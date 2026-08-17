@@ -18,20 +18,12 @@ jobs:
         sudo xcode-select -s /Applications/Xcode.app
         xcodebuild -version
 
-    - name: Create Xcode Project Structure
-      run: |
-        cat << 'EOF' > generate_project.swift
-        import Foundation
-        // Skrip otomatis pembuat kerangka proyek Xcode yang valid
-        print("Mempersiapkan struktur proyek Xcode untuk work.plot...")
-        EOF
-        swift generate_project.swift
-
     - name: Build Application via Xcode
       run: |
         mkdir -p Payload/work.plot.app
-        # Kompilasi Swift murni dengan target iOS arm64 agar dibaca valid oleh Sideloadly
-        swiftc Core.swift -o Payload/work.plot.app/work.plot -target arm64-apple-ios15.0 -sdk $(xcrun --sdk iphoneos --show-sdk-path)
+        
+        # Tambahkan -parse-as-library agar atribut @main dapat dibaca oleh kompiler Swift
+        swiftc Core.swift -o Payload/work.plot.app/work.plot -target arm64-apple-ios15.0 -sdk $(xcrun --sdk iphoneos --show-sdk-path) -parse-as-library
         
         # Buat Info.plist standar aplikasi iOS
         cat << 'EOF' > Payload/work.plot.app/Info.plist
