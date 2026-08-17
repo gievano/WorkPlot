@@ -24,8 +24,8 @@ jobs:
         rm -rf Payload Output
         mkdir -p Payload/work.plot.app
         
-        # Kompilasi seluruh file sumber di folder Sources/ dan UI/
-        swiftc Sources/*.swift UI/*.swift -o Payload/work.plot.app/work.plot \
+        # Perbaikan pemanggilan swiftc untuk mendeteksi file Swift secara spesifik di tiap direktori
+        swiftc Sources/AppDelegate.swift Sources/SystemCoordinator.swift Sources/ExploitEngine.swift Sources/FeatureFlagsManager.swift UI/MainDashboardView.swift UI/ConfigViews.swift -o Payload/work.plot.app/work.plot \
           -target arm64-apple-ios15.0 \
           -sdk $(xcrun --sdk iphoneos --show-sdk-path) \
           -framework SwiftUI \
