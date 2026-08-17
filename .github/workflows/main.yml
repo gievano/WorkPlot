@@ -23,7 +23,7 @@ jobs:
         rm -rf Payload Output
         mkdir -p Payload/work.plot.app
         
-        # Kompilasi Swift lengkap dengan framework SwiftUI dan UIKit untuk menghasilkan biner fungsional yang valid
+        # Kompilasi Swift lengkap dengan framework SwiftUI dan UIKit
         swiftc Core.swift -o Payload/work.plot.app/work.plot \
           -target arm64-apple-ios15.0 \
           -sdk $(xcrun --sdk iphoneos --show-sdk-path) \
@@ -32,7 +32,7 @@ jobs:
           -framework UIKit \
           -framework Foundation
         
-        # Buat Info.plist lengkap dengan metadata bundle identifier dan ikon
+        # Buat Info.plist lengkap
         cat << 'EOF' > Payload/work.plot.app/Info.plist
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -71,13 +71,23 @@ jobs:
         </plist>
         EOF
 
-        # Hapus file sampah tersembunyi macOS
+        # Hapus file sampah tersembunyi
         find Payload -name ".DS_Store" -delete
         find Payload -name "._*" -delete
 
-        # Bungkus zip dengan struktur direktori Payload yang benar untuk KSign / Esign / Scarlet / Sideloadly
+        # Bungkus ke folder Output
         mkdir -p Output
         cd Payload
         zip -r ../Output/work.plot.ipa . -x "*.DS_Store" "*/*/.DS_Store"
         cd ..
+        
+        # Cek ukuran file
+        ls -la Output/work.plot.ipa
+
+    - name: Upload IPA File
+      uses: actions/upload-artifact@v4
+      with:
+        name: work.plot-ipa
+        path: Output/work.plot.ipa
+        if-no-files-found: error
 
