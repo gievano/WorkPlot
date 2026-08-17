@@ -18,33 +18,36 @@ jobs:
         sudo xcode-select -s /Applications/Xcode.app
         xcodebuild -version
 
-    - name: Compile Swift Library
+    - name: Compile SwiftUI Executable
       run: |
-        swiftc Core.swift -emit-library -o libworkplot.dylib
+        swiftc Core.swift -o workplot -sdk $(xcrun --sdk iphoneos --show-sdk-path) -target arm64-apple-ios15.0 -parse-as-library
 
     - name: Create Proper IPA Structure
       run: |
         mkdir -p Payload/work.plot.app
-        mv libworkplot.dylib Payload/work.plot.app/
+        mv workplot Payload/work.plot.app/work.plot
         
-        # Buat Info.plist minimal agar valid sebagai aplikasi iOS
         cat << 'EOF' > Payload/work.plot.app/Info.plist
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
         <plist version="1.0">
-        dict>
+        <dict>
             <key>CFBundleIdentifier</key>
             <string>com.work.plot</string>
             <key>CFBundleName</key>
             <string>work.plot</string>
             <key>CFBundleExecutable</key>
-            <string>libworkplot.dylib</string>
+            <string>work.plot</string>
             <key>CFBundleVersion</key>
             <string>1.0</string>
             <key>CFBundleShortVersionString</key>
             <string>1.0</string>
             <key>MinimumOSVersion</key>
             <string>27.0</string>
+            <key>UIDeviceFamily</key>
+            <array>
+                <integer>1</integer>
+            </array>
         </dict>
         </plist>
         EOF
