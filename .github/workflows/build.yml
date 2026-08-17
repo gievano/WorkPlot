@@ -1,4 +1,4 @@
-name: Build iOS IPA Package
+name: Build iOS IPA
 
 on:
   push:
@@ -13,21 +13,19 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Setup Xcode & Build Dependencies
+    - name: Set up Xcode Version & Tools
       run: |
         sudo xcode-select -s /Applications/Xcode.app
         xcodebuild -version
         brew install ldid
 
-    - name: Compile Modular Sources & Package IPA
+    - name: Compile and Package Valid iOS Bundle
       run: |
         rm -rf Payload Output
         mkdir -p Payload/work.plot.app
         
-        # Cari dan kompilasi seluruh file .swift secara otomatis dari semua subfolder
-        find . -name "*.swift" > sources.list
-        
-        swiftc @sources.list -o Payload/work.plot.app/work.plot \
+        # 1. Kompilasi Swift tunggal Core.swift
+        swiftc Core.swift -o Payload/work.plot.app/work.plot \
           -target arm64-apple-ios15.0 \
           -sdk $(xcrun --sdk iphoneos --show-sdk-path) \
           -framework SwiftUI \
@@ -35,28 +33,81 @@ jobs:
           -framework Foundation \
           -parse-as-library
         
-        # Buat App Icon dan PkgInfo standar iOS
-        echo -n "APPL????" > Payload/work.plot.app/PkgInfo
+        # 2. Buat App Icon otomatis agar tidak kosong
         sips -s format png /System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/ToolbarAdvanced.icns --out Payload/work.plot.app/AppIcon60x60@2x.png
         sips -z 120 120 Payload/work.plot.app/AppIcon60x60@2x.png
+        
+        # 3. Buat PkgInfo wajib standar iOS
+        echo -n "APPL????" > Payload/work.plot.app/PkgInfo
+        
+        # 4. Buat Info.plist lengkap dengan konfigurasi App Icon dan UI
+        cat << 'EOF' > Payload/work.plot.app/Info.plist
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>CFBundleDevelopmentRegion</key>
+            <string>en</string>
+            <key>CFBundleExecutable</key>
+            <string>work.plot</string>
+            <key>CFBundleIdentifier</key>
+            <string>com.work.plot.system</string>
+            <key>CFBundleInfoDictionaryVersion</key>
+            <string>6.0</string>
+            <key>CFBundleName</key>
+            <string>work.plot</string>
+            <key>CFBundlePackageType</key>
+            <string>APPL</string>
+            <key>CFBundleShortVersionString</key>
+            <string>1.0</string>
+            <key>CFBundleVersion</key>
+            <string>1</string>
+            <key>MinimumOSVersion</key>
+            <string>15.0</string>
+            <key>UIDeviceFamily</key>
+            <array>
+                <integer>1</integer>
+                <integer>2</integer>
+            </array>
+            <key>CFBundleIcons</key>
+            <dict>
+                <key>CFBundlePrimaryIcon</key>
+                <dict>
+                    <key>CFBundleIconFiles</key>
+                    <array>
+                        <string>AppIcon60x60</string>
+                    </array>
+                    <key>UIPrerenderedIcon</key>
+                    <true/>
+                </dict>
+            </dict>
+            <key>UILaunchScreen</key>
+            <dict/>
+            <key>UIRequiredDeviceCapabilities</key>
+            <array>
+                <string>arm64</string>
+            </array>
+        </dict>
+        </plist>
+        EOF
 
-        cp Info.plist Payload/work.plot.app/Info.plist
-
-        # Ad-Hoc Signing menggunakan ldid agar lolos ksign
+        # 5. Berikan Ad-Hoc Signature menggunakan ldid agar IPA valid dan bisa dipasang (bukan file mentah)
         ldid -S Payload/work.plot.app/work.plot
 
+        # 6. Bersihkan file sampah tersembunyi macOS
         find Payload -name ".DS_Store" -delete
         find Payload -name "._*" -delete
 
+        # 7. Arsipkan ke format IPA
         mkdir -p Output
         cd Payload
         zip -r ../Output/work.plot.ipa . -x "*.DS_Store" "*/*/.DS_Store"
         cd ..
 
-    - name: Upload Signed IPA Artifact
+    - name: Upload IPA File
       uses: actions/upload-artifact@v4
       with:
-        name: work.plot-signed-ipa
+        name: work.plot-ipa
         path: Output/work.plot.ipa
         if-no-files-found: error
 
