@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Xcode Version
       run: |
@@ -29,7 +29,7 @@ jobs:
         mv Output/work.plot.zip Output/work.plot.ipa
 
     - name: Upload IPA File
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: work.plot-ipa
         path: Output/work.plot.ipa
