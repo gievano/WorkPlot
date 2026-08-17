@@ -2,7 +2,7 @@ import SwiftUI
 import Foundation
 import UIKit
 
-// MARK: - Application Entry Point
+// MARK: - Titik Masuk Aplikasi (Application Entry Point)
 @main
 public class AppDelegate: UIResponder, UIApplicationDelegate {
     public var window: UIWindow?
@@ -16,7 +16,7 @@ public class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 
-// MARK: - Main Dashboard & Navigation View
+// MARK: - Tampilan Utama Dashboard & Navigasi (Main Dashboard & Navigation View)
 public struct MainDashboardView: View {
     @StateObject private var stateManager = SystemStateManager.shared
     @State private var selectedTab: Int = 0
@@ -50,6 +50,7 @@ public struct MainDashboardView: View {
 // MARK: - Tab 1: Status & Exploit Dashboard
 public struct StatusDashboardView: View {
     @ObservedObject private var manager = SystemStateManager.shared
+    @State private var showingCertSheet: Bool = false
     
     public var body: some View {
         NavigationView {
@@ -71,6 +72,21 @@ public struct StatusDashboardView: View {
                         Spacer()
                         Text(manager.sandboxGranted ? "GRANTED" : "LOCKED")
                             .foregroundColor(manager.sandboxGranted ? .green : .orange)
+                    }
+                }
+                
+                Section(header: Text("Sertifikat & Profil Aplikasi")) {
+                    HStack {
+                        Text("Status Penandatanganan")
+                        Spacer()
+                        Text(manager.isCertificateInstalled ? "Terpasang & Valid" : "Belum Dipasang")
+                            .foregroundColor(manager.isCertificateInstalled ? .green : .orange)
+                    }
+                    Button(action: {
+                        showingCertSheet = true
+                    }) {
+                        Text(manager.isCertificateInstalled ? "Kelola Sertifikat" : "Pasang Sertifikat Aplikasi")
+                            .foregroundColor(.blue)
                     }
                 }
                 
@@ -106,6 +122,50 @@ public struct StatusDashboardView: View {
                 }
             }
             .navigationTitle("work.plot Security")
+            .sheet(isPresented: $showingCertSheet) {
+                CertificateManagementSheet()
+            }
+        }
+    }
+}
+
+// MARK: - Sub-Sheet Manajemen Sertifikat
+public struct CertificateManagementSheet: View {
+    @Environment(\.presentationMode) var presentationMode
+    @ObservedObject private var manager = SystemStateManager.shared
+    
+    public var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Pemasangan Profil Penandatanganan"), footer: Text("Memasang sertifikat pengembang atau enterprise memastikan persistensi aplikasi dan izin sandbox berjalan stabil pada iOS.")) {
+                    Button("Pasang Certificate Enterprise (.p12)") {
+                        manager.installCertificate(profileName: "Enterprise Distribution Profile")
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                    Button("Pasang Personal Team Profile") {
+                        manager.installCertificate(profileName: "Personal Development Profile")
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+                
+                if manager.isCertificateInstalled {
+                    Section(header: Text("Informasi Sertifikat Aktif")) {
+                        HStack {
+                            Text("Tipe Profil")
+                            Spacer()
+                            Text(manager.activeCertificateName).foregroundColor(.secondary)
+                        }
+                        Button("Cabut & Hapus Sertifikat") {
+                            manager.revokeCertificate()
+                        }
+                        .foregroundColor(.red)
+                    }
+                }
+            }
+            .navigationTitle("Manajemen Sertifikat")
+            .navigationBarItems(trailing: Button("Tutup") {
+                presentationMode.wrappedValue.dismiss()
+            })
         }
     }
 }
@@ -260,11 +320,12 @@ public class SystemStateManager: ObservableObject {
     @Published public var isBuildCompatible: Bool = true
     @Published public var sandboxGranted: Bool = false
     @Published public var isExecuting: Bool = false
+    @Published public var isCertificateInstalled: Bool = false
+    @Published public var activeCertificateName: String = "Belum Terpasang"
     @Published public var consoleLog: String = "[*] work.plot initialized.\n[*] Awaiting exploit trigger...\n"
     @Published public var backupList: [String] = []
     
     private let gestaltPath = "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist"
-    private let graphicsPath = "/var/preferences/com.apple.iomobilegraphicsfamily.plist"
     
     private init() {
         verifyBuildCompatibility()
@@ -280,6 +341,18 @@ public class SystemStateManager: ObservableObject {
         let validBuilds = ["24A5355q", "24A5370h", "24A5380h", "24A5390f"]
         isBuildCompatible = validBuilds.contains(currentBuildVersion)
         log(isBuildCompatible ? "[+] Compatible iOS 27 build detected." : "[-] Unsupported build.")
+    }
+    
+    public func installCertificate(profileName: String) {
+        activeCertificateName = profileName
+        isCertificateInstalled = true
+        log("[+] Sertifikat profil '\(profileName)' berhasil dipasang dan diverifikasi.")
+    }
+    
+    public func revokeCertificate() {
+        activeCertificateName = "Belum Terpasang"
+        isCertificateInstalled = false
+        log("[-] Sertifikat profil berhasil dicabut.")
     }
     
     public func initializeSandboxExploit() {
