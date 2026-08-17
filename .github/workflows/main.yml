@@ -18,15 +18,16 @@ jobs:
         sudo xcode-select -s /Applications/Xcode.app
         xcodebuild -version
 
-    - name: Compile and Package App Bundle
+    - name: Build Clean iOS App Package
       run: |
-        # Buat folder struktur aplikasi
+        # Buat direktori bersih untuk Payload
+        rm -rf Payload Output
         mkdir -p Payload/work.plot.app
         
         # Kompilasi Swift murni dengan target iOS arm64
         swiftc Core.swift -o Payload/work.plot.app/work.plot -target arm64-apple-ios15.0 -sdk $(xcrun --sdk iphoneos --show-sdk-path) -parse-as-library
         
-        # Buat Info.plist yang lengkap dan valid untuk Sideloadly
+        # Buat Info.plist standar lengkap dengan dukungan orientasi dan perangkat
         cat << 'EOF' > Payload/work.plot.app/Info.plist
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -55,16 +56,21 @@ jobs:
                 <integer>1</integer>
                 <integer>2</integer>
             </array>
+            <key>UILaunchScreen</key>
+            <dict/>
         </dict>
         </plist>
         EOF
 
-        # Kompres folder Payload menjadi arsip .ipa yang valid
+        # Hapus file sampah tersembunyi macOS agar tidak merusak pembacaan Sideloadly
+        find Payload -name ".DS_Store" -delete
+        find Payload -name "._*" -delete
+
+        # Bungkus ke dalam format IPA yang bersih
         mkdir -p Output
         cd Payload
-        zip -r ../Output/work.plot.ipa .
+        zip -r ../Output/work.plot.ipa . -x "*.DS_Store" "*/*/.DS_Store"
         cd ..
-        rm -rf Payload
 
     - name: Upload IPA File
       uses: actions/upload-artifact@v4
