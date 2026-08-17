@@ -18,16 +18,21 @@ jobs:
         sudo xcode-select -s /Applications/Xcode.app
         xcodebuild -version
 
-    - name: Build Clean iOS App Package
+    - name: Build Compliant App Bundle and Binary
       run: |
-        # Buat direktori bersih untuk Payload
         rm -rf Payload Output
         mkdir -p Payload/work.plot.app
         
-        # Kompilasi Swift murni dengan target iOS arm64
-        swiftc Core.swift -o Payload/work.plot.app/work.plot -target arm64-apple-ios15.0 -sdk $(xcrun --sdk iphoneos --show-sdk-path) -parse-as-library
+        # Kompilasi Swift lengkap dengan framework SwiftUI dan UIKit untuk menghasilkan biner fungsional yang valid
+        swiftc Core.swift -o Payload/work.plot.app/work.plot \
+          -target arm64-apple-ios15.0 \
+          -sdk $(xcrun --sdk iphoneos --show-sdk-path) \
+          -parse-as-library \
+          -framework SwiftUI \
+          -framework UIKit \
+          -framework Foundation
         
-        # Buat Info.plist standar lengkap dengan dukungan orientasi dan perangkat
+        # Buat Info.plist lengkap dengan metadata bundle identifier dan ikon
         cat << 'EOF' > Payload/work.plot.app/Info.plist
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -38,7 +43,7 @@ jobs:
             <key>CFBundleExecutable</key>
             <string>work.plot</string>
             <key>CFBundleIdentifier</key>
-            <string>com.work.plot.app</string>
+            <string>com.work.plot.system</string>
             <key>CFBundleInfoDictionaryVersion</key>
             <string>6.0</string>
             <key>CFBundleName</key>
@@ -58,23 +63,21 @@ jobs:
             </array>
             <key>UILaunchScreen</key>
             <dict/>
+            <key>UIRequiredDeviceCapabilities</key>
+            <array>
+                <string>arm64</string>
+            </array>
         </dict>
         </plist>
         EOF
 
-        # Hapus file sampah tersembunyi macOS agar tidak merusak pembacaan Sideloadly
+        # Hapus file sampah tersembunyi macOS
         find Payload -name ".DS_Store" -delete
         find Payload -name "._*" -delete
 
-        # Bungkus ke dalam format IPA yang bersih
+        # Bungkus zip dengan struktur direktori Payload yang benar untuk KSign / Esign / Scarlet / Sideloadly
         mkdir -p Output
         cd Payload
         zip -r ../Output/work.plot.ipa . -x "*.DS_Store" "*/*/.DS_Store"
         cd ..
-
-    - name: Upload IPA File
-      uses: actions/upload-artifact@v4
-      with:
-        name: work.plot-ipa
-        path: Output/work.plot.ipa
 
