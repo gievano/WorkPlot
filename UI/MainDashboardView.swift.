@@ -1,0 +1,71 @@
+import SwiftUI
+
+public struct MainDashboardView: View {
+    @StateObject private var coordinator = SystemCoordinator.shared
+    @State private var selectedTab: Int = 0
+    
+    public var body: some View {
+        TabView(selection: $selectedTab) {
+            StatusDashboardView()
+                .tabItem { Label("Dashboard", systemImage: "shield.checkered") }
+                .tag(0)
+            
+            ConfigViews()
+                .tabItem { Label("Configs & Patches", systemImage: "gearshape.2.fill") }
+                .tag(1)
+        }
+        .accentColor(.blue)
+        .preferredColorScheme(.dark)
+    }
+}
+
+public struct StatusDashboardView: View {
+    @ObservedObject private var coordinator = SystemCoordinator.shared
+    
+    public var body: some View {
+        NavigationView {
+            List {
+                Section(header: Text("Status Sistem iOS 27")) {
+                    HStack {
+                        Text("Target Build")
+                        Spacer()
+                        Text(coordinator.targetVersion).foregroundColor(.blue)
+                    }
+                    HStack {
+                        Text("Status bad_query")
+                        Spacer()
+                        Text(coordinator.sandboxEscaped ? "ESCAPED (ROOT)" : "LOCKED")
+                            .foregroundColor(coordinator.sandboxEscaped ? .green : .orange)
+                    }
+                }
+                
+                Section(header: Text("Eksekusi Kernel")) {
+                    Button(action: { coordinator.executeBadQuery() }) {
+                        HStack {
+                            Text("Jalankan bad_query Escape")
+                            Spacer()
+                            if coordinator.isExecuting { ProgressView() }
+                        }
+                    }
+                    .disabled(!coordinator.isCompatible || coordinator.sandboxEscaped)
+                }
+                
+                Section(header: Text("System Log")) {
+                    ScrollView {
+                        Text(coordinator.consoleOutput)
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundColor(.green)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding()
+                    }
+                    .frame(height: 180)
+                    .background(Color.black)
+                    .cornerRadius(8)
+                }
+            }
+            .listStyle(InsetGroupedListStyle())
+            .navigationTitle("work.plot Security")
+        }
+    }
+}
+
