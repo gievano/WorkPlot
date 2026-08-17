@@ -1,0 +1,17 @@
+import SwiftUI
+import Foundation
+import UIKit
+
+@main
+public class AppDelegate: UIResponder, UIApplicationDelegate {
+    public var window: UIWindow?
+
+    public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        let win = UIWindow(frame: UIScreen.main.bounds)
+        win.rootViewController = UIHostingController(rootView: MainDashboardView())
+        win.makeKeyAndVisible()
+        self.window = win
+        return true
+    }
+}
+
