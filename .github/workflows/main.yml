@@ -13,17 +13,19 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Set up Xcode Version
+    - name: Set up Environment & Sideload Tools
       run: |
         sudo xcode-select -s /Applications/Xcode.app
         xcodebuild -version
+        # Install ldid untuk Ad-Hoc signing (Sertifikat pseudo agar IPA valid)
+        brew install ldid
 
     - name: Compile and Package Valid iOS Bundle
       run: |
         rm -rf Payload Output
         mkdir -p Payload/work.plot.app
         
-        # Kompilasi Swift dengan menghubungkan framework secara eksplisien
+        # 1. Kompilasi Swift dengan menghubungkan framework yang dibutuhkan
         swiftc Core.swift -o Payload/work.plot.app/work.plot \
           -target arm64-apple-ios15.0 \
           -sdk $(xcrun --sdk iphoneos --show-sdk-path) \
@@ -32,10 +34,15 @@ jobs:
           -framework Foundation \
           -parse-as-library
         
-        # Buat PkgInfo standar iOS
+        # 2. Buat Icon Aplikasi Menggunakan sips (Native macOS Image Processor)
+        # Mengambil icon gear sistem dan mengubahnya menjadi AppIcon iOS (120x120px)
+        sips -s format png /System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/ToolbarAdvanced.icns --out Payload/work.plot.app/AppIcon60x60@2x.png
+        sips -z 120 120 Payload/work.plot.app/AppIcon60x60@2x.png
+        
+        # 3. Buat PkgInfo yang wajib ada pada aplikasi iOS standar
         echo -n "APPL????" > Payload/work.plot.app/PkgInfo
         
-        # Buat Info.plist dengan identitas bundle yang bersih
+        # 4. Buat Info.plist lengkap dengan identitas bundle, konfigurasi UIWindow, dan konfigurasi Icon
         cat << 'EOF' > Payload/work.plot.app/Info.plist
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -64,6 +71,18 @@ jobs:
                 <integer>1</integer>
                 <integer>2</integer>
             </array>
+            <key>CFBundleIcons</key>
+            <dict>
+                <key>CFBundlePrimaryIcon</key>
+                <dict>
+                    <key>CFBundleIconFiles</key>
+                    <array>
+                        <string>AppIcon60x60</string>
+                    </array>
+                    <key>UIPrerenderedIcon</key>
+                    <true/>
+                </dict>
+            </dict>
             <key>UILaunchScreen</key>
             <dict/>
             <key>UIRequiredDeviceCapabilities</key>
@@ -74,17 +93,20 @@ jobs:
         </plist>
         EOF
 
-        # Bersihkan file sampah tersembunyi macOS
+        # 5. Lakukan Ad-Hoc Signing dengan ldid (Mengubah file "mentah" menjadi file yang ditandatangani)
+        ldid -S Payload/work.plot.app/work.plot
+
+        # 6. Bersihkan file sampah tersembunyi macOS
         find Payload -name ".DS_Store" -delete
         find Payload -name "._*" -delete
 
-        # Arsipkan ke dalam format IPA standar
+        # 7. Arsipkan ke dalam format IPA
         mkdir -p Output
         cd Payload
         zip -r ../Output/work.plot.ipa . -x "*.DS_Store" "*/*/.DS_Store"
         cd ..
 
-    - name: Upload IPA File
+    - name: Upload Signed IPA File
       uses: actions/upload-artifact@v4
       with:
         name: work.plot-ipa
