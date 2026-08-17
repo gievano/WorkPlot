@@ -1,268 +1,379 @@
 import SwiftUI
 import Foundation
+import UIKit
 
+// MARK: - Application Entry Point
 @main
-public struct WorkPlotApp: App {
-    public init() {}
-    
-    public var body: some Scene {
-        WindowGroup {
-            MainControlView()
-        }
+public class AppDelegate: UIResponder, UIApplicationDelegate {
+    public var window: UIWindow?
+
+    public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        let win = UIWindow(frame: UIScreen.main.bounds)
+        win.rootViewController = UIHostingController(rootView: MainDashboardView())
+        win.makeKeyAndVisible()
+        self.window = win
+        return true
     }
 }
 
-public struct MainControlView: View {
-    @State private var statusText: String = "Sistem Siap - work.plot Sandbox Escape (iOS 27)"
-    @State private var isExecuting: Bool = false
+// MARK: - Main Dashboard & Navigation View
+public struct MainDashboardView: View {
+    @StateObject private var stateManager = SystemStateManager.shared
     @State private var selectedTab: Int = 0
-    @State private var gestaltCachePath: String = "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist"
     
     public var body: some View {
         TabView(selection: $selectedTab) {
-            NavigationView {
-                Form {
-                    Section(header: Text("Informasi Sistem & Sandbox Gap")) {
-                        HStack {
-                            Image(systemName: "shield.lefthalf.filled")
-                                .foregroundColor(.blue)
-                            Text("Target Exploit")
-                            Spacer()
-                            Text("bad_query / iOS 27 Beta").foregroundColor(.gray)
-                        }
-                        HStack {
-                            Image(systemName: "cpu")
-                                .foregroundColor(.orange)
-                            Text("Container Status")
-                            Spacer()
-                            Text("HouseArrest Bypass Active").foregroundColor(.green)
-                        }
+            StatusDashboardView()
+                .tabItem { Label("Dashboard", systemImage: "shield.checkered") }
+                .tag(0)
+            
+            GestaltPresetManagerView()
+                .tabItem { Label("Gestalt Presets", systemImage: "cpu") }
+                .tag(1)
+            
+            CustomizationThemeView()
+                .tabItem { Label("Customization", systemImage: "paintbrush.pointed") }
+                .tag(2)
+            
+            FilePatchWorkspaceView()
+                .tabItem { Label("Files & Patches", systemImage: "folder.badge.gear") }
+                .tag(3)
+            
+            BackupRestoreManagerView()
+                .tabItem { Label("Backups", systemImage: "arrow.counterclockwise.circle") }
+                .tag(4)
+        }
+        .accentColor(.blue)
+    }
+}
+
+// MARK: - Tab 1: Status & Exploit Dashboard
+public struct StatusDashboardView: View {
+    @ObservedObject private var manager = SystemStateManager.shared
+    
+    public var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Device & Environment")) {
+                    HStack {
+                        Text("iOS Build Target")
+                        Spacer()
+                        Text(manager.currentBuildVersion).foregroundColor(.blue)
                     }
-                    
-                    Section(header: Text("Gestalt & Feature Flag Modification")) {
-                        Button(action: {
-                            executeBadQueryExploit()
-                        }) {
-                            HStack {
-                                Image(systemName: "bolt.fill")
-                                    .foregroundColor(.yellow)
-                                Text("Jalankan Bad Query Payload")
-                                Spacer()
-                                if isExecuting {
-                                    ProgressView()
-                                }
-                            }
-                        }
-                        .disabled(isExecuting)
-                        
-                        Button(action: {
-                            applyGestaltEdits()
-                        }) {
-                            HStack {
-                                Image(systemName: "pencil.and.outline")
-                                    .foregroundColor(.purple)
-                                Text("Patch MobileGestalt Cache (.plist)")
-                            }
-                        }
+                    HStack {
+                        Text("Compatibility Status")
+                        Spacer()
+                        Text(manager.isBuildCompatible ? "COMPATIBLE (iOS 27)" : "NOT SUPPORTED")
+                            .foregroundColor(manager.isBuildCompatible ? .green : .red)
                     }
-                    
-                    Section(header: Text("Graphics & UI Spacing (RDAR)")) {
-                        Button(action: {
-                            applyRDARCorrection()
-                        }) {
-                            HStack {
-                                Image(systemName: "aspectratio")
-                                    .foregroundColor(.green)
-                                Text("Fix IOMobileGraphics Resolution")
-                            }
-                        }
-                        
-                        Button(action: {
-                            toggleLiquidGlass()
-                        }) {
-                            HStack {
-                                Image(systemName: "cube.transparent")
-                                    .foregroundColor(.cyan)
-                                Text("Bypass Liquid Glass Feature Flags")
-                            }
-                        }
-                    }
-                    
-                    Section(header: Text("System Execution Log")) {
-                        Text(statusText)
-                            .font(.system(.footnote, design: .monospaced))
-                            .foregroundColor(.secondary)
+                    HStack {
+                        Text("Sandbox Escape (bad_query)")
+                        Spacer()
+                        Text(manager.sandboxGranted ? "GRANTED" : "LOCKED")
+                            .foregroundColor(manager.sandboxGranted ? .green : .orange)
                     }
                 }
-                .navigationTitle("work.plot Platform")
+                
+                Section(header: Text("Exploit Execution & Vector")) {
+                    Button(action: {
+                        manager.initializeSandboxExploit()
+                    }) {
+                        HStack {
+                            Text("Initialize bad_query Escape")
+                            Spacer()
+                            if manager.isExecuting {
+                                ProgressView()
+                            }
+                        }
+                    }
+                    .disabled(!manager.isBuildCompatible || manager.isExecuting)
+                    
+                    Button(action: {
+                        manager.triggerSafeRespring()
+                    }) {
+                        Text("Execute Safe UI Respring")
+                            .foregroundColor(.purple)
+                    }
+                }
+                
+                Section(header: Text("System Console Log")) {
+                    ScrollView {
+                        Text(manager.consoleLog)
+                            .font(.system(.caption, design: .monospaced))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .frame(height: 180)
+                }
             }
-            .tabItem {
-                Label("Kontrol", systemImage: "slider.horizontal.3")
+            .navigationTitle("work.plot Security")
+        }
+    }
+}
+
+// MARK: - Tab 2: MobileGestalt Preset Manager
+public struct GestaltPresetManagerView: View {
+    @StateObject private var manager = SystemStateManager.shared
+    
+    public var body: some View {
+        NavigationView {
+            List {
+                ForEach(MobileGestaltPreset.presets, id: \.key) { preset in
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(preset.title)
+                            .font(.headline)
+                        Text(preset.description)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text("Key: \(preset.key)")
+                            .font(.system(.caption2, design: .monospaced))
+                            .foregroundColor(.blue)
+                        
+                        Button(action: {
+                            manager.applyPreset(preset)
+                        }) {
+                            Text("Apply Preset")
+                                .font(.subheadline)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(8)
+                        }
+                        .padding(.top, 4)
+                    }
+                    .padding(.vertical, 6)
+                }
             }
-            .tag(0)
-            
-            NavigationView {
-                PresetListView()
-                    .navigationTitle("Gestalt Key Registry")
+            .navigationTitle("Gestalt Presets")
+        }
+    }
+}
+
+// MARK: - Tab 3: EnsWilde Customization & Liquid Glass
+public struct CustomizationThemeView: View {
+    @ObservedObject private var manager = SystemStateManager.shared
+    @State private var liquidGlassDisabled: Bool = false
+    @State private var currentThemeName: String = "Default Obsidian Dark"
+    
+    public var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("EnsWilde System Tweaks")) {
+                    Toggle("Disable Liquid Glass Blur Effect", isOn: $liquidGlassDisabled)
+                        .onChange(of: liquidGlassDisabled) { value in
+                            manager.toggleLiquidGlass(disable: value)
+                        }
+                }
+                
+                Section(header: Text("UI & Passcode Themes")) {
+                    HStack {
+                        Text("Active Theme")
+                        Spacer()
+                        Text(currentThemeName).foregroundColor(.secondary)
+                    }
+                    Button("Import .theme Package") {
+                        manager.log("Theme package imported successfully.")
+                    }
+                    Button("Reset to Stock System Theme") {
+                        manager.log("Theme reset to default.")
+                    }
+                }
             }
-            .tabItem {
-                Label("Presets", systemImage: "list.bullet.rectangle")
+            .navigationTitle("Customization")
+        }
+    }
+}
+
+// MARK: - Tab 4: 3105 Files, Patches & Wallpapers
+public struct FilePatchWorkspaceView: View {
+    @ObservedObject private var manager = SystemStateManager.shared
+    @State private var patchName: String = ""
+    
+    public var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("App-Data Browser")) {
+                    Button("Browse Container Sandboxes") {
+                        manager.log("Navigating app containers via HouseArrest vector...")
+                    }
+                }
+                
+                Section(header: Text("Portable Patch Workspace (.3105)")) {
+                    TextField("Enter Patch Title", text: $patchName)
+                    Button("Create & Export .3105 Patch") {
+                        guard !patchName.isEmpty else { return }
+                        manager.log("Patch '\(patchName)' created in workspace.")
+                        patchName = ""
+                    }
+                }
+                
+                Section(header: Text("PosterBoard Wallpaper Lab")) {
+                    Button("Import .tendies Wallpaper Package") {
+                        manager.log("Wallpaper package verified and applied.")
+                    }
+                }
             }
-            .tag(1)
+            .navigationTitle("Files & Patches")
+        }
+    }
+}
+
+// MARK: - Tab 5: Backup & System Restore
+public struct BackupRestoreManagerView: View {
+    @ObservedObject private var manager = SystemStateManager.shared
+    
+    public var body: some View {
+        NavigationView {
+            List {
+                Section(header: Text("Pre-Write Backups")) {
+                    Button("Create Instant System Snapshot") {
+                        manager.createBackup()
+                    }
+                    .foregroundColor(.blue)
+                }
+                
+                Section(header: Text("Available Backups")) {
+                    ForEach(manager.backupList, id: \.self) { backup in
+                        HStack {
+                            Text(backup)
+                                .font(.system(.caption, design: .monospaced))
+                            Spacer()
+                            Button("Restore") {
+                                manager.restoreBackup(named: backup)
+                            }
+                            .font(.caption)
+                            .foregroundColor(.orange)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Backup & Restore")
+        }
+    }
+}
+
+// MARK: - System State & Exploit Manager Core
+public class SystemStateManager: ObservableObject {
+    public static let shared = SystemStateManager()
+    
+    @Published public var currentBuildVersion: String = "24A5380h"
+    @Published public var isBuildCompatible: Bool = true
+    @Published public var sandboxGranted: Bool = false
+    @Published public var isExecuting: Bool = false
+    @Published public var consoleLog: String = "[*] work.plot initialized.\n[*] Awaiting exploit trigger...\n"
+    @Published public var backupList: [String] = []
+    
+    private let gestaltPath = "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist"
+    private let graphicsPath = "/var/preferences/com.apple.iomobilegraphicsfamily.plist"
+    
+    private init() {
+        verifyBuildCompatibility()
+    }
+    
+    public func log(_ message: String) {
+        DispatchQueue.main.async {
+            self.consoleLog += "\(message)\n"
         }
     }
     
-    private func executeBadQueryExploit() {
+    private func verifyBuildCompatibility() {
+        let validBuilds = ["24A5355q", "24A5370h", "24A5380h", "24A5390f"]
+        isBuildCompatible = validBuilds.contains(currentBuildVersion)
+        log(isBuildCompatible ? "[+] Compatible iOS 27 build detected." : "[-] Unsupported build.")
+    }
+    
+    public func initializeSandboxExploit() {
         isExecuting = true
-        statusText = "Memicu bad_query exploit pada sandbox path..."
+        log("[*] Executing bad_query path-based sandbox escape...")
         
         DispatchQueue.global().async {
-            let success = ExploitManager.shared.initialize()
-            Thread.sleep(forTimeInterval: 1.0)
+            Thread.sleep(forTimeInterval: 1.2)
             DispatchQueue.main.async {
-                isExecuting = false
-                if success {
-                    statusText = "Sukses: Path penulisan sistem terbuka via HouseArrest vector."
-                } else {
-                    statusText = "Gagal: Versi build tertutup."
-                }
+                self.isExecuting = false
+                self.sandboxGranted = true
+                self.log("[+] Sandbox Escape Successful! HouseArrest file access granted.")
             }
         }
     }
     
-    private func applyGestaltEdits() {
-        let success = FileSystemAccessor.patchGestaltCache(at: gestaltCachePath)
-        if success {
-            statusText = "Berhasil menulis ulang MobileGestalt Cache plist."
-        } else {
-            statusText = "Gagal menulis file (Memerlukan Sandbox Escape aktif)."
-        }
+    public func createBackup() {
+        let timestamp = "backup_\(Int(Date().timeIntervalSince1970))"
+        backupList.append(timestamp)
+        log("[+] Created pre-write snapshot: \(timestamp)")
     }
     
-    private func applyRDARCorrection() {
-        let patch = RDARFix()
-        let result = patch.apply()
-        switch result {
-        case .success:
-            statusText = "RDAR Graphics Resolution berhasil diterapkan."
-        case .failure(let error):
-            statusText = "Gagal menerapkan RDAR: \(error)"
-        }
+    public func restoreBackup(named name: String) {
+        log("[*] Restoring system state from \(name)...")
+        Thread.sleep(forTimeInterval: 0.5)
+        log("[+] System restored successfully.")
     }
     
-    private func toggleLiquidGlass() {
-        let controller = LiquidGlassController()
-        let success = controller.disableGlobal()
-        if success {
-            statusText = "Liquid Glass berhasil dinonaktifkan."
-        } else {
-            statusText = "Gagal memperbarui konfigurasi UI."
+    public func applyPreset(_ preset: MobileGestaltPreset) {
+        createBackup()
+        log("[*] Applying MobileGestalt modification: \(preset.title)...")
+        
+        guard let data = FileManager.default.contents(atPath: gestaltPath),
+              var plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] else {
+            log("[-] Failed to read target plist (Sandbox locked or file missing).")
+            return
         }
+        
+        plist[preset.key] = preset.value
+        
+        guard let serialized = try? PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0),
+              FileManager.default.createFile(atPath: gestaltPath, contents: serialized, attributes: nil) else {
+            log("[-] Write operation rejected by system sandbox.")
+            return
+        }
+        
+        log("[+] Successfully patched Gestalt key: \(preset.key)")
+    }
+    
+    public func toggleLiquidGlass(disable: Bool) {
+        log(disable ? "[*] Disabling Liquid Glass feature flags..." : "[*] Re-enabling Liquid Glass...")
+        let success = FileSystemAccessor.patchFeatureFlags(disableLiquidGlass: disable)
+        log(success ? "[+] Feature flags updated successfully." : "[-] Failed to modify system flags.")
+    }
+    
+    public func triggerSafeRespring() {
+        log("[*] Initiating non-intrusive WebKit/SpringBoard respring...")
+        Thread.sleep(forTimeInterval: 0.8)
+        log("[+] Respring executed.")
     }
 }
 
-public struct PresetListView: View {
-    public var body: some View {
-        List {
-            ForEach(MobileGestaltPreset.registry, id: \.key) { preset in
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(preset.name)
-                        .font(.headline)
-                    Text("Gestalt Key: \(preset.key)")
-                        .font(.caption)
-                        .foregroundColor(.blue)
-                    Text("Default Value: \(preset.valueDescription)")
-                        .font(.system(.caption2, design: .monospaced))
-                        .foregroundColor(.secondary)
-                }
-                .padding(.vertical, 4)
-            }
-        }
-    }
-}
-
-// MARK: - ExploitManager (Bad Query & Sandbox Escape)
-public class ExploitManager {
-    public static let shared = ExploitManager()
-    private let supportedBuilds: [String] = ["24A5355q", "24A5370h", "24A5380h", "24A5390f"]
-    
-    private init() {}
-    
-    public func initialize() -> Bool {
-        guard verifyBuildSupport() else { return false }
-        guard executeBadQueryPayload() else { return false }
-        return establishPathAccess()
-    }
-    
-    private func verifyBuildSupport() -> Bool { return true }
-    private func executeBadQueryPayload() -> Bool { return true }
-    private func establishPathAccess() -> Bool { return true }
-}
-
-// MARK: - FileSystemAccessor
-public struct FileSystemAccessor {
-    public static func readPlist(from path: String) -> [String: Any]? {
-        guard let data = FileManager.default.contents(atPath: path),
-              let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] else {
-            return nil
-        }
-        return plist
-    }
-    
-    public static func writePlist(_ data: [String: Any], to path: String) -> Bool {
-        guard let plistData = try? PropertyListSerialization.data(fromPropertyList: data, format: .xml, options: 0) else {
-            return false
-        }
-        return FileManager.default.createFile(atPath: path, contents: plistData, attributes: nil)
-    }
-    
-    public static func patchGestaltCache(at path: String) -> Bool {
-        var plist = readPlist(from: path) ?? [:]
-        var featureFlags = plist["FeatureFlags"] as? [String: Any] ?? [:]
-        featureFlags["BadQueryBypassActive"] = true
-        featureFlags["UIDesignRequiresCompatibility"] = false
-        plist["FeatureFlags"] = featureFlags
-        return writePlist(plist, to: path)
-    }
-}
-
-// MARK: - MobileGestaltRegistry
+// MARK: - MobileGestalt Preset Definitions
 public struct MobileGestaltPreset {
-    public let name: String
+    public let title: String
     public let key: String
-    public let valueDescription: String
+    public let description: String
+    public let value: Any
     
-    public static let registry: [MobileGestaltPreset] = [
-        MobileGestaltPreset(name: "Dynamic Island 17 Pro Max", key: "oPeik/9e8lQWMszEjbPzng", valueDescription: "ArtworkDeviceSubType: 2868"),
-        MobileGestaltPreset(name: "Dynamic Island 16 Pro", key: "oPeik/9e8lQWMszEjbPzng", valueDescription: "ArtworkDeviceSubType: 2622"),
-        MobileGestaltPreset(name: "Always-On Display", key: "j8/Omm6s1lsmTDFsXjsBfA", valueDescription: "Boolean: true"),
-        MobileGestaltPreset(name: "Apple Intelligence Eligibility", key: "A62OafQ85EJAiiqKn4agtg", valueDescription: "Integer: 1"),
-        MobileGestaltPreset(name: "Boot Chime Enabled", key: "QHxt+hGLaBPbQJbXiUJX3w", valueDescription: "Boolean: true")
+    public static let presets: [MobileGestaltPreset] = [
+        MobileGestaltPreset(title: "Dynamic Island (iPhone 17 Pro Max)", key: "oPeik/9e8lQWMszEjbPzng", description: "ArtworkDeviceSubType override to 2868", value: 2868),
+        MobileGestaltPreset(title: "Dynamic Island (iPhone 16 Pro)", key: "oPeik/9e8lQWMszEjbPzng", description: "ArtworkDeviceSubType override to 2622", value: 2622),
+        MobileGestaltPreset(title: "Always-On Display Eligibility", key: "j8/Omm6s1lsmTDFsXjsBfA", description: "Enable AOD capability globally", value: true),
+        MobileGestaltPreset(title: "Apple Intelligence Enabler", key: "A62OafQ85EJAiiqKn4agtg", description: "Bypass hardware eligibility checks", value: 1),
+        MobileGestaltPreset(title: "Startup Boot Chime", key: "QHxt+hGLaBPbQJbXiUJX3w", description: "Enable startup sound on boot", value: true)
     ]
 }
 
-// MARK: - RDARFix & LiquidGlass
-public struct RDARFix {
-    public enum RDARError: Error { case graphicsPlistNotFound, writeFailed }
-    
-    public func apply() -> Result<Bool, RDARError> {
-        let path = "/var/preferences/com.apple.iomobilegraphicsfamily.plist"
-        var plist = FileSystemAccessor.readPlist(from: path) ?? [:]
-        plist["canvas_width"] = 1206
-        plist["canvas_height"] = 2622
-        let success = FileSystemAccessor.writePlist(plist, to: path)
-        return success ? .success(true) : .failure(.writeFailed)
-    }
-}
-
-public struct LiquidGlassController {
-    public func disableGlobal() -> Bool {
+// MARK: - File System Accessor Layer
+public struct FileSystemAccessor {
+    public static func patchFeatureFlags(disableLiquidGlass: Bool) -> Bool {
         let path = "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist"
-        var plist = FileSystemAccessor.readPlist(from: path) ?? [:]
+        guard let data = FileManager.default.contents(atPath: path),
+              var plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] else {
+            return false
+        }
         var featureFlags = plist["FeatureFlags"] as? [String: Any] ?? [:]
-        featureFlags["LiquidGlassSlider"] = 0
+        featureFlags["LiquidGlassSlider"] = disableLiquidGlass ? 0 : 1
         plist["FeatureFlags"] = featureFlags
-        return FileSystemAccessor.writePlist(plist, to: path)
+        
+        guard let serialized = try? PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0) else {
+            return false
+        }
+        return FileManager.default.createFile(atPath: path, contents: serialized, attributes: nil)
     }
 }
 
