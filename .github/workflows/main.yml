@@ -18,12 +18,31 @@ jobs:
         sudo xcode-select -s /Applications/Xcode.app
         xcodebuild -version
 
-    - name: Compile and Package Valid iOS Bundle with Icon Support
+    - name: Setup Signing & Certificate Profile
+      run: |
+        # Konfigurasi manajemen sertifikat dan provisioning profile untuk penandatanganan IPA
+        echo "[*] Menyiapkan sertifikat aplikasi dan provisioning profile..."
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        
+        # Jika menggunakan cert rahasia dari GitHub Secrets (Opsional)
+        if [ -n "${{ secrets.CERTIFICATE_P12 }}" ]; then
+          echo "${{ secrets.CERTIFICATE_P12 }}" | base64 --decode > certificate.p12
+          security create-keychain -p "buildpass" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "buildpass" build.keychain
+          security import certificate.p12 -k build.keychain -P "${{ secrets.CERTIFICATE_PASSWORD }}" -A
+          security set-keychain-settings -t 3600 -u build.keychain
+          echo "[+] Sertifikat berhasil diimpor ke keychain."
+        else
+          echo "[*] Menggunakan mode unsigned / simulasi penandatanganan lokal."
+        fi
+
+    - name: Compile and Package Valid iOS Bundle
       run: |
         rm -rf Payload Output
         mkdir -p Payload/work.plot.app
         
-        # Kompilasi Swift dengan menghubungkan UIKit, SwiftUI, dan Foundation secara eksplisien
+        # Kompilasi Swift dengan menghubungkan UIKit, SwiftUI, dan Foundation secara eksplisit
         swiftc Core.swift -o Payload/work.plot.app/work.plot \
           -target arm64-apple-ios15.0 \
           -sdk $(xcrun --sdk iphoneos --show-sdk-path) \
@@ -32,28 +51,10 @@ jobs:
           -framework Foundation \
           -parse-as-library
         
-        # Buat PkgInfo standar aplikasi iOS
+        # Buat PkgInfo yang wajib ada pada aplikasi iOS standar
         echo -n "APPL????" > Payload/work.plot.app/PkgInfo
         
-        # Buat direktori dan placeholder ikon aset agar dikenali penginstal signing (KSign/Sideloadly)
-        mkdir -p Payload/work.plot.app/Assets.xcassets/AppIcon.appiconset
-        cat << 'EOF' > Payload/work.plot.app/Assets.xcassets/AppIcon.appiconset/Contents.json
-        {
-          "images" : [
-            {
-              "idiom" : "universal",
-              "platform" : "ios",
-              "size" : "1024x1024"
-            }
-          ],
-          "info" : {
-            "author" : "xcode",
-            "version" : 1
-          }
-        }
-        EOF
-        
-        # Buat Info.plist lengkap dengan metadata ikon, bundle ID, dan orientasi
+        # Buat Info.plist lengkap dengan identitas bundle dan konfigurasi UIWindow & UI/UX Support
         cat << 'EOF' > Payload/work.plot.app/Info.plist
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -88,16 +89,6 @@ jobs:
             <array>
                 <string>arm64</string>
             </array>
-            <key>CFBundleIcons</key>
-            <dict>
-                <key>CFBundlePrimaryIcon</key>
-                <dict>
-                    <key>CFBundleIconFiles</key>
-                    <array>
-                        <string>AppIcon</string>
-                    </array>
-                </dict>
-            </dict>
         </dict>
         </plist>
         EOF
