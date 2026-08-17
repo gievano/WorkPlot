@@ -18,15 +18,40 @@ jobs:
         sudo xcode-select -s /Applications/Xcode.app
         xcodebuild -version
 
-    - name: Compile Swift Source
+    - name: Compile Swift Library
       run: |
         swiftc Core.swift -emit-library -o libworkplot.dylib
 
-    - name: Archive Artifacts
+    - name: Create Proper IPA Structure
       run: |
+        mkdir -p Payload/work.plot.app
+        mv libworkplot.dylib Payload/work.plot.app/
+        
+        # Buat Info.plist minimal agar valid sebagai aplikasi iOS
+        cat << 'EOF' > Payload/work.plot.app/Info.plist
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        dict>
+            <key>CFBundleIdentifier</key>
+            <string>com.work.plot</string>
+            <key>CFBundleName</key>
+            <string>work.plot</string>
+            <key>CFBundleExecutable</key>
+            <string>libworkplot.dylib</string>
+            <key>CFBundleVersion</key>
+            <string>1.0</string>
+            <key>CFBundleShortVersionString</key>
+            <string>1.0</string>
+            <key>MinimumOSVersion</key>
+            <string>27.0</string>
+        </dict>
+        </plist>
+        EOF
+        
         mkdir -p Output
-        zip -r Output/work.plot.zip Core.swift
-        mv Output/work.plot.zip Output/work.plot.ipa
+        zip -r Output/work.plot.ipa Payload
+        rm -rf Payload
 
     - name: Upload IPA File
       uses: actions/upload-artifact@v4
