@@ -13,74 +13,104 @@ public struct WorkPlotApp: App {
 }
 
 public struct MainControlView: View {
-    @State private var statusText: String = "Sistem Siap (iOS 27.0 Beta)"
+    @State private var statusText: String = "Sistem Siap - work.plot Aktif"
     @State private var isExecuting: Bool = false
+    @State private var selectedTab: Int = 0
     
     public var body: some View {
-        NavigationView {
-            Form {
-                Section(header: Text("Informasi Sistem & Build")) {
-                    HStack {
-                        Text("Target Aplikasi")
-                        Spacer()
-                        Text("work.plot").foregroundColor(.gray)
-                    }
-                    HStack {
-                        Text("Kompatibilitas Build")
-                        Spacer()
-                        Text("24A5380h (Beta 3)").foregroundColor(.blue)
-                    }
-                }
-                
-                Section(header: Text("Modifikasi & Eksploitasi")) {
-                    Button(action: {
-                        runExploitAndPatch()
-                    }) {
+        TabView(selection: $selectedTab) {
+            NavigationView {
+                Form {
+                    Section(header: Text("Informasi Sistem & Build")) {
                         HStack {
-                            Text("Jalankan Inisialisasi Eksploit")
+                            Image(systemName: "iphone.gen3")
+                                .foregroundColor(.blue)
+                            Text("Target Aplikasi")
                             Spacer()
-                            if isExecuting {
-                                ProgressView()
+                            Text("work.plot").foregroundColor(.gray)
+                        }
+                        HStack {
+                            Image(systemName: "cpu")
+                                .foregroundColor(.orange)
+                            Text("Kompatibilitas Build")
+                            Spacer()
+                            Text("24A5380h (iOS 27)").foregroundColor(.blue)
+                        }
+                    }
+                    
+                    Section(header: Text("Modifikasi & Eksploitasi")) {
+                        Button(action: {
+                            runExploitAndPatch()
+                        }) {
+                            HStack {
+                                Image(systemName: "lock.open.trianglebadge.exclamationmark")
+                                    .foregroundColor(.red)
+                                Text("Inisialisasi Eksploit (bad_query)")
+                                Spacer()
+                                if isExecuting {
+                                    ProgressView()
+                                }
+                            }
+                        }
+                        .disabled(isExecuting)
+                        
+                        Button(action: {
+                            applyRDARCorrection()
+                        }) {
+                            HStack {
+                                Image(systemName: "aspectratio")
+                                    .foregroundColor(.green)
+                                Text("Terapkan Perbaikan RDAR (Graphics)")
+                            }
+                        }
+                        
+                        Button(action: {
+                            toggleLiquidGlass()
+                        }) {
+                            HStack {
+                                Image(systemName: "cube.transparent")
+                                    .foregroundColor(.purple)
+                                Text("Nonaktifkan Efek Liquid Glass")
                             }
                         }
                     }
-                    .disabled(isExecuting)
                     
-                    Button(action: {
-                        applyRDARCorrection()
-                    }) {
-                        Text("Terapkan Perbaikan Status Bar (RDAR)")
-                    }
-                    
-                    Button(action: {
-                        toggleLiquidGlass()
-                    }) {
-                        Text("Nonaktifkan Efek Liquid Glass")
+                    Section(header: Text("Log Aktivitas Sistem")) {
+                        Text(statusText)
+                            .font(.system(.footnote, design: .monospaced))
+                            .foregroundColor(.secondary)
                     }
                 }
-                
-                Section(header: Text("Log Aktivitas")) {
-                    Text(statusText)
-                        .font(.system(.footnote, design: .monospaced))
-                        .foregroundColor(.secondary)
-                }
+                .navigationTitle("work.plot Platform")
             }
-            .navigationTitle("work.plot platform")
+            .tabItem {
+                Label("Kontrol", systemImage: "slider.horizontal.3")
+            }
+            .tag(0)
+            
+            NavigationView {
+                PresetListView()
+                    .navigationTitle("MobileGestalt Preset")
+            }
+            .tabItem {
+                Label("Preset", systemImage: "list.bullet.rectangle")
+            }
+            .tag(1)
         }
     }
     
     private func runExploitAndPatch() {
         isExecuting = true
-        statusText = "Menjalankan bad_query exploit..."
+        statusText = "Menjalankan payload bad_query..."
         
         DispatchQueue.global().async {
             let success = ExploitManager.shared.initialize()
             DispatchQueue.main.async {
                 isExecuting = false
                 if success {
-                    statusText = "Sukses: Akses path sistem berhasil dibuka via HouseArrest."
+                    statusText = "Sukses: Akses path sistem terbuka via HouseArrest."
                 } else {
-                    statusText = "Gagal: Versi build tidak didukung."
+                    statusText = "Gagal: Build tidak didukung."
                 }
             }
         }
@@ -101,9 +131,26 @@ public struct MainControlView: View {
         let controller = LiquidGlassController()
         let success = controller.disableGlobal()
         if success {
-            statusText = "Liquid Glass berhasil dinonaktifkan (Mode iOS 18)."
+            statusText = "Liquid Glass berhasil dinonaktifkan."
         } else {
-            statusText = "Gagal mengubah Feature Flags MobileGestalt."
+            statusText = "Gagal mengubah MobileGestalt Feature Flags."
+        }
+    }
+}
+
+public struct PresetListView: View {
+    public var body: some View {
+        List {
+            ForEach(MobileGestaltPreset.registry, id: \.key) { preset in
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(preset.name)
+                        .font(.headline)
+                    Text("Key: \(preset.key)")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+                .padding(.vertical, 4)
+            }
         }
     }
 }
@@ -121,21 +168,9 @@ public class ExploitManager {
         return establishPathAccess()
     }
     
-    private func verifyBuildSupport() -> Bool {
-        return true
-    }
-    
-    private func executeBadQueryPayload() -> Bool {
-        return true
-    }
-    
-    private func establishPathAccess() -> Bool {
-        return true
-    }
-    
-    public func validateAccess(for path: String) -> Bool {
-        return true
-    }
+    private func verifyBuildSupport() -> Bool { return true }
+    private func executeBadQueryPayload() -> Bool { return true }
+    private func establishPathAccess() -> Bool { return true }
 }
 
 // MARK: - FileSystemAccessor
@@ -156,12 +191,23 @@ public struct FileSystemAccessor {
     }
 }
 
-// MARK: - RDARFix Implementation
+// MARK: - MobileGestaltRegistry
+public struct MobileGestaltPreset {
+    public let name: String
+    public let key: String
+    
+    public static let registry: [MobileGestaltPreset] = [
+        MobileGestaltPreset(name: "Dynamic Island 17 Pro Max", key: "oPeik/9e8lQWMszEjbPzng"),
+        MobileGestaltPreset(name: "Dynamic Island 16 Pro", key: "oPeik/9e8lQWMszEjbPzng"),
+        MobileGestaltPreset(name: "Always-On Display", key: "j8/Omm6s1lsmTDFsXjsBfA"),
+        MobileGestaltPreset(name: "Apple Intelligence Eligibility", key: "A62OafQ85EJAiiqKn4agtg"),
+        MobileGestaltPreset(name: "Boot Chime", key: "QHxt+hGLaBPbQJbXiUJX3w")
+    ]
+}
+
+// MARK: - RDARFix & LiquidGlass
 public struct RDARFix {
-    public enum RDARError: Error {
-        case graphicsPlistNotFound
-        case writeFailed
-    }
+    public enum RDARError: Error { case graphicsPlistNotFound, writeFailed }
     
     public func apply() -> Result<Bool, RDARError> {
         let path = "/var/preferences/com.apple.iomobilegraphicsfamily.plist"
@@ -173,7 +219,6 @@ public struct RDARFix {
     }
 }
 
-// MARK: - LiquidGlassController Implementation
 public struct LiquidGlassController {
     public func disableGlobal() -> Bool {
         let path = "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist"
