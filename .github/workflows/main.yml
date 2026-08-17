@@ -23,7 +23,7 @@ jobs:
         rm -rf Payload Output
         mkdir -p Payload/work.plot.app
         
-        # Kompilasi Swift dengan menghubungkan framework secara eksplisien tanpa jeda error
+        # Kompilasi Swift dengan menghubungkan framework secara eksplisien
         swiftc Core.swift -o Payload/work.plot.app/work.plot \
           -target arm64-apple-ios15.0 \
           -sdk $(xcrun --sdk iphoneos --show-sdk-path) \
