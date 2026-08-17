@@ -3,6 +3,8 @@ import Foundation
 
 @main
 public struct WorkPlotApp: App {
+    public init() {}
+    
     public var body: some Scene {
         WindowGroup {
             MainControlView()
@@ -120,7 +122,7 @@ public class ExploitManager {
     }
     
     private func verifyBuildSupport() -> Bool {
-        return true // Bypass stub untuk simulasi
+        return true
     }
     
     private func executeBadQueryPayload() -> Bool {
