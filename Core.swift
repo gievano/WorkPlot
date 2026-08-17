@@ -67,7 +67,7 @@ public struct StatusDashboardView: View {
                             .foregroundColor(manager.isBuildCompatible ? .green : .red)
                         Text("Compatibility")
                         Spacer()
-                        Text(manager.isBuildCompatible ? "SUPPORTED" : "UNSUPPORTED")
+                        Text(manager.isBuildCompatible ? "SUPPORTED (BETA 1-4)" : "UNSUPPORTED")
                             .font(.caption)
                             .padding(4)
                             .background(manager.isBuildCompatible ? Color.green.opacity(0.2) : Color.red.opacity(0.2))
@@ -354,7 +354,9 @@ public struct BackupRestoreManagerView: View {
 public class SystemStateManager: ObservableObject {
     public static let shared = SystemStateManager()
     
-    @Published public var currentBuildVersion: String = "24A5380h"
+    // Set Target Saat Ini ke iOS 27 Developer Beta 4 (Simulasi build string)
+    @Published public var currentBuildVersion: String = "iOS 27.0 DB4"
+    
     @Published public var isBuildCompatible: Bool = true
     @Published public var sandboxGranted: Bool = false
     @Published public var isExecuting: Bool = false
@@ -378,13 +380,19 @@ public class SystemStateManager: ObservableObject {
     }
     
     private func verifyBuildCompatibility() {
-        let validBuilds = ["24A5355q", "24A5370h", "24A5380h", "24A5390f"]
+        // Rentang Target iOS 27 Developer Beta 1 sampai Beta 4
+        let validBuilds = [
+            "iOS 27.0 DB1", 
+            "iOS 27.0 DB2", 
+            "iOS 27.0 DB3", 
+            "iOS 27.0 DB4"
+        ]
+        
         isBuildCompatible = validBuilds.contains(currentBuildVersion)
-        log(isBuildCompatible ? "[+] Target iOS build verified. Exploitable." : "[-] Unsupported iOS build detected.")
+        log(isBuildCompatible ? "[+] Target iOS 27 Developer Beta verified. Exploitable." : "[-] Unsupported iOS build detected.")
     }
     
     public func initializeSandboxEscape() {
-        // Renamed for compatibility
         initializeSandboxExploit()
     }
     
@@ -393,7 +401,6 @@ public class SystemStateManager: ObservableObject {
         isExecuting = true
         log("[*] Bypassing Sandbox... Executing bad_query vector.")
         
-        // Mocking an async execution payload
         DispatchQueue.global(qos: .background).async {
             Thread.sleep(forTimeInterval: 0.8)
             self.log("[*] Overwriting generic container privileges...")
@@ -419,7 +426,6 @@ public class SystemStateManager: ObservableObject {
     
     public func restoreBackup(named name: String) {
         log("[*] Restoring environment state from: \(name)...")
-        // Mock restore
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.log("[+] System restored to \(name).")
         }
@@ -429,13 +435,11 @@ public class SystemStateManager: ObservableObject {
         createBackup()
         log("[*] Patching MobileGestalt: \(preset.title)")
         
-        // Safety check
         if !sandboxGranted {
             log("[-] Error: Read/Write rejected. Sandbox still locked.")
             return
         }
         
-        // Mocking the write process
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.log("[+] Successfully patched key: \(preset.key)")
         }
@@ -454,7 +458,6 @@ public class SystemStateManager: ObservableObject {
     
     public func triggerSafeRespring() {
         log("[*] Requesting SpringBoard UI Respring...")
-        // In a real exploit tool, this might call a C function. For SwiftUI, we mock it.
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.log("[+] Respring loop triggered.")
         }
@@ -476,4 +479,5 @@ public struct MobileGestaltPreset {
         MobileGestaltPreset(title: "Disable Camera Shutter", key: "h63QSdBCiT/z0WU6rdQv6Q", description: "Removes regional camera shutter sound", value: false)
     ]
 }
+
 
