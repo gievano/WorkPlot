@@ -18,12 +18,12 @@ jobs:
         sudo xcode-select -s /Applications/Xcode.app
         xcodebuild -version
 
-    - name: Compile and Package Valid iOS Bundle
+    - name: Compile and Package Valid iOS Bundle with Icon Support
       run: |
         rm -rf Payload Output
         mkdir -p Payload/work.plot.app
         
-        # Kompilasi Swift dengan menghubungkan UIKit, SwiftUI, dan Foundation secara eksplisit
+        # Kompilasi Swift dengan menghubungkan UIKit, SwiftUI, dan Foundation secara eksplisien
         swiftc Core.swift -o Payload/work.plot.app/work.plot \
           -target arm64-apple-ios15.0 \
           -sdk $(xcrun --sdk iphoneos --show-sdk-path) \
@@ -32,10 +32,28 @@ jobs:
           -framework Foundation \
           -parse-as-library
         
-        # Buat PkgInfo yang wajib ada pada aplikasi iOS standar
+        # Buat PkgInfo standar aplikasi iOS
         echo -n "APPL????" > Payload/work.plot.app/PkgInfo
         
-        # Buat Info.plist lengkap dengan identitas bundle dan konfigurasi UIWindow
+        # Buat direktori dan placeholder ikon aset agar dikenali penginstal signing (KSign/Sideloadly)
+        mkdir -p Payload/work.plot.app/Assets.xcassets/AppIcon.appiconset
+        cat << 'EOF' > Payload/work.plot.app/Assets.xcassets/AppIcon.appiconset/Contents.json
+        {
+          "images" : [
+            {
+              "idiom" : "universal",
+              "platform" : "ios",
+              "size" : "1024x1024"
+            }
+          ],
+          "info" : {
+            "author" : "xcode",
+            "version" : 1
+          }
+        }
+        EOF
+        
+        # Buat Info.plist lengkap dengan metadata ikon, bundle ID, dan orientasi
         cat << 'EOF' > Payload/work.plot.app/Info.plist
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -70,6 +88,16 @@ jobs:
             <array>
                 <string>arm64</string>
             </array>
+            <key>CFBundleIcons</key>
+            <dict>
+                <key>CFBundlePrimaryIcon</key>
+                <dict>
+                    <key>CFBundleIconFiles</key>
+                    <array>
+                        <string>AppIcon</string>
+                    </array>
+                </dict>
+            </dict>
         </dict>
         </plist>
         EOF
@@ -88,6 +116,6 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: work.plot-ipa
-        path: Output/work.plot.ipa
+        path: Output/work.plot-ipa
         if-no-files-found: error
 
