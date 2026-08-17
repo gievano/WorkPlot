@@ -2,7 +2,6 @@ import SwiftUI
 import Foundation
 import UIKit
 
-// MARK: - Application Entry Point
 @main
 public class AppDelegate: UIResponder, UIApplicationDelegate {
     public var window: UIWindow?
@@ -16,7 +15,6 @@ public class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 
-// MARK: - Main Dashboard & Navigation View
 public struct MainDashboardView: View {
     @StateObject private var stateManager = SystemStateManager.shared
     @State private var selectedTab: Int = 0
@@ -47,7 +45,6 @@ public struct MainDashboardView: View {
     }
 }
 
-// MARK: - Tab 1: Status & Exploit Dashboard
 public struct StatusDashboardView: View {
     @ObservedObject private var manager = SystemStateManager.shared
     @State private var showingCertSheet: Bool = false
@@ -129,7 +126,6 @@ public struct StatusDashboardView: View {
     }
 }
 
-// MARK: - Certificate Sheet Modal
 public struct CertificateModalView: View {
     @Environment(\.presentationMode) var presentationMode
     @ObservedObject private var manager = SystemStateManager.shared
@@ -170,7 +166,6 @@ public struct CertificateModalView: View {
     }
 }
 
-// MARK: - Tab 2: MobileGestalt Preset Manager
 public struct GestaltPresetManagerView: View {
     @StateObject private var manager = SystemStateManager.shared
     
@@ -209,7 +204,6 @@ public struct GestaltPresetManagerView: View {
     }
 }
 
-// MARK: - Tab 3: EnsWilde Customization & Liquid Glass
 public struct CustomizationThemeView: View {
     @ObservedObject private var manager = SystemStateManager.shared
     @State private var liquidGlassDisabled: Bool = false
@@ -244,7 +238,6 @@ public struct CustomizationThemeView: View {
     }
 }
 
-// MARK: - Tab 4: 3105 Files, Patches & Wallpapers
 public struct FilePatchWorkspaceView: View {
     @ObservedObject private var manager = SystemStateManager.shared
     @State private var patchName: String = ""
@@ -278,7 +271,6 @@ public struct FilePatchWorkspaceView: View {
     }
 }
 
-// MARK: - Tab 5: Backup & System Restore
 public struct BackupRestoreManagerView: View {
     @ObservedObject private var manager = SystemStateManager.shared
     
@@ -312,7 +304,6 @@ public struct BackupRestoreManagerView: View {
     }
 }
 
-// MARK: - System State & Exploit Manager Core
 public class SystemStateManager: ObservableObject {
     public static let shared = SystemStateManager()
     
@@ -346,7 +337,7 @@ public class SystemStateManager: ObservableObject {
     public func installCertificate(name: String) {
         certificateName = name
         isCertificateInstalled = true
-        log("[+] Sertifikat '\(name)' berhasil dipasang ke dalam memori aplikasi.")
+        log("[+] Sertifikat '\(name)' berhasil dipasang.")
     }
     
     public func removeCertificate() {
@@ -364,7 +355,7 @@ public class SystemStateManager: ObservableObject {
             DispatchQueue.main.async {
                 self.isExecuting = false
                 self.sandboxGranted = true
-                log("[+] Sandbox Escape Successful! HouseArrest file access granted.")
+                self.log("[+] Sandbox Escape Successful! HouseArrest file access granted.")
             }
         }
     }
@@ -415,10 +406,9 @@ public class SystemStateManager: ObservableObject {
     }
 }
 
-// MARK: - MobileGestalt Preset Definitions
 public struct MobileGestaltPreset {
     public let title: String
-    public let key: string? // Fixed spelling syntax
+    public let key: String
     public let description: String
     public let value: Any
     
@@ -431,7 +421,6 @@ public struct MobileGestaltPreset {
     ]
 }
 
-// MARK: - File System Accessor Layer
 public struct FileSystemAccessor {
     public static func patchFeatureFlags(disableLiquidGlass: Bool) -> Bool {
         let path = "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist"
