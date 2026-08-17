@@ -1,1 +1,35 @@
+name: Build iOS IPA
 
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Xcode Version
+      run: |
+        sudo xcode-select -s /Applications/Xcode.app
+        xcodebuild -version
+
+    - name: Compile Swift Source
+      run: |
+        swiftc Core.swift -emit-library -o libworkplot.dylib
+
+    - name: Archive Artifacts
+      run: |
+        mkdir -p Output
+        zip -r Output/work.plot.zip Core.swift
+        mv Output/work.plot.zip Output/work.plot.ipa
+
+    - name: Upload IPA File
+      uses: actions/upload-artifact@v3
+      with:
+        name: work.plot-ipa
+        path: Output/work.plot.ipa
