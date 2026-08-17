@@ -18,41 +18,52 @@ jobs:
         sudo xcode-select -s /Applications/Xcode.app
         xcodebuild -version
 
-    - name: Build Application via Xcode
+    - name: Compile and Package App Bundle
       run: |
+        # Buat folder struktur aplikasi
         mkdir -p Payload/work.plot.app
         
-        # Tambahkan -parse-as-library agar atribut @main dapat dibaca oleh kompiler Swift
+        # Kompilasi Swift murni dengan target iOS arm64
         swiftc Core.swift -o Payload/work.plot.app/work.plot -target arm64-apple-ios15.0 -sdk $(xcrun --sdk iphoneos --show-sdk-path) -parse-as-library
         
-        # Buat Info.plist standar aplikasi iOS
+        # Buat Info.plist yang lengkap dan valid untuk Sideloadly
         cat << 'EOF' > Payload/work.plot.app/Info.plist
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
         <plist version="1.0">
         <dict>
-            <key>CFBundleIdentifier</key>
-            <string>com.work.plot</string>
-            <key>CFBundleName</key>
-            <string>work.plot</string>
+            <key>CFBundleDevelopmentRegion</key>
+            <string>en</string>
             <key>CFBundleExecutable</key>
             <string>work.plot</string>
-            <key>CFBundleVersion</key>
-            <string>1.0</string>
+            <key>CFBundleIdentifier</key>
+            <string>com.work.plot.app</string>
+            <key>CFBundleInfoDictionaryVersion</key>
+            <string>6.0</string>
+            <key>CFBundleName</key>
+            <string>work.plot</string>
+            <key>CFBundlePackageType</key>
+            <string>APPL</string>
             <key>CFBundleShortVersionString</key>
             <string>1.0</string>
+            <key>CFBundleVersion</key>
+            <string>1</string>
             <key>MinimumOSVersion</key>
             <string>15.0</string>
             <key>UIDeviceFamily</key>
             <array>
                 <integer>1</integer>
+                <integer>2</integer>
             </array>
         </dict>
         </plist>
         EOF
 
+        # Kompres folder Payload menjadi arsip .ipa yang valid
         mkdir -p Output
-        zip -r Output/work.plot.ipa Payload
+        cd Payload
+        zip -r ../Output/work.plot.ipa .
+        cd ..
         rm -rf Payload
 
     - name: Upload IPA File
