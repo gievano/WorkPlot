@@ -116,6 +116,6 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: work.plot-ipa
-        path: Output/work.plot-ipa
+        path: Output/work.plot.ipa
         if-no-files-found: error
 
