@@ -1,0 +1,60 @@
+name: Build iOS IPA Package
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Xcode & Build Dependencies
+      run: |
+        sudo xcode-select -s /Applications/Xcode.app
+        xcodebuild -version
+        brew install ldid
+
+    - name: Compile Modular Sources & Package IPA
+      run: |
+        rm -rf Payload Output
+        mkdir -p Payload/work.plot.app
+        
+        # Kompilasi seluruh file sumber di folder Sources/ dan UI/
+        swiftc Sources/*.swift UI/*.swift -o Payload/work.plot.app/work.plot \
+          -target arm64-apple-ios15.0 \
+          -sdk $(xcrun --sdk iphoneos --show-sdk-path) \
+          -framework SwiftUI \
+          -framework UIKit \
+          -framework Foundation \
+          -parse-as-library
+        
+        # Buat App Icon dan PkgInfo standar iOS
+        echo -n "APPL????" > Payload/work.plot.app/PkgInfo
+        sips -s format png /System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/ToolbarAdvanced.icns --out Payload/work.plot.app/AppIcon60x60@2x.png
+        sips -z 120 120 Payload/work.plot.app/AppIcon60x60@2x.png
+
+        cp Info.plist Payload/work.plot.app/Info.plist
+
+        # Ad-Hoc Signing menggunakan ldid agar lolos ksign
+        ldid -S Payload/work.plot.app/work.plot
+
+        find Payload -name ".DS_Store" -delete
+        find Payload -name "._*" -delete
+
+        mkdir -p Output
+        cd Payload
+        zip -r ../Output/work.plot.ipa . -x "*.DS_Store" "*/*/.DS_Store"
+        cd ..
+
+    - name: Upload Signed IPA Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: work.plot-signed-ipa
+        path: Output/work.plot.ipa
+        if-no-files-found: error
+
