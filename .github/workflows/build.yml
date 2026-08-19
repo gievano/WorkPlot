@@ -1,4 +1,4 @@
-name: Build work.plot IPA
+name: Build work.plot IPA Package
 
 on:
   push:
@@ -13,23 +13,23 @@ on:
 
 jobs:
   build:
-    name: Build iOS App & Package IPA
+    name: Build iOS App and Package IPA
     runs-on: macos-14
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Select Xcode Version
+      - name: Setup Xcode Environment
         run: |
           sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
           xcodebuild -version
 
-      - name: Prepare Build Directory & Info.plist
+      - name: Generate App Bundle & AppIcon Assets
         run: |
           mkdir -p Payload/work.plot.app
           
-          # Membuat file Info.plist untuk aplikasi work.plot
+          # Membuat file Info.plist lengkap
           cat << 'EOF' > Payload/work.plot.app/Info.plist
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -39,27 +39,45 @@ jobs:
               <string>com.work.plot</string>
               <key>CFBundleName</key>
               <string>work.plot</string>
+              <key>CFBundleDisplayName</key>
+              <string>work.plot</string>
               <key>CFBundleExecutable</key>
               <string>work.plot</string>
               <key>CFBundleVersion</key>
-              <string>1.0</string>
+              <string>1.0.0</string>
               <key>CFBundleShortVersionString</key>
-              <string>1.0</string>
+              <string>1.0.0</string>
+              <key>CFBundlePackageType</key>
+              <string>APPL</string>
               <key>MinimumOSVersion</key>
-              <string>27.0</string>
+              <string>17.0</string>
               <key>UIDeviceFamily</key>
               <array>
                   <integer>1</integer>
               </array>
               <key>UILaunchScreen</key>
               <dict/>
+              <key>CFBundleIconFiles</key>
+              <array>
+                  <string>AppIcon60x60</string>
+              </array>
           </dict>
           </plist>
           EOF
 
-      - name: Compile Swift Code to Binary
+          # Generate Ikon Aplikasi Sederhana menggunakan Python Pillow bawaan macOS
+          python3 -c "
+          from PIL import Image, ImageDraw
+          img = Image.new('RGB', (180, 180), color=(15, 23, 42))
+          d = ImageDraw.Draw(img)
+          d.rectangle([20, 20, 160, 160], outline=(59, 130, 246), width=8)
+          d.ellipse([50, 50, 130, 130], fill=(59, 130, 246))
+          img.save('Payload/work.plot.app/AppIcon60x60@3x.png')
+          img.resize((120, 120)).save('Payload/work.plot.app/AppIcon60x60@2x.png')
+          "
+
+      - name: Compile Swift Application Binary
         run: |
-          # Kompiliasi berkas Swift menggunakan swiftc SDK iPhoneOS
           SDKPATH=$(xcrun --sdk iphoneos --show-sdk-path)
           
           swiftc -target arm64-apple-ios17.0 \
@@ -67,28 +85,31 @@ jobs:
             -import-objc-header /dev/null \
             -parse-as-library \
             -O \
+            -framework SwiftUI \
+            -framework UIKit \
+            -framework Foundation \
+            -framework CoreGraphics \
             work_plot_app.swift \
             -o Payload/work.plot.app/work.plot
 
-      - name: Package App into IPA File
+      - name: Package Payload into IPA
         run: |
-          # Mengompres direktori Payload menjadi berkas work.plot.ipa
           zip -r work.plot.ipa Payload/
 
-      - name: Upload Build Artifact (IPA)
+      - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
           name: work.plot-unsigned-ipa
           path: work.plot.ipa
 
-      - name: Create GitHub Release (On Tag/Dispatch)
+      - name: Create GitHub Release
         if: github.event_name == 'workflow_dispatch'
         uses: softprops/action-gh-release@v1
         with:
           files: work.plot.ipa
           tag_name: v1.0.0
-          name: "work.plot iOS 27 Release"
-          body: "Unsigned IPA file for work.plot built automatically via GitHub Actions."
+          name: "work.plot iOS 27 Utility Release"
+          body: "Official Unsigned IPA package for work.plot built via GitHub Actions with full UI/UX and App Icon support."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
