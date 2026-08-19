@@ -1,5 +1,5 @@
-import SwiftUI
 import UIKit
+import SwiftUI
 import Foundation
 import Security
 
@@ -786,8 +786,9 @@ struct WorkspacePatchesView: View {
     }
 }
 
-// MARK: - 9. UIKit Application Delegate Entry Point (Fixes C Entry Point Linker Error)
+// MARK: - 9. Pure UIKit Application Delegate Entry Point
 
+@objc(AppDelegate)
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
@@ -801,7 +802,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 
-// Menggunakan pemicu main eksplisit agar Kompiler swiftc dapat menghubungkan Entry Point (_main)
+// Titik Eksekusi Utama Aplikasi UIKit
 UIApplicationMain(
     CommandLine.argc,
     CommandLine.unsafeArgv,
