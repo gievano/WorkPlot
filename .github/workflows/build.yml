@@ -29,7 +29,7 @@ jobs:
         run: |
           mkdir -p Payload/work.plot.app
           
-          # Membuat file Info.plist lengkap
+          # Info.plist standar tanpa kustomisasi rumit
           cat << 'EOF' > Payload/work.plot.app/Info.plist
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -57,33 +57,18 @@ jobs:
               </array>
               <key>UILaunchScreen</key>
               <dict/>
-              <key>CFBundleIconFiles</key>
-              <array>
-                  <string>AppIcon60x60</string>
-              </array>
           </dict>
           </plist>
           EOF
-
-      - name: Generate App Icon File
-        run: |
-          # Buat placeholder ikon menggunakan tool sips bawaan macOS (ringan & stabil)
-          mkdir -p icon_build
-          echo '<svg width="180" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="180" height="180" fill="#0f172a"/><circle cx="90" cy="90" r="60" fill="#3b82f6"/></svg>' > icon_build/icon.svg
-          sips -s format png icon_build/icon.svg --out Payload/work.plot.app/AppIcon60x60@3x.png
-          sips -z 120 120 Payload/work.plot.app/AppIcon60x60@3x.png --out Payload/work.plot.app/AppIcon60x60@2x.png
 
       - name: Compile Swift Application Binary
         run: |
           SDKPATH=$(xcrun --sdk iphoneos --show-sdk-path)
           
-          # Menyusun aplikasi Swift dengan menyertakan seluruh modul framework iOS yang diperlukan
+          # Compile SwiftUI @main murni secara langsung
           swiftc -target arm64-apple-ios17.0 \
             -sdk $SDKPATH \
             -O \
-            -parse-as-library \
-            -Xlinker -rpath -Xlinker /System/Library/Frameworks \
-            -Xlinker -rpath -Xlinker /usr/lib/swift \
             work_plot_app.swift \
             -o Payload/work.plot.app/work.plot
 
@@ -104,7 +89,7 @@ jobs:
           files: work.plot.ipa
           tag_name: v1.0.0
           name: "work.plot iOS 27 Utility Release"
-          body: "Official Unsigned IPA package for work.plot built via GitHub Actions with full UI/UX and App Icon support."
+          body: "Unsigned IPA package for work.plot built via GitHub Actions."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
