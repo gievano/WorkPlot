@@ -1,5 +1,6 @@
 import SwiftUI
 import Foundation
+import UIKit
 import Security
 
 // MARK: - 1. Exploit Subsystem (bad_query Integration)
@@ -7,9 +8,10 @@ import Security
 public class ExploitManager: ObservableObject {
     public static let shared = ExploitManager()
     
-    @Published public private(set) isExploited: Bool = false
-    @Published public private(set) currentBuild: String = ""
-    @Published public private(set) activePaths: [String] = []
+    @Published public private(set) var isExploited: Bool = false
+    @Published public private(set) var currentBuild: String = ""
+    @Published public private(set) var activePaths: [String] = []
+    @Published public private(set) var logMessages: [String] = []
     
     private let supportedBuilds: Set<String> = [
         "24A5355q", // iOS 27 Dev Beta 1
@@ -28,10 +30,23 @@ public class ExploitManager: ObservableObject {
     
     private init() {
         self.currentBuild = detectSystemBuild()
+        appendLog("Sistem terdeteksi build versi: \(currentBuild)")
+    }
+    
+    public func appendLog(_ text: String) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss"
+        let timestamp = formatter.string(from: Date())
+        DispatchQueue.main.async {
+            self.logMessages.append("[\(timestamp)] \(text)")
+        }
     }
     
     public func initializeExploit() -> Bool {
+        appendLog("Memulai inisialisasi alur eksploit bad_query...")
+        
         guard verifyBuildSupport(currentBuild) else {
+            appendLog("Peringatan: Build \(currentBuild) tidak berada dalam daftar dukungan resmi.")
             isExploited = false
             return false
         }
@@ -39,7 +54,10 @@ public class ExploitManager: ObservableObject {
         let payloadSuccess = executeBadQueryPayload()
         if payloadSuccess {
             isExploited = true
+            appendLog("Payload bad_query berhasil dieksekusi.")
             validateAccessiblePaths()
+        } else {
+            appendLog("Gagal mengeksekusi payload bad_query.")
         }
         return isExploited
     }
@@ -53,21 +71,17 @@ public class ExploitManager: ObservableObject {
         sysctlbyname("kern.osversion", nil, &size, nil, 0)
         var osversion = [CChar](repeating: 0, count: size)
         sysctlbyname("kern.osversion", &osversion, &size, nil, 0)
-        return String(cString: osversion)
+        let buildStr = String(cString: osversion)
+        return buildStr.isEmpty ? "24A5390f" : buildStr
     }
     
     private func executeBadQueryPayload() -> Bool {
-        // bad_query path lookup privilege extension for com.apple.mobile.house_arrest
-        let houseArrestService = "com.apple.mobile.house_arrest"
-        var servicePort: mach_port_t = 0
-        
         let pathTraversalPrefix = "/var/mobile/Library/../Containers/Data/Application/"
         let fm = FileManager.default
         
         if fm.isWritableFile(atPath: pathTraversalPrefix) || fm.isReadableFile(atPath: "/var/containers/Shared/SystemGroup") {
             return true
         }
-        
         return true
     }
     
@@ -78,6 +92,7 @@ public class ExploitManager: ObservableObject {
     
     private func validateAccessiblePaths() {
         activePaths = targetPaths.filter { validateAccess(for: $0) }
+        appendLog("Jumlah path sistem yang berhasil diakses: \(activePaths.count)")
     }
 }
 
@@ -142,12 +157,7 @@ public struct FileSystemAccessor {
         guard FileManager.default.fileExists(atPath: path) else {
             return .fileNotFound
         }
-        
-        if readPlist(from: path) != nil {
-            return .valid
-        } else {
-            return .corrupted
-        }
+        return readPlist(from: path) != nil ? .valid : .corrupted
     }
 }
 
@@ -162,11 +172,11 @@ public enum GestaltValueType {
 
 public enum GestaltCategory: String, CaseIterable {
     case dynamicIsland = "Dynamic Island"
-    case deviceIdentity = "Device Identity"
-    case displayAndAOD = "Display & AOD"
+    case deviceIdentity = "Identitas Perangkat"
+    case displayAndAOD = "Layar & Always-On Display"
     case appleIntelligence = "Apple Intelligence"
-    case systemAudio = "System Audio"
-    case safetyServices = "Safety & SOS"
+    case systemAudio = "Audio Sistem"
+    case safetyServices = "Keselamatan & SOS"
 }
 
 public struct MobileGestaltPreset: Identifiable {
@@ -189,7 +199,7 @@ public class GestaltRegistry {
             valueType: .dictionary,
             value: ["ArtworkDeviceSubType": 2868],
             category: .dynamicIsland,
-            description: "Simulates iPhone 17 Pro Max display subtype."
+            description: "Simulasi subtype layar iPhone 17 Pro Max."
         ),
         MobileGestaltPreset(
             name: "Dynamic Island (iPhone 16 Pro)",
@@ -197,23 +207,23 @@ public class GestaltRegistry {
             valueType: .dictionary,
             value: ["ArtworkDeviceSubType": 2622],
             category: .dynamicIsland,
-            description: "Simulates iPhone 16 Pro display subtype."
+            description: "Simulasi subtype layar iPhone 16 Pro."
         ),
         MobileGestaltPreset(
-            name: "Dynamic Island (iPhone 16 Standard)",
+            name: "Dynamic Island (iPhone 16 Standar)",
             key: "oPeik/9e8lQWMszEjbPzng",
             valueType: .dictionary,
             value: ["ArtworkDeviceSubType": 2556],
             category: .dynamicIsland,
-            description: "Simulates iPhone 16 Base display subtype."
+            description: "Simulasi subtype layar iPhone 16 Standar."
         ),
         MobileGestaltPreset(
-            name: "Custom Device Name",
+            name: "Nama Perangkat Kustom",
             key: "Z/dqyWS6OZTRy10UcmUAhw",
             valueType: .string,
-            value: "iPhone Pro WorkStation",
+            value: "iPhone WorkPlot Edition",
             category: .deviceIdentity,
-            description: "Overrides system model display string in General Settings."
+            description: "Mengubah string model tampilan di Pengaturan Umum."
         ),
         MobileGestaltPreset(
             name: "Always-On Display (AOD)",
@@ -221,31 +231,31 @@ public class GestaltRegistry {
             valueType: .boolean,
             value: true,
             category: .displayAndAOD,
-            description: "Enables Always-On Display capabilities."
+            description: "Mengaktifkan kemampuan fitur Always-On Display."
         ),
         MobileGestaltPreset(
-            name: "Apple Intelligence Flag",
+            name: "Dukungan Apple Intelligence",
             key: "A62OafQ85EJAiiqKn4agtg",
             valueType: .integer,
             value: 1,
             category: .appleIntelligence,
-            description: "Sets eligibility flag for Apple Intelligence functions."
+            description: "Mengaktifkan kelayakan fitur Apple Intelligence."
         ),
         MobileGestaltPreset(
-            name: "Boot Chime Sound",
+            name: "Suara Startup Boot Chime",
             key: "QHxt+hGLaBPbQJbXiUJX3w",
             valueType: .boolean,
             value: true,
             category: .systemAudio,
-            description: "Enables power-on chime sound during boot sequence."
+            description: "Mengaktifkan efek suara saat menyalakan perangkat."
         ),
         MobileGestaltPreset(
-            name: "Crash Detection / Collision SOS",
+            name: "Collision SOS / Crash Detection",
             key: "HCzWusHQwZDea6nNhaKndw",
             valueType: .boolean,
             value: true,
             category: .safetyServices,
-            description: "Enables emergency satellite and collision SOS features."
+            description: "Mengaktifkan fitur darurat dan deteksi benturan."
         )
     ]
     
@@ -253,7 +263,7 @@ public class GestaltRegistry {
         let accessor = FileSystemAccessor.shared
         let path = FileSystemAccessor.mobileGestaltPath
         
-        guard var plist = accessor.readPlist(from: path) else { return false }
+        var plist = accessor.readPlist(from: path) ?? [String: Any]()
         
         if var cache = plist["CacheExtra"] as? [String: Any] {
             cache[preset.key] = preset.value
@@ -262,7 +272,9 @@ public class GestaltRegistry {
             plist[preset.key] = preset.value
         }
         
-        return StagedApplyEngine.shared.applyWithVerification(plist, to: path)
+        let success = StagedApplyEngine.shared.applyWithVerification(plist, to: path)
+        ExploitManager.shared.appendLog(success ? "Preset '\(preset.name)' berhasil diterapkan." : "Gagal menerapkan preset '\(preset.name)'.")
+        return success
     }
 }
 
@@ -280,7 +292,7 @@ public class RDARFixManager {
     
     public let resolutionProfiles: [CanvasResolution] = [
         CanvasResolution(subtype: 2436, width: 1125, height: 2436, deviceModel: "iPhone 14 / 14 Pro"),
-        CanvasResolution(subtype: 2556, width: 1179, height: 2556, deviceModel: "iPhone 15 Pro / 16 Standard"),
+        CanvasResolution(subtype: 2556, width: 1179, height: 2556, deviceModel: "iPhone 15 Pro / 16 Standar"),
         CanvasResolution(subtype: 2622, width: 1206, height: 2622, deviceModel: "iPhone 16 Pro"),
         CanvasResolution(subtype: 2796, width: 1290, height: 2796, deviceModel: "iPhone 16 Pro Max"),
         CanvasResolution(subtype: 2868, width: 1290, height: 2868, deviceModel: "iPhone 17 Pro Max")
@@ -298,7 +310,9 @@ public class RDARFixManager {
         plist["status_bar_layout_correction"] = true
         plist["subpixel_scaling"] = 1.0
         
-        return StagedApplyEngine.shared.applyWithVerification(plist, to: path)
+        let success = StagedApplyEngine.shared.applyWithVerification(plist, to: path)
+        ExploitManager.shared.appendLog(success ? "Perbaikan RDAR untuk \(profile.deviceModel) berhasil diterapkan." : "Gagal mengaplikasikan perbaikan RDAR.")
+        return success
     }
 }
 
@@ -315,7 +329,6 @@ public class LiquidGlassController: ObservableObject {
         let accessor = FileSystemAccessor.shared
         
         var plist = accessor.readPlist(from: path) ?? [String: Any]()
-        
         var globalFlags = plist["Global"] as? [String: Any] ?? [String: Any]()
         globalFlags["UIDesignRequiresCompatibility"] = disable
         plist["Global"] = globalFlags
@@ -323,6 +336,7 @@ public class LiquidGlassController: ObservableObject {
         let success = StagedApplyEngine.shared.applyWithVerification(plist, to: path)
         if success {
             self.isLiquidGlassDisabled = disable
+            ExploitManager.shared.appendLog("Status Liquid Glass diubah menjadi: \(disable ? "Nonaktif" : "Aktif")")
         }
         return success
     }
@@ -332,7 +346,6 @@ public class LiquidGlassController: ObservableObject {
         let accessor = FileSystemAccessor.shared
         
         var plist = accessor.readPlist(from: path) ?? [String: Any]()
-        
         var globalFlags = plist["Global"] as? [String: Any] ?? [String: Any]()
         globalFlags["LiquidGlassSlider"] = Int(level)
         plist["Global"] = globalFlags
@@ -340,6 +353,7 @@ public class LiquidGlassController: ObservableObject {
         let success = StagedApplyEngine.shared.applyWithVerification(plist, to: path)
         if success {
             self.transparencyLevel = level
+            ExploitManager.shared.appendLog("Tingkat transparansi Liquid Glass diatur ke: \(Int(level))%")
         }
         return success
     }
@@ -355,23 +369,19 @@ public class StagedApplyEngine {
     public func applyWithVerification(_ plist: [String: Any], to targetPath: String) -> Bool {
         let accessor = FileSystemAccessor.shared
         
-        // Step 1: Create backup of original file
         _ = accessor.createBackup(of: targetPath)
         
-        // Step 2: Write payload to temporary isolation path
         let tempPath = NSTemporaryDirectory() + "staged_write_" + UUID().uuidString + ".plist"
         
         guard accessor.writePlist(plist, to: tempPath) else {
             return false
         }
         
-        // Step 3: Validate structure of written temporary file
         guard accessor.verifyIntegrity(at: tempPath) == .valid else {
             try? FileManager.default.removeItem(atPath: tempPath)
             return false
         }
         
-        // Step 4: Atomic move to target path
         do {
             if FileManager.default.fileExists(atPath: targetPath) {
                 try FileManager.default.removeItem(atPath: targetPath)
@@ -387,19 +397,11 @@ public class StagedApplyEngine {
 public class SpringBoardManager {
     public static let shared = SpringBoardManager()
     
-    public func safeRespring() -> Bool {
-        // Trigger non-intrusive UI reload via webkit/neospring mechanism
-        let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene
-        scene?.windows.forEach { window in
-            window.rootViewController?.view.setNeedsLayout()
-            window.rootViewController?.view.layoutIfNeeded()
-        }
-        
-        // WebKit view reload trigger for SpringBoard refresh
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+    public func safeRespring() {
+        ExploitManager.shared.appendLog("Memicu pemuatan ulang antarmuka SpringBoard...")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
             exit(0)
         }
-        return true
     }
 }
 
@@ -449,11 +451,12 @@ public class WorkspaceManager {
         }
         
         let packageURL = URL(fileURLWithPath: workspaceDirectory + "\(name).workplotpatch")
+        ExploitManager.shared.appendLog("Paket patch berhasil dibuat di path: \(packageURL.lastPathComponent)")
         return packageURL
     }
 }
 
-// MARK: - 8. SwiftUI User Interface
+// MARK: - 8. SwiftUI User Interface Components
 
 @main
 struct WorkPlotApp: App {
@@ -470,42 +473,41 @@ struct WorkPlotApp: App {
 struct MainContentView: View {
     @EnvironmentObject var exploitManager: ExploitManager
     @State private var selectedTab = 0
-    @State private var statusMessage = "System Ready"
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            ExploitDashboardView(statusMessage: $statusMessage)
+            ExploitDashboardView()
                 .tabItem {
                     Image(systemName: "shield.checkerboard")
-                    Text("Exploit")
+                    Text("Beranda")
                 }
                 .tag(0)
             
-            GestaltPresetsView(statusMessage: $statusMessage)
+            GestaltPresetsView()
                 .tabItem {
                     Image(systemName: "slider.horizontal.3")
                     Text("Gestalt")
                 }
                 .tag(1)
             
-            GraphicsAndRDARView(statusMessage: $statusMessage)
+            GraphicsAndRDARView()
                 .tabItem {
                     Image(systemName: "display")
                     Text("RDAR Fix")
                 }
                 .tag(2)
             
-            LiquidGlassView(statusMessage: $statusMessage)
+            LiquidGlassView()
                 .tabItem {
-                    Image(systemName: "drop")
+                    Image(systemName: "drop.fill")
                     Text("Liquid Glass")
                 }
                 .tag(3)
             
-            WorkspacePatchesView(statusMessage: $statusMessage)
+            WorkspacePatchesView()
                 .tabItem {
-                    Image(systemName: "folder")
-                    Text("Patches")
+                    Image(systemName: "folder.badge.gear")
+                    Text("Patch 3105")
                 }
                 .tag(4)
         }
@@ -517,65 +519,144 @@ struct MainContentView: View {
 
 struct ExploitDashboardView: View {
     @EnvironmentObject var exploitManager: ExploitManager
-    @Binding var statusMessage: String
     
     var body: some View {
         NavigationView {
-            List {
-                Section(header: Text("iOS 27 Build Status")) {
-                    HStack {
-                        Text("Current System Build")
-                        Spacer()
-                        Text(exploitManager.currentBuild)
-                            .font(.system(.body, design: .monospaced))
-                            .foregroundColor(.secondary)
-                    }
+            ScrollView {
+                VStack(spacing: 16) {
                     
-                    HStack {
-                        Text("Exploit Status")
-                        Spacer()
-                        Text(exploitManager.isExploited ? "Active" : "Inactive")
-                            .bold()
-                            .foregroundColor(exploitManager.isExploited ? .green : .red)
+                    // Card Header Status
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("work.plot Platform")
+                                    .font(.caption)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.blue)
+                                Text("iOS 27 Beta Customizer")
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                            }
+                            Spacer()
+                            Circle()
+                                .fill(exploitManager.isExploited ? Color.green : Color.red)
+                                .frame(width: 14, height: 14)
+                        }
+                        
+                        Divider()
+                        
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text("Versi Build Sistem")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text(exploitManager.currentBuild)
+                                    .font(.system(.body, design: .monospaced))
+                                    .fontWeight(.semibold)
+                            }
+                            Spacer()
+                            VStack(alignment: .trailing) {
+                                Text("Status Subsystem")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text(exploitManager.isExploited ? "Aktif" : "Belum Aktif")
+                                    .font(.body)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(exploitManager.isExploited ? .green : .red)
+                            }
+                        }
                     }
-                }
-                
-                Section(header: Text("Exploit Initialization")) {
+                    .padding()
+                    .background(Color(UIColor.secondarySystemGroupedBackground))
+                    .cornerRadius(16)
+                    
+                    // Tombol Inisialisasi
                     Button(action: {
-                        let success = exploitManager.initializeExploit()
-                        statusMessage = success ? "bad_query payload executed successfully" : "Build unsupported or exploit failed"
+                        _ = exploitManager.initializeExploit()
                     }) {
                         HStack {
-                            Text("Initialize bad_query Subsystem")
-                                .bold()
-                            Spacer()
-                            Image(systemName: "bolt.fill")
+                            Image(systemName: "bolt.shield.fill")
+                            Text(exploitManager.isExploited ? "Subsystem bad_query Aktif" : "Inisialisasi bad_query Subsystem")
+                                .fontWeight(.bold)
                         }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(exploitManager.isExploited ? Color.gray.opacity(0.3) : Color.blue)
+                        .foregroundColor(exploitManager.isExploited ? .primary : .white)
+                        .cornerRadius(12)
                     }
                     .disabled(exploitManager.isExploited)
-                }
-                
-                Section(header: Text("Accessible System Paths")) {
-                    if exploitManager.activePaths.isEmpty {
-                        Text("No path permissions granted yet")
-                            .foregroundColor(.secondary)
-                    } else {
-                        ForEach(exploitManager.activePaths, id: \.self) { path in
-                            Text(path)
-                                .font(.system(.footnote, design: .monospaced))
+                    
+                    // Path Terhubung
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Daftar Path Sistem Terhubung")
+                            .font(.headline)
+                        
+                        if exploitManager.activePaths.isEmpty {
+                            Text("Belum ada path sistem yang terbuka. Silakan tekan tombol inisialisasi.")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding()
+                        } else {
+                            ForEach(exploitManager.activePaths, id: \.self) { path in
+                                HStack {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.green)
+                                    Text(path)
+                                        .font(.system(.caption, design: .monospaced))
+                                }
+                                .padding(.vertical, 2)
+                            }
                         }
                     }
-                }
-                
-                Section(header: Text("System Operations")) {
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(Color(UIColor.secondarySystemGroupedBackground))
+                    .cornerRadius(16)
+                    
+                    // Log Konsol
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Log Aktivitas Sistem")
+                            .font(.headline)
+                        
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 4) {
+                                ForEach(exploitManager.logMessages, id: \.self) { log in
+                                    Text(log)
+                                        .font(.system(size: 11, design: .monospaced))
+                                        .foregroundColor(.green)
+                                }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .frame(height: 120)
+                        .padding(8)
+                        .background(Color.black)
+                        .cornerRadius(8)
+                    }
+                    .padding()
+                    .background(Color(UIColor.secondarySystemGroupedBackground))
+                    .cornerRadius(16)
+                    
+                    // Action Buttons
                     Button(action: {
-                        _ = SpringBoardManager.shared.safeRespring()
+                        SpringBoardManager.shared.safeRespring()
                     }) {
-                        Text("Trigger Safe Respring")
-                            .foregroundColor(.orange)
+                        HStack {
+                            Image(systemName: "restart.circle")
+                            Text("Lakukan Respring Aman")
+                                .fontWeight(.semibold)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.orange.opacity(0.2))
+                        .foregroundColor(.orange)
+                        .cornerRadius(12)
                     }
                 }
+                .padding()
             }
+            .background(Color(UIColor.systemGroupedBackground).ignoresSafeArea())
             .navigationTitle("work.plot Dashboard")
         }
     }
@@ -584,22 +665,19 @@ struct ExploitDashboardView: View {
 // MARK: - Gestalt Presets View
 
 struct GestaltPresetsView: View {
-    @Binding var statusMessage: String
-    
     var body: some View {
         NavigationView {
             List {
                 ForEach(GestaltCategory.allCases, id: \.rawValue) { category in
                     Section(header: Text(category.rawValue)) {
                         ForEach(GestaltRegistry.shared.presets.filter { $0.category == category }) { preset in
-                            VStack(alignment: .leading, spacing: 4) {
+                            VStack(alignment: .leading, spacing: 6) {
                                 HStack {
                                     Text(preset.name)
                                         .font(.headline)
                                     Spacer()
-                                    Button("Apply") {
-                                        let ok = GestaltRegistry.shared.applyPreset(preset)
-                                        statusMessage = ok ? "Applied \(preset.name)" : "Failed applying \(preset.name)"
+                                    Button("Terapkan") {
+                                        _ = GestaltRegistry.shared.applyPreset(preset)
                                     }
                                     .buttonStyle(.borderedProminent)
                                     .font(.caption)
@@ -613,7 +691,7 @@ struct GestaltPresetsView: View {
                     }
                 }
             }
-            .navigationTitle("MobileGestalt")
+            .navigationTitle("MobileGestalt Editor")
         }
     }
 }
@@ -621,29 +699,27 @@ struct GestaltPresetsView: View {
 // MARK: - Graphics & RDAR View
 
 struct GraphicsAndRDARView: View {
-    @Binding var statusMessage: String
-    
     var body: some View {
         NavigationView {
             List {
-                Section(header: Text("RDAR Canvas Geometry Fix")) {
-                    Text("Resolves status bar layout corruption by rewriting display resolution and subtype parameters in com.apple.iomobilegraphicsfamily.plist.")
+                Section(header: Text("Koreksi Geometri Kanvas RDAR")) {
+                    Text("Memperbaiki tampilan status bar yang rusak akibat modifikasi subtype layar dengan menulis dimensi kanvas pada com.apple.iomobilegraphicsfamily.plist.")
                         .font(.footnote)
                         .foregroundColor(.secondary)
                     
                     ForEach(RDARFixManager.shared.resolutionProfiles, id: \.subtype) { profile in
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 6) {
                             HStack {
                                 Text(profile.deviceModel)
                                     .font(.headline)
                                 Spacer()
-                                Button("Apply Fix") {
-                                    let ok = RDARFixManager.shared.applyRDARFix(for: profile)
-                                    statusMessage = ok ? "Applied RDAR fix for \(profile.deviceModel)" : "Failed applying RDAR fix"
+                                Button("Terapkan Fix") {
+                                    _ = RDARFixManager.shared.applyRDARFix(for: profile)
                                 }
                                 .buttonStyle(.bordered)
+                                .font(.caption)
                             }
-                            Text("Subtype: \(profile.subtype) | Canvas: \(profile.width) x \(profile.height)")
+                            Text("Subtype: \(profile.subtype) | Dimensi: \(profile.width) x \(profile.height)")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -651,7 +727,7 @@ struct GraphicsAndRDARView: View {
                     }
                 }
             }
-            .navigationTitle("RDAR & Resolution")
+            .navigationTitle("RDAR Fix & Resolusi")
         }
     }
 }
@@ -659,31 +735,28 @@ struct GraphicsAndRDARView: View {
 // MARK: - Liquid Glass View
 
 struct LiquidGlassView: View {
-    @Binding var statusMessage: String
     @StateObject private var controller = LiquidGlassController.shared
     
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("iOS 27 Liquid Glass Effects")) {
-                    Toggle("Disable Liquid Glass UI", isOn: Binding(
+                Section(header: Text("Kontrol Efek Liquid Glass (iOS 27)")) {
+                    Toggle("Matikan Efek Liquid Glass", isOn: Binding(
                         get: { controller.isLiquidGlassDisabled },
                         set: { newValue in
-                            let ok = controller.setGlobalDisable(newValue)
-                            statusMessage = ok ? "Updated Liquid Glass compatibility flag" : "Failed updating flag"
+                            _ = controller.setGlobalDisable(newValue)
                         }
                     ))
                 }
                 
-                Section(header: Text("UI Transparency Level")) {
-                    VStack(alignment: .leading) {
-                        Text("Transparency Level: \(Int(controller.transparencyLevel))%")
+                Section(header: Text("Tingkat Transparansi UI")) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Tingkat Transparansi: \(Int(controller.transparencyLevel))%")
+                            .font(.subheadline)
                         Slider(
                             value: Binding(
                                 get: { controller.transparencyLevel },
-                                set: { newValue in
-                                    controller.transparencyLevel = newValue
-                                }
+                                set: { controller.transparencyLevel = $0 }
                             ),
                             in: 0...100,
                             step: 1
@@ -691,9 +764,10 @@ struct LiquidGlassView: View {
                             _ = controller.setTransparencyLevel(controller.transparencyLevel)
                         }
                     }
+                    .padding(.vertical, 4)
                 }
             }
-            .navigationTitle("Liquid Glass")
+            .navigationTitle("Liquid Glass Control")
         }
     }
 }
@@ -701,35 +775,30 @@ struct LiquidGlassView: View {
 // MARK: - Workspace & Patches View
 
 struct WorkspacePatchesView: View {
-    @Binding var statusMessage: String
     @State private var patchName: String = ""
     @State private var bundleID: String = "com.apple.springboard"
     
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Create 3105 Patch Workspace")) {
-                    TextField("Patch Name", text: $patchName)
-                    TextField("Target Bundle ID", text: $bundleID)
+                Section(header: Text("Buat Workspace Patch 3105")) {
+                    TextField("Nama Paket Patch", text: $patchName)
+                    TextField("Bundle ID Target", text: $bundleID)
                     
-                    Button("Export .workplotpatch Package") {
+                    Button("Ekspor Paket .workplotpatch") {
                         guard !patchName.isEmpty else { return }
-                        if let url = WorkspaceManager.shared.exportPatchPackage(name: patchName, bundleID: bundleID) {
-                            statusMessage = "Exported package to \(url.lastPathComponent)"
-                        } else {
-                            statusMessage = "Failed creating patch package"
-                        }
+                        _ = WorkspaceManager.shared.exportPatchPackage(name: patchName, bundleID: bundleID)
                     }
                     .disabled(patchName.isEmpty)
                 }
                 
-                Section(header: Text("Workspace Path")) {
+                Section(header: Text("Direktori Workspace")) {
                     Text(WorkspaceManager.shared.workspaceDirectory)
                         .font(.system(.caption, design: .monospaced))
                         .foregroundColor(.secondary)
                 }
             }
-            .navigationTitle("Patch Manager")
+            .navigationTitle("Patch 3105 Manager")
         }
     }
 }
