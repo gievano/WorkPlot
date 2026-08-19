@@ -25,7 +25,7 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
           xcodebuild -version
 
-      - name: Generate App Bundle & AppIcon Assets
+      - name: Prepare App Payload Directory
         run: |
           mkdir -p Payload/work.plot.app
           
@@ -65,25 +65,40 @@ jobs:
           </plist>
           EOF
 
-          # Generate Ikon Aplikasi Sederhana menggunakan Python Pillow bawaan macOS
-          python3 -c "
-          from PIL import Image, ImageDraw
-          img = Image.new('RGB', (180, 180), color=(15, 23, 42))
-          d = ImageDraw.Draw(img)
-          d.rectangle([20, 20, 160, 160], outline=(59, 130, 246), width=8)
-          d.ellipse([50, 50, 130, 130], fill=(59, 130, 246))
-          img.save('Payload/work.plot.app/AppIcon60x60@3x.png')
-          img.resize((120, 120)).save('Payload/work.plot.app/AppIcon60x60@2x.png')
-          "
+      - name: Generate App Icon
+        run: |
+          # Menggunakan sips bawaan macOS untuk membuat gambar icon tanpa library python luar
+          mkdir -p icon_tmp
+          cat << 'EOF' > icon_tmp/gen.swift
+          import Cocoa
+
+          let size = NSSize(width: 180, height: 180)
+          let image = NSImage(size: size)
+          image.lockFocus()
+
+          let ctx = NSGraphicsContext.current?.cgContext
+          ctx?.setFillColor(CGColor(red: 0.05, green: 0.1, blue: 0.2, alpha: 1.0))
+          ctx?.fill(CGRect(x: 0, y: 0, width: 180, height: 180))
+
+          ctx?.setFillColor(CGColor(red: 0.2, green: 0.5, blue: 1.0, alpha: 1.0))
+          ctx?.fillEllipse(in: CGRect(x: 30, y: 30, width: 120, height: 120))
+
+          image.unlockFocus()
+
+          if let tiff = image.tiffRepresentation, let bitmap = NSBitmapImageRep(data: tiff), let png = bitmap.representation(using: .png, properties: [:]) {
+              try? png.write(to: URL(fileURLWithPath: "Payload/work.plot.app/AppIcon60x60@3x.png"))
+              try? png.write(to: URL(fileURLWithPath: "Payload/work.plot.app/AppIcon60x60@2x.png"))
+          }
+          EOF
+          swift icon_tmp/gen.swift
 
       - name: Compile Swift Application Binary
         run: |
           SDKPATH=$(xcrun --sdk iphoneos --show-sdk-path)
           
+          # Menyusun aplikasi dengan entry point UIApplicationMain
           swiftc -target arm64-apple-ios17.0 \
             -sdk $SDKPATH \
-            -import-objc-header /dev/null \
-            -parse-as-library \
             -O \
             -framework SwiftUI \
             -framework UIKit \
