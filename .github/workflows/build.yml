@@ -1,124 +1,94 @@
-name: Comprehensive WorkPlot IPA Release Workflow
+name: Build work.plot IPA
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches:
+      - main
+      - master
   pull_request:
-    branches: [ "main", "master" ]
+    branches:
+      - main
+      - master
   workflow_dispatch:
-    inputs:
-      build_target:
-        description: 'Target iOS 27 Developer Beta Build'
-        required: true
-        default: '24A5380h'
-        type: choice
-        options:
-          - '24A5355q'
-          - '24A5370h'
-          - '24A5380h'
-          - '24A5390f'
 
 jobs:
-  build-and-package:
-    name: Build work.plot iOS 27 Utility Suite
-    runs-on: macos-latest
-
-    env:
-      APP_NAME: "work.plot"
-      BUNDLE_ID: "com.workplot.customization.ios27"
-      BUILD_CONFIGURATION: "Release"
+  build:
+    name: Build iOS App & Package IPA
+    runs-on: macos-14
 
     steps:
-    - name: Checkout Repository Code
-      uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-    - name: Set up Xcode Environment
-      run: |
-        echo "Mengonfigurasi Xcode untuk versi terbaru..."
-        sudo xcode-select -s /Applications/Xcode.app
-        xcodebuild -version
-        xcrun --sdk iphoneos --show-sdk-path
+      - name: Select Xcode Version
+        run: |
+          sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+          xcodebuild -version
 
-    - name: Initialize Directory Structure and Xcode Workspace
-      run: |
-        echo "Mempersiapkan struktur direktori payload..."
-        mkdir -p build/Payload
-        mkdir -p build/work.plot.app
-        mkdir -p Sources
-        mkdir -p Resources
-        
-        echo "Membuat berkas info plist pendukung..."
-        cat << 'EOF' > build/work.plot.app/Info.plist
-        <?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-        <plist version="1.0">
-        <dict>
-            <key>CFBundleDevelopmentRegion</key>
-            <string>en</string>
-            <key>CFBundleExecutable</key>
-            <string>work.plot</string>
-            <key>CFBundleIdentifier</key>
-            <string>com.workplot.customization.ios27</string>
-            <key>CFBundleInfoDictionaryVersion</key>
-            <string>6.0</string>
-            <key>CFBundleName</key>
-            <string>work.plot</string>
-            <key>CFBundlePackageType</key>
-            <string>APPL</string>
-            <key>CFBundleShortVersionString</key>
-            <string>1.0.0</string>
-            <key>CFBundleVersion</key>
-            <string>2026.1</string>
-            <key>MinimumOSVersion</key>
-            <string>27.0</string>
-            <key>UIDeviceFamily</key>
-            <array>
-                <integer>1</integer>
-                <integer>2</integer>
-            </array>
-            <key>UILaunchStoryboardName</key>
-            <string>LaunchScreen</string>
-            <key>UIRequiredDeviceCapabilities</key>
-            <array>
-                <string>arm64</string>
-            </array>
-        </dict>
-        </dict>
-        </plist>
-        EOF
+      - name: Prepare Build Directory & Info.plist
+        run: |
+          mkdir -p Payload/work.plot.app
+          
+          # Membuat file Info.plist untuk aplikasi work.plot
+          cat << 'EOF' > Payload/work.plot.app/Info.plist
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleIdentifier</key>
+              <string>com.work.plot</string>
+              <key>CFBundleName</key>
+              <string>work.plot</string>
+              <key>CFBundleExecutable</key>
+              <string>work.plot</string>
+              <key>CFBundleVersion</key>
+              <string>1.0</string>
+              <key>CFBundleShortVersionString</key>
+              <string>1.0</string>
+              <key>MinimumOSVersion</key>
+              <string>27.0</string>
+              <key>UIDeviceFamily</key>
+              <array>
+                  <integer>1</integer>
+              </array>
+              <key>UILaunchScreen</key>
+              <dict/>
+          </dict>
+          </plist>
+          EOF
 
-    - name: Compile Swift Customization Framework Sources
-      run: |
-        if [ -f "work_plot.swift" ]; then
-          echo "Melakukan kompilasi Swift target binary..."
-          swiftc -target arm64-apple-ios27.0 -sdk $(xcrun --sdk iphoneos --show-sdk-path) -o build/work.plot.app/work.plot work_plot.swift || echo "Fallback kompilasi simulator diproses."
-        else
-          echo "Membuat binary dummy fungsional..."
-          touch build/work.plot.app/work.plot
-          chmod +x build/work.plot.app/work.plot
-        fi
+      - name: Compile Swift Code to Binary
+        run: |
+          # Kompiliasi berkas Swift menggunakan swiftc SDK iPhoneOS
+          SDKPATH=$(xcrun --sdk iphoneos --show-sdk-path)
+          
+          swiftc -target arm64-apple-ios17.0 \
+            -sdk $SDKPATH \
+            -import-objc-header /dev/null \
+            -parse-as-library \
+            -O \
+            work_plot_app.swift \
+            -o Payload/work.plot.app/work.plot
 
-    - name: Generate Heavyweight Payload Padding (Target ~20MB IPA)
-      run: |
-        echo "Menambahkan aset binari dan data framework terstruktur untuk mencapai ukuran IPA yang ditargetkan..."
-        mkdir -p build/work.plot.app/Frameworks
-        mkdir -p build/work.plot.app/Assets
-        # Membuat file padding biner terstruktur untuk mencapai ukuran stabil ~20MB
-        dd if=/dev/zero of=build/work.plot.app/Assets/payload_extended_core.bin bs=1024 count=18432
-        dd if=/dev/zero of=build/work.plot.app/Frameworks/libCustomGraphicsEngine.dylib bs=1024 count=2048
+      - name: Package App into IPA File
+        run: |
+          # Mengompres direktori Payload menjadi berkas work.plot.ipa
+          zip -r work.plot.ipa Payload/
 
-    - name: Package Payload and Build IPA Archive
-      run: |
-        cd build
-        cp -r work.plot.app Payload/
-        zip -r work.plot.ipa Payload
-        ls -lh work.plot.ipa
-        echo "IPA berhasil dikemas."
+      - name: Upload Build Artifact (IPA)
+        uses: actions/upload-artifact@v4
+        with:
+          name: work.plot-unsigned-ipa
+          path: work.plot.ipa
 
-    - name: Upload Artifact IPA Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: work-plot-ios27-ipa
-        path: build/work.plot.ipa
-        retention-days: 30
+      - name: Create GitHub Release (On Tag/Dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: work.plot.ipa
+          tag_name: v1.0.0
+          name: "work.plot iOS 27 Release"
+          body: "Unsigned IPA file for work.plot built automatically via GitHub Actions."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
