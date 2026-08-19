@@ -1,7 +1,6 @@
-import UIKit
 import SwiftUI
+import UIKit
 import Foundation
-import Security
 
 // MARK: - 1. Exploit Subsystem (bad_query Integration)
 
@@ -359,7 +358,7 @@ public class LiquidGlassController: ObservableObject {
     }
 }
 
-// MARK: - 6. Security, Anti-Bootloop & Respring Engine
+// MARK: - 6. Security & Anti-Bootloop Engine
 
 public class StagedApplyEngine {
     public static let shared = StagedApplyEngine()
@@ -456,7 +455,7 @@ public class WorkspaceManager {
     }
 }
 
-// MARK: - 8. SwiftUI User Interface Components
+// MARK: - 8. SwiftUI User Interface Views
 
 struct MainContentView: View {
     @EnvironmentObject var exploitManager: ExploitManager
@@ -503,8 +502,6 @@ struct MainContentView: View {
     }
 }
 
-// MARK: - Dashboard View
-
 struct ExploitDashboardView: View {
     @EnvironmentObject var exploitManager: ExploitManager
     
@@ -512,7 +509,6 @@ struct ExploitDashboardView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 16) {
-                    
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
@@ -645,8 +641,6 @@ struct ExploitDashboardView: View {
     }
 }
 
-// MARK: - Gestalt Presets View
-
 struct GestaltPresetsView: View {
     var body: some View {
         NavigationView {
@@ -678,8 +672,6 @@ struct GestaltPresetsView: View {
         }
     }
 }
-
-// MARK: - Graphics & RDAR View
 
 struct GraphicsAndRDARView: View {
     var body: some View {
@@ -714,8 +706,6 @@ struct GraphicsAndRDARView: View {
         }
     }
 }
-
-// MARK: - Liquid Glass View
 
 struct LiquidGlassView: View {
     @StateObject private var controller = LiquidGlassController.shared
@@ -755,8 +745,6 @@ struct LiquidGlassView: View {
     }
 }
 
-// MARK: - Workspace & Patches View
-
 struct WorkspacePatchesView: View {
     @State private var patchName: String = ""
     @State private var bundleID: String = "com.apple.springboard"
@@ -786,27 +774,17 @@ struct WorkspacePatchesView: View {
     }
 }
 
-// MARK: - 9. Pure UIKit Application Delegate Entry Point
+// MARK: - 9. Official SwiftUI @main App Lifecycle Entry Point
 
-@objc(AppDelegate)
-class AppDelegate: UIResponder, UIApplicationDelegate {
-    var window: UIWindow?
-
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        let contentView = MainContentView().environmentObject(ExploitManager.shared)
-        let window = UIWindow(frame: UIScreen.main.bounds)
-        window.rootViewController = UIHostingController(rootView: contentView)
-        self.window = window
-        window.makeKeyAndVisible()
-        return true
+@main
+struct WorkPlotApp: App {
+    @StateObject private var exploitManager = ExploitManager.shared
+    
+    var body: some Scene {
+        WindowGroup {
+            MainContentView()
+                .environmentObject(exploitManager)
+        }
     }
 }
-
-// Titik Eksekusi Utama Aplikasi UIKit
-UIApplicationMain(
-    CommandLine.argc,
-    CommandLine.unsafeArgv,
-    nil,
-    NSStringFromClass(AppDelegate.self)
-)
 
