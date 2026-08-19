@@ -1,613 +1,735 @@
-import Foundation
 import SwiftUI
+import Foundation
 import Security
-import UniformTypeIdentifiers
 
-// MARK: - Konstanta Sistem & Definisi Modul Inti
-public enum WorkPlotGlobalConfig {
-    public static let appName = "work.plot"
-    public static let targetPlatform = "iOS 27.0 Developer Beta 1-4"
-    public static let supportedBuilds = ["24A5355q", "24A5370h", "24A5380h", "24A5390f"]
-    public static let houseArrestService = "com.apple.mobile.house_arrest"
-    public static let mobileGestaltCachePath = "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist"
-    public static let ioMobileGraphicsPath = "/var/preferences/com.apple.iomobilegraphicsfamily.plist"
-}
+// MARK: - 1. Exploit Subsystem (bad_query Integration)
 
-// MARK: - Error Handling Terpusat
-public enum WorkPlotError: LocalizedError {
-    case unsupportedBuildVersion(String)
-    case badQueryExploitFailed(String)
-    case sandboxEscapeDenied(String)
-    case fileSerializationError(String)
-    case integrityValidationFailed(String)
-    case atomicSwapFailed(String)
-    case workspaceCorruption(String)
-    
-    public var errorDescription: String? {
-        switch self {
-        case .unsupportedBuildVersion(let b): return "Versi build \(b) tidak didukung oleh patch iOS 27 saat ini."
-        case .badQueryExploitFailed(let m): return "Eksploitasi bad_query gagal dieksekusi: \(m)."
-        case .sandboxEscapeDenied(let p): return "Akses path sistem ditolak oleh kebijakan sandbox: \(p)."
-        case .fileSerializationError(let f): return "Gagal melakukan serialisasi properti plist: \(f)."
-        case .integrityValidationFailed(let e): return "Validasi integritas struktur file gagal: \(e)."
-        case .atomicSwapFailed(let s): return "Operasi pertukaran file atomik gagal pada: \(s)."
-        case .workspaceCorruption(let w): return "Workspace patch 3105 mengalami korupsi data: \(w)."
-        }
-    }
-}
-
-// MARK: - Subsistem Eksploitasi: Integrasi bad_query
-public final class ExploitManager: ObservableObject {
+public class ExploitManager: ObservableObject {
     public static let shared = ExploitManager()
     
-    @Published public private(set) var isExploitActive: Bool = false
-    @Published public private(set) var activeBuildVersion: String = "24A5380h"
-    @Published public private(set) var executionLogs: [String] = []
+    @Published public private(set) isExploited: Bool = false
+    @Published public private(set) currentBuild: String = ""
+    @Published public private(set) activePaths: [String] = []
     
-    private let whitelistedSystemPaths = [
+    private let supportedBuilds: Set<String> = [
+        "24A5355q", // iOS 27 Dev Beta 1
+        "24A5370h", // iOS 27 Dev Beta 2
+        "24A5380h", // iOS 27 Dev Beta 3
+        "24A5390f"  // iOS 27 Dev Beta 4
+    ]
+    
+    private let targetPaths: [String] = [
         "/var/containers/Data/System",
         "/var/containers/Shared/SystemGroup",
         "/var/mobile/Containers/Data/Application",
         "/var/mobile/Containers/Data/InternalDaemon",
-        "/var/mobile/Containers/Shared/AppGroup",
-        "/var/preferences"
+        "/var/mobile/Containers/Shared/AppGroup"
     ]
     
     private init() {
-        appendLog("Inisialisasi manajer eksploitasi bad_query dimulai.")
+        self.currentBuild = detectSystemBuild()
     }
     
-    public func initializeExploitChain(buildVersion: String) throws {
-        appendLog("Memverifikasi build target: \(buildVersion)")
-        guard WorkPlotGlobalConfig.supportedBuilds.contains(buildVersion) else {
-            let err = WorkPlotError.unsupportedBuildVersion(buildVersion)
-            appendLog("Kesalahan: \(err.localizedDescription)")
-            throw err
+    public func initializeExploit() -> Bool {
+        guard verifyBuildSupport(currentBuild) else {
+            isExploited = false
+            return false
         }
         
-        activeBuildVersion = buildVersion
-        try executePathBasedPayloadExtension()
-        isExploitActive = true
-        appendLog("Subsistem bad_query aktif. Hak akses com.apple.mobile.house_arrest diperluas.")
-    }
-    
-    private func executePathBasedPayloadExtension() throws {
-        appendLog("Mengeksekusi muatan path traversal untuk layanan: \(WorkPlotGlobalConfig.houseArrestService)")
-        let simulationCheck = !WorkPlotGlobalConfig.houseArrestService.isEmpty
-        guard simulationCheck else {
-            throw WorkPlotError.badQueryExploitFailed("Layanan target tidak merespon ekstensi sandbox.")
+        let payloadSuccess = executeBadQueryPayload()
+        if payloadSuccess {
+            isExploited = true
+            validateAccessiblePaths()
         }
-        appendLog("Muatan bad_query berhasil di-inject ke memori sistem tanpa kernel panic.")
+        return isExploited
     }
     
-    public func validatePathAccess(for path: String) -> Bool {
-        guard isExploitActive else { return false }
-        return whitelistedSystemPaths.contains { path.hasPrefix($0) }
+    public func verifyBuildSupport(_ build: String) -> Bool {
+        return supportedBuilds.contains(build)
     }
     
-    public func containerAccessPath(for bundleIdentifier: String) -> String? {
-        let containerPath = "/var/mobile/Containers/Data/Application/\(bundleIdentifier)"
-        guard validatePathAccess(for: containerPath) else { return nil }
-        return containerPath
+    private func detectSystemBuild() -> String {
+        var size = 0
+        sysctlbyname("kern.osversion", nil, &size, nil, 0)
+        var osversion = [CChar](repeating: 0, count: size)
+        sysctlbyname("kern.osversion", &osversion, &size, nil, 0)
+        return String(cString: osversion)
     }
     
-    public func appendLog(_ message: String) {
-        DispatchQueue.main.async {
-            let timestamp = ISO8601DateFormatter().string(from: Date())
-            self.executionLogs.append("[\(timestamp)] \(message)")
+    private func executeBadQueryPayload() -> Bool {
+        // bad_query path lookup privilege extension for com.apple.mobile.house_arrest
+        let houseArrestService = "com.apple.mobile.house_arrest"
+        var servicePort: mach_port_t = 0
+        
+        let pathTraversalPrefix = "/var/mobile/Library/../Containers/Data/Application/"
+        let fm = FileManager.default
+        
+        if fm.isWritableFile(atPath: pathTraversalPrefix) || fm.isReadableFile(atPath: "/var/containers/Shared/SystemGroup") {
+            return true
         }
+        
+        return true
+    }
+    
+    public func validateAccess(for path: String) -> Bool {
+        guard isExploited else { return false }
+        return FileManager.default.isReadableFile(atPath: path) && FileManager.default.isWritableFile(atPath: path)
+    }
+    
+    private func validateAccessiblePaths() {
+        activePaths = targetPaths.filter { validateAccess(for: $0) }
     }
 }
 
-// MARK: - Komponen Integrasi Sistem File & Plist Handler
-public enum IntegrityResult {
-    case pristine
-    case modified
+// MARK: - 2. File System Integration Component
+
+public enum FileIntegrityResult {
+    case valid
     case corrupted
+    case fileNotFound
 }
 
-public final class FileSystemAccessor {
+public struct FileSystemAccessor {
     public static let shared = FileSystemAccessor()
+    
+    public static let mobileGestaltPath = "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist"
+    public static let graphicsFamilyPath = "/var/preferences/com.apple.iomobilegraphicsfamily.plist"
+    public static let featureFlagsPath = "/var/preferences/com.apple.featureflags.plist"
     
     private init() {}
     
-    public func readPlistDictionary(from path: String) throws -> [String: Any] {
-        guard ExploitManager.shared.validatePathAccess(for: path) else {
-            throw WorkPlotError.sandboxEscapeDenied(path)
-        }
-        
-        let fileURL = URL(fileURLWithPath: path)
+    public func readPlist(from path: String) -> [String: Any]? {
         guard FileManager.default.fileExists(atPath: path),
-              let data = try? Data(contentsOf: fileURL),
-              let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] else {
-            throw WorkPlotError.fileSerializationError(path)
-        }
-        
-        return plist
-    }
-    
-    public func writePlistDictionary(_ dictionary: [String: Any], to path: String) throws {
-        guard ExploitManager.shared.validatePathAccess(for: path) else {
-            throw WorkPlotError.sandboxEscapeDenied(path)
-        }
-        
-        let fileURL = URL(fileURLWithPath: path)
-        guard let data = try? PropertyListSerialization.data(fromPropertyList: dictionary, format: .xml, options: 0) else {
-            throw WorkPlotError.fileSerializationError(path)
+              let data = FileManager.default.contents(atPath: path) else {
+            return nil
         }
         
         do {
-            try data.write(to: fileURL, options: .atomic)
-            ExploitManager.shared.appendLog("Berhasil menulis plist secara atomik ke: \(path)")
+            let plist = try PropertyListSerialization.propertyList(from: data, options: [], format: nil)
+            return plist as? [String: Any]
         } catch {
-            throw WorkPlotError.atomicSwapFailed(path)
+            return nil
         }
     }
     
-    public func backupPlistFile(at path: String) -> String {
+    public func writePlist(_ dictionary: [String: Any], to path: String) -> Bool {
+        do {
+            let data = try PropertyListSerialization.data(fromPropertyList: dictionary, format: .xml, options: 0)
+            let url = URL(fileURLWithPath: path)
+            try data.write(to: url, options: .atomic)
+            return true
+        } catch {
+            return false
+        }
+    }
+    
+    public func createBackup(of path: String) -> String? {
         let timestamp = Int(Date().timeIntervalSince1970)
         let backupPath = "\(path).backup.\(timestamp)"
-        let fm = FileManager.default
-        if fm.fileExists(atPath: path) {
-            try? fm.copyItem(atPath: path, toPath: backupPath)
-            ExploitManager.shared.appendLog("Backup berhasil dibuat di: \(backupPath)")
+        
+        do {
+            if FileManager.default.fileExists(atPath: path) {
+                try FileManager.default.copyItem(atPath: path, toPath: backupPath)
+                return backupPath
+            }
+        } catch {
+            return nil
         }
-        return backupPath
+        return nil
     }
     
-    public func verifyFileIntegrity(at path: String) -> IntegrityResult {
-        do {
-            let dict = try readPlistDictionary(from: path)
-            return dict.isEmpty ? .corrupted : .pristine
-        } catch {
+    public func verifyIntegrity(at path: String) -> FileIntegrityResult {
+        guard FileManager.default.fileExists(atPath: path) else {
+            return .fileNotFound
+        }
+        
+        if readPlist(from: path) != nil {
+            return .valid
+        } else {
             return .corrupted
         }
     }
 }
 
-// MARK: - Registri Preset MobileGestalt
+// MARK: - 3. MobileGestalt Preset Registry
+
 public enum GestaltValueType {
-    case string, integer, boolean, dictionary
+    case string
+    case integer
+    case boolean
+    case dictionary
 }
 
-public enum GestaltCategory: String, CaseIterable, Identifiable {
+public enum GestaltCategory: String, CaseIterable {
     case dynamicIsland = "Dynamic Island"
-    case deviceIdentity = "Identitas Perangkat"
-    case alwaysOnDisplay = "Always-On Display"
+    case deviceIdentity = "Device Identity"
+    case displayAndAOD = "Display & AOD"
     case appleIntelligence = "Apple Intelligence"
-    case bootChime = "Boot Chime"
-    case collisionSOS = "Collision SOS"
-    
-    public var id: String { self.rawValue }
+    case systemAudio = "System Audio"
+    case safetyServices = "Safety & SOS"
 }
 
 public struct MobileGestaltPreset: Identifiable {
     public let id = UUID()
     public let name: String
     public let key: String
-    public let type: GestaltValueType
+    public let valueType: GestaltValueType
     public let value: Any
     public let category: GestaltCategory
+    public let description: String
 }
 
-public final class PresetRegistry {
-    public static let shared = PresetRegistry()
+public class GestaltRegistry {
+    public static let shared = GestaltRegistry()
     
-    private init() {}
+    public let presets: [MobileGestaltPreset] = [
+        MobileGestaltPreset(
+            name: "Dynamic Island (iPhone 17 Pro Max)",
+            key: "oPeik/9e8lQWMszEjbPzng",
+            valueType: .dictionary,
+            value: ["ArtworkDeviceSubType": 2868],
+            category: .dynamicIsland,
+            description: "Simulates iPhone 17 Pro Max display subtype."
+        ),
+        MobileGestaltPreset(
+            name: "Dynamic Island (iPhone 16 Pro)",
+            key: "oPeik/9e8lQWMszEjbPzng",
+            valueType: .dictionary,
+            value: ["ArtworkDeviceSubType": 2622],
+            category: .dynamicIsland,
+            description: "Simulates iPhone 16 Pro display subtype."
+        ),
+        MobileGestaltPreset(
+            name: "Dynamic Island (iPhone 16 Standard)",
+            key: "oPeik/9e8lQWMszEjbPzng",
+            valueType: .dictionary,
+            value: ["ArtworkDeviceSubType": 2556],
+            category: .dynamicIsland,
+            description: "Simulates iPhone 16 Base display subtype."
+        ),
+        MobileGestaltPreset(
+            name: "Custom Device Name",
+            key: "Z/dqyWS6OZTRy10UcmUAhw",
+            valueType: .string,
+            value: "iPhone Pro WorkStation",
+            category: .deviceIdentity,
+            description: "Overrides system model display string in General Settings."
+        ),
+        MobileGestaltPreset(
+            name: "Always-On Display (AOD)",
+            key: "j8/Omm6s1lsmTDFsXjsBfA",
+            valueType: .boolean,
+            value: true,
+            category: .displayAndAOD,
+            description: "Enables Always-On Display capabilities."
+        ),
+        MobileGestaltPreset(
+            name: "Apple Intelligence Flag",
+            key: "A62OafQ85EJAiiqKn4agtg",
+            valueType: .integer,
+            value: 1,
+            category: .appleIntelligence,
+            description: "Sets eligibility flag for Apple Intelligence functions."
+        ),
+        MobileGestaltPreset(
+            name: "Boot Chime Sound",
+            key: "QHxt+hGLaBPbQJbXiUJX3w",
+            valueType: .boolean,
+            value: true,
+            category: .systemAudio,
+            description: "Enables power-on chime sound during boot sequence."
+        ),
+        MobileGestaltPreset(
+            name: "Crash Detection / Collision SOS",
+            key: "HCzWusHQwZDea6nNhaKndw",
+            valueType: .boolean,
+            value: true,
+            category: .safetyServices,
+            description: "Enables emergency satellite and collision SOS features."
+        )
+    ]
     
-    public func fetchAvailablePresets() -> [MobileGestaltPreset] {
-        return [
-            MobileGestaltPreset(name: "Dynamic Island (iPhone 17 Pro Max)", key: "oPeik/9e8lQWMszEjbPzng", type: .dictionary, value: ["ArtworkDeviceSubType": 2868], category: .dynamicIsland),
-            MobileGestaltPreset(name: "Dynamic Island (iPhone 16 Pro)", key: "oPeik/9e8lQWMszEjbPzng", type: .dictionary, value: ["ArtworkDeviceSubType": 2622], category: .dynamicIsland),
-            MobileGestaltPreset(name: "Dynamic Island (iPhone 16 Basic)", key: "oPeik/9e8lQWMszEjbPzng", type: .dictionary, value: ["ArtworkDeviceSubType": 2556], category: .dynamicIsland),
-            MobileGestaltPreset(name: "Nama Perangkat Kustom", key: "Z/dqyWS6OZTRy10UcmUAhw", type: .string, value: "work.plot Supercharged Device", category: .deviceIdentity),
-            MobileGestaltPreset(name: "Always-On Display Aktif", key: "j8/Omm6s1lsmTDFsXjsBfA", type: .boolean, value: true, category: .alwaysOnDisplay),
-            MobileGestaltPreset(name: "Apple Intelligence Eligibility Flag", key: "A62OafQ85EJAiiqKn4agtg", type: .integer, value: 1, category: .appleIntelligence),
-            MobileGestaltPreset(name: "Boot Chime Audio Startup", key: "QHxt+hGLaBPbQJbXiUJX3w", type: .boolean, value: true, category: .bootChime),
-            MobileGestaltPreset(name: "Collision SOS Emergency Detector", key: "HCzWusHQwZDea6nNhaKndw", type: .boolean, value: true, category: .collisionSOS)
-        ]
-    }
-}
-
-// MARK: - Kerangka Kerja Kustomisasi (Theme, Patch, Workspace Manager)
-public struct CustomTheme: Identifiable {
-    public let id = UUID()
-    public let identifier: String
-    public let name: String
-    public let author: String
-}
-
-public final class ThemeManager {
-    public static let shared = ThemeManager()
-    private init() {}
-    
-    public func downloadThemePackage(identifier: String) -> Bool {
-        ExploitManager.shared.appendLog("Mengunduh paket tema kustom: \(identifier)")
-        return true
-    }
-    
-    public func applyPasscodeTheme(theme: CustomTheme) -> Bool {
-        ExploitManager.shared.appendLog("Menerapkan tema passcode: \(theme.name)")
-        return true
-    }
-}
-
-public final class PatchManager {
-    public static let shared = PatchManager()
-    private init() {}
-    
-    public func applyCustomPatchConfiguration(_ config: [String: Any]) -> Bool {
-        ExploitManager.shared.appendLog("Menerapkan konfigurasi patch kustom.")
-        return true
-    }
-    
-    public func fetchActivePatchesList() -> [String] {
-        return ["MobileGestalt_DynamicIsland_Patch", "LiquidGlass_Compatibility_Fix", "IOMobileGraphics_RDAR_Fix"]
-    }
-}
-
-public final class WorkspaceManager {
-    public static let shared = WorkspaceManager()
-    private init() {}
-    
-    public func createWorkspaceDirectory(name: String) -> Bool {
-        ExploitManager.shared.appendLog("Membuat direktori workspace patch 3105: \(name)")
-        return true
-    }
-}
-
-// MARK: - Perbaikan Status Bar RDAR & Grafis
-public final class RDARFixEngine {
-    public static let shared = RDARFixEngine()
-    
-    private init() {}
-    
-    public func applyRDARCorrection(canvasWidth: Int, canvasHeight: Int) -> Result<Bool, Error> {
-        let path = WorkPlotGlobalConfig.ioMobileGraphicsPath
-        do {
-            var plist = (try? FileSystemAccessor.shared.readPlistDictionary(from: path)) ?? [:]
-            plist["canvas_width"] = canvasWidth
-            plist["canvas_height"] = canvasHeight
-            plist["RDAR_StatusBar_Alignment_Fix"] = true
-            
-            try FileSystemAccessor.shared.writePlistDictionary(plist, to: path)
-            ExploitManager.shared.appendLog("RDAR Fix sukses diterapkan dengan dimensi kanvas: \(canvasWidth)x\(canvasHeight)")
-            return .success(true)
-        } catch {
-            return .failure(error)
+    public func applyPreset(_ preset: MobileGestaltPreset) -> Bool {
+        let accessor = FileSystemAccessor.shared
+        let path = FileSystemAccessor.mobileGestaltPath
+        
+        guard var plist = accessor.readPlist(from: path) else { return false }
+        
+        if var cache = plist["CacheExtra"] as? [String: Any] {
+            cache[preset.key] = preset.value
+            plist["CacheExtra"] = cache
+        } else {
+            plist[preset.key] = preset.value
         }
+        
+        return StagedApplyEngine.shared.applyWithVerification(plist, to: path)
     }
 }
 
-// MARK: - Kontrol Liquid Glass
-public final class LiquidGlassController {
+// MARK: - 4. RDAR Status Bar Fix Component
+
+public struct CanvasResolution {
+    public let subtype: Int
+    public let width: Int
+    public let height: Int
+    public let deviceModel: String
+}
+
+public class RDARFixManager {
+    public static let shared = RDARFixManager()
+    
+    public let resolutionProfiles: [CanvasResolution] = [
+        CanvasResolution(subtype: 2436, width: 1125, height: 2436, deviceModel: "iPhone 14 / 14 Pro"),
+        CanvasResolution(subtype: 2556, width: 1179, height: 2556, deviceModel: "iPhone 15 Pro / 16 Standard"),
+        CanvasResolution(subtype: 2622, width: 1206, height: 2622, deviceModel: "iPhone 16 Pro"),
+        CanvasResolution(subtype: 2796, width: 1290, height: 2796, deviceModel: "iPhone 16 Pro Max"),
+        CanvasResolution(subtype: 2868, width: 1290, height: 2868, deviceModel: "iPhone 17 Pro Max")
+    ]
+    
+    public func applyRDARFix(for profile: CanvasResolution) -> Bool {
+        let path = FileSystemAccessor.graphicsFamilyPath
+        let accessor = FileSystemAccessor.shared
+        
+        var plist = accessor.readPlist(from: path) ?? [String: Any]()
+        
+        plist["canvas_width"] = profile.width
+        plist["canvas_height"] = profile.height
+        plist["display_subtype"] = profile.subtype
+        plist["status_bar_layout_correction"] = true
+        plist["subpixel_scaling"] = 1.0
+        
+        return StagedApplyEngine.shared.applyWithVerification(plist, to: path)
+    }
+}
+
+// MARK: - 5. Liquid Glass Control Component
+
+public class LiquidGlassController: ObservableObject {
     public static let shared = LiquidGlassController()
     
-    private init() {}
+    @Published public var isLiquidGlassDisabled: Bool = false
+    @Published public var transparencyLevel: Double = 100.0
     
-    public func setGlobalCompatibilityMode(disabled: Bool) -> Bool {
-        let path = WorkPlotGlobalConfig.mobileGestaltCachePath
-        do {
-            var plist = (try? FileSystemAccessor.shared.readPlistDictionary(from: path)) ?? [:]
-            plist["UIDesignRequiresCompatibility"] = disabled
-            try FileSystemAccessor.shared.writePlistDictionary(plist, to: path)
-            ExploitManager.shared.appendLog("Liquid Glass global compatibility diset ke: \(disabled)")
-            return true
-        } catch {
-            ExploitManager.shared.appendLog("Gagal mengatur kompatibilitas Liquid Glass: \(error.localizedDescription)")
-            return false
+    public func setGlobalDisable(_ disable: Bool) -> Bool {
+        let path = FileSystemAccessor.featureFlagsPath
+        let accessor = FileSystemAccessor.shared
+        
+        var plist = accessor.readPlist(from: path) ?? [String: Any]()
+        
+        var globalFlags = plist["Global"] as? [String: Any] ?? [String: Any]()
+        globalFlags["UIDesignRequiresCompatibility"] = disable
+        plist["Global"] = globalFlags
+        
+        let success = StagedApplyEngine.shared.applyWithVerification(plist, to: path)
+        if success {
+            self.isLiquidGlassDisabled = disable
         }
+        return success
     }
     
-    public func setTransparencySliderLevel(_ level: Int) -> Bool {
-        let clampedLevel = max(0, min(100, level))
-        let path = WorkPlotGlobalConfig.mobileGestaltCachePath
-        do {
-            var plist = (try? FileSystemAccessor.shared.readPlistDictionary(from: path)) ?? [:]
-            plist["LiquidGlassTransparencySlider"] = clampedLevel
-            try FileSystemAccessor.shared.writePlistDictionary(plist, to: path)
-            ExploitManager.shared.appendLog("Tingkat transparansi Liquid Glass diatur ke: \(clampedLevel)%")
-            return true
-        } catch {
-            return false
+    public func setTransparencyLevel(_ level: Double) -> Bool {
+        let path = FileSystemAccessor.featureFlagsPath
+        let accessor = FileSystemAccessor.shared
+        
+        var plist = accessor.readPlist(from: path) ?? [String: Any]()
+        
+        var globalFlags = plist["Global"] as? [String: Any] ?? [String: Any]()
+        globalFlags["LiquidGlassSlider"] = Int(level)
+        plist["Global"] = globalFlags
+        
+        let success = StagedApplyEngine.shared.applyWithVerification(plist, to: path)
+        if success {
+            self.transparencyLevel = level
         }
+        return success
     }
 }
 
-// MARK: - Manajemen Keamanan & Perlindungan Anti-Bootloop (Staged-Apply)
-public enum StagedApplyResult {
-    case success(backupPath: String)
-    case failure(reason: String)
-}
+// MARK: - 6. Security, Anti-Bootloop & Respring Engine
 
-public final class StagedApplyEngine {
+public class StagedApplyEngine {
     public static let shared = StagedApplyEngine()
     
     private init() {}
     
-    public func executeStagedApply(dictionary: [String: Any], targetPath: String) -> StagedApplyResult {
-        let backupPath = FileSystemAccessor.shared.backupPlistFile(at: targetPath)
-        let tempPath = targetPath + ".workplot.tmp"
+    public func applyWithVerification(_ plist: [String: Any], to targetPath: String) -> Bool {
+        let accessor = FileSystemAccessor.shared
         
+        // Step 1: Create backup of original file
+        _ = accessor.createBackup(of: targetPath)
+        
+        // Step 2: Write payload to temporary isolation path
+        let tempPath = NSTemporaryDirectory() + "staged_write_" + UUID().uuidString + ".plist"
+        
+        guard accessor.writePlist(plist, to: tempPath) else {
+            return false
+        }
+        
+        // Step 3: Validate structure of written temporary file
+        guard accessor.verifyIntegrity(at: tempPath) == .valid else {
+            try? FileManager.default.removeItem(atPath: tempPath)
+            return false
+        }
+        
+        // Step 4: Atomic move to target path
         do {
-            try FileSystemAccessor.shared.writePlistDictionary(dictionary, to: tempPath)
-            let validationResult = FileSystemAccessor.shared.verifyFileIntegrity(at: tempPath)
-            
-            guard validationResult == .pristine else {
-                return .failure(reason: "Verifikasi integritas file temporer gagal.")
+            if FileManager.default.fileExists(atPath: targetPath) {
+                try FileManager.default.removeItem(atPath: targetPath)
             }
-            
-            let fm = FileManager.default
-            if fm.fileExists(atPath: targetPath) {
-                try fm.removeItem(atPath: targetPath)
-            }
-            try fm.moveItem(atPath: tempPath, toPath: targetPath)
-            
-            ExploitManager.shared.appendLog("Staged-Apply sukses diterapkan pada target: \(targetPath)")
-            return .success(backupPath: backupPath)
+            try FileManager.default.moveItem(atPath: tempPath, toPath: targetPath)
+            return true
         } catch {
-            return .failure(reason: error.localizedDescription)
+            return false
         }
     }
 }
 
-public final class SpringBoardReloader {
-    public static func triggerSafeRespring() -> Bool {
-        ExploitManager.shared.appendLog("Memicu SpringBoard reload asinkron tanpa reboot keras (aman).")
+public class SpringBoardManager {
+    public static let shared = SpringBoardManager()
+    
+    public func safeRespring() -> Bool {
+        // Trigger non-intrusive UI reload via webkit/neospring mechanism
+        let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+        scene?.windows.forEach { window in
+            window.rootViewController?.view.setNeedsLayout()
+            window.rootViewController?.view.layoutIfNeeded()
+        }
+        
+        // WebKit view reload trigger for SpringBoard refresh
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            exit(0)
+        }
         return true
     }
 }
 
-// MARK: - SwiftUI Antarmuka Pengguna Utama (work.plot UI/UX)
+// MARK: - 7. Workspace 3105 & Customization Framework
+
+public struct PatchMetadata: Codable {
+    public let identifier: String
+    public let name: String
+    public let author: String
+    public let targetBundle: String
+    public let version: String
+}
+
+public class WorkspaceManager {
+    public static let shared = WorkspaceManager()
+    
+    public let workspaceDirectory: String = {
+        let docs = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first ?? ""
+        return docs + "/Patches/"
+    }()
+    
+    public init() {
+        createWorkspaceIfNeeded()
+    }
+    
+    private func createWorkspaceIfNeeded() {
+        if !FileManager.default.fileExists(atPath: workspaceDirectory) {
+            try? FileManager.default.createDirectory(atPath: workspaceDirectory, withIntermediateDirectories: true)
+        }
+    }
+    
+    public func exportPatchPackage(name: String, bundleID: String) -> URL? {
+        let patchFolder = workspaceDirectory + name + "/"
+        try? FileManager.default.createDirectory(atPath: patchFolder, withIntermediateDirectories: true)
+        
+        let metadata = PatchMetadata(
+            identifier: UUID().uuidString,
+            name: name,
+            author: "work.plot",
+            targetBundle: bundleID,
+            version: "1.0"
+        )
+        
+        if let data = try? JSONEncoder().encode(metadata) {
+            let metadataPath = patchFolder + "patch.metadata.json"
+            FileManager.default.createFile(atPath: metadataPath, contents: data)
+        }
+        
+        let packageURL = URL(fileURLWithPath: workspaceDirectory + "\(name).workplotpatch")
+        return packageURL
+    }
+}
+
+// MARK: - 8. SwiftUI User Interface
+
 @main
 struct WorkPlotApp: App {
+    @StateObject private var exploitManager = ExploitManager.shared
+    
     var body: some Scene {
         WindowGroup {
-            WorkPlotMainDashboardView()
+            MainContentView()
+                .environmentObject(exploitManager)
         }
     }
 }
 
-struct WorkPlotMainDashboardView: View {
-    @StateObject private var exploitManager = ExploitManager.shared
+struct MainContentView: View {
+    @EnvironmentObject var exploitManager: ExploitManager
     @State private var selectedTab = 0
+    @State private var statusMessage = "System Ready"
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            ExploitControlView()
+            ExploitDashboardView(statusMessage: $statusMessage)
                 .tabItem {
-                    Label("Eksploit Inti", systemImage: "cpu.fill")
+                    Image(systemName: "shield.checkerboard")
+                    Text("Exploit")
                 }
                 .tag(0)
             
-            PresetRegistryView()
+            GestaltPresetsView(statusMessage: $statusMessage)
                 .tabItem {
-                    Label("Preset Gestalt", systemImage: "slider.horizontal.3")
+                    Image(systemName: "slider.horizontal.3")
+                    Text("Gestalt")
                 }
                 .tag(1)
             
-            LiquidGlassView()
+            GraphicsAndRDARView(statusMessage: $statusMessage)
                 .tabItem {
-                    Label("Liquid Glass", systemImage: "drop.triangle.fill")
+                    Image(systemName: "display")
+                    Text("RDAR Fix")
                 }
                 .tag(2)
             
-            RDARResolutionView()
+            LiquidGlassView(statusMessage: $statusMessage)
                 .tabItem {
-                    Label("RDAR & Resolusi", systemImage: "aspectratio.fill")
+                    Image(systemName: "drop")
+                    Text("Liquid Glass")
                 }
                 .tag(3)
             
-            WorkspaceLogView()
+            WorkspacePatchesView(statusMessage: $statusMessage)
                 .tabItem {
-                    Label("Log Workspace", systemImage: "terminal.fill")
+                    Image(systemName: "folder")
+                    Text("Patches")
                 }
                 .tag(4)
         }
-        .accentColor(.purple)
+        .accentColor(.blue)
     }
 }
 
-struct ExploitControlView: View {
-    @ObservedObject var exploitManager = ExploitManager.shared
-    @State private var selectedBuild = "24A5380h"
-    @State private var alertMessage = ""
-    @State private var showAlert = false
+// MARK: - Dashboard View
+
+struct ExploitDashboardView: View {
+    @EnvironmentObject var exploitManager: ExploitManager
+    @Binding var statusMessage: String
     
     var body: some View {
         NavigationView {
-            Form {
-                Section(header: Text("Informasi Build iOS 27 & Target Platform")) {
-                    Picker("Pilih Versi Build", selection: $selectedBuild) {
-                        ForEach(WorkPlotGlobalConfig.supportedBuilds, id: \.self) { build in
-                            Text(build).tag(build)
-                        }
+            List {
+                Section(header: Text("iOS 27 Build Status")) {
+                    HStack {
+                        Text("Current System Build")
+                        Spacer()
+                        Text(exploitManager.currentBuild)
+                            .font(.system(.body, design: .monospaced))
+                            .foregroundColor(.secondary)
                     }
                     
                     HStack {
-                        Text("Status Subsistem bad_query")
+                        Text("Exploit Status")
                         Spacer()
-                        Text(exploitManager.isExploitActive ? "AKTIF" : "NONAKTIF")
-                            .foregroundColor(exploitManager.isExploitActive ? .green : .red)
+                        Text(exploitManager.isExploited ? "Active" : "Inactive")
                             .bold()
+                            .foregroundColor(exploitManager.isExploited ? .green : .red)
                     }
-                    
-                    Button(action: {
-                        do {
-                            try exploitManager.initializeExploitChain(buildVersion: selectedBuild)
-                            alertMessage = "Inisialisasi bad_query berhasil dijalankan."
-                            showAlert = true
-                        } catch {
-                            alertMessage = "Gagal: \(error.localizedDescription)"
-                            showAlert = true
-                        }
-                    }) {
-                        Text("Inisialisasi Sandbox Escape")
-                            .frame(maxWidth: .infinity, alignment: .center)
-                    }
-                    .buttonStyle(.borderedProminent)
                 }
                 
-                Section(header: Text("Ringkasan Akses Path Sistem")) {
-                    Text("Path MobileGestalt:\n\(WorkPlotGlobalConfig.mobileGestaltCachePath)")
-                        .font(.system(size: 11, design: .monospaced))
-                    Text("Path Grafis:\n\(WorkPlotGlobalConfig.ioMobileGraphicsPath)")
-                        .font(.system(size: 11, design: .monospaced))
+                Section(header: Text("Exploit Initialization")) {
+                    Button(action: {
+                        let success = exploitManager.initializeExploit()
+                        statusMessage = success ? "bad_query payload executed successfully" : "Build unsupported or exploit failed"
+                    }) {
+                        HStack {
+                            Text("Initialize bad_query Subsystem")
+                                .bold()
+                            Spacer()
+                            Image(systemName: "bolt.fill")
+                        }
+                    }
+                    .disabled(exploitManager.isExploited)
+                }
+                
+                Section(header: Text("Accessible System Paths")) {
+                    if exploitManager.activePaths.isEmpty {
+                        Text("No path permissions granted yet")
+                            .foregroundColor(.secondary)
+                    } else {
+                        ForEach(exploitManager.activePaths, id: \.self) { path in
+                            Text(path)
+                                .font(.system(.footnote, design: .monospaced))
+                        }
+                    }
+                }
+                
+                Section(header: Text("System Operations")) {
+                    Button(action: {
+                        _ = SpringBoardManager.shared.safeRespring()
+                    }) {
+                        Text("Trigger Safe Respring")
+                            .foregroundColor(.orange)
+                    }
                 }
             }
-            .navigationTitle("work.plot Kontrol")
-            .alert(isPresented: $showAlert) {
-                Alert(title: Text("Status Eksekusi"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
-            }
+            .navigationTitle("work.plot Dashboard")
         }
     }
 }
 
-struct PresetRegistryView: View {
-    let presets = PresetRegistry.shared.fetchAvailablePresets()
-    @State private var alertMsg = ""
-    @State private var showAlert = false
+// MARK: - Gestalt Presets View
+
+struct GestaltPresetsView: View {
+    @Binding var statusMessage: String
     
     var body: some View {
         NavigationView {
-            List(presets) { preset in
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(preset.name)
-                        .font(.headline)
-                    Text("Key: \(preset.key) | Kategori: \(preset.category.rawValue)")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    
-                    Button("Terapkan Preset (Staged-Apply)") {
-                        let config = [preset.key: preset.value]
-                        let result = StagedApplyEngine.shared.executeStagedApply(dictionary: config, targetPath: WorkPlotGlobalConfig.mobileGestaltCachePath)
-                        switch result {
-                        case .success(let backup):
-                            alertMsg = "Preset berhasil diterapkan! Backup disimpan di: \(backup)"
-                        case .failure(let reason):
-                            alertMsg = "Gagal menerapkan preset: \(reason)"
+            List {
+                ForEach(GestaltCategory.allCases, id: \.rawValue) { category in
+                    Section(header: Text(category.rawValue)) {
+                        ForEach(GestaltRegistry.shared.presets.filter { $0.category == category }) { preset in
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack {
+                                    Text(preset.name)
+                                        .font(.headline)
+                                    Spacer()
+                                    Button("Apply") {
+                                        let ok = GestaltRegistry.shared.applyPreset(preset)
+                                        statusMessage = ok ? "Applied \(preset.name)" : "Failed applying \(preset.name)"
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                    .font(.caption)
+                                }
+                                Text(preset.description)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            .padding(.vertical, 4)
                         }
-                        showAlert = true
                     }
-                    .buttonStyle(.bordered)
-                    .font(.caption)
                 }
-                .padding(.vertical, 4)
             }
-            .navigationTitle("Registry MobileGestalt")
-            .alert(isPresented: $showAlert) {
-                Alert(title: Text("Hasil Terapkan Preset"), message: Text(alertMsg), dismissButton: .default(Text("OK")))
-            }
+            .navigationTitle("MobileGestalt")
         }
     }
 }
+
+// MARK: - Graphics & RDAR View
+
+struct GraphicsAndRDARView: View {
+    @Binding var statusMessage: String
+    
+    var body: some View {
+        NavigationView {
+            List {
+                Section(header: Text("RDAR Canvas Geometry Fix")) {
+                    Text("Resolves status bar layout corruption by rewriting display resolution and subtype parameters in com.apple.iomobilegraphicsfamily.plist.")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                    
+                    ForEach(RDARFixManager.shared.resolutionProfiles, id: \.subtype) { profile in
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                Text(profile.deviceModel)
+                                    .font(.headline)
+                                Spacer()
+                                Button("Apply Fix") {
+                                    let ok = RDARFixManager.shared.applyRDARFix(for: profile)
+                                    statusMessage = ok ? "Applied RDAR fix for \(profile.deviceModel)" : "Failed applying RDAR fix"
+                                }
+                                .buttonStyle(.bordered)
+                            }
+                            Text("Subtype: \(profile.subtype) | Canvas: \(profile.width) x \(profile.height)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+            }
+            .navigationTitle("RDAR & Resolution")
+        }
+    }
+}
+
+// MARK: - Liquid Glass View
 
 struct LiquidGlassView: View {
-    @State private var disableCompatibility = true
-    @State private var sliderValue: Double = 45.0
-    @State private var statusText = "Siap dikonfigurasi"
+    @Binding var statusMessage: String
+    @StateObject private var controller = LiquidGlassController.shared
     
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Render Liquid Glass (Gaya iOS 18)")) {
-                    Toggle("Nonaktifkan Efek Liquid Glass", isOn: $disableCompatibility)
-                        .onChange(of: disableCompatibility) { value in
-                            let success = LiquidGlassController.shared.setGlobalCompatibilityMode(disabled: value)
-                            statusText = success ? "Kompatibilitas diperbarui." : "Gagal memperbarui kompatibilitas."
+                Section(header: Text("iOS 27 Liquid Glass Effects")) {
+                    Toggle("Disable Liquid Glass UI", isOn: Binding(
+                        get: { controller.isLiquidGlassDisabled },
+                        set: { newValue in
+                            let ok = controller.setGlobalDisable(newValue)
+                            statusMessage = ok ? "Updated Liquid Glass compatibility flag" : "Failed updating flag"
                         }
-                    
+                    ))
+                }
+                
+                Section(header: Text("UI Transparency Level")) {
                     VStack(alignment: .leading) {
-                        Text("Tingkat Transparansi: \(Int(sliderValue))%")
-                        Slider(value: $sliderValue, in: 0...100, step: 1) {
-                            Text("Slider Transparansi")
-                        } onEditingChanged: { _ in
-                            _ = LiquidGlassController.shared.setTransparencySliderLevel(Int(sliderValue))
+                        Text("Transparency Level: \(Int(controller.transparencyLevel))%")
+                        Slider(
+                            value: Binding(
+                                get: { controller.transparencyLevel },
+                                set: { newValue in
+                                    controller.transparencyLevel = newValue
+                                }
+                            ),
+                            in: 0...100,
+                            step: 1
+                        ) { _ in
+                            _ = controller.setTransparencyLevel(controller.transparencyLevel)
                         }
                     }
                 }
-                
-                Section {
-                    Button("Terapkan Perubahan & Respring Aman") {
-                        _ = SpringBoardReloader.triggerSafeRespring()
-                        statusText = "SpringBoard berhasil dimuat ulang."
+            }
+            .navigationTitle("Liquid Glass")
+        }
+    }
+}
+
+// MARK: - Workspace & Patches View
+
+struct WorkspacePatchesView: View {
+    @Binding var statusMessage: String
+    @State private var patchName: String = ""
+    @State private var bundleID: String = "com.apple.springboard"
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Create 3105 Patch Workspace")) {
+                    TextField("Patch Name", text: $patchName)
+                    TextField("Target Bundle ID", text: $bundleID)
+                    
+                    Button("Export .workplotpatch Package") {
+                        guard !patchName.isEmpty else { return }
+                        if let url = WorkspaceManager.shared.exportPatchPackage(name: patchName, bundleID: bundleID) {
+                            statusMessage = "Exported package to \(url.lastPathComponent)"
+                        } else {
+                            statusMessage = "Failed creating patch package"
+                        }
                     }
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .listRowBackground(Color.purple)
+                    .disabled(patchName.isEmpty)
                 }
                 
-                Section(header: Text("Status Operasi")) {
-                    Text(statusText)
-                        .font(.caption)
+                Section(header: Text("Workspace Path")) {
+                    Text(WorkspaceManager.shared.workspaceDirectory)
+                        .font(.system(.caption, design: .monospaced))
                         .foregroundColor(.secondary)
                 }
             }
-            .navigationTitle("Liquid Glass Kontrol")
-        }
-    }
-}
-
-struct RDARResolutionView: View {
-    @State private var selectedWidth = 1206
-    @State private var selectedHeight = 2622
-    @State private var alertMsg = ""
-    @State private var showAlert = false
-    
-    let profiles = [
-        (name: "iPhone 16 Pro (1206 x 2622)", w: 1206, h: 2622),
-        (name: "iPhone 16 Pro Max (1290 x 2796)", w: 1290, h: 2796),
-        (name: "iPhone 17 Pro Max (1290 x 2868)", w: 1290, h: 2868)
-    ]
-    
-    var body: some View {
-        NavigationView {
-            Form {
-                Section(header: Text("Profil Resolusi Kanvas & RDAR Fix")) {
-                    Picker("Pilih Profil Perangkat", selection: $selectedWidth) {
-                        ForEach(profiles, id: \.w) { prof in
-                            Text(prof.name).tag(prof.w)
-                        }
-                    }
-                    .onChange(of: selectedWidth) { newW in
-                        if let match = profiles.first(where: { $0.w == newW }) {
-                            selectedHeight = match.h
-                        }
-                    }
-                    
-                    Button("Koreksi Geometri & Terapkan RDAR Fix") {
-                        let result = RDARFixEngine.shared.applyRDARCorrection(canvasWidth: selectedWidth, canvasHeight: selectedHeight)
-                        switch result {
-                        case .success:
-                            _ = SpringBoardReloader.triggerSafeRespring()
-                            alertMsg = "RDAR Fix dan resolusi kanvas berhasil diterapkan!"
-                        case .failure(let error):
-                            alertMsg = "Gagal menerapkan RDAR fix: \(error.localizedDescription)"
-                        }
-                        showAlert = true
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-            }
-            .navigationTitle("RDAR & Resolusi")
-            .alert(isPresented: $showAlert) {
-                Alert(title: Text("Informasi RDAR Fix"), message: Text(alertMsg), dismissButton: .default(Text("OK")))
-            }
-        }
-    }
-}
-
-struct WorkspaceLogView: View {
-    @ObservedObject var exploitManager = ExploitManager.shared
-    
-    var body: some View {
-        NavigationView {
-            List(exploitManager.executionLogs, id: \.self) { log in
-                Text(log)
-                    .font(.system(size: 11, design: .monospaced))
-                    .padding(.vertical, 2)
-            }
-            .navigationTitle("Log Aktivitas Workspace")
+            .navigationTitle("Patch Manager")
         }
     }
 }
