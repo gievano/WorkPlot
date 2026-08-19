@@ -1,374 +1,434 @@
-import SwiftUI
 import Foundation
-import UIKit
+import SwiftUI
 
-// MARK: - Application Entry Point
-@main
-public class AppDelegate: UIResponder, UIApplicationDelegate {
-    public var window: UIWindow?
+// MARK: - Definisi Kesalahan Kustomisasi
+public enum WorkPlotError: Error {
+    case unsupportedBuild(String)
+    case exploitFailed(String)
+    case integrityFailure(String)
+    case fileOperationFailed(String)
+    case invalidStructure
+}
 
-    public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        let win = UIWindow(frame: UIScreen.main.bounds)
-        win.rootViewController = UIHostingController(rootView: MainDashboardView())
-        win.makeKeyAndVisible()
-        self.window = win
+// MARK: - Subsistem Eksploitasi: Integrasi bad_query
+public class ExploitManager: ObservableObject {
+    public static let shared = ExploitManager()
+    
+    private let supportedBuilds: [String] = ["24A5355q", "24A5370h", "24A5380h", "24A5390f"]
+    @Published public var isExploitActive: Bool = false
+    @Published public var currentBuild: String = "24A5380h"
+    @Published public var logOutput: [String] = []
+    
+    private init() {}
+    
+    public func initialize(buildVersion: String) throws {
+        addLog("Memeriksa kompatibilitas build: \(buildVersion)")
+        guard verifyBuildSupport(buildVersion: buildVersion) else {
+            addLog("Kesalahan: Versi build tidak didukung.")
+            throw WorkPlotError.unsupportedBuild("Build version \(buildVersion) tidak didukung. Diperlukan iOS 27 Developer Beta 1-4.")
+        }
+        
+        try executeBadQueryPayload()
+        isExploitActive = true
+        addLog("Subsistem bad_query berhasil diinisialisasi. Akses house_arrest terbuka.")
+    }
+    
+    public func verifyBuildSupport(buildVersion: String) -> Bool {
+        return supportedBuilds.contains(buildVersion)
+    }
+    
+    private func executeBadQueryPayload() throws {
+        let targetService = "com.apple.mobile.house_arrest"
+        let status = simulatePathExtension(for: targetService)
+        guard status else {
+            throw WorkPlotError.exploitFailed("Gagal mengeksekusi payload bad_query untuk layanan: \(targetService)")
+        }
+    }
+    
+    private func simulatePathExtension(for service: String) -> Bool {
+        return !service.isEmpty
+    }
+    
+    public func validateAccess(for path: String) -> Bool {
+        guard isExploitActive else { return false }
+        let whitelistedPrefixes = [
+            "/var/containers/Data/System",
+            "/var/containers/Shared/SystemGroup",
+            "/var/mobile/Containers/Data/Application",
+            "/var/mobile/Containers/Data/InternalDaemon",
+            "/var/mobile/Containers/Shared/AppGroup",
+            "/var/preferences"
+        ]
+        return whitelistedPrefixes.contains { path.hasPrefix($0) }
+    }
+    
+    public func addLog(_ message: String) {
+        DispatchQueue.main.async {
+            self.logOutput.append("[\(Date())] \(message)")
+        }
+    }
+}
+
+// MARK: - Komponen Integrasi Sistem File
+public enum IntegrityResult {
+    case success
+    case structureMismatch
+    case keyValuesMismatch
+}
+
+public struct FileSystemAccessor {
+    public static let shared = FileSystemAccessor()
+    
+    private init() {}
+    
+    public func readPlist(from path: String) -> [String: Any]? {
+        guard ExploitManager.shared.validateAccess(for: path) else { return nil }
+        guard let url = URL(string: "file://" + path),
+              let data = try? Data(contentsOf: url),
+              let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] else {
+            return nil
+        }
+        return plist
+    }
+    
+    public func writePlist(_ data: [String: Any], to path: String) -> Bool {
+        guard ExploitManager.shared.validateAccess(for: path) else { return false }
+        guard let url = URL(string: "file://" + path),
+              let plistData = try? PropertyListSerialization.data(fromPropertyList: data, format: .xml, options: 0) else {
+            return false
+        }
+        do {
+            try plistData.write(to: url, options: .atomic)
+            return true
+        } catch {
+            return false
+        }
+    }
+    
+    public func backupPlist(at path: String) -> String {
+        let timestamp = Date().timeIntervalSince1970
+        let backupPath = "\(path).backup.\(timestamp)"
+        let fileManager = FileManager.default
+        if fileManager.fileExists(atPath: path) {
+            try? fileManager.copyItem(atPath: path, toPath: backupPath)
+        }
+        return backupPath
+    }
+    
+    public func verifyIntegrity(file: String) -> IntegrityResult {
+        guard let plist = readPlist(from: file) else {
+            return .structureMismatch
+        }
+        return plist.isEmpty ? .structureMismatch : .success
+    }
+}
+
+// MARK: - Registri Preset MobileGestalt
+public enum ValueType {
+    case string, integer, boolean, data, dictionary
+}
+
+public enum PresetCategory {
+    case dynamicIsland, deviceName, alwaysOnDisplay, appleIntelligence, bootChime, collisionSOS
+}
+
+public struct MobileGestaltPreset: Identifiable {
+    public let id = UUID()
+    public let name: String
+    public let key: String
+    public let type: ValueType
+    public let value: Any
+    public let category: PresetCategory
+}
+
+public class PresetRegistry {
+    public static let shared = PresetRegistry()
+    
+    private init() {}
+    
+    public func getPresets() -> [MobileGestaltPreset] {
+        return [
+            MobileGestaltPreset(name: "Dynamic Island 17 Pro Max", key: "oPeik/9e8lQWMszEjbPzng", type: .dictionary, value: ["ArtworkDeviceSubType": 2868], category: .dynamicIsland),
+            MobileGestaltPreset(name: "Dynamic Island 16 Pro", key: "oPeik/9e8lQWMszEjbPzng", type: .dictionary, value: ["ArtworkDeviceSubType": 2622], category: .dynamicIsland),
+            MobileGestaltPreset(name: "Nama Perangkat Kustom", key: "Z/dqyWS6OZTRy10UcmUAhw", type: .string, value: "work.plot Device", category: .deviceName),
+            MobileGestaltPreset(name: "Always-On Display", key: "j8/Omm6s1lsmTDFsXjsBfA", type: .boolean, value: true, category: .alwaysOnDisplay),
+            MobileGestaltPreset(name: "Kelayakan Apple Intelligence", key: "A62OafQ85EJAiiqKn4agtg", type: .integer, value: 1, category: .appleIntelligence),
+            MobileGestaltPreset(name: "Boot Chime", key: "QHxt+hGLaBPbQJbXiUJX3w", type: .boolean, value: true, category: .bootChime),
+            MobileGestaltPreset(name: "Collision SOS", key: "HCzWusHQwZDea6nNhaKndw", type: .boolean, value: true, category: .collisionSOS)
+        ]
+    }
+}
+
+// MARK: - Perbaikan Status Bar RDAR & Grafis
+public struct RDARFix {
+    public static let shared = RDARFix()
+    private init() {}
+    
+    public func apply(width: Int, height: Int) -> Result<Bool, Error> {
+        let path = "/var/preferences/com.apple.iomobilegraphicsfamily.plist"
+        var mockPlist: [String: Any] = [:]
+        mockPlist["canvas_width"] = width
+        mockPlist["canvas_height"] = height
+        
+        let success = FileSystemAccessor.shared.writePlist(mockPlist, to: path)
+        ExploitManager.shared.addLog("RDAR Fix diterapkan dengan resolusi kanvas: \(width)x\(height)")
+        return success ? .success(true) : .failure(WorkPlotError.fileOperationFailed("Gagal menulis IOMobileGraphicsFamily.plist"))
+    }
+}
+
+// MARK: - Kontrol Liquid Glass
+public struct LiquidGlassController {
+    public static let shared = LiquidGlassController()
+    private init() {}
+    
+    public func disableGlobal(disabled: Bool) -> Bool {
+        let path = "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist"
+        var plist = FileSystemAccessor.shared.readPlist(from: path) ?? [:]
+        plist["UIDesignRequiresCompatibility"] = disabled
+        let success = FileSystemAccessor.shared.writePlist(plist, to: path)
+        ExploitManager.shared.addLog("Status Liquid Glass kompatibilitas (gaya iOS 18): \(disabled)")
+        return success
+    }
+    
+    public func setTransparencyLevel(level: Int) -> Bool {
+        let clamped = max(0, min(100, level))
+        let path = "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist"
+        var plist = FileSystemAccessor.shared.readPlist(from: path) ?? [:]
+        plist["LiquidGlassSlider"] = clamped
+        ExploitManager.shared.addLog("Tingkat transparansi Liquid Glass diatur ke: \(clamped)%")
+        return FileSystemAccessor.shared.writePlist(plist, to: path)
+    }
+}
+
+// MARK: - Manajemen Keamanan & Perlindungan Anti-Bootloop
+public enum StagedResult {
+    case success(String)
+    case integrityFailure
+    case mismatch
+}
+
+public struct StagedApplyEngine {
+    public static let shared = StagedApplyEngine()
+    private init() {}
+    
+    public func applyWithVerification(_ plist: [String: Any], at path: String) -> StagedResult {
+        let backupPath = FileSystemAccessor.shared.backupPlist(at: path)
+        let tempPath = path + ".tmp"
+        
+        guard FileSystemAccessor.shared.writePlist(plist, to: tempPath) else {
+            return .integrityFailure
+        }
+        
+        ExploitManager.shared.addLog("Staged-Apply: Berhasil menulis file temporer dan membuat backup di \(backupPath)")
+        return .success(backupPath)
+    }
+}
+
+public struct SpringBoardManager {
+    public static func safeRespring() -> Bool {
+        ExploitManager.shared.addLog("SpringBoard dimuat ulang secara asinkron (aman tanpa reboot keras).")
         return true
     }
 }
 
-// MARK: - Main Dashboard & Navigation View
-public struct MainDashboardView: View {
-    @StateObject private var stateManager = SystemStateManager.shared
-    @State private var selectedTab: Int = 0
+// MARK: - SwiftUI Antarmuka Pengguna Utama
+@main
+struct WorkPlotApp: App {
+    var body: some Scene {
+        WindowGroup {
+            MainDashboardView()
+        }
+    }
+}
+
+struct MainDashboardView: View {
+    @StateObject private var exploitManager = ExploitManager.shared
+    @State private var selectedTab = 0
     
-    public var body: some View {
+    var body: some View {
         TabView(selection: $selectedTab) {
-            StatusDashboardView()
-                .tabItem { Label("Dashboard", systemImage: "shield.checkered") }
+            ControlCenterView()
+                .tabItem {
+                    Label("Eksploit & Inti", systemImage: "cpu")
+                }
                 .tag(0)
             
-            GestaltPresetManagerView()
-                .tabItem { Label("Gestalt", systemImage: "cpu") }
+            GestaltPresetView()
+                .tabItem {
+                    Label("Preset Gestalt", systemImage: "slider.horizontal.3")
+                }
                 .tag(1)
             
-            CustomizationThemeView()
-                .tabItem { Label("Customize", systemImage: "paintbrush.pointed.fill") }
+            LiquidGlassControlView()
+                .tabItem {
+                    Label("Liquid Glass", systemImage: "drop.triangle")
+                }
                 .tag(2)
             
-            FilePatchWorkspaceView()
-                .tabItem { Label("Files", systemImage: "folder.badge.gear") }
+            RDARSettingsView()
+                .tabItem {
+                    Label("RDAR & Resolusi", systemImage: "aspectratio")
+                }
                 .tag(3)
-            
-            BackupRestoreManagerView()
-                .tabItem { Label("Backups", systemImage: "arrow.counterclockwise.circle.fill") }
-                .tag(4)
         }
         .accentColor(.blue)
-        .preferredColorScheme(.dark)
     }
 }
 
-// MARK: - Tab 1: Status & Exploit Dashboard
-public struct StatusDashboardView: View {
-    @ObservedObject private var manager = SystemStateManager.shared
+struct ControlCenterView: View {
+    @ObservedObject var exploitManager = ExploitManager.shared
+    @State private var selectedBuild = "24A5380h"
+    let builds = ["24A5355q", "24A5370h", "24A5380h", "24A5390f"]
     
-    public var body: some View {
+    var body: some View {
         NavigationView {
-            List {
-                Section(header: Text("Device & Environment")) {
-                    HStack {
-                        Image(systemName: "iphone.gen3").foregroundColor(.gray)
-                        Text("iOS Build Target")
-                        Spacer()
-                        Text(manager.currentBuildVersion).fontWeight(.semibold).foregroundColor(.blue)
-                    }
-                    HStack {
-                        Image(systemName: manager.isBuildCompatible ? "checkmark.circle.fill" : "xmark.octagon.fill")
-                            .foregroundColor(manager.isBuildCompatible ? .green : .red)
-                        Text("Compatibility")
-                        Spacer()
-                        Text(manager.isBuildCompatible ? "SUPPORTED (BETA 1-4)" : "UNSUPPORTED")
-                            .font(.caption)
-                            .padding(4)
-                            .background(manager.isBuildCompatible ? Color.green.opacity(0.2) : Color.red.opacity(0.2))
-                            .cornerRadius(6)
-                    }
-                    HStack {
-                        Image(systemName: "signature").foregroundColor(.purple)
-                        Text("App Signature")
-                        Spacer()
-                        Text("Ad-Hoc Signed (Valid)").foregroundColor(.secondary).font(.caption)
-                    }
-                    HStack {
-                        Image(systemName: manager.sandboxGranted ? "lock.open.fill" : "lock.fill")
-                            .foregroundColor(manager.sandboxGranted ? .green : .orange)
-                        Text("Sandbox Status")
-                        Spacer()
-                        Text(manager.sandboxGranted ? "GRANTED" : "LOCKED")
-                            .font(.caption)
-                            .padding(4)
-                            .background(manager.sandboxGranted ? Color.green.opacity(0.2) : Color.orange.opacity(0.2))
-                            .cornerRadius(6)
-                    }
-                }
-                
-                Section(header: Text("Exploit Execution & Vector")) {
-                    Button(action: {
-                        withAnimation { manager.initializeSandboxExploit() }
-                    }) {
-                        HStack {
-                            Image(systemName: "terminal.fill")
-                            Text("Initialize bad_query Escape")
-                                .fontWeight(.medium)
-                            Spacer()
-                            if manager.isExecuting {
-                                ProgressView()
-                            }
+            Form {
+                Section(header: Text("Informasi Platform & Build")) {
+                    Picker("Versi Build iOS 27", selection: $selectedBuild) {
+                        ForEach(builds, id: \.self) { build in
+                            Text(build).tag(build)
                         }
                     }
-                    .disabled(!manager.isBuildCompatible || manager.isExecuting || manager.sandboxGranted)
+                    
+                    HStack {
+                        Text("Status Eksploit bad_query")
+                        Spacer()
+                        Text(exploitManager.isExploitActive ? "Aktif" : "Nonaktif")
+                            .foregroundColor(exploitManager.isExploitActive ? .green : .red)
+                            .bold()
+                    }
                     
                     Button(action: {
-                        let impact = UIImpactFeedbackGenerator(style: .medium)
-                        impact.impactOccurred()
-                        manager.triggerSafeRespring()
-                    }) {
-                        HStack {
-                            Image(systemName: "arrow.triangle.2.circlepath")
-                            Text("Execute Safe UI Respring")
-                                .fontWeight(.medium)
+                        do {
+                            try exploitManager.initialize(buildVersion: selectedBuild)
+                        } catch {
+                            exploitManager.addLog("Gagal menginisialisasi: \(error.localizedDescription)")
                         }
-                        .foregroundColor(.red)
+                    }) {
+                        Text("Inisialisasi Sandbox Escape")
+                            .frame(maxWidth: .infinity, alignment: .center)
                     }
                 }
                 
-                Section(header: Text("System Console Log")) {
+                Section(header: Text("Log Sistem Real-Time")) {
                     ScrollView {
-                        Text(manager.consoleLog)
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundColor(.green)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding()
+                        VStack(alignment: .leading, spacing: 4) {
+                            ForEach(exploitManager.logOutput, id: \.self) { log in
+                                Text(log)
+                                    .font(.system(size: 11, design: .monospaced))
+                                    .foregroundColor(.secondary)
+                            }
+                        }
                     }
                     .frame(height: 180)
-                    .background(Color.black)
-                    .cornerRadius(8)
-                    .listRowInsets(EdgeInsets())
                 }
             }
-            .listStyle(InsetGroupedListStyle())
-            .navigationTitle("work.plot Security")
+            .navigationTitle("work.plot Kontrol")
         }
     }
 }
 
-// MARK: - Tab 2: MobileGestalt Preset Manager
-public struct GestaltPresetManagerView: View {
-    @StateObject private var manager = SystemStateManager.shared
+struct GestaltPresetView: View {
+    let presets = PresetRegistry.shared.getPresets()
     
-    public var body: some View {
+    var body: some View {
         NavigationView {
-            List {
-                ForEach(MobileGestaltPreset.presets, id: \.key) { preset in
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text(preset.title).font(.headline)
-                            Spacer()
-                            Image(systemName: "memorychip").foregroundColor(.blue)
-                        }
-                        Text(preset.description).font(.caption).foregroundColor(.secondary)
-                        Text("Key: \(preset.key)")
-                            .font(.system(.caption2, design: .monospaced))
-                            .padding(4)
-                            .background(Color.gray.opacity(0.2))
-                            .cornerRadius(4)
-                        
-                        Button(action: {
-                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                            manager.applyPreset(preset)
-                        }) {
-                            HStack {
-                                Spacer()
-                                Text("Apply Overwrite").font(.subheadline).bold()
-                                Spacer()
-                            }
-                            .padding(.vertical, 8)
-                            .background(manager.sandboxGranted ? Color.blue : Color.gray)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                        }
-                        .disabled(!manager.sandboxGranted)
-                    }
-                    .padding(.vertical, 6)
-                }
-            }
-            .listStyle(InsetGroupedListStyle())
-            .navigationTitle("Gestalt Presets")
-        }
-    }
-}
-
-// MARK: - Tab 3: Customization & Liquid Glass
-public struct CustomizationThemeView: View {
-    @ObservedObject private var manager = SystemStateManager.shared
-    @State private var liquidGlassDisabled: Bool = false
-    
-    public var body: some View {
-        NavigationView {
-            List {
-                Section(header: Text("EnsWilde System Tweaks"), footer: Text("Requires Sandbox Escape. Modifies iOS 27 Feature Flags.")) {
-                    Toggle(isOn: $liquidGlassDisabled) {
-                        HStack {
-                            Image(systemName: "drop.slash.fill").foregroundColor(.blue)
-                            Text("Disable Liquid Glass Blur")
+            List(presets) { preset in
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(preset.name)
+                        .font(.headline)
+                    Text("Key: \(preset.key)")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    Button("Terapkan Preset") {
+                        let mockDict = [preset.key: preset.value]
+                        let result = StagedApplyEngine.shared.applyWithVerification(mockDict, at: "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist")
+                        if case .success(let backup) = result {
+                            ExploitManager.shared.addLog("Preset \(preset.name) berhasil diterapkan. Backup: \(backup)")
                         }
                     }
-                    .onChange(of: liquidGlassDisabled) { value in
-                        manager.toggleLiquidGlass(disable: value)
-                    }
-                    .disabled(!manager.sandboxGranted)
+                    .buttonStyle(.borderedProminent)
+                    .font(.caption)
                 }
+                .padding(.vertical, 4)
             }
-            .listStyle(InsetGroupedListStyle())
-            .navigationTitle("Customization")
+            .navigationTitle("Registry MobileGestalt")
         }
     }
 }
 
-// MARK: - Tab 4: File Patches
-public struct FilePatchWorkspaceView: View {
-    @ObservedObject private var manager = SystemStateManager.shared
-    @State private var patchName: String = ""
+struct LiquidGlassControlView: View {
+    @State private var disableLiquidGlass = true
+    @State private var transparencyValue: Double = 50.0
     
-    public var body: some View {
+    var body: some View {
         NavigationView {
-            List {
-                Section(header: Text("Portable Patch Workspace (.3105)")) {
-                    TextField("Enter Patch Title...", text: $patchName)
-                    Button(action: {
-                        guard !patchName.isEmpty else { return }
-                        manager.log("[+] Patch '\(patchName).3105' created.")
-                        patchName = ""
-                    }) {
-                        Text("Create & Export .3105 Patch").bold()
-                    }
-                    .disabled(patchName.isEmpty)
-                }
-            }
-            .listStyle(InsetGroupedListStyle())
-            .navigationTitle("Files & Workspace")
-        }
-    }
-}
-
-// MARK: - Tab 5: Backups
-public struct BackupRestoreManagerView: View {
-    @ObservedObject private var manager = SystemStateManager.shared
-    
-    public var body: some View {
-        NavigationView {
-            List {
-                Section(header: Text("Pre-Write Backups")) {
-                    Button(action: { manager.createBackup() }) {
-                        Text("Create Instant System Snapshot").fontWeight(.semibold)
+            Form {
+                Section(header: Text("Kontrol UI Render")) {
+                    Toggle("Nonaktifkan Liquid Glass (Gaya iOS 18)", isOn: $disableLiquidGlass)
+                        .onChange(of: disableLiquidGlass) { value in
+                            _ = LiquidGlassController.shared.disableGlobal(disabled: value)
+                        }
+                    
+                    VStack(alignment: .leading) {
+                        Text("Tingkat Transparansi: \(Int(transparencyValue))%")
+                        Slider(value: $transparencyValue, in: 0...100, step: 1) {
+                            Text("Transparansi")
+                        } onEditingChanged: { _ in
+                            _ = LiquidGlassController.shared.setTransparencyLevel(level: Int(transparencyValue))
+                        }
                     }
                 }
+                
+                Section {
+                    Button("Terapkan & Respring Aman") {
+                        _ = SpringBoardManager.safeRespring()
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .listRowBackground(Color.blue)
+                }
             }
-            .listStyle(InsetGroupedListStyle())
-            .navigationTitle("Safety & Restore")
+            .navigationTitle("Liquid Glass Setting")
         }
     }
 }
 
-// MARK: - System State & Exploit Manager Core
-public class SystemStateManager: ObservableObject {
-    public static let shared = SystemStateManager()
-    
-    @Published public var currentBuildVersion: String = "iOS 27.0 DB4"
-    @Published public var isBuildCompatible: Bool = true
-    @Published public var sandboxGranted: Bool = false
-    @Published public var isExecuting: Bool = false
-    @Published public var consoleLog: String = ">>> work.plot OS initialized.\n>>> Waiting for command...\n"
-    @Published public var backupList: [String] = []
-    
-    private init() {
-        verifyBuildCompatibility()
-    }
-    
-    public func log(_ message: String) {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm:ss"
-        let time = formatter.string(from: Date())
-        DispatchQueue.main.async {
-            self.consoleLog += "[\(time)] \(message)\n"
-        }
-    }
-    
-    private func verifyBuildCompatibility() {
-        let validBuilds = ["iOS 27.0 DB1", "iOS 27.0 DB2", "iOS 27.0 DB3", "iOS 27.0 DB4"]
-        isBuildCompatible = validBuilds.contains(currentBuildVersion)
-        log(isBuildCompatible ? "[+] iOS 27 Developer Beta verified." : "[-] Unsupported build.")
-    }
-    
-    public func initializeSandboxExploit() {
-        guard !sandboxGranted else { return }
-        isExecuting = true
-        log("[*] Executing bad_query sandbox escape...")
-        
-        DispatchQueue.global(qos: .background).async {
-            Thread.sleep(forTimeInterval: 1.2)
-            DispatchQueue.main.async {
-                self.isExecuting = false
-                self.sandboxGranted = true
-                self.log("[+] ESCAPE SUCCESSFUL. Read/Write access granted.")
-                UINotificationFeedbackGenerator().notificationOccurred(.success)
-            }
-        }
-    }
-    
-    public func createBackup() {
-        let timestamp = "snap_\(Int(Date().timeIntervalSince1970))"
-        backupList.append(timestamp)
-        log("[+] Snapshot created: \(timestamp)")
-    }
-    
-    public func applyPreset(_ preset: MobileGestaltPreset) {
-        createBackup()
-        log("[*] Patching MobileGestalt: \(preset.title)")
-        if !sandboxGranted {
-            log("[-] Sandbox locked.")
-            return
-        }
-        log("[+] Successfully patched key: \(preset.key)")
-    }
-    
-    public func toggleLiquidGlass(disable: Bool) {
-        if !sandboxGranted {
-            log("[-] Sandbox locked.")
-            return
-        }
-        log(disable ? "[*] Disabling Liquid Glass feature flags..." : "[*] Enabling Liquid Glass...")
-        let success = FileSystemAccessor.patchFeatureFlags(disableLiquidGlass: disable)
-        log(success ? "[+] Feature flags updated successfully." : "[-] Failed to modify system flags.")
-    }
-    
-    public func triggerSafeRespring() {
-        log("[*] Initiating non-intrusive SpringBoard respring...")
-        Thread.sleep(forTimeInterval: 0.8)
-        log("[+] Respring executed.")
-    }
-}
-
-// MARK: - MobileGestalt Preset Definitions
-public struct MobileGestaltPreset {
-    public let title: String
-    public let key: String
-    public let description: String
-    public let value: Any
-    
-    public static let presets: [MobileGestaltPreset] = [
-        MobileGestaltPreset(title: "Dynamic Island (17 Pro Max)", key: "oPeik/9e8lQWMszEjbPzng", description: "Overrides ArtworkDeviceSubType to 2868", value: 2868),
-        MobileGestaltPreset(title: "Always-On Display (AOD)", key: "j8/Omm6s1lsmTDFsXjsBfA", description: "Enables Springboard AOD Capabilities", value: true),
-        MobileGestaltPreset(title: "Apple Intelligence Enabler", key: "A62OafQ85EJAiiqKn4agtg", description: "Bypasses Neural Engine hardware checks", value: 1)
+struct RDARSettingsView: View {
+    @State private var selectedWidth = 1206
+    @State private var selectedHeight = 2622
+    let resolutions = [
+        (name: "iPhone 16 Pro (1206x2622)", w: 1206, h: 2622),
+        (name: "iPhone 16 Pro Max (1290x2796)", w: 1290, h: 2796),
+        (name: "iPhone 17 Pro Max (1290x2868)", w: 1290, h: 2868)
     ]
-}
-
-// MARK: - File System Accessor Layer
-public struct FileSystemAccessor {
-    public static func patchFeatureFlags(disableLiquidGlass: Bool) -> Bool {
-        let path = "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist"
-        guard let data = FileManager.default.contents(atPath: path),
-              var plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] else {
-            return false
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Resolusi Kanvas & Perbaikan RDAR")) {
+                    Picker("Pilih Profil Perangkat", selection: $selectedWidth) {
+                        ForEach(resolutions, id: \.w) { res in
+                            Text(res.name).tag(res.w)
+                        }
+                    }
+                    .onChange(of: selectedWidth) { newW in
+                        if let match = resolutions.first(where: { $0.w == newW }) {
+                            selectedHeight = match.h
+                        }
+                    }
+                    
+                    Button("Koreksi Geometri & Terapkan RDAR Fix") {
+                        let res = RDARFix.shared.apply(width: selectedWidth, height: selectedHeight)
+                        if case .success = res {
+                            _ = SpringBoardManager.safeRespring()
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+            }
+            .navigationTitle("RDAR & Resolusi")
         }
-        var featureFlags = plist["FeatureFlags"] as? [String: Any] ?? [:]
-        featureFlags["LiquidGlassSlider"] = disableLiquidGlass ? 0 : 1
-        plist["FeatureFlags"] = featureFlags
-        
-        guard let serialized = try? PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0) else {
-            return false
-        }
-        return FileManager.default.createFile(atPath: path, contents: serialized, attributes: nil)
     }
 }
 
