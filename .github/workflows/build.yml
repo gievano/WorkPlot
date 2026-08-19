@@ -65,45 +65,25 @@ jobs:
           </plist>
           EOF
 
-      - name: Generate App Icon
+      - name: Generate App Icon File
         run: |
-          # Menggunakan sips bawaan macOS untuk membuat gambar icon tanpa library python luar
-          mkdir -p icon_tmp
-          cat << 'EOF' > icon_tmp/gen.swift
-          import Cocoa
-
-          let size = NSSize(width: 180, height: 180)
-          let image = NSImage(size: size)
-          image.lockFocus()
-
-          let ctx = NSGraphicsContext.current?.cgContext
-          ctx?.setFillColor(CGColor(red: 0.05, green: 0.1, blue: 0.2, alpha: 1.0))
-          ctx?.fill(CGRect(x: 0, y: 0, width: 180, height: 180))
-
-          ctx?.setFillColor(CGColor(red: 0.2, green: 0.5, blue: 1.0, alpha: 1.0))
-          ctx?.fillEllipse(in: CGRect(x: 30, y: 30, width: 120, height: 120))
-
-          image.unlockFocus()
-
-          if let tiff = image.tiffRepresentation, let bitmap = NSBitmapImageRep(data: tiff), let png = bitmap.representation(using: .png, properties: [:]) {
-              try? png.write(to: URL(fileURLWithPath: "Payload/work.plot.app/AppIcon60x60@3x.png"))
-              try? png.write(to: URL(fileURLWithPath: "Payload/work.plot.app/AppIcon60x60@2x.png"))
-          }
-          EOF
-          swift icon_tmp/gen.swift
+          # Buat placeholder ikon menggunakan tool sips bawaan macOS (ringan & stabil)
+          mkdir -p icon_build
+          echo '<svg width="180" height="180" xmlns="http://www.w3.org/2000/svg"><rect width="180" height="180" fill="#0f172a"/><circle cx="90" cy="90" r="60" fill="#3b82f6"/></svg>' > icon_build/icon.svg
+          sips -s format png icon_build/icon.svg --out Payload/work.plot.app/AppIcon60x60@3x.png
+          sips -z 120 120 Payload/work.plot.app/AppIcon60x60@3x.png --out Payload/work.plot.app/AppIcon60x60@2x.png
 
       - name: Compile Swift Application Binary
         run: |
           SDKPATH=$(xcrun --sdk iphoneos --show-sdk-path)
           
-          # Menyusun aplikasi dengan entry point UIApplicationMain
+          # Menyusun aplikasi Swift dengan menyertakan seluruh modul framework iOS yang diperlukan
           swiftc -target arm64-apple-ios17.0 \
             -sdk $SDKPATH \
             -O \
-            -framework SwiftUI \
-            -framework UIKit \
-            -framework Foundation \
-            -framework CoreGraphics \
+            -parse-as-library \
+            -Xlinker -rpath -Xlinker /System/Library/Frameworks \
+            -Xlinker -rpath -Xlinker /usr/lib/swift \
             work_plot_app.swift \
             -o Payload/work.plot.app/work.plot
 
