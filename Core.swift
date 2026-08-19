@@ -1,6 +1,6 @@
 import SwiftUI
-import Foundation
 import UIKit
+import Foundation
 import Security
 
 // MARK: - 1. Exploit Subsystem (bad_query Integration)
@@ -458,18 +458,6 @@ public class WorkspaceManager {
 
 // MARK: - 8. SwiftUI User Interface Components
 
-@main
-struct WorkPlotApp: App {
-    @StateObject private var exploitManager = ExploitManager.shared
-    
-    var body: some Scene {
-        WindowGroup {
-            MainContentView()
-                .environmentObject(exploitManager)
-        }
-    }
-}
-
 struct MainContentView: View {
     @EnvironmentObject var exploitManager: ExploitManager
     @State private var selectedTab = 0
@@ -525,7 +513,6 @@ struct ExploitDashboardView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     
-                    // Card Header Status
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
@@ -570,7 +557,6 @@ struct ExploitDashboardView: View {
                     .background(Color(UIColor.secondarySystemGroupedBackground))
                     .cornerRadius(16)
                     
-                    // Tombol Inisialisasi
                     Button(action: {
                         _ = exploitManager.initializeExploit()
                     }) {
@@ -587,7 +573,6 @@ struct ExploitDashboardView: View {
                     }
                     .disabled(exploitManager.isExploited)
                     
-                    // Path Terhubung
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Daftar Path Sistem Terhubung")
                             .font(.headline)
@@ -614,7 +599,6 @@ struct ExploitDashboardView: View {
                     .background(Color(UIColor.secondarySystemGroupedBackground))
                     .cornerRadius(16)
                     
-                    // Log Konsol
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Log Aktivitas Sistem")
                             .font(.headline)
@@ -638,7 +622,6 @@ struct ExploitDashboardView: View {
                     .background(Color(UIColor.secondarySystemGroupedBackground))
                     .cornerRadius(16)
                     
-                    // Action Buttons
                     Button(action: {
                         SpringBoardManager.shared.safeRespring()
                     }) {
@@ -802,4 +785,27 @@ struct WorkspacePatchesView: View {
         }
     }
 }
+
+// MARK: - 9. UIKit Application Delegate Entry Point (Fixes C Entry Point Linker Error)
+
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    var window: UIWindow?
+
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        let contentView = MainContentView().environmentObject(ExploitManager.shared)
+        let window = UIWindow(frame: UIScreen.main.bounds)
+        window.rootViewController = UIHostingController(rootView: contentView)
+        self.window = window
+        window.makeKeyAndVisible()
+        return true
+    }
+}
+
+// Menggunakan pemicu main eksplisit agar Kompiler swiftc dapat menghubungkan Entry Point (_main)
+UIApplicationMain(
+    CommandLine.argc,
+    CommandLine.unsafeArgv,
+    nil,
+    NSStringFromClass(AppDelegate.self)
+)
 
