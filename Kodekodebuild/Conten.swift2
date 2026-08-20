@@ -1,0 +1,1008 @@
+//
+//  ContentView.swift
+//  GestaltTweak
+//
+//  Licensed under the MIT License. Portions derived from frs0n/GestaltEdit.
+//
+
+import SwiftUI
+import UIKit
+import UniformTypeIdentifiers
+
+struct ContentView: View {
+    @EnvironmentObject private var viewModel: GestaltViewModel
+
+    @State private var showsSettings = false
+
+    var body: some View {
+        Group {
+            if GestaltAccess.isRunningSupportedOS() {
+                NavigationStack {
+                    List {
+                        Section {
+                            deviceRow
+                                .listRowInsets(EdgeInsets(top: 14, leading: 16, bottom: 14, trailing: 16))
+                                .listRowBackground(Color(.secondarySystemGroupedBackground))
+                        }
+
+                        Section("Modules") {
+                            NavigationLink {
+                                TweakWorkbench()
+                            } label: {
+                                moduleRow(
+                                    icon: "paintbrush",
+                                    tint: .pink,
+                                    title: "MobileGestalt",
+                                    subtitle: "Flip flags, pick a subtype, rename"
+                                )
+                            }
+                            NavigationLink {
+                                AdvancedGestaltEditor()
+                            } label: {
+                                moduleRow(
+                                    icon: "square.and.pencil",
+                                    tint: .blue,
+                                    title: "Advanced Fields",
+                                    subtitle: "Edit raw MobileGestalt keys"
+                                )
+                            }
+                            NavigationLink {
+                                BackupLibrary()
+                            } label: {
+                                moduleRow(
+                                    icon: "archivebox",
+                                    tint: .orange,
+                                    title: "Backups",
+                                    subtitle: "Snapshots you can roll back"
+                                )
+                            }
+                            NavigationLink {
+                                PosterView()
+                            } label: {
+                                moduleRow(
+                                    icon: "photo.on.rectangle.angled",
+                                    tint: .purple,
+                                    title: "PosterBoard",
+                                    subtitle: "Drop in wallpaper packs"
+                                )
+                            }
+                            NavigationLink {
+                                HouseArrestView()
+                            } label: {
+                                moduleRow(
+                                    icon: "folder.badge.gearshape",
+                                    tint: .teal,
+                                    title: "HouseArrest",
+                                    subtitle: "Browse, import, edit, and delete files"
+                                )
+                            }
+                            NavigationLink {
+                                SystemAppsView()
+                            } label: {
+                                moduleRow(
+                                    icon: "apps.iphone",
+                                    tint: .indigo,
+                                    title: "System Apps",
+                                    subtitle: "Open any installed apps"
+                                )
+                            }
+                        }
+                        .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16))
+
+                        Section("Actions") {
+                            Button {
+                                viewModel.runExploit()
+                            } label: {
+                                moduleRow(
+                                    icon: "bolt.fill",
+                                    tint: .green,
+                                    title: "Run Exploit",
+                                    subtitle: "Reconnect to MobileGestalt"
+                                )
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(viewModel.isBusy)
+
+                            Button {
+                                viewModel.respring()
+                            } label: {
+                                moduleRow(
+                                    icon: "arrow.counterclockwise",
+                                    tint: .red,
+                                    title: "Respring",
+                                    subtitle: "Refresh SpringBoard"
+                                )
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(viewModel.isRespringing)
+                        }
+                        .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16))
+                    }
+                    .navigationTitle("GestaltTweak")
+                    .navigationBarTitleDisplayMode(.large)
+                    .listStyle(.insetGrouped)
+                    .scrollContentBackground(.hidden)
+                    .background(Color(.systemGroupedBackground))
+                    .tint(.indigo)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button {
+                                showsSettings = true
+                            } label: {
+                                Image(systemName: "gear")
+                            }
+                        }
+                    }
+                    .sheet(isPresented: $showsSettings) {
+                        SettingsView()
+                    }
+                }
+                .task { viewModel.load() }
+            } else {
+                UnsupportedOSView()
+            }
+        }
+        .overlay {
+            if viewModel.isRespringing {
+                NeoSpringView()
+            }
+        }
+        .alert(item: $viewModel.notice) { notice in
+            Alert(
+                title: Text(notice.title),
+                message: Text(notice.message),
+                dismissButton: .default(Text("OK"))
+            )
+        }
+    }
+
+    private var deviceRow: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "iphone")
+                .font(.title2)
+                .foregroundStyle(Color.accentColor)
+                .frame(width: 38, height: 38)
+                .background(
+                    RoundedRectangle(cornerRadius: 9, style: .continuous)
+                        .fill(Color(.secondarySystemBackground))
+                )
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(viewModel.aiRegionProfile?.marketingName ?? "Current Device")
+                    .font(.body.weight(.semibold))
+                Text("Build \(GestaltAccess.currentOSBuild())")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            deviceStatus
+        }
+    }
+
+    @ViewBuilder
+    private var deviceStatus: some View {
+        if viewModel.plist == nil {
+            if viewModel.isBusy || !viewModel.hasAttemptedLoad {
+                HStack(spacing: 6) {
+                    ProgressView()
+                        .controlSize(.small)
+                    Text("Reading...")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            } else {
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text("Unavailable")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.orange)
+                    Button("Retry", action: viewModel.load)
+                        .font(.caption)
+                }
+            }
+        } else {
+            Label("Connected", systemImage: "checkmark.circle.fill")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.green)
+        }
+    }
+
+    private func moduleRow(
+        icon: String,
+        tint: Color,
+        title: String,
+        subtitle: String
+    ) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 34, height: 34)
+                .background(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(tint)
+                )
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.body)
+                    .foregroundStyle(.primary)
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 8)
+        }
+        .padding(.vertical, 3)
+    }
+}
+
+private struct UnsupportedOSView: View {
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: 44))
+                .foregroundStyle(.secondary)
+            Text("Unsupported OS Version")
+                .font(.title2.weight(.semibold))
+            Text("GestaltTweak supports only iOS and iPadOS 27 beta 1 through beta 4.")
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+        }
+        .padding(24)
+    }
+}
+
+struct AppActionRow: View {
+    let icon: String
+    let color: Color
+    let title: String
+    let subtitle: String
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 34, height: 34)
+                .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(color))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).foregroundStyle(.primary)
+                Text(subtitle).font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 8)
+        }
+        .padding(.vertical, 3)
+    }
+}
+
+private struct TweakWorkbench: View {
+    @EnvironmentObject private var viewModel: GestaltViewModel
+    @State private var query = ""
+    @State private var showsRevertConfirmation = false
+
+    var body: some View {
+        List {
+            if viewModel.plist != nil {
+                Section {
+                    Button {
+                        showsRevertConfirmation = true
+                    } label: {
+                        Label("Revert Tweaks", systemImage: "arrow.uturn.backward")
+                    }
+                    .disabled(viewModel.isBusy)
+                } footer: {
+                    Text("Restores the stock snapshot, undoing every applied tweak.")
+                }
+                .confirmationDialog(
+                    "Revert All Tweaks?",
+                    isPresented: $showsRevertConfirmation,
+                    titleVisibility: .visible
+                ) {
+                    Button("Revert", role: .destructive) {
+                        viewModel.revertTweaks()
+                    }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("The stock MobileGestalt captured on first launch will be written back and SpringBoard will refresh. This cannot be undone after the write.")
+                }
+
+                if deviceIdentityMatchesQuery {
+                    Section {
+                        Picker("Subtype", selection: Binding<DynamicIslandSelection>(
+                            get: { viewModel.displayedSubtypeSelection },
+                            set: { viewModel.setDynamicIslandSelection($0) }
+                        )) {
+                            Text("Original").tag(DynamicIslandSelection.original)
+                            ForEach(DynamicIslandOption.all) { option in
+                                Text("\(option.subtype) · \(option.title)").tag(DynamicIslandSelection.subtype(option.subtype))
+                            }
+                        }
+                        Toggle("Custom Model Name", isOn: Binding(
+                            get: { viewModel.modelNameToggleState },
+                            set: { viewModel.setModelNameToggled($0) }
+                        ))
+                        if viewModel.modelNameToggleState {
+                            TextField("Model Name", text: $viewModel.modelName)
+                                .textInputAutocapitalization(.words)
+                        }
+                    } header: {
+                        Text("Device Identity")
+                    } footer: {
+                        Text("The subtype picker writes ArtworkDeviceSubType and the Dynamic Island support flag. Original restores the stock value.")
+                    }
+                }
+
+                ForEach(GestaltTweakCategory.allCases) { category in
+                    tweakSection(category)
+                }
+
+                if !hasAnyResults {
+                    Section {
+                        Text("No results for \"\(query)\"")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            } else {
+                Section {
+                    if viewModel.isBusy || !viewModel.hasAttemptedLoad {
+                        HStack(spacing: 10) {
+                            ProgressView()
+                                .controlSize(.small)
+                            Text("Reading MobileGestalt…")
+                                .foregroundStyle(.secondary)
+                        }
+                    } else {
+                        HStack {
+                            Text("Unable to load MobileGestalt")
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Button("Retry") { viewModel.load() }
+                                .font(.caption)
+                        }
+                    }
+                }
+            }
+        }
+        .navigationTitle("MobileGestalt")
+        .navigationBarTitleDisplayMode(.large)
+        .searchable(text: $query, prompt: "Filter tweaks")
+        .refreshable { viewModel.load() }
+        .safeAreaInset(edge: .bottom) {
+            if viewModel.hasStagedTweaks {
+                applyBar
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func tweakSection(_ category: GestaltTweakCategory) -> some View {
+        let definitions = GestaltTweakCatalog.definitions.filter { $0.category == category }
+        let visible = filtered(definitions)
+        let showAI = category == .region && aiRegionMatchesQuery
+
+        if !visible.isEmpty || showAI {
+            Section(category.label) {
+                if showAI {
+                    aiRegionToggle
+                }
+                ForEach(visible) { definition in
+                    Toggle(isOn: Binding(
+                        get: { viewModel.isTweakEnabled(definition.id) },
+                        set: { viewModel.setTweak(definition.id, enabled: $0) }
+                    )) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            HStack(spacing: 6) {
+                                Text(definition.title)
+                                if definition.isLocked {
+                                    Image(systemName: "lock.fill")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                } else if definition.isRisky {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .font(.caption)
+                                        .foregroundStyle(.orange)
+                                }
+                            }
+                            Text(definition.detail)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .opacity(definition.isLocked ? 0.5 : 1)
+                    }
+                    .disabled(definition.isLocked)
+                }
+            }
+        }
+    }
+
+    private var aiRegionToggle: some View {
+        Toggle(isOn: Binding(
+            get: { viewModel.aiRegionToggleState },
+            set: { viewModel.setAIRegion(enabled: $0) }
+        )) {
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 6) {
+                    Text("Apple Intelligence")
+                    if viewModel.requiresForcedAIEnable {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                    }
+                }
+                if viewModel.requiresForcedAIEnable {
+                    Text("Unsupported device: force enable with device identity spoofing. Face ID or system stability may be affected.")
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+    }
+
+    private func filtered(_ definitions: [GestaltTweakDefinition]) -> [GestaltTweakDefinition] {
+        let q = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !q.isEmpty else { return definitions }
+        return definitions.filter {
+            $0.title.localizedCaseInsensitiveContains(q) ||
+            $0.detail.localizedCaseInsensitiveContains(q)
+        }
+    }
+
+    private var aiRegionMatchesQuery: Bool {
+        let q = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        if q.isEmpty { return true }
+        return "apple intelligence".localizedCaseInsensitiveContains(q)
+            || "region".localizedCaseInsensitiveContains(q)
+    }
+
+    private var deviceIdentityMatchesQuery: Bool {
+        let q = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        if q.isEmpty { return true }
+        let haystack = "device identity subtype model name island restore original"
+        return haystack.localizedCaseInsensitiveContains(q)
+    }
+
+    private var hasAnyResults: Bool {
+        let q = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        if q.isEmpty { return true }
+        if aiRegionMatchesQuery { return true }
+        return GestaltTweakCatalog.definitions.contains {
+            $0.title.localizedCaseInsensitiveContains(q) ||
+            $0.detail.localizedCaseInsensitiveContains(q)
+        }
+    }
+
+    private var applyBar: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(String(format: "%d pending change%@", viewModel.stagedChangeCount, viewModel.stagedChangeCount == 1 ? "" : "s"))
+                    .font(.subheadline.weight(.semibold))
+                Text("A backup is saved before every write")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            Button {
+                viewModel.applySelectedTweaks()
+            } label: {
+                Label("Apply", systemImage: "checkmark")
+            }
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
+            .controlSize(.large)
+            .disabled(!viewModel.hasStagedTweaks || viewModel.isBusy)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(.bar)
+    }
+}
+
+private struct BackupLibrary: View {
+    @EnvironmentObject private var viewModel: GestaltViewModel
+    @State private var backupToRestore: GestaltBackup?
+    @State private var showsBackupImporter = false
+
+
+    var body: some View {
+        List {
+            Section {
+                Button {
+                    viewModel.createBackup()
+                } label: {
+                    AppActionRow(icon: "plus.circle.fill", color: .indigo, title: "Back Up Current MobileGestalt", subtitle: "Save a local snapshot")
+                }
+                .disabled(viewModel.plist == nil || viewModel.isBusy)
+
+                Button {
+                    showsBackupImporter = true
+                } label: {
+                    AppActionRow(icon: "square.and.arrow.down", color: .indigo, title: "Import Backup", subtitle: "Add a plist snapshot")
+                }
+                .disabled(viewModel.isBusy)
+            } footer: {
+                Text("The original plist is backed up before every write.")
+                    .foregroundStyle(.secondary)
+            }
+
+            Section("Local Backups") {
+                if viewModel.backups.isEmpty {
+                    AppActionRow(icon: "archivebox", color: .indigo, title: "No Backups", subtitle: "Create or import one above")
+                } else {
+                    ForEach(viewModel.backups) { backup in
+                        BackupRow(backup: backup) {
+                            backupToRestore = backup
+                        }
+                    }
+                    .onDelete { offsets in
+                        for index in offsets { viewModel.delete(viewModel.backups[index]) }
+                    }
+                }
+            }
+        }
+        .navigationTitle("Backups")
+            .foregroundStyle(.primary)
+            .tint(.indigo)
+            .refreshable { viewModel.refreshBackups() }
+            .onAppear { viewModel.refreshBackups() }
+            .fileImporter(
+                isPresented: $showsBackupImporter,
+                allowedContentTypes: [.propertyList],
+                allowsMultipleSelection: false
+            ) { result in
+                switch result {
+                case .success(let urls):
+                    if let url = urls.first { viewModel.importBackup(from: url) }
+                case .failure(let error):
+                    viewModel.notice = GestaltNotice(kind: .error, message: error.localizedDescription)
+                }
+            }
+            .confirmationDialog(
+                "Restore This MobileGestalt Backup?",
+                isPresented: Binding(
+                    get: { backupToRestore != nil },
+                    set: { if !$0 { backupToRestore = nil } }
+                ),
+                titleVisibility: .visible
+            ) {
+                Button("Restore and Write", role: .destructive) {
+                    if let backupToRestore { viewModel.restore(backupToRestore) }
+                    backupToRestore = nil
+                }
+                Button("Cancel", role: .cancel) { backupToRestore = nil }
+            } message: {
+                Text("The current file will be backed up first. SpringBoard will refresh automatically after restoring.")
+            }
+    }
+}
+
+private struct BackupRow: View {
+    let backup: GestaltBackup
+    let restore: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(backup.createdAt, format: .dateTime.year().month().day().hour().minute().second())
+                Text(ByteCountFormatter.string(fromByteCount: backup.byteCount, countStyle: .file))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            ShareLink(item: backup.url) {
+                Image(systemName: "square.and.arrow.up")
+                    .foregroundStyle(.indigo)
+            }
+            .accessibilityLabel("Export Backup")
+            Button("Restore", action: restore)
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
+            .controlSize(.small)
+            .accessibilityLabel("Restore Backup")
+        }
+    }
+}
+
+private struct AdvancedGestaltEditor: View {
+    @EnvironmentObject private var viewModel: GestaltViewModel
+
+    @State private var searchText = ""
+    @State private var activeEditor: FieldEditorRoute?
+
+    private var cacheExtraKeys: [String] {
+        filtered(viewModel.plist?.cacheExtraKeys ?? [], section: .cacheExtra)
+    }
+
+    private var topLevelKeys: [String] {
+        filtered(
+            viewModel.plist?.topLevelKeys.filter { $0 != "CacheExtra" } ?? [],
+            section: .topLevel
+        )
+    }
+
+    var body: some View {
+        List {
+            if viewModel.plist != nil {
+                KeySection(
+                    title: "CacheExtra",
+                    keys: cacheExtraKeys,
+                    value: { value(for: PlistKey(section: .cacheExtra, key: $0)) },
+                    select: {
+                        activeEditor = .edit(
+                            PlistKey(section: .cacheExtra, key: $0)
+                        )
+                    }
+                )
+
+                KeySection(
+                    title: "Top Level",
+                    keys: topLevelKeys,
+                    value: { value(for: PlistKey(section: .topLevel, key: $0)) },
+                    select: {
+                        activeEditor = .edit(
+                            PlistKey(section: .topLevel, key: $0)
+                        )
+                    }
+                )
+            }
+        }
+        .navigationTitle("Advanced Fields")
+        .searchable(text: $searchText, prompt: "Search key or value")
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                Button {
+                    activeEditor = .addCacheExtra
+                } label: {
+                    Image(systemName: "plus")
+                }
+                .accessibilityLabel("Add CacheExtra Field")
+                .disabled(viewModel.plist == nil || viewModel.isBusy)
+
+                Button("Save", action: viewModel.applyChanges)
+                    .fontWeight(.semibold)
+                    .disabled(!viewModel.isDirty || viewModel.isBusy)
+            }
+        }
+        .sheet(item: $activeEditor) { editor in
+            Group {
+                switch editor {
+                case .edit(let key):
+                    ValueEditor(
+                        key: key.key,
+                        initialValue: value(for: key),
+                        save: { update($0, for: key) },
+                        delete: key.section == .cacheExtra
+                            ? { deleteCacheExtraField(key.key) }
+                            : nil
+                    )
+                case .addCacheExtra:
+                    AddCacheExtraFieldEditor(save: addCacheExtraField)
+                }
+            }
+            .presentationDetents([.medium, .large])
+        }
+    }
+
+    private func filtered(_ keys: [String], section: PlistSection) -> [String] {
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return keys }
+
+        return keys.filter { key in
+            let reference = PlistKey(section: section, key: key)
+            let info = PlistValueInfo.info(for: value(for: reference))
+            return key.localizedCaseInsensitiveContains(query)
+                || info.searchText.localizedCaseInsensitiveContains(query)
+        }
+    }
+
+    private func value(for key: PlistKey) -> Any? {
+        switch key.section {
+        case .cacheExtra:
+            viewModel.plist?.cacheExtra[key.key]
+        case .topLevel:
+            viewModel.plist?.value(forKey: key.key)
+        }
+    }
+
+    private func update(_ value: Any, for key: PlistKey) {
+        guard var plist = viewModel.plist else { return }
+        switch key.section {
+        case .cacheExtra:
+            plist.setCacheExtra(value, forKey: key.key)
+        case .topLevel:
+            plist.setValue(value, forKey: key.key)
+        }
+        viewModel.plist = plist
+        viewModel.isDirty = true
+    }
+
+    private func addCacheExtraField(key: String, value: Any) throws {
+        guard var plist = viewModel.plist else { return }
+        let normalizedKey = key.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !normalizedKey.isEmpty else {
+            throw AddFieldError.emptyKey
+        }
+        guard plist.cacheExtra[normalizedKey] == nil else {
+            throw AddFieldError.duplicateKey(normalizedKey)
+        }
+
+        plist.setCacheExtra(value, forKey: normalizedKey)
+        viewModel.plist = plist
+        viewModel.isDirty = true
+    }
+
+    private func deleteCacheExtraField(_ key: String) {
+        guard var plist = viewModel.plist else { return }
+        plist.removeCacheExtraValue(forKey: key)
+        viewModel.plist = plist
+        viewModel.isDirty = true
+    }
+}
+
+private enum PlistSection: String {
+    case cacheExtra
+    case topLevel
+}
+
+private struct PlistKey: Identifiable {
+    let section: PlistSection
+    let key: String
+    var id: String { "\(section.rawValue)/\(key)" }
+}
+
+private enum FieldEditorRoute: Identifiable {
+    case edit(PlistKey)
+    case addCacheExtra
+
+    var id: String {
+        switch self {
+        case .edit(let key): "edit/\(key.id)"
+        case .addCacheExtra: "add/cacheExtra"
+        }
+    }
+}
+
+private enum AddFieldError: LocalizedError {
+    case emptyKey
+    case duplicateKey(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .emptyKey:
+            "Key cannot be empty."
+        case .duplicateKey(let key):
+            String(format: "CacheExtra already contains the field: %@", key)
+        }
+    }
+}
+
+private struct KeySection: View {
+    let title: String
+    let keys: [String]
+    let value: (String) -> Any?
+    let select: (String) -> Void
+
+    var body: some View {
+        Section(title) {
+            if keys.isEmpty {
+                Text("No Results")
+                    .foregroundStyle(.secondary)
+            } else {
+                ForEach(keys, id: \.self) { key in
+                    Button { select(key) } label: {
+                        KeyRow(key: key, value: value(key))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+}
+
+private struct KeyRow: View {
+    let key: String
+    let value: Any?
+
+    var body: some View {
+        let info = PlistValueInfo.info(for: value)
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(key)
+                    .font(.system(.body, design: .monospaced))
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                Text(info.summary)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+            }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.tertiary)
+        }
+        .contentShape(Rectangle())
+    }
+}
+
+private struct ValueEditor: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let key: String
+    let initialValue: Any?
+    let save: (Any) -> Void
+    let delete: (() -> Void)?
+
+    @State private var kind: PlistValueKind
+    @State private var text: String
+    @State private var errorMessage: String?
+    @State private var showsDeleteConfirmation = false
+
+    init(
+        key: String,
+        initialValue: Any?,
+        save: @escaping (Any) -> Void,
+        delete: (() -> Void)? = nil
+    ) {
+        self.key = key
+        self.initialValue = initialValue
+        self.save = save
+        self.delete = delete
+        let kind = PlistValueKind.kind(of: initialValue)
+        _kind = State(initialValue: kind)
+        _text = State(initialValue: PlistValueInfo.encode(initialValue, as: kind))
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Type") {
+                    Picker("Type", selection: $kind) {
+                        ForEach(PlistValueKind.allCases) { kind in
+                            Text(kind.label).tag(kind)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                }
+
+                Section("Value") {
+                    TextEditor(text: $text)
+                        .font(.system(.body, design: .monospaced))
+                        .frame(minHeight: 140)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                }
+
+                if let errorMessage {
+                    Section {
+                        Text(errorMessage)
+                            .foregroundStyle(.red)
+                    }
+                }
+
+                if delete != nil {
+                    Section {
+                        Button("Delete Field", role: .destructive) {
+                            showsDeleteConfirmation = true
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                }
+            }
+            .navigationTitle(key)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done", action: commit)
+                        .fontWeight(.semibold)
+                }
+            }
+            .confirmationDialog(
+                "Delete CacheExtra Field?",
+                isPresented: $showsDeleteConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Delete", role: .destructive) {
+                    delete?()
+                    dismiss()
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("The field will be removed from the file after you return to the editor and tap Save.")
+            }
+        }
+    }
+
+    private func commit() {
+        do {
+            save(try PlistValueInfo.parse(text, as: kind))
+            dismiss()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+}
+
+private struct AddCacheExtraFieldEditor: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let save: (String, Any) throws -> Void
+
+    @State private var key = ""
+    @State private var kind: PlistValueKind = .string
+    @State private var text = ""
+    @State private var errorMessage: String?
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Field") {
+                    LabeledContent("Location", value: "CacheExtra")
+                    TextField("Key", text: $key)
+                        .font(.system(.body, design: .monospaced))
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                }
+
+                Section("Type") {
+                    Picker("Type", selection: $kind) {
+                        ForEach(PlistValueKind.allCases) { kind in
+                            Text(kind.label).tag(kind)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                }
+
+                Section("Value") {
+                    TextEditor(text: $text)
+                        .font(.system(.body, design: .monospaced))
+                        .frame(minHeight: 120)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                }
+
+                if let errorMessage {
+                    Section {
+                        Text(errorMessage)
+                            .foregroundStyle(.red)
+                    }
+                }
+            }
+            .navigationTitle("Add Field")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Add", action: commit)
+                        .fontWeight(.semibold)
+                }
+            }
+        }
+    }
+
+    private func commit() {
+        do {
+            let value = try PlistValueInfo.parse(text, as: kind)
+            try save(key, value)
+            dismiss()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+}
+
+#Preview {
+    ContentView()
+        .environmentObject(GestaltViewModel())
+}
