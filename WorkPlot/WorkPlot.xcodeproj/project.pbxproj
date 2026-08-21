@@ -29,9 +29,9 @@
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
 		WP0000000000000000000011 /* Exceptions */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			target = WP0000000000000000000100;
 			membershipExceptions = (
 				Info.plist,
-				WorkPlot.xcodeproj,
 			);
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
