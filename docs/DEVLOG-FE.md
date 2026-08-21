@@ -202,4 +202,20 @@
 - Build tetap belum bisa diverifikasi lokal (Windows); bergantung pada CI round-trip.
 - Deployment target 27.0 vs SDK runner 26.5.99 masih warning.
 
+## 2026-08-21 - CI Green: Void-Returning Throws (PR #13)
+
+### The Change
+
+- Commit `97bc8a1`: perbaiki pemanggilan `connect()` dan `saveGestalt(_:)` di `ExploitManager` dari assignment nilai kembalian menjadi do/catch.
+
+### The Reasoning
+
+- Aturan import ObjC→Swift tingkat kedua yang terlewat: method dengan return `BOOL` **plus** out-param `NSError**` di-import sebagai throwing yang mengembalikan `()` — nilai BOOL "ditelan" jadi indikator success/failure. Jadi `sandboxGranted = try access.connect()` invalid; harus `try access.connect()` lalu anggap sukses kalau tidak throw.
+- Error pertama kali baru keluar setelah batch error sebelumnya beres (compiler berhenti di error awal).
+
+### Result
+
+- ✅ Run [32500505536](https://github.com/gievano/work-plot2/actions/runs/32500505536): archive ✓, package IPA ✓, upload IPA ✓.
+
+
 
