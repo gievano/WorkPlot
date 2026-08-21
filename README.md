@@ -78,7 +78,7 @@ WorkPlot ships as a sideloaded IPA. It will not appear on the App Store.
 - Apple can close the `bad_query` vector in a future beta, so check the version table above before updating iOS.
 - This project has no affiliation with Apple Inc.
 
-## 🛠 Troubleshooting
+## Troubleshooting
 
 | Symptom                              | Fix                                                                        |
 | ------------------------------------ | -------------------------------------------------------------------------- |
