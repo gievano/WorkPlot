@@ -8,10 +8,22 @@ enum LiquidGlassMode: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 
     var label: String {
+        L10n.shared.tr(labelKey)
+    }
+
+    var labelKey: String {
         switch self {
-        case .systemDefault: "Bawaan Sistem"
-        case .lowPerformanceOff: "Low Performance OFF"
-        case .lowPerformanceOn: "Low Performance ON"
+        case .systemDefault: "lg.mode.default"
+        case .lowPerformanceOff: "lg.mode.off"
+        case .lowPerformanceOn: "lg.mode.on"
+        }
+    }
+
+    var descriptionKey: String {
+        switch self {
+        case .systemDefault: "lg.desc.default"
+        case .lowPerformanceOff: "lg.desc.off"
+        case .lowPerformanceOn: "lg.desc.on"
         }
     }
 
@@ -27,6 +39,11 @@ enum LiquidGlassMode: String, CaseIterable, Identifiable {
 struct LiquidGlassState {
     var cacheExtraValue: Int?
     var sliderDisabled: Bool
+}
+
+struct LiquidGlassError: LocalizedError {
+    let message: String
+    var errorDescription: String? { message }
 }
 
 struct LiquidGlassController {
@@ -46,8 +63,10 @@ struct LiquidGlassController {
         )
     }
 
-    static func apply(mode: LiquidGlassMode, sliderDisabled: Bool) -> Bool {
-        guard var plist = ExploitManager.shared.readGestalt() else { return false }
+    static func apply(mode: LiquidGlassMode, sliderDisabled: Bool) throws {
+        guard var plist = ExploitManager.shared.readGestalt() else {
+            throw LiquidGlassError(message: L10n.shared.tr("lg.error.read"))
+        }
 
         var cacheExtra = plist["CacheExtra"] as? [String: Any] ?? [:]
         if let value = mode.cacheExtraValue {
@@ -61,10 +80,10 @@ struct LiquidGlassController {
         featureFlags["LiquidGlassSlider"] = sliderDisabled ? 0 : 1
         plist["FeatureFlags"] = featureFlags
 
-        return ExploitManager.shared.saveGestalt(plist)
+        try ExploitManager.shared.saveGestaltOrThrow(plist)
     }
 
-    static func disableGlobal() -> Bool {
-        apply(mode: .systemDefault, sliderDisabled: true)
+    static func disableGlobal() throws {
+        try apply(mode: .systemDefault, sliderDisabled: true)
     }
 }

@@ -142,3 +142,24 @@
 "preset.footer" = "Пресет записывает набор ключей CacheExtra MobileGestalt за один проход. Перед каждым применением создаётся резервная копия.";
 "preset.userHeader" = "Мои пресеты";
 "preset.author" = "автор: %@";
+// Пути ошибок Liquid Glass и ошибка иконки
+"icon.error.prefix" = "Ошибка: ";
+"lg.error.read" = "Не удалось прочитать MobileGestalt.";
+"lg.error.save" = "Не удалось сохранить MobileGestalt.";
+"error.backup" = "Не удалось создать резервную копию.";
+"lg.applied" = "Liquid Glass применён.";
+"lg.disabled" = "Liquid Glass отключён.";
+"lg.disableFailed" = "Не удалось отключить Liquid Glass.";
+"lg.state.loadFail" = "Не удалось прочитать текущее состояние Liquid Glass.";
+"lg.mode.default" = "Как в системе";
+"lg.mode.off" = "Низкая производительность: выкл.";
+"lg.mode.on" = "Низкая производительность: вкл.";
+"lg.desc.default" = "Удаляет переопределение и следует значению устройства по умолчанию.";
+"lg.desc.off" = "Liquid Glass рендерится полностью (нужен мощный GPU, выше расход батареи).";
+"lg.desc.on" = "Эффект стекла упрощается для экономии ресурсов.";
+"lg.section.global" = "Глобально";
+"lg.toggle.disable" = "Отключить Liquid Glass";
+// Встроенные обои tendies
+"pb.builtin.header" = "Готовые обои";
+"pb.builtin.install" = "Установить";
+"pb.builtin.none" = "Встроенных обоев нет.";

@@ -142,3 +142,24 @@
 "preset.footer" = "预设会一次性写入一组 MobileGestalt CacheExtra 键。每次应用前都会自动创建备份。";
 "preset.userHeader" = "我的预设";
 "preset.author" = "作者：%@";
+// Liquid Glass 错误路径与图标错误
+"icon.error.prefix" = "失败：";
+"lg.error.read" = "读取 MobileGestalt 失败。";
+"lg.error.save" = "保存 MobileGestalt 失败。";
+"error.backup" = "创建备份失败。";
+"lg.applied" = "Liquid Glass 已应用。";
+"lg.disabled" = "Liquid Glass 已禁用。";
+"lg.disableFailed" = "禁用 Liquid Glass 失败。";
+"lg.state.loadFail" = "无法读取当前 Liquid Glass 状态。";
+"lg.mode.default" = "系统默认";
+"lg.mode.off" = "低性能关闭";
+"lg.mode.on" = "低性能开启";
+"lg.desc.default" = "移除覆盖值，跟随设备默认设置。";
+"lg.desc.off" = "完整渲染 Liquid Glass（需要较强 GPU，更耗电）。";
+"lg.desc.on" = "简化玻璃效果以节省性能。";
+"lg.section.global" = "全局";
+"lg.toggle.disable" = "禁用 Liquid Glass";
+// 内置 tendies 壁纸
+"pb.builtin.header" = "内置壁纸";
+"pb.builtin.install" = "安装";
+"pb.builtin.none" = "暂无内置壁纸。";

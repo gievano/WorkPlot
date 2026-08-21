@@ -24,11 +24,12 @@ struct StatusDashboardView: View {
                     }
                     .disabled(!manager.sandboxGranted)
                     Button(l10n.tr("status.lg.disable")) {
-                        manager.statusText = LiquidGlassController.disableGlobal()
-                            ? "Liquid Glass dinonaktifkan."
-                            : "Liquid Glass gagal dinonaktifkan."
-                        if manager.statusText.hasPrefix("Liquid Glass dinonaktifkan") {
+                        do {
+                            try LiquidGlassController.disableGlobal()
+                            manager.statusText = L10n.shared.tr("lg.disabled")
                             showRestartAlert = true
+                        } catch {
+                            manager.statusText = "Gagal: \(error.localizedDescription)"
                         }
                     }
                     .disabled(!manager.sandboxGranted)

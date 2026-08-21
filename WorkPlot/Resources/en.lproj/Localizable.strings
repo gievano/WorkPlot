@@ -142,3 +142,24 @@
 "preset.importFail" = "Failed to import preset.";
 "preset.confirm.title" = "Apply Risky Preset?";
 "preset.confirm.message" = "This preset changes identity-related keys and can break Face ID or other services. A backup is created before applying.";
+// Liquid Glass error paths & icon error
+"icon.error.prefix" = "Failed: ";
+"lg.error.read" = "Failed to read MobileGestalt.";
+"lg.error.save" = "Failed to save MobileGestalt.";
+"error.backup" = "Failed to create backup.";
+"lg.applied" = "Liquid Glass applied.";
+"lg.disabled" = "Liquid Glass disabled.";
+"lg.disableFailed" = "Failed to disable Liquid Glass.";
+"lg.state.loadFail" = "Unable to read the current Liquid Glass state.";
+"lg.mode.default" = "System Default";
+"lg.mode.off" = "Low Performance Off";
+"lg.mode.on" = "Low Performance On";
+"lg.desc.default" = "Removes the override and follows the device's default value.";
+"lg.desc.off" = "Liquid Glass renders fully (needs a strong GPU, uses more battery).";
+"lg.desc.on" = "The glass effect is simplified to save performance.";
+"lg.section.global" = "Global";
+"lg.toggle.disable" = "Disable Liquid Glass";
+// Bundled tendies wallpapers
+"pb.builtin.header" = "Ready-to-Use Wallpapers";
+"pb.builtin.install" = "Install";
+"pb.builtin.none" = "No bundled wallpapers.";
