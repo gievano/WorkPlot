@@ -36,6 +36,7 @@ final class AppBackgroundStore: ObservableObject {
 
 struct AppBackground: View {
     @ObservedObject private var store = AppBackgroundStore.shared
+    @AppStorage("backgroundOpacity") private var backgroundOpacity = 0.35
 
     var body: some View {
         ZStack {
@@ -46,7 +47,7 @@ struct AppBackground: View {
                         .scaledToFill()
                         .frame(width: geo.size.width, height: geo.size.height)
                         .clipped()
-                        .opacity(0.35)
+                        .opacity(backgroundOpacity)
                 }
                 .ignoresSafeArea()
             }
@@ -57,6 +58,7 @@ struct AppBackground: View {
 /// Sheet hosting the photo picker plus a reset option.
 struct BackgroundPickerSheet: View {
     @ObservedObject private var store = AppBackgroundStore.shared
+    @AppStorage("backgroundOpacity") private var backgroundOpacity = 0.35
     @State private var selectedItem: PhotosPickerItem?
     @Environment(\.dismiss) private var dismiss
 
@@ -72,6 +74,23 @@ struct BackgroundPickerSheet: View {
                             store.setImage(nil)
                         } label: {
                             Label(L10n.shared.tr("bg.reset"), systemImage: "trash")
+                        }
+                    }
+                }
+                if store.image != nil {
+                    Section(header: Text(L10n.shared.tr("bg.opacity"))) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Slider(value: $backgroundOpacity, in: 0.05...1.0, step: 0.05)
+                                .accessibilityLabel(Text(L10n.shared.tr("bg.opacity")))
+                            HStack {
+                                Text(L10n.shared.tr("bg.opacity.hint"))
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(.secondary)
+                                Spacer()
+                                Text("\(Int(backgroundOpacity * 100))%")
+                                    .font(.system(size: 11, weight: .semibold))
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                     }
                 }

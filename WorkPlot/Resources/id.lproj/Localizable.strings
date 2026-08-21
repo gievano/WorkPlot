@@ -49,3 +49,26 @@
 "icon.default" = "WorkPlot Klasik";
 "icon.collage" = "Kolase WP";
 "common.done" = "Selesai";
+
+// Icon grid, credits detail, posterboard list, background slider
+"icon.dark" = "Gelap";
+"icon.neon" = "Neon";
+"icon.minimal" = "Minimal";
+"icon.retro" = "Retro";
+"icon.gradient" = "Gradasi";
+"icon.confirm.title" = "Ganti Icon Aplikasi?";
+"icon.confirm.change" = "Ganti";
+"icon.confirm.message" = "iOS langsung menerapkan icon baru dan me-restart aplikasi.";
+"credits.owner" = "Pemilik";
+"credits.projects" = "Proyek";
+"credits.thanks" = "Terima Kasih Khusus";
+"credits.exploit.detail" = "Exploit - bad_query oleh forcequitOS";
+"credits.sandbox.detail" = "iOS 27 Sandbox Escape (kelas bug MCM)";
+"pb.installed" = "Wallpaper Terpasang";
+"pb.empty" = "Belum ada wallpaper terpasang.";
+"pb.apply" = "Terapkan";
+"pb.remove" = "Hapus";
+"pb.remove.confirm" = "Hapus wallpaper ini?";
+"pb.wrongext" = "Hanya file .tendies yang didukung.";
+"bg.opacity" = "Opasitas Background";
+"bg.opacity.hint" = "Ketembusan background custom kamu";

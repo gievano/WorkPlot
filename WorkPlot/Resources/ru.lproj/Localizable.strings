@@ -49,3 +49,26 @@
 "icon.default" = "Классический WorkPlot";
 "icon.collage" = "Коллаж WP";
 "common.done" = "Готово";
+
+// Icon grid, credits detail, posterboard list, background slider
+"icon.dark" = "Тёмная";
+"icon.neon" = "Неон";
+"icon.minimal" = "Минимализм";
+"icon.retro" = "Ретро";
+"icon.gradient" = "Градиент";
+"icon.confirm.title" = "Сменить иконку приложения?";
+"icon.confirm.change" = "Сменить";
+"icon.confirm.message" = "iOS сразу применит новую иконку и перезапустит приложение.";
+"credits.owner" = "Владельцы";
+"credits.projects" = "Проекты";
+"credits.thanks" = "Особая благодарность";
+"credits.exploit.detail" = "Эксплойт - bad_query от forcequitOS";
+"credits.sandbox.detail" = "Побег из песочницы iOS 27 (класс багов MCM)";
+"pb.installed" = "Установленные обои";
+"pb.empty" = "Обои пока не установлены.";
+"pb.apply" = "Применить";
+"pb.remove" = "Удалить";
+"pb.remove.confirm" = "Удалить эти обои?";
+"pb.wrongext" = "Поддерживаются только файлы .tendies.";
+"bg.opacity" = "Непрозрачность фона";
+"bg.opacity.hint" = "Прозрачность пользовательского фона";

@@ -49,3 +49,26 @@
 "icon.default" = "WorkPlot Classic";
 "icon.collage" = "WP Collage";
 "common.done" = "Done";
+
+// Icon grid, credits detail, posterboard list, background slider
+"icon.dark" = "Dark";
+"icon.neon" = "Neon";
+"icon.minimal" = "Minimal";
+"icon.retro" = "Retro";
+"icon.gradient" = "Gradient";
+"icon.confirm.title" = "Change App Icon?";
+"icon.confirm.change" = "Change";
+"icon.confirm.message" = "iOS applies the new icon immediately and relaunches the app.";
+"credits.owner" = "Owner";
+"credits.projects" = "Projects";
+"credits.thanks" = "Special Thanks";
+"credits.exploit.detail" = "Exploit - bad_query by forcequitOS";
+"credits.sandbox.detail" = "iOS 27 Sandbox Escape (MCM bug class)";
+"pb.installed" = "Installed Wallpapers";
+"pb.empty" = "No wallpapers installed yet.";
+"pb.apply" = "Apply";
+"pb.remove" = "Remove";
+"pb.remove.confirm" = "Remove this wallpaper?";
+"pb.wrongext" = "Only .tendies files are supported.";
+"bg.opacity" = "Background Opacity";
+"bg.opacity.hint" = "Transparency of your custom background";

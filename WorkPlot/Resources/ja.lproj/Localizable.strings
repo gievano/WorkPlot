@@ -49,3 +49,26 @@
 "icon.default" = "クラシック WorkPlot";
 "icon.collage" = "WP コラージュ";
 "common.done" = "完了";
+
+// Icon grid, credits detail, posterboard list, background slider
+"icon.dark" = "ダーク";
+"icon.neon" = "ネオン";
+"icon.minimal" = "ミニマル";
+"icon.retro" = "レトロ";
+"icon.gradient" = "グラデーション";
+"icon.confirm.title" = "アプリアイコンを変更しますか？";
+"icon.confirm.change" = "変更";
+"icon.confirm.message" = "iOS は新しいアイコンを即座に適用し、アプリを再起動します。";
+"credits.owner" = "オーナー";
+"credits.projects" = "プロジェクト";
+"credits.thanks" = "スペシャルサンクス";
+"credits.exploit.detail" = "エクスプロイト - forcequitOS の bad_query";
+"credits.sandbox.detail" = "iOS 27 サンドボックス脱出（MCM バグクラス）";
+"pb.installed" = "インストール済み壁紙";
+"pb.empty" = "壁紙はまだありません。";
+"pb.apply" = "適用";
+"pb.remove" = "削除";
+"pb.remove.confirm" = "この壁紙を削除しますか？";
+"pb.wrongext" = ".tendies ファイルのみ対応しています。";
+"bg.opacity" = "背景の不透明度";
+"bg.opacity.hint" = "カスタム背景の透過度";

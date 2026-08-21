@@ -343,3 +343,33 @@
 **The Change:** `Support/Info.plist` baru (GENERATE_INFOPLIST_FILE=NO di pbxproj, INFOPLIST_FILE relatif) dengan CFBundleAlternateIcons "WPCollage" -> AppIconCollage.png (placeholder 1024x1024 digenerate lokal, GANTI dengan artwork asli user). `AppIconSwitcherSheet.swift` (setAlternateIconName), tombol di gear menu. `MainDashboardView.swift`: 5 tab (Status/Gestalt/Fields/SiriAI/More) + font tab bar 13 semibold + symbol pointSize 26 via UIImage config. `MoreMenuView.swift` baru: NavigationLink baris besar (icon 30pt, teks 19pt) utk LiquidGlass/PosterBoard/Backups/Files — menggantikan "More" bawaan sistem yang Inggris & kecil.
 **The Reasoning:** Info.plist ditaruh DI LUAR folder synced WorkPlot/ supaya PBXFileSystemSynchronizedRootGroup tidak menyalinnya sbg resource (hindari "Multiple commands produce"). 8 tab bikin SwiftUI jatuh ke system More yang tidak terlokalisasi; menu sendiri = kontrol bahasa + ukuran.
 **The Tech Debt:** Icon alternatif masih placeholder hasil generate Windows — user harus replace WorkPlot/Resources/AppIconCollage.png dengan artwork aslinya. Keys lokalisasi belum masuk fallback in-code table (bundle .strings cukup).
+
+## 2026-08-22 — Icon Alternatif Artwork Asli
+**The Change:** Replace WorkPlot/Resources/AppIconCollage.png dari placeholder hasil generate jadi artwork asli user (WhatsApp image, center-crop persegi + resize 1024x1024 via System.Drawing).
+**The Reasoning:** iOS mensyaratkan alternate icon persegi tanpa alpha; crop tengah menjaga komposisi kolase tetap utuh.
+**The Tech Debt:** Sumber JPEG tidak di-commit (bukan bagian app); kalau mau ganti icon lagi tinggal replace PNG dengan nama sama.
+
+## 2026-08-22 — README Baru
+**The Change:** Rewrite README.md: logo icon utama di atas (copy AppIcon.png -> docs/assets/logo.png), badges, tabel fitur lengkap, panduan install/sideload, quick start, troubleshooting, credits, disclaimer.
+**The Reasoning:** README lama cuma 20 baris dan tidak mencerminkan fitur aktual; logo dari appiconset biar identik dengan icon app.
+**The Tech Debt:** Belum ada file LICENSE di repo root padahal bad_query GPLv3 - perlu ditambahkan sebelum distribusi luas.
+
+## 2026-08-22 — README Rewrite (stop-slop pass)
+**The Change:** Prose README ditulis ulang dengan aturan skill stop-slop: hapus em dash di credits, adverba ("directly"), lazy extreme ("every write"), staccato ("*Always.*"), dan kalimat dramatis. Struktur tabel/panduan dipertahankan.
+**The Reasoning:** Versi pertama masih penuh pola tulisan AI; user minta gaya yang lebih manusiawi via stop-slop + humanizer.
+**The Tech Debt:** Header kolom "What it does" dipertahankan sebagai label tabel (bukan kalimat), di luar scope aturan sentence-level.
+
+## 2026-08-22 — Batch Upgrade: Icon Grid, PosterBoard Manager, Credits, Slider
+**The Change:**
+- PosterBoardLabView: fileImporter kini filter khusus .tendies (UTType filenameExtension), guard ekstensi ganda, section Wallpaper Terpasang dengan tombol apply/respring & remove berkonfirmasi. PosterBoardAccess dapat listInstalledWallpapers() + removeWallpaper(named:) via bad_query list/consume.
+- Icon switcher jadi grid 7 pilihan (Default, Collage, Dark, Neon, Minimal, Retro, Gradient) + alert konfirmasi sebelum setAlternateIconName; 5 PNG baru digenerate; Info.plist daftar WPDark/WPNeon/WPMinimal/WPRetro/WPGradient. Entry point ditambah di menu Lainnya (gear tetap).
+- CreditsView baru (Owner Adnan.120hz & Gievano, bad_query forcequitOS, MCM bug class 0xjohnnydev, special thanks Mond/GestaltEdit/Ketamine/3105/Placard/FilzaSlop) dari menu Lainnya; footer Owner di tab Status.
+- Slider opasitas background nyata (0.05-1.0) di BackgroundPickerSheet dengan label 11pt sesuai spek slider kecil; AppBackground baca @AppStorage backgroundOpacity (default 0.35, perilaku lama utuh).
+- 21 key lokalisasi baru x 6 bahasa.
+**The Reasoning:** Spek minta slider label kecil tapi tidak ada slider eksisting; menambah slider palsu = gimmick (dilarang spek), jadi dipakai slider nyata untuk fitur background yang sudah ada. Semua upgrade incremental, tidak ada file inti ditulis ulang.
+**The Tech Debt:** Icon PNG hasil generate programatik (bukan desain hand-crafted); nama wallpaper tampil sebagai UUID folder karena Descriptor.plist tidak diparsing.
+
+## 2026-08-22 — Keputusan Icon: Tetap 7 Pilihan
+**The Change:** Membatalkan penghapusan 5 icon generate-an; Info.plist kembali mendaftar 6 alternate icons + default = 7 total di grid.
+**The Reasoning:** User memutuskan tetap pakai semua varian (Dark, Neon, Minimal, Retro, Gradient) selain Default dan WP Collage.
+**The Tech Debt:** Tidak ada perubahan kode Swift - AppIconSwitcherSheet sudah mendaftar 7 sejak awal.
