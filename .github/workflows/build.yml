@@ -19,13 +19,13 @@ jobs:
         xcodebuild -version
         xcrun --sdk iphoneos --show-sdk-path
 
-    - name: Prepare Payload Directory and Info.plist
+    - name: Prepare Clean Payload Directory Structure
       run: |
         mkdir -p build/Payload/work.plot.app
         mkdir -p build/Payload/work.plot.app/Frameworks
         mkdir -p build/Payload/work.plot.app/Assets
-        mkdir -p build/Payload/work.plot.app/_CodeSignature
         
+        # Menyusun Info.plist dengan standar bundle valid untuk sideloading
         cat << 'EOF' > build/Payload/work.plot.app/Info.plist
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -60,20 +60,6 @@ jobs:
             <array>
                 <string>arm64</string>
             </array>
-        </dict>
-        </plist>
-        EOF
-
-        cat << 'EOF' > build/Payload/work.plot.app/_CodeSignature/CodeResources
-        <?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-        <plist version="1.0">
-        <dict>
-            <key>files</key>
-            <dict>
-                <key>Info.plist</key>
-                <data> ps43ai575og9vCmTC+X/FnMk0F8= </data>
-            </dict>
         </dict>
         </plist>
         EOF
