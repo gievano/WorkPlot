@@ -368,3 +368,8 @@
 - 21 key lokalisasi baru x 6 bahasa.
 **The Reasoning:** Spek minta slider label kecil tapi tidak ada slider eksisting; menambah slider palsu = gimmick (dilarang spek), jadi dipakai slider nyata untuk fitur background yang sudah ada. Semua upgrade incremental, tidak ada file inti ditulis ulang.
 **The Tech Debt:** Icon PNG hasil generate programatik (bukan desain hand-crafted); nama wallpaper tampil sebagai UUID folder karena Descriptor.plist tidak diparsing.
+
+## 2026-08-22 — Keputusan Icon: Tetap 7 Pilihan
+**The Change:** Membatalkan penghapusan 5 icon generate-an; Info.plist kembali mendaftar 6 alternate icons + default = 7 total di grid.
+**The Reasoning:** User memutuskan tetap pakai semua varian (Dark, Neon, Minimal, Retro, Gradient) selain Default dan WP Collage.
+**The Tech Debt:** Tidak ada perubahan kode Swift - AppIconSwitcherSheet sudah mendaftar 7 sejak awal.
