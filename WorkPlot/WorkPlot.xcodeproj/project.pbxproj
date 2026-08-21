@@ -1,254 +1,194 @@
 // !$*UTF8*$!
 {
 	archiveVersion = 1;
-	classes = {};
-	objectVersion = 56;
+	classes = {
+	};
+	objectVersion = 90;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AA00000128E0234B00000001 /* WorkPlotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000001 /* WorkPlotApp.swift */; };
-		AA00000228E0234B00000002 /* ExploitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000002 /* ExploitManager.swift */; };
-		AA00000328E0234B00000003 /* FileSystemAccessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000003 /* FileSystemAccessor.swift */; };
-		AA00000428E0234B00000004 /* LiquidGlassController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000004 /* LiquidGlassController.swift */; };
-		AA00000528E0234B00000005 /* RDARFix.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000005 /* RDARFix.swift */; };
-		AA00000628E0234B00000006 /* GestaltBackupStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000006 /* GestaltBackupStore.swift */; };
-		AA00000728E0234B00000007 /* GestaltTweaks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000007 /* GestaltTweaks.swift */; };
-		AA00000828E0234B00000008 /* MainDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000008 /* MainDashboardView.swift */; };
-		AA00000928E0234B00000009 /* StatusDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000009 /* StatusDashboardView.swift */; };
-		AA00000A28E0234B0000000A /* GestaltPresetManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B0000000A /* GestaltPresetManagerView.swift */; };
-		AA00000B28E0234B0000000B /* CustomizationThemeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B0000000B /* CustomizationThemeView.swift */; };
-		AA00000C28E0234B0000000C /* FilePatchWorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B0000000C /* FilePatchWorkspaceView.swift */; };
-		AA00000D28E0234B0000000D /* BackupRestoreManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B0000000D /* BackupRestoreManagerView.swift */; };
-		AA00000E28E0234B0000000E /* BadQueryBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B0000000E /* BadQueryBridge.m */; };
-		AA00000F28E0234B0000000F /* GestaltAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B0000000F /* GestaltAccess.m */; };
-		AA00001028E0234B00000010 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000010 /* Assets.xcassets */; };
+		WP00000000000000000000A1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = WP00000000000000000000B1 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		AA00020128E0234B00000001 /* WorkPlot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WorkPlot.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA00030128E0234B00000001 /* WorkPlotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkPlotApp.swift; sourceTree = "<group>"; };
-		AA00030128E0234B00000002 /* ExploitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploitManager.swift; sourceTree = "<group>"; };
-		AA00030128E0234B00000003 /* FileSystemAccessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSystemAccessor.swift; sourceTree = "<group>"; };
-		AA00030128E0234B00000004 /* LiquidGlassController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassController.swift; sourceTree = "<group>"; };
-		AA00030128E0234B00000005 /* RDARFix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDARFix.swift; sourceTree = "<group>"; };
-		AA00030128E0234B00000006 /* GestaltBackupStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestaltBackupStore.swift; sourceTree = "<group>"; };
-		AA00030128E0234B00000007 /* GestaltTweaks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestaltTweaks.swift; sourceTree = "<group>"; };
-		AA00030128E0234B00000008 /* MainDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainDashboardView.swift; sourceTree = "<group>"; };
-		AA00030128E0234B00000009 /* StatusDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusDashboardView.swift; sourceTree = "<group>"; };
-		AA00030128E0234B0000000A /* GestaltPresetManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestaltPresetManagerView.swift; sourceTree = "<group>"; };
-		AA00030128E0234B0000000B /* CustomizationThemeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomizationThemeView.swift; sourceTree = "<group>"; };
-		AA00030128E0234B0000000C /* FilePatchWorkspaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePatchWorkspaceView.swift; sourceTree = "<group>"; };
-		AA00030128E0234B0000000D /* BackupRestoreManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRestoreManagerView.swift; sourceTree = "<group>"; };
-		AA00030128E0234B0000000E /* BadQueryBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BadQueryBridge.m; sourceTree = "<group>"; };
-		AA00030128E0234B0000000F /* GestaltAccess.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GestaltAccess.m; sourceTree = "<group>"; };
-		AA00030128E0234B00000010 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		AA00030128E0234B00000011 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		AA00030128E0234B00000012 /* BadQueryBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BadQueryBridge.h; sourceTree = "<group>"; };
-		AA00030128E0234B00000013 /* GestaltAccess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GestaltAccess.h; sourceTree = "<group>"; };
-		AA00030128E0234B00000014 /* WorkPlot-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WorkPlot-Bridging-Header.h"; sourceTree = "<group>"; };
+		WP00000000000000000000C0 /* WorkPlot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WorkPlot.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		WP00000000000000000000B1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		WP0000000000000000000010 /* Sources */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = .;
+			sourceTree = "<group>";
+			exceptions = (
+				WP0000000000000000000011,
+			);
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		WP0000000000000000000011 /* Exceptions */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+				WorkPlot.xcodeproj,
+			);
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFrameworksBuildPhase section */
-		AA00040128E0234B00000001 /* Frameworks */ = {
+		WP0000000000000000000020 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = {};
+			files = (
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		AA00050128E0234B00000001 /* App */ = {
+		WP0000000000000000000001 = {
 			isa = PBXGroup;
 			children = (
-				AA00030128E0234B00000001 /* WorkPlotApp.swift */,
+				WP0000000000000000000010 /* Sources */,
+				WP00000000000000000000B1 /* Assets.xcassets */,
+				WP0000000000000000000022 /* Products */,
 			);
-			path = App;
 			sourceTree = "<group>";
 		};
-		AA00050128E0234B00000002 /* Managers */ = {
+		WP0000000000000000000022 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AA00030128E0234B00000002 /* ExploitManager.swift */,
-				AA00030128E0234B00000003 /* FileSystemAccessor.swift */,
-				AA00030128E0234B00000004 /* LiquidGlassController.swift */,
-				AA00030128E0234B00000005 /* RDARFix.swift */,
-				AA00030128E0234B00000006 /* GestaltBackupStore.swift */,
-				AA00030128E0234B00000007 /* GestaltTweaks.swift */,
-			);
-			path = Managers;
-			sourceTree = "<group>";
-		};
-		AA00050128E0234B00000003 /* UI */ = {
-			isa = PBXGroup;
-			children = (
-				AA00030128E0234B00000008 /* MainDashboardView.swift */,
-				AA00030128E0234B00000009 /* StatusDashboardView.swift */,
-				AA00030128E0234B0000000A /* GestaltPresetManagerView.swift */,
-				AA00030128E0234B0000000B /* CustomizationThemeView.swift */,
-				AA00030128E0234B0000000C /* FilePatchWorkspaceView.swift */,
-				AA00030128E0234B0000000D /* BackupRestoreManagerView.swift */,
-			);
-			path = UI;
-			sourceTree = "<group>";
-		};
-		AA00050128E0234B00000004 /* Exploit */ = {
-			isa = PBXGroup;
-			children = (
-				AA00030128E0234B00000012 /* BadQueryBridge.h */,
-				AA00030128E0234B0000000E /* BadQueryBridge.m */,
-				AA00030128E0234B00000013 /* GestaltAccess.h */,
-				AA00030128E0234B0000000F /* GestaltAccess.m */,
-				AA00030128E0234B00000014 /* WorkPlot-Bridging-Header.h */,
-			);
-			path = Exploit;
-			sourceTree = "<group>";
-		};
-		AA00050128E0234B00000005 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				AA00020128E0234B00000001 /* WorkPlot.app */,
+				WP00000000000000000000C0 /* WorkPlot.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		AA00050128E0234B00000006 /* WorkPlot */ = {
-			isa = PBXGroup;
-			children = (
-				AA00050128E0234B00000001 /* App */,
-				AA00050128E0234B00000002 /* Managers */,
-				AA00050128E0234B00000003 /* UI */,
-				AA00050128E0234B00000004 /* Exploit */,
-				AA00030128E0234B00000010 /* Assets.xcassets */,
-				AA00030128E0234B00000011 /* Info.plist */,
-				AA00050128E0234B00000005 /* Products */,
-			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AA00060128E0234B00000001 /* WorkPlot */ = {
+		WP0000000000000000000100 /* WorkPlot */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AA00080128E0234B00000002;
+			buildConfigurationList = WP0000000000000000000110;
 			buildPhases = (
-				AA00070128E0234B00000001 /* Sources */,
-				AA00040128E0234B00000001 /* Frameworks */,
-				AA00070128E0234B00000002 /* Resources */,
+				WP0000000000000000000021 /* Sources */,
+				WP0000000000000000000020 /* Frameworks */,
+				WP0000000000000000000023 /* Resources */,
 			);
-			buildRules = ();
-			dependencies = ();
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				WP0000000000000000000010 /* Sources */,
+			);
 			name = WorkPlot;
 			productName = WorkPlot;
-			productReference = AA00020128E0234B00000001 /* WorkPlot.app */;
+			productReference = WP00000000000000000000C0 /* WorkPlot.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		AA00090128E0234B00000001 /* Project object */ = {
+		WP0000000000000000000000 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2630;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
-					AA00060128E0234B00000001 = {
-						CreatedOnToolsVersion = 15.0;
+					WP0000000000000000000100 = {
+						CreatedOnToolsVersion = 26.3;
 					};
 				};
 			};
-			buildConfigurationList = AA00080128E0234B00000001;
-			compatibilityVersion = "Xcode 14.0";
+			buildConfigurationList = WP0000000000000000000120;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = AA00050128E0234B00000006;
-			productRefGroup = AA00050128E0234B00000005;
+			mainGroup = WP0000000000000000000001;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 90;
+			productRefGroup = WP0000000000000000000022;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AA00060128E0234B00000001 /* WorkPlot */,
+				WP0000000000000000000100 /* WorkPlot */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		AA00070128E0234B00000002 /* Resources */ = {
+		WP0000000000000000000023 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
-				AA00001028E0234B00000010 /* Assets.xcassets in Resources */,
+				WP00000000000000000000A1 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		AA00070128E0234B00000001 /* Sources */ = {
+		WP0000000000000000000021 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
-				AA00000128E0234B00000001 /* WorkPlotApp.swift in Sources */,
-				AA00000228E0234B00000002 /* ExploitManager.swift in Sources */,
-				AA00000328E0234B00000003 /* FileSystemAccessor.swift in Sources */,
-				AA00000428E0234B00000004 /* LiquidGlassController.swift in Sources */,
-				AA00000528E0234B00000005 /* RDARFix.swift in Sources */,
-				AA00000628E0234B00000006 /* GestaltBackupStore.swift in Sources */,
-				AA00000728E0234B00000007 /* GestaltTweaks.swift in Sources */,
-				AA00000828E0234B00000008 /* MainDashboardView.swift in Sources */,
-				AA00000928E0234B00000009 /* StatusDashboardView.swift in Sources */,
-				AA00000A28E0234B0000000A /* GestaltPresetManagerView.swift in Sources */,
-				AA00000B28E0234B0000000B /* CustomizationThemeView.swift in Sources */,
-				AA00000C28E0234B0000000C /* FilePatchWorkspaceView.swift in Sources */,
-				AA00000D28E0234B0000000D /* BackupRestoreManagerView.swift in Sources */,
-				AA00000E28E0234B0000000E /* BadQueryBridge.m in Sources */,
-				AA00000F28E0234B0000000F /* GestaltAccess.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		AA000A0128E0234B00000001 /* Debug */ = {
+		WP0000000000000000000121 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGNING_ALLOWED = NO;
-				CODE_SIGNING_REQUIRED = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = Info.plist;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.work.plot.system";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		AA000A0128E0234B00000002 /* Release */ = {
+		WP0000000000000000000122 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
 				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		AA000A0128E0234B00000003 /* Debug */ = {
+		WP0000000000000000000111 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -256,18 +196,20 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = NO;
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.work.plot.system";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = Exploit/WorkPlot-Bridging-Header.h;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		AA000A0128E0234B00000004 /* Release */ = {
+		WP0000000000000000000112 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -276,13 +218,16 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = NO;
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.work.plot.system";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = Exploit/WorkPlot-Bridging-Header.h;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -290,25 +235,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AA00080128E0234B00000001 /* Build configuration list for PBXProject "WorkPlot" */ = {
+		WP0000000000000000000120 /* Build configuration list for PBXProject "WorkPlot" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AA000A0128E0234B00000001 /* Debug */,
-				AA000A0128E0234B00000002 /* Release */,
+				WP0000000000000000000121 /* Debug */,
+				WP0000000000000000000122 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AA00080128E0234B00000002 /* Build configuration list for PBXNativeTarget "WorkPlot" */ = {
+		WP0000000000000000000110 /* Build configuration list for PBXNativeTarget "WorkPlot" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AA000A0128E0234B00000003 /* Debug */,
-				AA000A0128E0234B00000004 /* Release */,
+				WP0000000000000000000111 /* Debug */,
+				WP0000000000000000000112 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = AA00090128E0234B00000001 /* Project object */;
+	rootObject = WP0000000000000000000000 /* Project object */;
 }
