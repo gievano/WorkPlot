@@ -28,6 +28,13 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         case .vietnamese: "Tiếng Việt"
         }
     }
+
+    var stringsCode: String {
+        switch self {
+        case .chinese: "zh-Hans"
+        default: rawValue
+        }
+    }
 }
 
 enum AppearanceMode: String, CaseIterable, Identifiable {
@@ -74,13 +81,6 @@ final class L10n: ObservableObject {
         }
         // Fallback until the resource bundles are verified on-device.
         return Self.table[language]?[key] ?? Self.table[.english]?[key] ?? key
-    }
-
-    var stringsCode: String {
-        switch self {
-        case .chinese: "zh-Hans"
-        default: rawValue
-        }
     }
 
     private static let table: [AppLanguage: [String: String]] = [
