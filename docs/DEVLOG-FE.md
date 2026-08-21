@@ -217,5 +217,82 @@
 
 - ✅ Run [32500505536](https://github.com/gievano/work-plot2/actions/runs/32500505536): archive ✓, package IPA ✓, upload IPA ✓.
 
+## 2026-08-21 - Fix Respring + RDAR Rewrite + UI Liquid Glass
+
+### The Change
+
+- Hapus `ExploitManager.restartDevice()` (`posix_spawn("/usr/sbin/reboot")`) — tidak mungkin jalan dari app sandboxed.
+- Port metode respring **NeoSpring** (neonmodder123 / skadz108, jailbreak.party) ke `RespringController.swift`: WKWebView dengan payload HTML backdrop-filter + perspective + memory pressure yang membuat SpringBoard crash → respring. Dipakai juga oleh GestaltEdit & mond.
+- Overlay respring global di `WorkPlotApp` via `manager.respringRequested`; bisa dipicu dari tab mana pun.
+- Auto-respring 1 detik setelah Apply tweaks (tab Gestalt), RDAR Fix, dan Apply di tab Liquid Glass — pattern GestaltEdit ("automatically respring after a verified write").
+- Rewrite `RDARFix.swift`: throwing API, tulis inode-preserving (`open O_WRONLY|O_NOFOLLOW` → ftruncate → write → fsync, mirroring `saveGestalt`) menggantikan `FileManager.createFile` yang replace inode (ownership jadi mobile, xattr hilang), format plist asli dipertahankan (binary vs xml), canvas configurable, verifikasi pasca-tulis.
+- Ekspansi `LiquidGlassController`: enum `LiquidGlassMode`, `currentState()`, `apply(mode:sliderDisabled:)`.
+- Tab baru **Liquid Glass** (`LiquidGlassView.swift`): picker Mode Render (Bawaan/Low Perf OFF/OFF... lihat kode), toggle Matikan Global, tombol Apply + Respring manual.
+
+### The Reasoning
+
+- Bug "hp gamau restart": memanggil binary sistem butuh root + entitlement; satu-satunya jalur respring yang proven di iOS 27 beta 1–4 tanpa jailbreak adalah crash WebKit compositing (NeoSpring).
+- RDARFix lama menimpa inode sehingga ownership file berubah — pattern ini berbahaya jika disalin ke penulisan plists lain.
+
+### The Tech Debt
+
+- Build tetap belum terverifikasi lokal (Windows); butuh CI round-trip.
+- Respring NeoSpring membuat layar hitam sesaat saat SpringBoard restart — expected behavior.
+
+## 2026-08-21 - Feature Parity dengan GestaltEdit
+
+### The Change
+
+- Gap analysis GestaltEdit vs WorkPlot; 5 gap besar ditutup semua:
+- `PlistValues.swift`: port `PlistValueKind`/`PlistValueInfo` — parse & encode 7 tipe nilai plist (String/Int/Float/Bool/Data Base64/Array JSON/Dict JSON), disederhanakan untuk `[String: Any]`.
+- `GestaltFieldEditorView.swift` + tab **Fields**: searchable key top-level & CacheExtra, editor per tipe, tambah field (sheet), hapus via swipe.
+- `GestaltArtwork.swift`: set `ArtworkDeviceSubType` (Dynamic Island picker: SE gestures s/d iPhone Air) dan `ArtworkDeviceProductDescription` (nama model) di tab Gestalt.
+- `AIRegionProfile.swift`: port AI Region spoofing (LL/LL/A + regulatory model per device, fallback device spoofing product/hardware/CPU untuk device non-AI) sebagai tweak "AI Region: US (LL/A)" kategori Region baru.
+- `BackupRestoreManagerView`: tombol buat backup manual, impor via fileImporter (validasi CacheExtra), ekspor via ShareLink per baris, konfirmasi sebelum restore.
+- iPadOS Mode (5 capability keys + patch biner CacheData ala Nugget via `GestaltCacheDataPatch`) masuk katalog tweak dengan RISKY badge.
+
+### The Reasoning
+
+- Semua port langsung dari GestaltEdit (GPLv3, konsisten dengan port BadQueryBridge sebelumnya) agar perilaku proven tidak diimprovisasi ulang.
+- Helper ditulis sebagai fungsi murni atas `[String: Any]` inout, bukan wrapper struct seperti GestaltEdit — WorkPlot tidak pakai ViewModel terpusat jadi lebih minim lapisan.
+
+### The Tech Debt
+
+- Build belum terverifikasi lokal (Windows); butuh CI round-trip.
+- Fields Editor menyimpan per-edit (satu write gestalt per commit), tidak ada staging dirty-state seperti GestaltEdit.
+- AI Region belum ada verifikasi semantik pasca-tulis (byte-level verify saja).
+
+## 2026-08-22 - Siri AI Suite, Device Spoofing, PosterBoard Lab, i18n & Tema
+
+### The Change
+
+- Port `bad_query.c/h` dari Placard (GPLv3): tambah kemampuan `bad_query_list` (enumerasi container via `fsgetpath`) dan query class 7 dengan group identifier custom. Bridging header diperbarui.
+- `PosterBoardAccess.swift`: cari container PosterBoard (`com.apple.PosterBoard`) via scan metadata MCM di `/var/mobile/Containers/Data/{Application,InternalDaemon,PluginKitPlugin}` (hash di-cache di UserDefaults), lalu tulis descriptor ke `PRBPosterExtensionDataStore/61/Extensions/com.apple.WallpaperKit.CollectionsPoster/descriptors/`.
+- `TendiesPackage.swift`: ZIP reader minimal (central directory scan, stored + deflate via `compression_decode_buffer` COMPRESSION_ZLIB) untuk paket `.tendies`; validasi struktur descriptor (`versions/1/contents`, `Descriptor.plist`, atau `posterkit.descriptor.identifier`); sanitasi path anti zip-slip.
+- `SiriAIModifier.swift`: automasi metode Toto — serialisasi plist ke XML (newline dibuang supaya base64 tidak terpotong wrap 76-char Apple), replace exact marker base64 CacheData, parse balik.
+- `DeviceSpoofingManager.swift`: spoof penuh — 9 ProductType keys sekaligus + hardware/board model (`oYicEKzVTz4/CxxE05pEgQ`) + dua device name keys; katalog target iPhone 15 Pro s/d 17 Pro Max; deteksi target aktif.
+- `AppleIntelligenceController.swift`: toggle eligibility key `A62OafQ85EJAiiqKn4agtg` on/off.
+- Tab baru **Siri AI** (`SiriAITweaksView.swift`): toggle Siri AI (CacheData), picker spoof device (+ warning Face ID), toggle Apple Intelligence, satu tombol "Apply Changes" staged → backup → write verified → auto-respring.
+- Tab Customization diganti jadi **PosterBoard Lab** (`PosterBoardLabView`): impor .tendies → validasi → ekstrak → install ke PosterBoard → respring.
+- Field Editor: section Cache baru (CacheUUID, CacheVersion, CacheData hex dump 512 byte + base64 lengkap).
+- `Localization.swift`: switcher 6 bahasa (EN/ID/ZH/JA/RU/VI) in-app + mode tampilan System/Light/Dark; gear Settings di tab Status; tab labels terlokalisasi.
+
+### The Reasoning
+
+- Pipeline PosterBoard disalin dari Placard karena path & struktur descriptor (`PRBPosterExtensionDataStore/61/Extensions/<provider>/descriptors/<UUID>`) tidak terdokumentasi publik — mengimprovisasi berisiko korup data wallpaper.
+- Siri AI patch dilakukan di level XML string agar identik dengan metode manual Toto yang sudah terbukti, bukan patch biner heuristik seperti iPadOS CacheData.
+- Staged apply: semua perubahan Siri AI/spoof/AI dikumpulkan dulu sebagai intent (nil = tidak disentuh), lalu satu kali read-modify-write — meminimalkan jumlah write ke gestalt.
+
+### The Tech Debt
+
+- Build belum diverifikasi (Windows); CI round-trip wajib.
+- Board config iPhone 16 Pro & 15 Pro Max dipaksa pakai board generasinya (D74AP) karena mapping pasti belum dikonfirmasi user.
+- Lokalisasi baru mencakup label tab, Settings, dan screen Siri AI/PosterBoard; teks di layar lain masih Indonesia.
+- ZIP reader tidak mendukung ZIP64/enkripsi/data-descriptor (bit 3); paket .tendies umumnya aman tapi perlu uji lapangan.
+- PosterBoard Lab belum bisa list/hapus wallpaper terpasang (Placard punya; bisa ditambah belakangan).
+
+
+
+
 
 
