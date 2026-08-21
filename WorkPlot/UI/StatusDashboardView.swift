@@ -1,9 +1,9 @@
 import SwiftUI
 
-public struct StatusDashboardView: View {
+struct StatusDashboardView: View {
     @ObservedObject private var manager = ExploitManager.shared
 
-    public var body: some View {
+    var body: some View {
         NavigationView {
             Form {
                 Section(header: Text("Informasi Sistem")) {
