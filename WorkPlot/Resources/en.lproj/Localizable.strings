@@ -31,3 +31,13 @@
 
 "posterboard.import" = "Import .tendies Wallpaper";
 "fields.openEditor" = "View Field Editor";
+"status.checkaccess" = "Check System Access";
+"status.rdarfix" = "Fix RDAR";
+"status.lg.disable" = "Disable Liquid Glass";
+"status.respring.refresh" = "Respring (Refresh)";
+"restart.rec.title" = "Restart Recommended";
+"restart.rec.message" = "A full device restart gives the best results. You can also respring to refresh quickly.";
+"credits.header" = "Credits";
+"credits.disclaimer" = "This app uses sandbox escape & bad_query (github.com/forcequitOS/bad_query).";
+"bg.pick" = "Custom Background...";
+"bg.reset" = "Reset Background";

@@ -57,6 +57,7 @@ struct PosterBoardLabView: View {
                 }
             }
             .navigationTitle(L10n.shared.tr("tab.posterboard"))
+            .scrollContentBackground(.hidden)
             .fileImporter(
                 isPresented: $isShowingImporter,
                 allowedContentTypes: [.data],

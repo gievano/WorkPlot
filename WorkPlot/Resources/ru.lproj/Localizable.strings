@@ -31,3 +31,13 @@
 
 "posterboard.import" = "Импортировать обои .tendies";
 "fields.openEditor" = "Открыть редактор полей";
+"status.checkaccess" = "Проверить доступ к системе";
+"status.rdarfix" = "Исправить RDAR";
+"status.lg.disable" = "Выключить Liquid Glass";
+"status.respring.refresh" = "Respring (Обновить)";
+"restart.rec.title" = "Рекомендуется перезагрузка";
+"restart.rec.message" = "Полная перезагрузка даёт лучший результат. Respring подходит для быстрого обновления.";
+"credits.header" = "Авторы";
+"credits.disclaimer" = "This app uses sandbox escape & bad_query (github.com/forcequitOS/bad_query).";
+"bg.pick" = "Свой фон…";
+"bg.reset" = "Сбросить фон";

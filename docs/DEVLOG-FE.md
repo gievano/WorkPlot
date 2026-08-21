@@ -311,6 +311,27 @@
 - Tabel in-code di Localization.swift duplikat sementara dengan .strings files; hapus begitu on-device test membuktikan bundle termuat.
 - CI belum lulus untuk commit ini (menunggu round-trip).
 
+## 2026-08-22 - UX Pass: Bahasa, Alert Restart, Credits, Custom Background
+
+### The Change
+
+- **Bug bahasa**: retrofit tab Status/Gestalt/Liquid Glass ke `L10n.tr` (tombol aksi & section) — switcher bahasa kini mengubah lebih banyak teks, bukan cuma label slider.
+- **Alert "Restart Disarankan"** menggantikan auto-respring di semua apply tweaks: Gestalt, Liquid Glass (termasuk disable global dari Status), dan RDAR Fix. Tombol alert: Respring / Nanti. Tab Siri AI tetap pakai alert "Restart Diperlukan" yang lebih tegas.
+- **Respring tetap di menu utama** (tab Status) sebagai tombol refresh.
+- **Credits** di tab Status: link gievano (github.com/gievano) & Adnan 120Hz (github.com/adnan120hz), plus disclaimer bahasa Inggris soal sandbox escape & bad_query.
+- **Custom background**: `AppBackgroundStore` simpan gambar pilihan user (PhotosPicker) ke Documents/background.jpg; layer background di root ZStack dengan opacity 0.35; `scrollContentBackground(.hidden)` di semua List/Form utama. Menu ada di gear Settings dan tombol di tab Status.
+
+### The Reasoning
+
+- Auto-respring diam-diam terasa seperti tweak "gagal" kalau efek tidak muncul; alert eksplisit memberi kontrol ke user dan jujur bahwa restart penuh hasilnya maksimal.
+- Background dibuat layer terpisah + opacity rendah supaya kontras teks tetap aman di light/dark mode.
+
+### The Tech Debt
+
+- Layar Fields/Files/Backups/PosterBoard belum sepenuhnya dilokalisasi (masih campur Indonesia); keys baru hanya di .strings files, belum masuk tabel fallback in-code.
+- Background image tidak di-blur; bisa ditambahkan material effect nanti.
+
+
 
 
 

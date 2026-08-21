@@ -31,3 +31,13 @@
 
 "posterboard.import" = "Impor Wallpaper .tendies";
 "fields.openEditor" = "Buka Field Editor";
+"status.checkaccess" = "Periksa Akses Sistem";
+"status.rdarfix" = "Perbaiki RDAR";
+"status.lg.disable" = "Matikan Liquid Glass";
+"status.respring.refresh" = "Respring (Segarkan)";
+"restart.rec.title" = "Restart Disarankan";
+"restart.rec.message" = "Restart penuh memberikan hasil paling maksimal. Respring juga bisa untuk menyegarkan cepat.";
+"credits.header" = "Kredit";
+"credits.disclaimer" = "This app uses sandbox escape & bad_query (github.com/forcequitOS/bad_query).";
+"bg.pick" = "Background Kustom...";
+"bg.reset" = "Reset Background";

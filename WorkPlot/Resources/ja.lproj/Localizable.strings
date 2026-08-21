@@ -31,3 +31,13 @@
 
 "posterboard.import" = ".tendies 壁紙を読み込む";
 "fields.openEditor" = "フィールドエディタを開く";
+"status.checkaccess" = "システムアクセスを確認";
+"status.rdarfix" = "RDAR を修正";
+"status.lg.disable" = "リキッドグラスをオフ";
+"status.respring.refresh" = "Respring（更新）";
+"restart.rec.title" = "再起動をおすすめします";
+"restart.rec.message" = "完全な再起動で最良の結果が得られます。Respring でも素早く更新できます。";
+"credits.header" = "クレジット";
+"credits.disclaimer" = "This app uses sandbox escape & bad_query (github.com/forcequitOS/bad_query).";
+"bg.pick" = "カスタム背景…";
+"bg.reset" = "背景をリセット";

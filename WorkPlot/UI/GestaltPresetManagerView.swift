@@ -7,6 +7,7 @@ struct GestaltPresetManagerView: View {
     @State private var changesModelName = false
     @State private var modelName = ""
     @State private var isApplying = false
+    @State private var showRestartAlert = false
 
     private var stagedChangeCount: Int {
         selectedTweaks.count
@@ -26,6 +27,26 @@ struct GestaltPresetManagerView: View {
                     }
                 } else {
                     List {
+                        Section(
+                            header: Text("Dynamic Island"),
+                            footer: Text("Mengubah ArtworkDeviceSubType; pilih tipe layar yang ingin ditiru.")
+                        ) {
+                            Picker("Tipe", selection: $dynamicIslandSubtype) {
+                                Text("Bawaan").tag(Int?.none)
+                                ForEach(DynamicIslandOption.all) { option in
+                                    Text("\(option.title) (\(option.subtype))").tag(Int?.some(option.subtype))
+                                }
+                            }
+                        }
+
+                        Section(header: Text("Nama Model")) {
+                            Toggle("Ubah Nama Model", isOn: $changesModelName)
+                            if changesModelName {
+                                TextField("cth. iPhone 16 Pro", text: $modelName)
+                                    .autocorrectionDisabled()
+                            }
+                        }
+
                         ForEach(GestaltTweakCategory.allCases) { category in
                             Section(header: Text(category.label)) {
                                 ForEach(tweaks(in: category)) { tweak in
@@ -48,29 +69,20 @@ struct GestaltPresetManagerView: View {
                             }
                         }
 
-                        Section(
-                            header: Text("Dynamic Island"),
-                            footer: Text("Mengubah ArtworkDeviceSubType; pilih tipe layar yang ingin ditiru.")
-                        ) {
-                            Picker("Tipe", selection: $dynamicIslandSubtype) {
-                                Text("Bawaan").tag(Int?.none)
-                                ForEach(DynamicIslandOption.all) { option in
-                                    Text("\(option.title) (\(option.subtype))").tag(Int?.some(option.subtype))
-                                }
-                            }
-                        }
-
-                        Section(header: Text("Nama Model")) {
-                            Toggle("Ubah Nama Model", isOn: $changesModelName)
-                            if changesModelName {
-                                TextField("cth. iPhone 16 Pro", text: $modelName)
-                                    .autocorrectionDisabled()
-                            }
-                        }
                     }
+                    .scrollContentBackground(.hidden)
                 }
             }
             .navigationTitle("Gestalt")
+            .alert(
+                L10n.shared.tr("restart.rec.title"),
+                isPresented: $showRestartAlert
+            ) {
+                Button(L10n.shared.tr("siriai.restart.respring")) { manager.respringRequested = true }
+                Button(L10n.shared.tr("siriai.restart.later"), role: .cancel) {}
+            } message: {
+                Text(L10n.shared.tr("restart.rec.message"))
+            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(stagedChangeCount == 0 ? "Apply" : "Apply (\(stagedChangeCount))") {
@@ -147,10 +159,8 @@ struct GestaltPresetManagerView: View {
             dynamicIslandSubtype = nil
             changesModelName = false
             modelName = ""
-            manager.statusText = "Tweak diterapkan. Respring dalam 1 detik..."
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                manager.respringRequested = true
-            }
+            manager.statusText = "Tweak diterapkan. \(L10n.shared.tr("restart.rec.title"))"
+            showRestartAlert = true
         } else {
             manager.statusText = "Gagal menyimpan MobileGestalt."
         }

@@ -31,3 +31,13 @@
 
 "posterboard.import" = "导入 .tendies 壁纸";
 "fields.openEditor" = "打开字段编辑器";
+"status.checkaccess" = "检查系统访问";
+"status.rdarfix" = "修复 RDAR";
+"status.lg.disable" = "关闭液态玻璃";
+"status.respring.refresh" = "Respring（刷新）";
+"restart.rec.title" = "建议重新启动";
+"restart.rec.message" = "完整重启设备可获得最佳效果。也可以 Respring 快速刷新。";
+"credits.header" = "致谢";
+"credits.disclaimer" = "This app uses sandbox escape & bad_query (github.com/forcequitOS/bad_query).";
+"bg.pick" = "自定义背景…";
+"bg.reset" = "重置背景";

@@ -27,6 +27,7 @@ struct GestaltFieldEditorView: View {
                 }
             }
             .navigationTitle("Fields")
+            .scrollContentBackground(.hidden)
             .searchable(text: $searchText, prompt: "Cari key atau value")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

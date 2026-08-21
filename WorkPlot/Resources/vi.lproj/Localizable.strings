@@ -31,3 +31,13 @@
 
 "posterboard.import" = "Nhập hình nền .tendies";
 "fields.openEditor" = "Mở trình soạn thảo trường";
+"status.checkaccess" = "Kiểm tra quyền truy cập hệ thống";
+"status.rdarfix" = "Sửa RDAR";
+"status.lg.disable" = "Tắt Liquid Glass";
+"status.respring.refresh" = "Respring (Làm mới)";
+"restart.rec.title" = "Nên khởi động lại";
+"restart.rec.message" = "Khởi động lại toàn bộ sẽ cho kết quả tốt nhất. Có thể dùng Respring để làm mới nhanh.";
+"credits.header" = "Ghi công";
+"credits.disclaimer" = "This app uses sandbox escape & bad_query (github.com/forcequitOS/bad_query).";
+"bg.pick" = "Nền tùy chỉnh…";
+"bg.reset" = "Đặt lại nền";

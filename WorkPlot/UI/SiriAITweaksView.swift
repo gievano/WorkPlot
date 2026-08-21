@@ -38,6 +38,7 @@ struct SiriAITweaksView: View {
                 }
             }
             .navigationTitle(l10n.tr("siriai.title"))
+            .scrollContentBackground(.hidden)
             .alert(
                 l10n.tr("siriai.restart.title"),
                 isPresented: $showRestartAlert
