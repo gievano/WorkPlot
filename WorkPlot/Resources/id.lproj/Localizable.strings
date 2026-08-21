@@ -1,0 +1,33 @@
+/* WorkPlot — Bahasa Indonesia */
+
+"tab.status" = "Status";
+"tab.gestalt" = "Gestalt";
+"tab.fields" = "Fields";
+"tab.siriai" = "Siri AI";
+"tab.liquidglass" = "Liquid Glass";
+"tab.posterboard" = "PosterBoard";
+"tab.backups" = "Backups";
+
+"settings.title" = "Pengaturan";
+"settings.language" = "Bahasa";
+"settings.appearance" = "Tampilan";
+"appearance.system" = "Sistem";
+"appearance.light" = "Terang";
+"appearance.dark" = "Gelap";
+
+"siriai.title" = "Siri AI Tweaks";
+"siriai.toggle" = "Aktifkan Siri AI Baru (CacheData)";
+"siriai.toggle.detail" = "Patch blob CacheData otomatis (metode Toto).";
+"siriai.spoof" = "Spoof Device ke:";
+"siriai.spoof.none" = "Tanpa Spoofing";
+"siriai.warning" = "Spoofing dapat merusak Face ID. Gunakan dengan risiko sendiri.";
+"siriai.ai.toggle" = "Aktifkan Apple Intelligence";
+"siriai.apply" = "Apply Changes";
+
+"siriai.restart.title" = "Restart Diperlukan";
+"siriai.restart.message" = "Siri AI baru aktif setelah perangkat direstart.";
+"siriai.restart.respring" = "Respring";
+"siriai.restart.later" = "Nanti";
+
+"posterboard.import" = "Impor Wallpaper .tendies";
+"fields.openEditor" = "Buka Field Editor";

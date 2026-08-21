@@ -1,0 +1,33 @@
+/* WorkPlot — Tiếng Việt */
+
+"tab.status" = "Trạng thái";
+"tab.gestalt" = "Gestalt";
+"tab.fields" = "Trường dữ liệu";
+"tab.siriai" = "Siri AI";
+"tab.liquidglass" = "Liquid Glass";
+"tab.posterboard" = "PosterBoard";
+"tab.backups" = "Sao lưu";
+
+"settings.title" = "Cài đặt";
+"settings.language" = "Ngôn ngữ";
+"settings.appearance" = "Giao diện";
+"appearance.system" = "Theo hệ thống";
+"appearance.light" = "Sáng";
+"appearance.dark" = "Tối";
+
+"siriai.title" = "Tinh chỉnh Siri AI";
+"siriai.toggle" = "Bật Siri AI mới (CacheData)";
+"siriai.toggle.detail" = "Tự động vá khối CacheData (phương pháp Toto).";
+"siriai.spoof" = "Giả lập thiết bị thành:";
+"siriai.spoof.none" = "Không giả lập";
+"siriai.warning" = "Việc giả lập có thể làm hỏng Face ID. Hãy tự chịu rủi ro.";
+"siriai.ai.toggle" = "Bật Apple Intelligence";
+"siriai.apply" = "Áp dụng thay đổi";
+
+"siriai.restart.title" = "Cần khởi động lại";
+"siriai.restart.message" = "Siri AI mới sẽ hoạt động sau khi khởi động lại thiết bị.";
+"siriai.restart.respring" = "Respring";
+"siriai.restart.later" = "Để sau";
+
+"posterboard.import" = "Nhập hình nền .tendies";
+"fields.openEditor" = "Mở trình soạn thảo trường";

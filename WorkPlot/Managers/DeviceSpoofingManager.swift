@@ -30,13 +30,12 @@ enum DeviceSpoofingError: LocalizedError {
 
 enum DeviceSpoofingManager {
 
-    /// Board configs follow the user-provided mapping (D74AP → iPhone 15 Pro
-    /// family, D97AP → iPhone 17 Pro family). Models without a confirmed board
-    /// reuse the nearest confirmed board of their generation.
+    /// Confirmed identifier/board mapping per device generation.
     static let targets: [SpoofTarget] = [
         SpoofTarget(marketingName: "iPhone 15 Pro", productType: "iPhone16,1", boardConfig: "D74AP"),
         SpoofTarget(marketingName: "iPhone 15 Pro Max", productType: "iPhone16,2", boardConfig: "D74AP"),
-        SpoofTarget(marketingName: "iPhone 16 Pro", productType: "iPhone17,2", boardConfig: "D74AP"),
+        SpoofTarget(marketingName: "iPhone 16 Pro", productType: "iPhone17,1", boardConfig: "D74AP"),
+        SpoofTarget(marketingName: "iPhone 16 Pro Max", productType: "iPhone17,2", boardConfig: "D74AP"),
         SpoofTarget(marketingName: "iPhone 17 Pro", productType: "iPhone18,1", boardConfig: "D97AP"),
         SpoofTarget(marketingName: "iPhone 17 Pro Max", productType: "iPhone18,2", boardConfig: "D97AP")
     ]
@@ -55,8 +54,19 @@ enum DeviceSpoofingManager {
         "G91h5IuJvXISeyngNFqEpg"
     ]
 
-    /// Hardware / board model string (D27AP on iPhone 14, D74AP, D97AP, ...).
-    static let hardwareModelKey = "oYicEKzVTz4/CxxE05pEgQ"
+    /// All nine keys in CacheExtra that store a board config string
+    /// (D27AP on iPhone 14, D74AP, D97AP, ...).
+    static let boardConfigKeys = [
+        "oQNDePXjSD1z7W0ddqt9tg",
+        "/YYygAofPDbhrwToVsXdeA",
+        "b4e7mEbjqfewD6oXmo9U5g",
+        "dW5fpt/6HhaTbnK/UqL6cA",
+        "GGIIDN/ANr8X2WrgS6nBYQ",
+        "ZGraRMW0TsxCvONeeJ5C2w",
+        "uCIk6n9Am5fsV2cTjhqFQw",
+        "oYicEKzVTz4/CxxE05pEgQ",
+        "yAfB6E2v0++rHtdW7SDg8w"
+    ]
 
     /// Both device marketing-name keys.
     static let deviceNameKeys = ["Z/dqyWS6OZTRy10UcmUAhw", "bbtR9jQx50Fv5Af/affNtA"]
@@ -80,11 +90,19 @@ enum DeviceSpoofingManager {
         for key in productTypeKeys {
             cacheExtra[key] = target.productType
         }
-        cacheExtra[hardwareModelKey] = target.boardConfig
+        for key in boardConfigKeys {
+            cacheExtra[key] = target.boardConfig
+        }
 
         // Only overwrite names that already exist so we never invent keys.
         for key in deviceNameKeys where cacheExtra[key] != nil {
             cacheExtra[key] = target.marketingName
+        }
+
+        // CompatibleDeviceFallback lives inside the ArtworkDevice dictionary.
+        if var artwork = cacheExtra[GestaltArtwork.artworkKey] as? [String: Any] {
+            artwork["CompatibleDeviceFallback"] = target.productType
+            cacheExtra[GestaltArtwork.artworkKey] = artwork
         }
 
         plist["CacheExtra"] = cacheExtra

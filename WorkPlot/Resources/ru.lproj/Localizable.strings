@@ -1,0 +1,33 @@
+/* WorkPlot — Русский */
+
+"tab.status" = "Статус";
+"tab.gestalt" = "Gestalt";
+"tab.fields" = "Поля";
+"tab.siriai" = "Siri AI";
+"tab.liquidglass" = "Liquid Glass";
+"tab.posterboard" = "PosterBoard";
+"tab.backups" = "Резервные копии";
+
+"settings.title" = "Настройки";
+"settings.language" = "Язык";
+"settings.appearance" = "Оформление";
+"appearance.system" = "Системная";
+"appearance.light" = "Светлая";
+"appearance.dark" = "Тёмная";
+
+"siriai.title" = "Настройки Siri AI";
+"siriai.toggle" = "Включить новый Siri AI (CacheData)";
+"siriai.toggle.detail" = "Автоматически изменяет блок CacheData (метод Toto).";
+"siriai.spoof" = "Подменить устройство на:";
+"siriai.spoof.none" = "Без подмены";
+"siriai.warning" = "Подмена может сломать Face ID. Используйте на свой риск.";
+"siriai.ai.toggle" = "Включить Apple Intelligence";
+"siriai.apply" = "Применить изменения";
+
+"siriai.restart.title" = "Требуется перезагрузка";
+"siriai.restart.message" = "Новый Siri AI активируется после перезагрузки устройства.";
+"siriai.restart.respring" = "Respring";
+"siriai.restart.later" = "Позже";
+
+"posterboard.import" = "Импортировать обои .tendies";
+"fields.openEditor" = "Открыть редактор полей";

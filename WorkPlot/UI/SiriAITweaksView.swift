@@ -9,6 +9,7 @@ struct SiriAITweaksView: View {
     @State private var appleIntelligenceStaged: Bool?
     @State private var spoofTarget: SpoofTarget?
     @State private var isApplying = false
+    @State private var showRestartAlert = false
     @State private var didLoadState = false
 
     private var stagedCount: Int {
@@ -37,6 +38,17 @@ struct SiriAITweaksView: View {
                 }
             }
             .navigationTitle(l10n.tr("siriai.title"))
+            .alert(
+                l10n.tr("siriai.restart.title"),
+                isPresented: $showRestartAlert
+            ) {
+                Button(l10n.tr("siriai.restart.respring")) {
+                    manager.respringRequested = true
+                }
+                Button(l10n.tr("siriai.restart.later"), role: .cancel) {}
+            } message: {
+                Text(l10n.tr("siriai.restart.message"))
+            }
             .onAppear(perform: loadCurrentState)
         }
     }
@@ -156,10 +168,10 @@ struct SiriAITweaksView: View {
             siriAIStaged = nil
             appleIntelligenceStaged = nil
             spoofTarget = nil
-            manager.statusText = "\(l10n.tr("siriai.apply")) OK. Respring dalam 1 detik..."
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                manager.respringRequested = true
-            }
+            manager.statusText = "\(l10n.tr("siriai.apply")) OK. \(l10n.tr("siriai.restart.title"))"
+            // Siri AI tweaks require a device restart before they take
+            // effect; the user picks between respring now or later.
+            showRestartAlert = true
         } else {
             manager.statusText = "Gagal menyimpan MobileGestalt."
         }
