@@ -7,7 +7,7 @@ public struct StatusDashboardView: View {
         NavigationView {
             Form {
                 Section(header: Text("Informasi Sistem")) {
-                    HStack { Text("Build"); Spacer(); Text("24A5380h").foregroundColor(.blue) }
+                    HStack { Text("Build"); Spacer(); Text(manager.osBuild.isEmpty ? "—" : manager.osBuild).foregroundColor(.blue) }
                     HStack { Text("Status"); Spacer(); Text(manager.sandboxGranted ? "Aktif" : "Terkunci").foregroundColor(manager.sandboxGranted ? .green : .orange) }
                 }
                 Section(header: Text("Aksi")) {
@@ -20,6 +20,8 @@ public struct StatusDashboardView: View {
                             ? "Liquid Glass dinonaktifkan."
                             : "Liquid Glass gagal dinonaktifkan."
                     }
+                    Button("Restart Device") { manager.restartDevice() }
+                        .disabled(!manager.sandboxGranted)
                 }
                 Section(header: Text("Log")) {
                     Text(manager.statusText)

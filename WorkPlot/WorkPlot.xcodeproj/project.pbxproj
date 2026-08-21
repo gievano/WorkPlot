@@ -18,6 +18,10 @@
 		8300012A28E0234B00778B50 /* FilePatchWorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011A28E0234B00778B50 /* FilePatchWorkspaceView.swift */; };
 		8300012B28E0234B00778B50 /* BackupRestoreManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011B28E0234B00778B50 /* BackupRestoreManagerView.swift */; };
 		8300012C28E0234B00778B50 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8300011C28E0234B00778B50 /* Assets.xcassets */; };
+		8300012D28E0234B00778B50 /* BadQueryBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 8300011E28E0234B00778B50 /* BadQueryBridge.m */; };
+		8300012E28E0234B00778B50 /* GestaltAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = 8300012028E0234B00778B50 /* GestaltAccess.m */; };
+		8300012F28E0234B00778B50 /* GestaltBackupStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300012328E0234B00778B51 /* GestaltBackupStore.swift */; };
+		8300013028E0234B00778B51 /* GestaltTweaks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300012428E0234B00778B51 /* GestaltTweaks.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +39,13 @@
 		8300011B28E0234B00778B50 /* BackupRestoreManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRestoreManagerView.swift; sourceTree = "<group>"; };
 		8300011C28E0234B00778B50 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8300011D28E0234B00778B50 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8300011E28E0234B00778B50 /* BadQueryBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BadQueryBridge.m; sourceTree = "<group>"; };
+		8300011F28E0234B00778B50 /* BadQueryBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BadQueryBridge.h; sourceTree = "<group>"; };
+		8300012028E0234B00778B50 /* GestaltAccess.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GestaltAccess.m; sourceTree = "<group>"; };
+		8300012128E0234B00778B51 /* GestaltAccess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GestaltAccess.h; sourceTree = "<group>"; };
+		8300012228E0234B00778B51 /* WorkPlot-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WorkPlot-Bridging-Header.h"; sourceTree = "<group>"; };
+		8300012328E0234B00778B51 /* GestaltBackupStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestaltBackupStore.swift; sourceTree = "<group>"; };
+		8300012428E0234B00778B51 /* GestaltTweaks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestaltTweaks.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +73,8 @@
 				8300011328E0234B00778B50 /* FileSystemAccessor.swift */,
 				8300011428E0234B00778B50 /* LiquidGlassController.swift */,
 				8300011528E0234B00778B50 /* RDARFix.swift */,
+				8300012328E0234B00778B51 /* GestaltBackupStore.swift */,
+				8300012428E0234B00778B51 /* GestaltTweaks.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -87,12 +100,25 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		8300030528E0234B00778B50 /* Exploit */ = {
+			isa = PBXGroup;
+			children = (
+				8300011F28E0234B00778B50 /* BadQueryBridge.h */,
+				8300011E28E0234B00778B50 /* BadQueryBridge.m */,
+				8300012128E0234B00778B51 /* GestaltAccess.h */,
+				8300012028E0234B00778B50 /* GestaltAccess.m */,
+				8300012228E0234B00778B51 /* WorkPlot-Bridging-Header.h */,
+			);
+			path = Exploit;
+			sourceTree = "<group>";
+		};
 		83C901C228E0234B00778B50 /* WorkPlot */ = {
 			isa = PBXGroup;
 			children = (
 				8300030128E0234B00778B50 /* App */,
 				8300030228E0234B00778B50 /* Managers */,
 				8300030328E0234B00778B50 /* UI */,
+				8300030528E0234B00778B50 /* Exploit */,
 				8300011C28E0234B00778B50 /* Assets.xcassets */,
 				8300011D28E0234B00778B50 /* Info.plist */,
 				8300030428E0234B00778B50 /* Products */,
@@ -176,6 +202,10 @@
 				8300012928E0234B00778B50 /* CustomizationThemeView.swift in Sources */,
 				8300012A28E0234B00778B50 /* FilePatchWorkspaceView.swift in Sources */,
 				8300012B28E0234B00778B50 /* BackupRestoreManagerView.swift in Sources */,
+				8300012D28E0234B00778B50 /* BadQueryBridge.m in Sources */,
+				8300012E28E0234B00778B50 /* GestaltAccess.m in Sources */,
+				8300012F28E0234B00778B50 /* GestaltBackupStore.swift in Sources */,
+				8300013028E0234B00778B51 /* GestaltTweaks.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,6 +230,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Exploit/WorkPlot-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -233,6 +264,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Exploit/WorkPlot-Bridging-Header.h";
 			};
 			name = Debug;
 		};

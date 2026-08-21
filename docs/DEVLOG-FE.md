@@ -53,3 +53,66 @@
 
 - The wildcard "latest Xcode" pick is best-effort; if Apple renames beta images the sort may select a non-iOS-27 SDK — check the SDK log line if builds fail.
 - IPA remains unsigned; sideloading still requires TrollStore or a re-sign step.
+
+## 2026-08-21 — BadQuery Exploit Port
+
+### The Change
+
+- Ported `BadQueryBridge.h/.m` and `GestaltAccess.h/.m` from GestaltEdit (GPLv3) into `WorkPlot/Exploit/`.
+- Added `WorkPlot-Bridging-Header.h` and wired it via `SWIFT_OBJC_BRIDGING_HEADER` in both Debug and Release configurations.
+- Rewired `ExploitManager.swift` from naive `FileManager.isWritableFile` to proper `GestaltAccess.connectWithError()` with OS build whitelist check.
+- Rewired `LiquidGlassController.swift` to read/write through ExploitManager (bad_query) instead of direct FileManager.
+- Rewired `RDARFix.swift` to use `BadQueryLease` directly for its non-Gestalt path.
+- Updated `StatusDashboardView.swift` to display actual OS build from `sysctl` instead of hardcoded string.
+- Added `.gitignore` for temp clone and Xcode user data.
+
+### The Reasoning
+
+- Without bad_query, the app cannot escape the iOS sandbox. FileManager calls to system paths always fail on stock iOS.
+- GestaltEdit's implementation is battle-tested: path traversal via ContainerManager private API, sandbox extension token acquisition, atomic write with rollback, post-write verification.
+- OS build whitelist prevents accidental writes on unsupported builds that could brick the device.
+
+### The Tech Debt
+
+- Build not verified locally (Windows); requires macOS CI with iOS 27 SDK.
+- Gestalt, Customization, Files, Backups tabs remain placeholder views.
+- No backup system yet — writes are destructive without restore capability.
+
+## 2026-08-21 — Backup System
+
+### The Change
+
+- Added `GestaltBackupStore.swift` — creates timestamped plist backups in Documents/MobileGestalt Backups, lists/deletes them.
+- Wired `ExploitManager.saveGestalt()` to auto-backup the current plist before every write.
+- Added `restore()` and `delete()` to ExploitManager for backup management.
+- Rebuilt `BackupRestoreManagerView` from placeholder to functional list: shows name/date/size, tap to restore, swipe to delete, EditButton.
+
+### The Reasoning
+
+- Every MobileGestalt write is potentially destructive. Auto-backup before write is the minimum safety net.
+- Restore also auto-backups the current state first, so you can always undo a restore.
+
+### The Tech Debt
+
+- No import/export yet (share sheet / file picker).
+- No confirmation dialog before restore.
+
+## 2026-08-21 — Preset Catalog & Gestalt UI
+
+### The Change
+
+- Added `GestaltTweaks.swift` — 17 tweak definitions across 4 categories (Display, Hardware, iPad, Internal), ported from GestaltEdit/Nugget.
+- Rebuilt `GestaltPresetManagerView` from placeholder to functional: category sections, toggles with detail text, RISKY badge, mutual exclusion for Liquid Glass ON/OFF, Apply button with count.
+- Added `respring()` to ExploitManager (killall SpringBoard) and Respring button in Status tab.
+- Registered both files in project.pbxproj.
+
+### The Reasoning
+
+- Presets cover the most common MobileGestalt tweaks without requiring users to know CacheExtra key names.
+- Mutual exclusion prevents conflicting Liquid Glass values.
+- RISKY badge warns users about potentially destabilizing tweaks (AOD burn-in, internal features).
+
+### The Tech Debt
+
+- Dynamic Island subtype picker, model name editor, AI region spoofing, and iPadOS CacheData binary patch not yet implemented.
+- Field editor (search & edit any key by hand) not yet implemented.
