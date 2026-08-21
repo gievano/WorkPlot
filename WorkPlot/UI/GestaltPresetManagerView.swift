@@ -21,7 +21,7 @@ struct GestaltPresetManagerView: View {
                 if !manager.sandboxGranted {
                     VStack(spacing: 12) {
                         Image(systemName: "lock.icloud").font(.largeTitle).foregroundColor(.orange)
-                        Text("Akses sistem belum aktif.\nBuka tab Status dan tekan \"Periksa Akses Sistem\".")
+                        Text(L10n.shared.tr("common.accessLocked"))
                             .multilineTextAlignment(.center)
                             .foregroundColor(.secondary)
                     }
@@ -29,17 +29,17 @@ struct GestaltPresetManagerView: View {
                     List {
                         Section(
                             header: Text("Dynamic Island"),
-                            footer: Text("Mengubah ArtworkDeviceSubType; pilih tipe layar yang ingin ditiru.")
+                            footer: Text(L10n.shared.tr("gestalt.islandFooter"))
                         ) {
                             Picker("Tipe", selection: $dynamicIslandSubtype) {
-                                Text("Bawaan").tag(Int?.none)
+                                Text(L10n.shared.tr("common.default")).tag(Int?.none)
                                 ForEach(DynamicIslandOption.all) { option in
                                     Text("\(option.title) (\(option.subtype))").tag(Int?.some(option.subtype))
                                 }
                             }
                         }
 
-                        Section(header: Text("Nama Model")) {
+                        Section(header: Text(L10n.shared.tr("gestalt.modelHeader"))) {
                             Toggle("Ubah Nama Model", isOn: $changesModelName)
                             if changesModelName {
                                 TextField("cth. iPhone 16 Pro", text: $modelName)
@@ -55,7 +55,7 @@ struct GestaltPresetManagerView: View {
                                             HStack(spacing: 4) {
                                                 Text(tweak.title)
                                                 if tweak.isRisky {
-                                                    Text("RISKY").font(.caption2).bold()
+                                                    Text(L10n.shared.tr("common.risky")).font(.caption2).bold()
                                                         .foregroundColor(.red)
                                                         .padding(.horizontal, 4).padding(.vertical, 1)
                                                         .background(Color.red.opacity(0.15))

@@ -123,3 +123,8 @@
 "compat.title" = "Phiên bản iOS không được hỗ trợ";
 "compat.message" = "Build phát hiện được %@ nằm ngoài phạm vi hỗ trợ (iOS 27.0 Dev Beta 1-4). Tính năng có thể lỗi.";
 "pb.loading" = "Đang tải hình nền đã cài…";
+"common.default" = "Mặc định";
+"backup.restoreConfirm" = "Khôi phục %@?";
+"backup.restoreOk" = "Khôi phục thành công. Tự động respring…";
+"fields.searchPrompt" = "Tìm khóa hoặc giá trị";
+"home.log" = "Nhật ký";

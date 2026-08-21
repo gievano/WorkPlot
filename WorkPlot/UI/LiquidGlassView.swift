@@ -14,13 +14,13 @@ struct LiquidGlassView: View {
                 if !manager.sandboxGranted {
                     VStack(spacing: 12) {
                         Image(systemName: "lock.icloud").font(.largeTitle).foregroundColor(.orange)
-                        Text("Akses sistem belum aktif.\nBuka tab Status dan tekan \"Periksa Akses Sistem\".")
+                        Text(L10n.shared.tr("common.accessLocked"))
                             .multilineTextAlignment(.center)
                             .foregroundColor(.secondary)
                     }
                 } else {
                     List {
-                        Section(header: Text("Mode Render")) {
+                        Section(header: Text(L10n.shared.tr("lg.renderMode"))) {
                             Picker("Mode", selection: $mode) {
                                 ForEach(LiquidGlassMode.allCases) { m in
                                     Text(m.label).tag(m)
@@ -43,7 +43,7 @@ struct LiquidGlassView: View {
                                 .foregroundColor(.secondary)
                         }
 
-                        Section(header: Text("Global"), footer: Text("Menonaktifkan Liquid Glass Slider secara global di seluruh sistem.")) {
+                        Section(header: Text("Global"), footer: Text(L10n.shared.tr("lg.globalFooter"))) {
                             Toggle("Matikan Liquid Glass", isOn: $sliderDisabled)
                         }
 
@@ -52,9 +52,9 @@ struct LiquidGlassView: View {
                                 applyChanges()
                             } label: {
                                 if isApplying {
-                                    HStack { ProgressView(); Text("Menerapkan...") }
+                                    HStack { ProgressView(); Text(L10n.shared.tr("common.applying")) }
                                 } else {
-                                    Text("Apply")
+                                    Text(L10n.shared.tr("common.apply"))
                                 }
                             }
                             .disabled(isApplying)
@@ -62,7 +62,7 @@ struct LiquidGlassView: View {
                             Button(role: .destructive) {
                                 manager.respringRequested = true
                             } label: {
-                                Label("Respring Sekarang", systemImage: "arrow.counterclockwise")
+                                Label(L10n.shared.tr("status.respring.refresh"), systemImage: "arrow.counterclockwise")
                             }
                         }
                     }

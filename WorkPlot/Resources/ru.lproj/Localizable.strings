@@ -123,3 +123,8 @@
 "compat.title" = "Неподдерживаемая версия iOS";
 "compat.message" = "Обнаруженная сборка %@ вне поддерживаемого диапазона (iOS 27.0 Dev Beta 1-4). Функции могут не работать.";
 "pb.loading" = "Загрузка установленных обоев…";
+"common.default" = "По умолчанию";
+"backup.restoreConfirm" = "Восстановить %@?";
+"backup.restoreOk" = "Восстановлено. Автоматический respring…";
+"fields.searchPrompt" = "Поиск ключей и значений";
+"home.log" = "Журнал";
