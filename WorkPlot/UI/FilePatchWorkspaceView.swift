@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct FilePatchWorkspaceView: View {
+    @ObservedObject private var manager = ExploitManager.shared
+    @ObservedObject private var l10n = L10n.shared
+
     var body: some View {
-<<<<<<< HEAD
-        NavigationView { List { Text("File Patch Workspace") }.navigationTitle("Files") }
-=======
         NavigationView {
             List {
                 Section(header: Text(l10n.tr("danger.header"))) {
@@ -21,8 +21,8 @@ struct FilePatchWorkspaceView: View {
                         .foregroundStyle(manager.sandboxGranted ? Color.primary : Color.orange)
                 }
             }
+            .workPlotScrollBackground()
             .navigationTitle(l10n.tr("tab.files"))
         }
->>>>>>> 20aa9fc (fix: perbaiki type mismatch foregroundStyle di FilePatchWorkspaceView)
     }
 }
