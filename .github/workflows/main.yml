@@ -2,6 +2,8 @@ name: Build iOS IPA
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -9,11 +11,14 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Select Latest Xcode (iOS 27 SDK)
+      - name: Select Xcode 26.6 (iOS 27 SDK)
         run: |
-          sudo xcode-select -s "$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
+          test -d "/Applications/Xcode_26.6.app/Contents/Developer"
+          sudo xcode-select -s "/Applications/Xcode_26.6.app/Contents/Developer"
           xcodebuild -version
-          echo "iOS SDK: $(xcrun --sdk iphoneos --show-sdk-version)"
+          sdk_version="$(xcrun --sdk iphoneos --show-sdk-version)"
+          test "$sdk_version" = "27.0"
+          echo "iOS SDK: $sdk_version"
       - name: Build iOS App
         run: |
           xcodebuild -project WorkPlot/WorkPlot.xcodeproj \

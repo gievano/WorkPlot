@@ -116,3 +116,21 @@
 
 - Dynamic Island subtype picker, model name editor, AI region spoofing, and iPadOS CacheData binary patch not yet implemented.
 - Field editor (search & edit any key by hand) not yet implemented.
+
+## 2026-08-21 - CI Target Alignment
+
+### The Change
+
+- Restored the iOS deployment target to `27.0` in both project configurations.
+- Aligned `Info.plist` with the target bundle identifier `com.workplot.app`.
+- Pinned the workflow to Xcode 26.6 and verified the iPhoneOS SDK is `27.0`.
+- Enabled the iOS build workflow for pull requests targeting `main`.
+
+### The Reasoning
+
+- The project had drifted to iOS 26.5 while the app requires iOS 27 beta APIs.
+- Selecting the newest runner Xcode was nondeterministic and could select an SDK without iOS 27 support.
+
+### The Tech Debt
+
+- GitHub-hosted runner availability for Xcode 26.6 must be confirmed; the workflow now reports this directly instead of falling through to compiler errors.

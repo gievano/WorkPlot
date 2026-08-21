@@ -3,65 +3,119 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 90;
 	objects = {
-		/* Begin PBXBuildFile section */
-		A1B2C3D4E5F6 /* WorkPlotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F7G8H9I0J1K2L /* WorkPlotApp.swift */; };
-		/* End PBXBuildFile section */
-		
-		/* Begin PBXFileReference section */
-		1A2B3C4D5E6F7G8H9I0J1K2L /* WorkPlotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkPlotApp.swift; sourceTree = "<group>"; };
-		/* End PBXFileReference section */
-		
-		/* Begin PBXGroup section */
-		ABCD1234EFGH5678IJKL /* WorkPlot */ = {
-			isa = PBXGroup;
-			children = (
-				1A2B3C4D5E6F7G8H9I0J1K2L /* WorkPlotApp.swift */,
-			);
-			path = WorkPlot;
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		000000000000000000000010 /* WorkPlot */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ".";
 			sourceTree = "<group>";
 		};
-		/* End PBXGroup section */
-		
-		/* Begin PBXProject section */
-		1234567890ABCDEF12345678 /* Project object */ = {
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		000000000000000130000000 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		000000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000010 /* WorkPlot */,
+				000000000000000000000020 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		000000000000000000000020 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000120 /* WorkPlot.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AA0000000000000000000100 /* WorkPlot */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA0000000000000000000110 /* Build configuration list for PBXNativeTarget "WorkPlot" */;
+			buildPhases = (
+				000000000000000120000000 /* Sources */,
+				000000000000000130000000 /* Frameworks */,
+				000000000000000140000000 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				000000000000000000000010 /* WorkPlot */,
+			);
+			name = WorkPlot;
+			productName = WorkPlot;
+			productReference = 000000000000000000000120 /* WorkPlot.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXFileReference section */
+		000000000000000000000120 /* WorkPlot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WorkPlot.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXProject section */
+		000000000000000000000000 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2630;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					AA0000000000000000000100 = {
+						CreatedOnToolsVersion = 26.3;
+					};
+				};
 			};
-			buildConfigurationList = 9876543210ABCDEF12345678 /* Build configuration list for PBXProject "WorkPlot" */;
-			compatibilityVersion = "Xcode 15.0";
+			buildConfigurationList = AA0000000000000000000010 /* Build configuration list for PBXProject "WorkPlot" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = ABCD1234EFGH5678IJKL /* WorkPlot */;
-			productRefGroup = ABCD1234EFGH5678IJKL /* WorkPlot */;
+			mainGroup = 000000000000000000000001;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 90;
+			productRefGroup = 000000000000000000000020 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				Z1Y2X3W4V5U6T7 /* WorkPlot */,
+				AA0000000000000000000100 /* WorkPlot */,
 			);
 		};
-		/* End PBXProject section */
-		
-		/* Begin PBXSourcesBuildPhase section */
-		F1E2D3C4B5A6 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		000000000000000140000000 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
 			files = (
-				A1B2C3D4E5F6 /* WorkPlotApp.swift in Sources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
-		/* End PBXSourcesBuildPhase section */
-		
-		/* Begin XCBuildConfiguration section */
-		AAAA1111BBBB2222CCCC3333 /* Debug */ = {
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		000000000000000120000000 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AA0000000000000000000011 /* Debug configuration for PBXProject "WorkPlot" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -89,7 +143,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
@@ -113,22 +166,17 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.workplot.app;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		BBBB2222CCCC3333DDDD4444 /* Release */ = {
+		AA0000000000000000000012 /* Release configuration for PBXProject "WorkPlot" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -156,7 +204,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
@@ -174,61 +221,86 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		AA0000000000000000000111 /* Debug configuration for PBXNativeTarget "WorkPlot" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WorkPlot;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.workplot.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SUPPORTED_PLATFORMS = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Exploit/WorkPlot-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AA0000000000000000000112 /* Release configuration for PBXNativeTarget "WorkPlot" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WorkPlot;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.workplot.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Exploit/WorkPlot-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		/* End XCBuildConfiguration section */
-		
-		/* Begin XCConfigurationList section */
-		9876543210ABCDEF12345678 /* Build configuration list for PBXProject "WorkPlot" */ = {
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AA0000000000000000000010 /* Build configuration list for PBXProject "WorkPlot" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AAAA1111BBBB2222CCCC3333 /* Debug */,
-				BBBB2222CCCC3333DDDD4444 /* Release */,
+				AA0000000000000000000011 /* Debug configuration for PBXProject "WorkPlot" */,
+				AA0000000000000000000012 /* Release configuration for PBXProject "WorkPlot" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		/* End XCConfigurationList section */
-		
-		/* Begin XCConfigurationList section */
-		Z1Y2X3W4V5U6T7 /* Build configuration list for PBXTarget "WorkPlot" */ = {
+		AA0000000000000000000110 /* Build configuration list for PBXNativeTarget "WorkPlot" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AAAA1111BBBB2222CCCC3333 /* Debug */,
-				BBBB2222CCCC3333DDDD4444 /* Release */,
+				AA0000000000000000000111 /* Debug configuration for PBXNativeTarget "WorkPlot" */,
+				AA0000000000000000000112 /* Release configuration for PBXNativeTarget "WorkPlot" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		/* End XCConfigurationList section */
-		
-		/* Begin PBXNativeTarget section */
-		Z1Y2X3W4V5U6T7 /* WorkPlot */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = Z1Y2X3W4V5U6T7 /* Build configuration list for PBXTarget "WorkPlot" */;
-			buildPhases = (
-				F1E2D3C4B5A6 /* Sources */,
-			);
-			dependencies = (
-			);
-			name = WorkPlot;
-			productName = WorkPlot;
-			productType = "com.apple.product-type.application";
-		};
-		/* End PBXNativeTarget section */
+/* End XCConfigurationList section */
 	};
-	rootObject = 1234567890ABCDEF12345678 /* Project object */;
+	rootObject = 000000000000000000000000 /* Project object */;
 }
