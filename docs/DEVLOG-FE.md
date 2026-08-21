@@ -353,3 +353,8 @@
 **The Change:** Rewrite README.md: logo icon utama di atas (copy AppIcon.png -> docs/assets/logo.png), badges, tabel fitur lengkap, panduan install/sideload, quick start, troubleshooting, credits, disclaimer.
 **The Reasoning:** README lama cuma 20 baris dan tidak mencerminkan fitur aktual; logo dari appiconset biar identik dengan icon app.
 **The Tech Debt:** Belum ada file LICENSE di repo root padahal bad_query GPLv3 - perlu ditambahkan sebelum distribusi luas.
+
+## 2026-08-22 — README Rewrite (stop-slop pass)
+**The Change:** Prose README ditulis ulang dengan aturan skill stop-slop: hapus em dash di credits, adverba ("directly"), lazy extreme ("every write"), staccato ("*Always.*"), dan kalimat dramatis. Struktur tabel/panduan dipertahankan.
+**The Reasoning:** Versi pertama masih penuh pola tulisan AI; user minta gaya yang lebih manusiawi via stop-slop + humanizer.
+**The Tech Debt:** Header kolom "What it does" dipertahankan sebagai label tabel (bukan kalimat), di luar scope aturan sentence-level.

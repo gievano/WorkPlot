@@ -1,99 +1,97 @@
 <p align="center">
-  <img src="docs/assets/logo.png" alt="WorkPlot" width="180" border-radius="20%">
+  <img src="docs/assets/logo.png" alt="WorkPlot" width="180">
 </p>
 
 <h1 align="center">WorkPlot</h1>
 
-<p align="center">
-  <strong>Modify MobileGestalt on iOS 27 Developer Beta 1–4 — no jailbreak required.</strong>
-</p>
+<p align="center"><strong>Modify MobileGestalt on iOS 27 Developer Beta 1 to 4. No jailbreak.</strong></p>
 
 <p align="center">
   <a href="#-features"><img alt="Platform" src="https://img.shields.io/badge/platform-iOS%2027%20beta%201%E2%80%934-black?logo=apple&logoColor=white"></a>
   <a href="#-features"><img alt="Language" src="https://img.shields.io/badge/language-Swift-orange?logo=swift&logoColor=white"></a>
-  <a href="#️-warning"><img alt="Status" src="https://img.shields.io/badge/status-experimental-red"></a>
+  <a href="#%EF%B8%8F-warning"><img alt="Status" src="https://img.shields.io/badge/status-experimental-red"></a>
   <a href="https://github.com/forcequitOS/bad_query"><img alt="bad_query" src="https://img.shields.io/badge/exploit-bad__query-purple"></a>
 </p>
 
 ---
 
-WorkPlot is a SwiftUI app that uses the **`bad_query`** sandbox escape ([forcequitOS/bad_query](https://github.com/forcequitOS/bad_query)) to write directly to **MobileGestalt** and system plists on iOS 27.0 developer betas — unlocking hidden features, spoofing your device model, enabling Apple Intelligence, and more, all from a friendly UI with automatic backups.
+WorkPlot is a SwiftUI app built on the `bad_query` sandbox escape from [forcequitOS](https://github.com/forcequitOS/bad_query). It writes to MobileGestalt and system plists on iOS 27.0 developer betas, so you can change your device identity, enable Apple Intelligence, and unlock hidden features through a regular app UI. The app backs up MobileGestalt before each write.
 
 ## 🌐 Languages
 
 English · Bahasa Indonesia · 中文 · 日本語 · Русский · Tiếng Việt
 
-Switch in-app: **gear icon → Language**. The entire UI follows instantly.
+Switch them in-app under the gear icon. The whole UI follows your choice.
 
 ## ✨ Features
 
 | Feature | What it does |
 |---|---|
-| 🛡️ **Status Dashboard** | Grant the `bad_query` sandbox escape, monitor exploit status, manual respring |
-| 🧬 **Gestalt Presets** | Dynamic Island for any device, custom Model Name, and more — presets applied with one tap |
-| 🔬 **Field Editor** | Edit *any* MobileGestalt key manually, inspect CacheData as hex |
-| 🤖 **Siri AI Suite** | Enable the new Siri AI + Apple Intelligence via CacheData patch (Toto method), optional device spoofing to iPhone 15/16/17 Pro & Pro Max |
-| 💧 **Liquid Glass** | Turn on Apple's new Liquid Glass UI effect |
-| 🖼️ **PosterBoard Lab** | Import `.tendies` wallpapers straight into PosterBoard |
-| 💾 **Backup & Restore** | Automatic inode-preserving backup before every write; export/import JSON snapshots; RDARFix repair tool |
-| 📁 **File Patch Workspace** | Browse and patch system files via the sandbox escape |
-| ⚙️ **Customization** | 6 languages, light/dark/system appearance, custom background image, alternate app icons |
+| 🛡️ **Status Dashboard** | Grant the `bad_query` sandbox escape, watch exploit status, trigger a respring |
+| 🧬 **Gestalt Presets** | Dynamic Island on unsupported devices, custom Model Name, one-tap presets |
+| 🔬 **Field Editor** | Edit MobileGestalt keys by hand and inspect CacheData as hex |
+| 🤖 **Siri AI Suite** | Enable the new Siri AI and Apple Intelligence through the CacheData patch (Toto method), with optional spoofing to iPhone 15/16/17 Pro and Pro Max |
+| 💧 **Liquid Glass** | Turn on Apple's Liquid Glass UI effect |
+| 🖼️ **PosterBoard Lab** | Import `.tendies` wallpapers into PosterBoard |
+| 💾 **Backup & Restore** | Automatic backup before each write, JSON snapshots you can export or import, plus the RDARFix repair tool |
+| 📁 **File Patch Workspace** | Browse and patch system files through the sandbox escape |
+| ⚙️ **Customization** | Six languages, light/dark/system appearance, custom background image, alternate app icons |
 
 ## 📲 Installation
 
-> WorkPlot is sideload-only. It will never be on the App Store.
+WorkPlot ships as a sideloaded IPA. It will not appear on the App Store.
 
-1. Grab the unsigned IPA from a green **Build unsigned IPA** CI run (Actions → latest run → Artifacts), or build it yourself:
+1. Download the unsigned IPA from a green **Build unsigned IPA** CI run (Actions tab, latest run, Artifacts section), or build it yourself:
    ```bash
    xcodebuild -project WorkPlot/WorkPlot.xcodeproj -scheme WorkPlot archive
    ```
-2. Sideload with your favorite tool: **AltStore**, **Sideloadly**, or **TrollStore**.
-3. Trust the developer certificate in **Settings → General → VPN & Device Management**.
+2. Sideload it with AltStore, Sideloadly, or TrollStore.
+3. Trust your developer certificate under Settings → General → VPN & Device Management.
 
 ### Requirements
 
 | | |
 |---|---|
-| Device | iPhone / iPad |
-| iOS | 27.0 Developer Beta **1–4** or Public Beta 1–2 |
-| Not supported | iOS ≤ 26.x, Dev Beta ≥ 5, Public Beta ≥ 3 |
+| Devices | iPhone and iPad |
+| Supported | iOS 27.0 Developer Beta 1–4, Public Beta 1–2 |
+| Not supported | iOS 26.x and older, Dev Beta 5+, Public Beta 3+ |
 
 ## 🚀 Quick Start
 
-1. Open WorkPlot → **Status** tab → tap to grant the sandbox escape (`bad_query`).
-2. Go to **Backups** and create your first backup. *Always.*
-3. Apply any tweak you like. After applying, you'll get a **"Restart Recommended"** alert — respring when convenient.
-4. Enjoy. If anything looks wrong, restore from **Backups** first, ask questions later.
+1. Open WorkPlot, go to the **Status** tab, and grant the sandbox escape.
+2. Open **Backups** and create your first snapshot before touching anything.
+3. Apply a tweak. You will see a "Restart Recommended" alert; respring whenever it suits you.
+4. If something misbehaves, restore the snapshot from **Backups**, then report the bug.
 
-### Enabling Siri AI / Apple Intelligence
+### Enabling Siri AI and Apple Intelligence
 
-1. **Siri AI** tab → toggle **Enable New Siri AI (CacheData)**.
-2. *(Optional)* pick a device spoof target — needed if Apple Intelligence checks your hardware.
-3. Tap **Apply Changes** → a **"Restart Required"** popup appears → respring.
-4. ⚠️ Spoofing may break Face ID until reverted.
+1. In the **Siri AI** tab, toggle **Enable New Siri AI (CacheData)**.
+2. Pick a device spoof target if Apple Intelligence rejects your hardware.
+3. Tap **Apply Changes**, then confirm the respring in the "Restart Required" popup.
+4. Spoofing can break Face ID until you revert it, so keep a snapshot handy.
 
 ## ⚠️ Warning
 
-- This app **modifies system state** using a sandbox escape. You use it **entirely at your own risk**.
-- Device spoofing can break Face ID, FaceTime, OTA updates, or other Apple services.
-- Always keep a fresh backup before experimenting.
-- Apple can close the `bad_query` vector in any future beta — pinned to beta ranges above.
-- Not affiliated with or endorsed by Apple Inc.
+- This app modifies system state through a sandbox escape. Use it at your own risk.
+- Device spoofing can break Face ID, FaceTime, OTA updates, and other Apple services.
+- Keep a fresh backup before you experiment.
+- Apple can close the `bad_query` vector in a future beta, so check the version table above before updating iOS.
+- This project has no affiliation with Apple Inc.
 
 ## 🛠 Troubleshooting
 
 | Symptom | Fix |
 |---|---|
-| App won't apply tweaks | Re-grant the sandbox escape from the Status tab |
-| Weird behavior after Gestalt edits | Restore your latest snapshot in **Backups** |
-| Stuck RDAR bug after edits | Run the built-in **RDARFix** repair tool |
-| Boot loop | Respring failsafe overlay handles it; worst case restore backup after reboot |
+| Tweaks fail to apply | Re-grant the sandbox escape on the Status tab |
+| Strange behavior after Gestalt edits | Restore your latest snapshot in Backups |
+| RDAR bug after edits | Run the built-in RDARFix repair tool |
+| Respring loop | The failsafe overlay recovers the app; after a reboot, restore your backup |
 
 ## 🙏 Credits
 
-- [gievano](https://github.com/gievano) — WorkPlot
-- [Adnan120Hz](https://github.com/adnan120hz) — contributions & testing
-- [forcequitOS/bad_query](https://github.com/forcequitOS/bad_query) — sandbox escape
-- [Placard](https://github.com/Placard-App) & [GestaltEdit](https://github.com/) — inspiration & reference implementations
+- WorkPlot: [gievano](https://github.com/gievano)
+- Contributions and testing: [Adnan120Hz](https://github.com/adnan120hz)
+- Sandbox escape: [forcequitOS/bad_query](https://github.com/forcequitOS/bad_query)
+- Inspiration and reference implementations: Placard and GestaltEdit
 
 This project incorporates GPLv3-licensed `bad_query` source code.
