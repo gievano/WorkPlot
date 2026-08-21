@@ -1,8 +1,8 @@
 import SwiftUI
 
 @main
-public struct WorkPlotApp: App {
-    public var body: some Scene {
+struct WorkPlotApp: App {
+    var body: some Scene {
         WindowGroup {
             MainDashboardView()
         }

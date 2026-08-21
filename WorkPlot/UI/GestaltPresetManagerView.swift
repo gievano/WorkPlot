@@ -1,11 +1,11 @@
 import SwiftUI
 
-public struct GestaltPresetManagerView: View {
+struct GestaltPresetManagerView: View {
     @ObservedObject private var manager = ExploitManager.shared
     @State private var selectedTweaks: Set<GestaltTweakID> = []
     @State private var isApplying = false
 
-    public var body: some View {
+    var body: some View {
         NavigationView {
             Group {
                 if !manager.sandboxGranted {

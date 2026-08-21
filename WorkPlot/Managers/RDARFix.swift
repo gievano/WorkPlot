@@ -1,7 +1,7 @@
 import Foundation
 
-public struct RDARFix {
-    public static func apply() -> Bool {
+struct RDARFix {
+    static func apply() -> Bool {
         let path = "/var/preferences/com.apple.iomobilegraphicsfamily.plist"
         var error: NSString? = nil
         guard let lease = BadQueryLease.lease(forPath: path, error: &error) else { return false }

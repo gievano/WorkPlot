@@ -1,7 +1,7 @@
 import SwiftUI
 
-public struct MainDashboardView: View {
-    public var body: some View {
+struct MainDashboardView: View {
+    var body: some View {
         TabView {
             StatusDashboardView().tabItem { Label("Status", systemImage: "shield.checkered") }
             GestaltPresetManagerView().tabItem { Label("Gestalt", systemImage: "cpu") }

@@ -1,9 +1,9 @@
 import SwiftUI
 
-public struct BackupRestoreManagerView: View {
+struct BackupRestoreManagerView: View {
     @ObservedObject private var manager = ExploitManager.shared
 
-    public var body: some View {
+    var body: some View {
         NavigationView {
             Group {
                 if manager.backups.isEmpty {
