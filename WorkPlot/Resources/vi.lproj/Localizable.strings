@@ -31,7 +31,6 @@
 
 "posterboard.import" = "Nhập hình nền .tendies";
 "fields.openEditor" = "Mở trình soạn thảo trường";
-"status.checkaccess" = "Kiểm tra quyền truy cập hệ thống";
 "status.rdarfix" = "Sửa RDAR";
 "status.lg.disable" = "Tắt Liquid Glass";
 "status.respring.refresh" = "Respring (Làm mới)";

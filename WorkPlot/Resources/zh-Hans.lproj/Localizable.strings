@@ -31,7 +31,6 @@
 
 "posterboard.import" = "导入 .tendies 壁纸";
 "fields.openEditor" = "打开字段编辑器";
-"status.checkaccess" = "检查系统访问";
 "status.rdarfix" = "修复 RDAR";
 "status.lg.disable" = "关闭液态玻璃";
 "status.respring.refresh" = "Respring（刷新）";

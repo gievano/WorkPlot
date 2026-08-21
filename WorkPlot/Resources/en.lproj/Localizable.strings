@@ -31,7 +31,6 @@
 
 "posterboard.import" = "Import .tendies Wallpaper";
 "fields.openEditor" = "View Field Editor";
-"status.checkaccess" = "Check System Access";
 "status.rdarfix" = "Fix RDAR";
 "status.lg.disable" = "Disable Liquid Glass";
 "status.respring.refresh" = "Respring (Refresh)";

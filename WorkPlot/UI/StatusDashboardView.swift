@@ -13,7 +13,6 @@ struct StatusDashboardView: View {
                     HStack { Text(l10n.tr("home.statusLabel")); Spacer(); Text(manager.sandboxGranted ? l10n.tr("home.active") : l10n.tr("home.locked")).foregroundColor(manager.sandboxGranted ? .green : .orange) }
                 }
                 Section(header: Text(l10n.tr("home.actionsHeader"))) {
-                    Button(l10n.tr("status.checkaccess")) { _ = manager.checkSystemPathAccess() }
                     Button(l10n.tr("status.rdarfix")) {
                         do {
                             try RDARFix.apply()

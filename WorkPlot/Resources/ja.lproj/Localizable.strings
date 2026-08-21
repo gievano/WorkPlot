@@ -31,7 +31,6 @@
 
 "posterboard.import" = ".tendies 壁紙を読み込む";
 "fields.openEditor" = "フィールドエディタを開く";
-"status.checkaccess" = "システムアクセスを確認";
 "status.rdarfix" = "RDAR を修正";
 "status.lg.disable" = "リキッドグラスをオフ";
 "status.respring.refresh" = "Respring（更新）";

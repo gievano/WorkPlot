@@ -31,7 +31,6 @@
 
 "posterboard.import" = "Импортировать обои .tendies";
 "fields.openEditor" = "Открыть редактор полей";
-"status.checkaccess" = "Проверить доступ к системе";
 "status.rdarfix" = "Исправить RDAR";
 "status.lg.disable" = "Выключить Liquid Glass";
 "status.respring.refresh" = "Respring (Обновить)";
