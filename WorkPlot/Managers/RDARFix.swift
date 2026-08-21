@@ -20,35 +20,31 @@ struct RDARFix {
 
     static func apply(canvasWidth: Int,
                       canvasHeight: Int) throws {
-        var leaseError: NSString? = nil
-        guard let lease = BadQueryLease.lease(forPath: path, error: &leaseError) else {
-            throw RDARFixError(message: "bad_query gagal: \(leaseError ?? "tidak diketahui")")
-        }
-        defer { lease.invalidate() }
+        try BadQueryLeaseScope.withLease(forPath: path) {
+            guard let data = FileManager.default.contents(atPath: path) else {
+                throw RDARFixError(message: "Plist tidak dapat dibaca di \(path).")
+            }
 
-        guard let data = FileManager.default.contents(atPath: path) else {
-            throw RDARFixError(message: "Plist tidak dapat dibaca di \(path).")
-        }
+            var format = PropertyListSerialization.PropertyListFormat.binary
+            guard var plist = try? PropertyListSerialization.propertyList(
+                from: data, options: [], format: &format) as? [String: Any] else {
+                throw RDARFixError(message: "Isi plist bukan dictionary yang valid.")
+            }
 
-        var format = PropertyListSerialization.PropertyListFormat.binary
-        guard var plist = try? PropertyListSerialization.propertyList(
-            from: data, options: [], format: &format) as? [String: Any] else {
-            throw RDARFixError(message: "Isi plist bukan dictionary yang valid.")
-        }
+            plist["canvas_width"] = canvasWidth
+            plist["canvas_height"] = canvasHeight
 
-        plist["canvas_width"] = canvasWidth
-        plist["canvas_height"] = canvasHeight
+            guard let outData = try? PropertyListSerialization.data(
+                fromPropertyList: plist, format: format, options: 0) else {
+                throw RDARFixError(message: "Gagal serialisasi plist.")
+            }
 
-        guard let outData = try? PropertyListSerialization.data(
-            fromPropertyList: plist, format: format, options: 0) else {
-            throw RDARFixError(message: "Gagal serialisasi plist.")
-        }
+            try writeInPlace(outData, to: path)
 
-        try writeInPlace(outData, to: path)
-
-        guard let verification = FileManager.default.contents(atPath: path),
-              verification == outData else {
-            throw RDARFixError(message: "Verifikasi pasca-tulis gagal.")
+            guard let verification = FileManager.default.contents(atPath: path),
+                  verification == outData else {
+                throw RDARFixError(message: "Verifikasi pasca-tulis gagal.")
+            }
         }
     }
 

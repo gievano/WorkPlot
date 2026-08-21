@@ -16,6 +16,9 @@ struct MoreMenuView: View {
                 NavigationLink { BackupRestoreManagerView() } label: {
                     Label(l10n.tr("tab.backups"), systemImage: "arrow.counterclockwise.circle.fill")
                 }
+                NavigationLink { PresetLabView() } label: {
+                    Label(l10n.tr("preset.title"), systemImage: "wand.and.stars")
+                }
                 NavigationLink { FilePatchWorkspaceView() } label: {
                     Label(l10n.tr("tab.files"), systemImage: "folder.fill")
                 }
