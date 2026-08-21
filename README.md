@@ -35,7 +35,7 @@ Switch them in-app under the gear icon. The whole UI follows your choice.
 | **PosterBoard Lab**      | Import `.tendies` wallpapers into PosterBoard                                                                                                      |
 | **Backup & Restore**     | Automatic backup before each write, JSON snapshots you can export or import, plus the RDARFix repair tool                                          |
 | **File Patch Workspace** | Browse and patch system files through the sandbox escape                                                                                           |
-| **Customization**        | Six languages, light/dark/system appearance, custom background image, alternate app icons                                                          |
+| **Customization**        | Six languages, light/dark/system appearance, alternate app icons                                                                                   |
 
 ## Installation
 

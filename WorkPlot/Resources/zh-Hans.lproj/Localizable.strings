@@ -76,3 +76,16 @@
 // Home tab
 "tab.home" = "主页";
 "home.info" = "系统信息";
+
+// Danger zone warnings
+"danger.header" = "危险区域";
+"danger.spoof.title" = "设备伪装风险";
+"danger.spoof.continue" = "仍要继续";
+"danger.spoof.message" = "伪装可能破坏面容 ID、FaceTime 和 OTA 更新。继续前请先备份。";
+"danger.filepatch.message" = "错误修改系统文件可能导致无法开机。请务必先备份。";
+"filepatch.ready" = "沙盒访问已激活。文件浏览将在后续版本提供。";
+"filepatch.needaccess" = "请先在主页标签授予系统访问权限。";
+
+// Compatibility check
+"compat.title" = "不受支持的 iOS 版本";
+"compat.message" = "检测到的版本 %@ 超出支持范围（iOS 27.0 开发者测试版 1-4）。功能可能失败或异常。";

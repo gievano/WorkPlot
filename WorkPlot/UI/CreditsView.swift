@@ -45,7 +45,7 @@ struct CreditsView: View {
             }
 
             Section(header: Text(l10n.tr("credits.thanks"))) {
-                Text(thanks.joined(separator: " · "))
+                Text(thanks.joined(separator: ", "))
                     .font(.system(size: 16, weight: .medium))
             }
 
