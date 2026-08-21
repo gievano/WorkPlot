@@ -13,15 +13,22 @@ struct StatusDashboardView: View {
                 Section(header: Text("Aksi")) {
                     Button("Periksa Akses Sistem") { _ = manager.checkSystemPathAccess() }
                     Button("Perbaiki RDAR") {
-                        manager.statusText = RDARFix.apply() ? "RDAR Fix diterapkan." : "RDAR Fix gagal."
+                        do {
+                            try RDARFix.apply()
+                            manager.statusText = "RDAR Fix diterapkan. Respring dalam 1 detik..."
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                manager.respringRequested = true
+                            }
+                        } catch {
+                            manager.statusText = "Gagal: \(error.localizedDescription)"
+                        }
                     }
                     Button("Matikan Liquid Glass") {
                         manager.statusText = LiquidGlassController.disableGlobal()
                             ? "Liquid Glass dinonaktifkan."
                             : "Liquid Glass gagal dinonaktifkan."
                     }
-                    Button("Restart Device") { manager.restartDevice() }
-                        .disabled(!manager.sandboxGranted)
+                    Button("Respring (NeoSpring)") { manager.respringRequested = true }
                 }
                 Section(header: Text("Log")) {
                     Text(manager.statusText)
@@ -30,6 +37,34 @@ struct StatusDashboardView: View {
                 }
             }
             .navigationTitle("work.plot")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    MainDashboardSettingsMenu()
+                }
+            }
+        }
+    }
+}
+
+struct MainDashboardSettingsMenu: View {
+    @ObservedObject private var l10n = L10n.shared
+    @AppStorage("appearanceMode") private var appearanceMode = AppearanceMode.system.rawValue
+
+    var body: some View {
+        Menu {
+            Picker(l10n.tr("settings.language"), selection: $l10n.language) {
+                ForEach(AppLanguage.allCases) { language in
+                    Text(language.label).tag(language)
+                }
+            }
+
+            Picker(l10n.tr("settings.appearance"), selection: $appearanceMode) {
+                ForEach(AppearanceMode.allCases) { mode in
+                    Text(l10n.tr(mode.labelKey)).tag(mode.rawValue)
+                }
+            }
+        } label: {
+            Image(systemName: "gearshape.fill")
         }
     }
 }
