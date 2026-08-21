@@ -229,6 +229,8 @@ struct GestaltFieldEditorView: View {
 private struct CacheDataView: View {
     let plist: [String: Any]
 
+    @ObservedObject private var l10n = L10n.shared
+
     private var cacheData: Data? { plist["CacheData"] as? Data }
 
     var body: some View {
@@ -303,6 +305,7 @@ private struct ValueEditor: View {
     let initialText: String
     let onCommit: (String) -> Void
 
+    @ObservedObject private var l10n = L10n.shared
     @State private var text: String
     @Environment(\.dismiss) private var dismiss
 
@@ -344,6 +347,7 @@ private struct ValueEditor: View {
 private struct AddCacheExtraFieldView: View {
     let onSave: (String, PlistValueKind, String) -> Void
 
+    @ObservedObject private var l10n = L10n.shared
     @State private var key = ""
     @State private var kind: PlistValueKind = .string
     @State private var valueText = ""
