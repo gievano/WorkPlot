@@ -70,7 +70,7 @@ struct GestaltPresetManagerView: View {
                         }
 
                     }
-                    .scrollContentBackground(.hidden)
+                    .workPlotScrollBackground()
                 }
             }
             .navigationTitle("Gestalt")

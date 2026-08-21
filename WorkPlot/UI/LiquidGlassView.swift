@@ -69,7 +69,7 @@ struct LiquidGlassView: View {
                 }
             }
             .navigationTitle("Liquid Glass")
-            .scrollContentBackground(.hidden)
+            .workPlotScrollBackground()
             .alert(
                 L10n.shared.tr("restart.rec.title"),
                 isPresented: $showRestartAlert

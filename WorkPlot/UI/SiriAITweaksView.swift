@@ -38,7 +38,7 @@ struct SiriAITweaksView: View {
                 }
             }
             .navigationTitle(l10n.tr("siriai.title"))
-            .scrollContentBackground(.hidden)
+            .workPlotScrollBackground()
             .alert(
                 l10n.tr("siriai.restart.title"),
                 isPresented: $showRestartAlert

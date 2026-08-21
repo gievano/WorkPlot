@@ -37,7 +37,7 @@ struct PosterBoardLabView: View {
                 }
             }
             .navigationTitle(L10n.shared.tr("tab.posterboard"))
-            .scrollContentBackground(.hidden)
+            .workPlotScrollBackground()
             .onAppear(perform: reloadInstalled)
             .fileImporter(
                 isPresented: $isShowingImporter,

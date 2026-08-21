@@ -46,7 +46,7 @@ struct BackupRestoreManagerView: View {
                 }
             }
             .navigationTitle("Backups")
-            .scrollContentBackground(.hidden)
+            .workPlotScrollBackground()
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {

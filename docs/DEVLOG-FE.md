@@ -378,3 +378,8 @@
 **The Change:** StatusDashboardView kembali 3 section (Informasi Sistem/Aksi/Log) - section Credits dipindah penuh ke menu Lainnya. Tombol & sheet background custom dihapus dari Aksi dan gear menu; BackgroundPickerSheet dihapus sebagai dead code (AppBackground layer tetap ada untuk background lama). Tab pertama jadi Home dengan icon house.fill. Key baru tab.home + home.info x6 bahasa.
 **The Reasoning:** User minta UI balik ke tampilan awal ala tabel inset, tab awal dinamai Home, dan fitur background custom ditarik dari menu.
 **The Tech Debt:** AppBackgroundStore/AppBackground masih ter-render kalau background.jpg sudah tersimpan di device tapi tidak ada cara menghapusnya via UI lagi.
+
+## 2026-08-22 — Fix Tabel Hilang di Light Theme
+**The Change:** .scrollContentBackground(.hidden) di 7 view diganti modifier kondisional workPlotScrollBackground(): background sistem list hanya disembunyikan kalau user pasang custom background image. Tanpa background, kartu grouped-table default iOS kembali tampil (fix laporan "gada shape di back textnya" di light theme).
+**The Reasoning:** scrollContentBackground(.hidden) permanen bikin teks melayang tanpa bentuk kartu di light mode.
+**The Tech Debt:** -

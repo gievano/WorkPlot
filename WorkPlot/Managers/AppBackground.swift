@@ -54,3 +54,23 @@ struct AppBackground: View {
     }
 }
 
+/// Hides the system list background only while a custom background image is
+/// set, so grouped-table shapes stay visible in the default look.
+private struct ConditionalListBackground: ViewModifier {
+    @ObservedObject private var store = AppBackgroundStore.shared
+
+    func body(content: Content) -> some View {
+        if store.image != nil {
+            content.scrollContentBackground(.hidden)
+        } else {
+            content
+        }
+    }
+}
+
+extension View {
+    func workPlotScrollBackground() -> some View {
+        modifier(ConditionalListBackground())
+    }
+}
+

@@ -43,7 +43,7 @@ struct StatusDashboardView: View {
                 }
             }
             .navigationTitle("work.plot")
-            .scrollContentBackground(.hidden)
+            .workPlotScrollBackground()
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     MainDashboardSettingsMenu()
