@@ -25,17 +25,17 @@ Switch them in-app under the gear icon. The whole UI follows your choice.
 
 ## ✨ Features
 
-| Feature | What it does |
-|---|---|
-| 🛡️ **Status Dashboard** | Grant the `bad_query` sandbox escape, watch exploit status, trigger a respring |
-| 🧬 **Gestalt Presets** | Dynamic Island on unsupported devices, custom Model Name, one-tap presets |
-| 🔬 **Field Editor** | Edit MobileGestalt keys by hand and inspect CacheData as hex |
-| 🤖 **Siri AI Suite** | Enable the new Siri AI and Apple Intelligence through the CacheData patch (Toto method), with optional spoofing to iPhone 15/16/17 Pro and Pro Max |
-| 💧 **Liquid Glass** | Turn on Apple's Liquid Glass UI effect |
-| 🖼️ **PosterBoard Lab** | Import `.tendies` wallpapers into PosterBoard |
-| 💾 **Backup & Restore** | Automatic backup before each write, JSON snapshots you can export or import, plus the RDARFix repair tool |
-| 📁 **File Patch Workspace** | Browse and patch system files through the sandbox escape |
-| ⚙️ **Customization** | Six languages, light/dark/system appearance, custom background image, alternate app icons |
+| Feature                     | What it does                                                                                                                                       |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🛡️ **Status Dashboard**     | Grant the `bad_query` sandbox escape, watch exploit status, trigger a respring                                                                     |
+| 🧬 **Gestalt Presets**      | Dynamic Island on unsupported devices, custom Model Name, one-tap presets                                                                          |
+| 🔬 **Field Editor**         | Edit MobileGestalt keys by hand and inspect CacheData as hex                                                                                       |
+| 🤖 **Siri AI Suite**        | Enable the new Siri AI and Apple Intelligence through the CacheData patch (Toto method), with optional spoofing to iPhone 15/16/17 Pro and Pro Max |
+| 💧 **Liquid Glass**         | Turn on Apple's Liquid Glass UI effect                                                                                                             |
+| 🖼️ **PosterBoard Lab**      | Import `.tendies` wallpapers into PosterBoard                                                                                                      |
+| 💾 **Backup & Restore**     | Automatic backup before each write, JSON snapshots you can export or import, plus the RDARFix repair tool                                          |
+| 📁 **File Patch Workspace** | Browse and patch system files through the sandbox escape                                                                                           |
+| ⚙️ **Customization**        | Six languages, light/dark/system appearance, custom background image, alternate app icons                                                          |
 
 ## 📲 Installation
 
@@ -50,10 +50,10 @@ WorkPlot ships as a sideloaded IPA. It will not appear on the App Store.
 
 ### Requirements
 
-| | |
-|---|---|
-| Devices | iPhone and iPad |
-| Supported | iOS 27.0 Developer Beta 1–4, Public Beta 1–2 |
+|               |                                                 |
+| ------------- | ----------------------------------------------- |
+| Devices       | iPhone and iPad                                 |
+| Supported     | iOS 27.0 Developer Beta 1–4, Public Beta 1–2    |
 | Not supported | iOS 26.x and older, Dev Beta 5+, Public Beta 3+ |
 
 ## 🚀 Quick Start
@@ -80,16 +80,16 @@ WorkPlot ships as a sideloaded IPA. It will not appear on the App Store.
 
 ## 🛠 Troubleshooting
 
-| Symptom | Fix |
-|---|---|
-| Tweaks fail to apply | Re-grant the sandbox escape on the Status tab |
-| Strange behavior after Gestalt edits | Restore your latest snapshot in Backups |
-| RDAR bug after edits | Run the built-in RDARFix repair tool |
-| Respring loop | The failsafe overlay recovers the app; after a reboot, restore your backup |
+| Symptom                              | Fix                                                                        |
+| ------------------------------------ | -------------------------------------------------------------------------- |
+| Tweaks fail to apply                 | Re-grant the sandbox escape on the Status tab                              |
+| Strange behavior after Gestalt edits | Restore your latest snapshot in Backups                                    |
+| RDAR bug after edits                 | Run the built-in RDARFix repair tool                                       |
+| Respring loop                        | The failsafe overlay recovers the app; after a reboot, restore your backup |
 
 ## 🙏 Credits
 
-- WorkPlot: [gievano](https://github.com/gievano)
+- WorkPlot: [gievano](https://github.com/gievano), [Adnan120Hz](https://github.com/adnan120hz)
 - Contributions and testing: [Adnan120Hz](https://github.com/adnan120hz)
 - Sandbox escape: [forcequitOS/bad_query](https://github.com/forcequitOS/bad_query)
 - Inspiration and reference implementations: Placard and GestaltEdit

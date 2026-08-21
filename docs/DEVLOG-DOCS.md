@@ -14,3 +14,19 @@
 ### The Tech Debt
 
 - Replace the status badge with CI/release-backed badges once automated releases exist.
+
+## 2026-08-22
+
+### The Change
+
+- Rewrote `README.md` using humanizer rules to scrub AI writing artifacts (em dashes, overused buzzwords, and promotional language).
+- Pushed update to branch `docs/rewrite-readme-humanizer`.
+
+### The Reasoning
+
+- Clean human writing improves clarity and removes generic AI-generated fluff from project documentation.
+
+### The Tech Debt
+
+- None.
+

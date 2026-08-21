@@ -373,3 +373,8 @@
 **The Change:** Membatalkan penghapusan 5 icon generate-an; Info.plist kembali mendaftar 6 alternate icons + default = 7 total di grid.
 **The Reasoning:** User memutuskan tetap pakai semua varian (Dark, Neon, Minimal, Retro, Gradient) selain Default dan WP Collage.
 **The Tech Debt:** Tidak ada perubahan kode Swift - AppIconSwitcherSheet sudah mendaftar 7 sejak awal.
+
+## 2026-08-22 — UI Revert ke Layout Awal, Tab Home, Hapus Menu Background
+**The Change:** StatusDashboardView kembali 3 section (Informasi Sistem/Aksi/Log) - section Credits dipindah penuh ke menu Lainnya. Tombol & sheet background custom dihapus dari Aksi dan gear menu; BackgroundPickerSheet dihapus sebagai dead code (AppBackground layer tetap ada untuk background lama). Tab pertama jadi Home dengan icon house.fill. Key baru tab.home + home.info x6 bahasa.
+**The Reasoning:** User minta UI balik ke tampilan awal ala tabel inset, tab awal dinamai Home, dan fitur background custom ditarik dari menu.
+**The Tech Debt:** AppBackgroundStore/AppBackground masih ter-render kalau background.jpg sudah tersimpan di device tapi tidak ada cara menghapusnya via UI lagi.

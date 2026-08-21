@@ -8,7 +8,7 @@ struct StatusDashboardView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text(l10n.tr("tab.status"))) {
+                Section(header: Text(l10n.tr("home.info"))) {
                     HStack { Text("Build"); Spacer(); Text(manager.osBuild.isEmpty ? "—" : manager.osBuild).foregroundColor(.blue) }
                     HStack { Text("Status"); Spacer(); Text(manager.sandboxGranted ? "Aktif" : "Terkunci").foregroundColor(manager.sandboxGranted ? .green : .orange) }
                 }
@@ -35,21 +35,6 @@ struct StatusDashboardView: View {
                     .disabled(!manager.sandboxGranted)
                     // Respring tetap di menu utama: fungsinya menyegarkan UI saja.
                     Button(l10n.tr("status.respring.refresh")) { manager.respringRequested = true }
-
-                    Button {
-                        showBackgroundPicker = true
-                    } label: {
-                        Label(l10n.tr("bg.pick"), systemImage: "photo")
-                    }
-                }
-                Section(header: Text(l10n.tr("credits.header"))) {
-                    Link("Owner: Adnan.120hz & Gievano", destination: URL(string: "https://github.com/adnan120hz")!)
-                        .font(.system(size: 15, weight: .semibold))
-                    Link("gievano", destination: URL(string: "https://github.com/gievano")!)
-                    Link("Adnan 120Hz", destination: URL(string: "https://github.com/adnan120hz")!)
-                    Text(l10n.tr("credits.disclaimer"))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
                 }
                 Section(header: Text("Log")) {
                     Text(manager.statusText)
@@ -73,19 +58,13 @@ struct StatusDashboardView: View {
             } message: {
                 Text(l10n.tr("restart.rec.message"))
             }
-            .sheet(isPresented: $showBackgroundPicker) {
-                BackgroundPickerSheet()
-            }
         }
     }
-
-    @State private var showBackgroundPicker = false
 }
 
 struct MainDashboardSettingsMenu: View {
     @ObservedObject private var l10n = L10n.shared
     @AppStorage("appearanceMode") private var appearanceMode = AppearanceMode.system.rawValue
-    @State private var showBackgroundPicker = false
     @State private var showIconSwitcher = false
 
     var body: some View {
@@ -103,21 +82,12 @@ struct MainDashboardSettingsMenu: View {
             }
 
             Button {
-                showBackgroundPicker = true
-            } label: {
-                Label(l10n.tr("bg.pick"), systemImage: "photo")
-            }
-
-            Button {
                 showIconSwitcher = true
             } label: {
                 Label(l10n.tr("icon.menu"), systemImage: "paintbrush")
             }
         } label: {
             Image(systemName: "gearshape.fill")
-        }
-        .sheet(isPresented: $showBackgroundPicker) {
-            BackgroundPickerSheet()
         }
         .sheet(isPresented: $showIconSwitcher) {
             AppIconSwitcherSheet()

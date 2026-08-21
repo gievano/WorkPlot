@@ -72,3 +72,7 @@
 "pb.wrongext" = "仅支持 .tendies 文件。";
 "bg.opacity" = "背景不透明度";
 "bg.opacity.hint" = "自定义背景的透明度";
+
+// Home tab
+"tab.home" = "主页";
+"home.info" = "系统信息";
