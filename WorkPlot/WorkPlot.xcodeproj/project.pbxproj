@@ -1,0 +1,314 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8300012128E0234B00778B50 /* WorkPlotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011128E0234B00778B50 /* WorkPlotApp.swift */; };
+		8300012228E0234B00778B50 /* ExploitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011228E0234B00778B50 /* ExploitManager.swift */; };
+		8300012328E0234B00778B50 /* FileSystemAccessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011328E0234B00778B50 /* FileSystemAccessor.swift */; };
+		8300012428E0234B00778B50 /* LiquidGlassController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011428E0234B00778B50 /* LiquidGlassController.swift */; };
+		8300012528E0234B00778B50 /* RDARFix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011528E0234B00778B50 /* RDARFix.swift */; };
+		8300012628E0234B00778B50 /* MainDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011628E0234B00778B50 /* MainDashboardView.swift */; };
+		8300012728E0234B00778B50 /* StatusDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011728E0234B00778B50 /* StatusDashboardView.swift */; };
+		8300012828E0234B00778B50 /* GestaltPresetManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011828E0234B00778B50 /* GestaltPresetManagerView.swift */; };
+		8300012928E0234B00778B50 /* CustomizationThemeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011928E0234B00778B50 /* CustomizationThemeView.swift */; };
+		8300012A28E0234B00778B50 /* FilePatchWorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011A28E0234B00778B50 /* FilePatchWorkspaceView.swift */; };
+		8300012B28E0234B00778B50 /* BackupRestoreManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011B28E0234B00778B50 /* BackupRestoreManagerView.swift */; };
+		8300012C28E0234B00778B50 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8300011C28E0234B00778B50 /* Assets.xcassets */; };
+		8300012D28E0234B00778B50 /* BadQueryBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 8300011E28E0234B00778B50 /* BadQueryBridge.m */; };
+		8300012E28E0234B00778B50 /* GestaltAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = 8300012028E0234B00778B50 /* GestaltAccess.m */; };
+		8300012F28E0234B00778B50 /* GestaltBackupStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300012328E0234B00778B51 /* GestaltBackupStore.swift */; };
+		8300013028E0234B00778B51 /* GestaltTweaks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300012428E0234B00778B51 /* GestaltTweaks.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		8300010128E0234B00778B50 /* WorkPlot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WorkPlot.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8300011128E0234B00778B50 /* WorkPlotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkPlotApp.swift; sourceTree = "<group>"; };
+		8300011228E0234B00778B50 /* ExploitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploitManager.swift; sourceTree = "<group>"; };
+		8300011328E0234B00778B50 /* FileSystemAccessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSystemAccessor.swift; sourceTree = "<group>"; };
+		8300011428E0234B00778B50 /* LiquidGlassController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassController.swift; sourceTree = "<group>"; };
+		8300011528E0234B00778B50 /* RDARFix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDARFix.swift; sourceTree = "<group>"; };
+		8300011628E0234B00778B50 /* MainDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainDashboardView.swift; sourceTree = "<group>"; };
+		8300011728E0234B00778B50 /* StatusDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusDashboardView.swift; sourceTree = "<group>"; };
+		8300011828E0234B00778B50 /* GestaltPresetManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestaltPresetManagerView.swift; sourceTree = "<group>"; };
+		8300011928E0234B00778B50 /* CustomizationThemeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomizationThemeView.swift; sourceTree = "<group>"; };
+		8300011A28E0234B00778B50 /* FilePatchWorkspaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePatchWorkspaceView.swift; sourceTree = "<group>"; };
+		8300011B28E0234B00778B50 /* BackupRestoreManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRestoreManagerView.swift; sourceTree = "<group>"; };
+		8300011C28E0234B00778B50 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8300011D28E0234B00778B50 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8300011E28E0234B00778B50 /* BadQueryBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BadQueryBridge.m; sourceTree = "<group>"; };
+		8300011F28E0234B00778B50 /* BadQueryBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BadQueryBridge.h; sourceTree = "<group>"; };
+		8300012028E0234B00778B50 /* GestaltAccess.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GestaltAccess.m; sourceTree = "<group>"; };
+		8300012128E0234B00778B51 /* GestaltAccess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GestaltAccess.h; sourceTree = "<group>"; };
+		8300012228E0234B00778B51 /* WorkPlot-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WorkPlot-Bridging-Header.h"; sourceTree = "<group>"; };
+		8300012328E0234B00778B51 /* GestaltBackupStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestaltBackupStore.swift; sourceTree = "<group>"; };
+		8300012428E0234B00778B51 /* GestaltTweaks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestaltTweaks.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8300020128E0234B00778B50 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = {};
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8300030128E0234B00778B50 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				8300011128E0234B00778B50 /* WorkPlotApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		8300030228E0234B00778B50 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				8300011228E0234B00778B50 /* ExploitManager.swift */,
+				8300011328E0234B00778B50 /* FileSystemAccessor.swift */,
+				8300011428E0234B00778B50 /* LiquidGlassController.swift */,
+				8300011528E0234B00778B50 /* RDARFix.swift */,
+				8300012328E0234B00778B51 /* GestaltBackupStore.swift */,
+				8300012428E0234B00778B51 /* GestaltTweaks.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		8300030328E0234B00778B50 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				8300011628E0234B00778B50 /* MainDashboardView.swift */,
+				8300011728E0234B00778B50 /* StatusDashboardView.swift */,
+				8300011828E0234B00778B50 /* GestaltPresetManagerView.swift */,
+				8300011928E0234B00778B50 /* CustomizationThemeView.swift */,
+				8300011A28E0234B00778B50 /* FilePatchWorkspaceView.swift */,
+				8300011B28E0234B00778B50 /* BackupRestoreManagerView.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		8300030428E0234B00778B50 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8300010128E0234B00778B50 /* WorkPlot.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8300030528E0234B00778B50 /* Exploit */ = {
+			isa = PBXGroup;
+			children = (
+				8300011F28E0234B00778B50 /* BadQueryBridge.h */,
+				8300011E28E0234B00778B50 /* BadQueryBridge.m */,
+				8300012128E0234B00778B51 /* GestaltAccess.h */,
+				8300012028E0234B00778B50 /* GestaltAccess.m */,
+				8300012228E0234B00778B51 /* WorkPlot-Bridging-Header.h */,
+			);
+			path = Exploit;
+			sourceTree = "<group>";
+		};
+		83C901C228E0234B00778B50 /* WorkPlot */ = {
+			isa = PBXGroup;
+			children = (
+				8300030128E0234B00778B50 /* App */,
+				8300030228E0234B00778B50 /* Managers */,
+				8300030328E0234B00778B50 /* UI */,
+				8300030528E0234B00778B50 /* Exploit */,
+				8300011C28E0234B00778B50 /* Assets.xcassets */,
+				8300011D28E0234B00778B50 /* Info.plist */,
+				8300030428E0234B00778B50 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		83C901C028E0234B00778B50 /* WorkPlot */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8300050128E0234B00778B50;
+			buildPhases = (
+				8300020028E0234B00778B50 /* Sources */,
+				8300020128E0234B00778B50 /* Frameworks */,
+				8300020228E0234B00778B50 /* Resources */,
+			);
+			buildRules = {};
+			dependencies = {};
+			name = WorkPlot;
+			productName = WorkPlot;
+			productReference = 8300010128E0234B00778B50 /* WorkPlot.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		83C901BF28E0234B00778B50 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					83C901C028E0234B00778B50 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = 8300050028E0234B00778B50;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 83C901C228E0234B00778B50;
+			productRefGroup = 8300030428E0234B00778B50 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				83C901C028E0234B00778B50 /* WorkPlot */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8300020228E0234B00778B50 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8300012C28E0234B00778B50 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8300020028E0234B00778B50 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8300012128E0234B00778B50 /* WorkPlotApp.swift in Sources */,
+				8300012228E0234B00778B50 /* ExploitManager.swift in Sources */,
+				8300012328E0234B00778B50 /* FileSystemAccessor.swift in Sources */,
+				8300012428E0234B00778B50 /* LiquidGlassController.swift in Sources */,
+				8300012528E0234B00778B50 /* RDARFix.swift in Sources */,
+				8300012628E0234B00778B50 /* MainDashboardView.swift in Sources */,
+				8300012728E0234B00778B50 /* StatusDashboardView.swift in Sources */,
+				8300012828E0234B00778B50 /* GestaltPresetManagerView.swift in Sources */,
+				8300012928E0234B00778B50 /* CustomizationThemeView.swift in Sources */,
+				8300012A28E0234B00778B50 /* FilePatchWorkspaceView.swift in Sources */,
+				8300012B28E0234B00778B50 /* BackupRestoreManagerView.swift in Sources */,
+				8300012D28E0234B00778B50 /* BadQueryBridge.m in Sources */,
+				8300012E28E0234B00778B50 /* GestaltAccess.m in Sources */,
+				8300012F28E0234B00778B50 /* GestaltBackupStore.swift in Sources */,
+				8300013028E0234B00778B51 /* GestaltTweaks.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		8300040128E0234B00778B50 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.work.plot.system";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Exploit/WorkPlot-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8300040228E0234B00778B50 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		8300040328E0234B00778B50 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.work.plot.system";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Exploit/WorkPlot-Bridging-Header.h";
+			};
+			name = Debug;
+		};
+		8300040428E0234B00778B50 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.work.plot.system";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8300050028E0234B00778B50 /* Build configuration list for PBXProject "WorkPlot" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8300040128E0234B00778B50 /* Debug */,
+				8300040228E0234B00778B50 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8300050128E0234B00778B50 /* Build configuration list for PBXNativeTarget "WorkPlot" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8300040328E0234B00778B50 /* Debug */,
+				8300040428E0234B00778B50 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 83C901BF28E0234B00778B50 /* Project object */;
+}

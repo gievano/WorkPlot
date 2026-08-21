@@ -1,0 +1,4 @@
+.tmp-gestaltedit/
+*.xcuserdatad/
+xcuserdata/
+.DS_Store
