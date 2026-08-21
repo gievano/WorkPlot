@@ -124,6 +124,7 @@
 - Restored the iOS deployment target to `27.0` in both project configurations.
 - Aligned `Info.plist` with the target bundle identifier `com.workplot.app`.
 - Pinned the workflow to Xcode 26.6 and verified the iPhoneOS SDK is `27.0`.
+- Enabled the iOS build workflow for pull requests targeting `main`.
 
 ### The Reasoning
 
