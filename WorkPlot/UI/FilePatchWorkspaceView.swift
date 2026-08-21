@@ -18,7 +18,7 @@ struct FilePatchWorkspaceView: View {
                          ? l10n.tr("filepatch.ready")
                          : l10n.tr("filepatch.needaccess"))
                         .font(.system(size: 15))
-                        .foregroundStyle(manager.sandboxGranted ? .primary : .orange)
+                        .foregroundStyle(manager.sandboxGranted ? Color.primary : Color.orange)
                 }
             }
             .navigationTitle(l10n.tr("tab.files"))
