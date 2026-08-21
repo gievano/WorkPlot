@@ -76,3 +76,16 @@
 // Home tab
 "tab.home" = "Home";
 "home.info" = "Informasi Sistem";
+
+// Danger zone warnings
+"danger.header" = "Zona Berbahaya";
+"danger.spoof.title" = "Risiko Spoofing Device";
+"danger.spoof.continue" = "Tetap Lanjutkan";
+"danger.spoof.message" = "Spoofing dapat merusak Face ID, FaceTime, dan update OTA. Buat backup sebelum lanjut.";
+"danger.filepatch.message" = "Salah patch file sistem bisa bikin boot loop. Selalu punya backup segar.";
+"filepatch.ready" = "Akses sandbox aktif. Browser file akan hadir di build berikutnya.";
+"filepatch.needaccess" = "Grant akses sistem dulu di tab Home.";
+
+// Compatibility check
+"compat.title" = "Versi iOS Tidak Didukung";
+"compat.message" = "Build terdeteksi %@ di luar rentang didukung (iOS 27.0 Dev Beta 1-4). Fitur bisa gagal atau tidak normal.";
