@@ -1,0 +1,26 @@
+Wallpaper Siap Pakai (.tendies) — Atribusi
+==========================================
+
+Sumber:
+Repo aslinya yang diminta adalah leminlimez/Cowabunga (GPL-3.0), tetapi
+repo tersebut TIDAK menyertakan file .tendies apa pun (diverifikasi dari
+git tree resmi). Koleksi berikut diambil dari repo wallpaper tendies
+open-source komunitas:
+
+  CAPlayground/wallpapers
+  https://github.com/CAPlayground/wallpapers
+  Lisensi repo: GPL-3.0 (LICENSE di repo sumber)
+  Wallpaper dikumpulkan dari kontribusi komunitas PosterBoard/tendies;
+  pembuat masing-masing wallpaper tercantum pada repo sumber (folder
+  jsons/ dan previews/ memakai nama file yang sama).
+
+Berkas yang disertakan (diunduh dari commit main, Agustus 2026):
+  - Arch_3D.tendies
+  - Warm_Horizon.tendies
+  - Batman.tendies
+  - WatchOS_Reflect.tendies
+  - iPhone_17_Purple.tendies
+  - Apple_Intelligence.tendies
+
+WorkPlot sendiri berlisensi sesuai ketentuan repo ini; distribusi ulang
+berkas GPL-3.0 ini mengikuti syarat GPL-3.0 dengan atribusi seperti di atas.
