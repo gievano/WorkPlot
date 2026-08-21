@@ -15,6 +15,7 @@ struct PosterBoardLabView: View {
     @State private var installedWallpapers: [String] = []
     @State private var pendingRemoval: String?
     @State private var isLoadingWallpapers = false
+    @State private var bundledWallpapers: [URL] = []
 
     var body: some View {
         NavigationView {
@@ -39,7 +40,10 @@ struct PosterBoardLabView: View {
             }
             .navigationTitle(L10n.shared.tr("tab.posterboard"))
             .workPlotScrollBackground()
-            .onAppear(perform: reloadInstalled)
+            .onAppear {
+                reloadInstalled()
+                bundledWallpapers = Self.bundledTendies()
+            }
             .fileImporter(
                 isPresented: $isShowingImporter,
                 allowedContentTypes: [.tendies],
@@ -90,6 +94,33 @@ struct PosterBoardLabView: View {
                 }
             }
 
+            Section(header: Text(l10n.tr("pb.builtin.header"))) {
+                if bundledWallpapers.isEmpty {
+                    Text(l10n.tr("pb.builtin.none"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(bundledWallpapers, id: \.self) { url in
+                        HStack {
+                            Image(systemName: "photo.fill")
+                                .foregroundStyle(.pink)
+                            Text(url.deletingPathExtension().lastPathComponent)
+                                .font(.system(size: 15, weight: .medium))
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                            Spacer()
+                            Button {
+                                installTendies(from: url)
+                            } label: {
+                                Label(l10n.tr("pb.builtin.install"), systemImage: "arrow.down.circle")
+                            }
+                            .buttonStyle(.borderless)
+                            .disabled(isInstalling)
+                        }
+                    }
+                }
+            }
+
             Section(header: Text(l10n.tr("pb.installed"))) {
                 if isLoadingWallpapers {
                     HStack { ProgressView(); Text(l10n.tr("pb.loading")).font(.caption) }
@@ -134,6 +165,17 @@ struct PosterBoardLabView: View {
                 }
             }
         }
+    }
+
+    /// Bundled tendies live flat in the bundle root when Xcode copies the
+    /// synchronized Resources folder as groups, or under their folder name
+    /// if it ships as a folder reference — check both.
+    private static func bundledTendies() -> [URL] {
+        var urls = Bundle.main.urls(forResourcesWithExtension: "tendies", subdirectory: nil) ?? []
+        if urls.isEmpty {
+            urls = Bundle.main.urls(forResourcesWithExtension: "tendies", subdirectory: "TendiesWallpapers") ?? []
+        }
+        return urls.sorted { $0.lastPathComponent.localizedCaseInsensitiveCompare($1.lastPathComponent) == .orderedAscending }
     }
 
     /// Pipeline: copy out of the security scope -> validate ZIP & structure ->
