@@ -41,3 +41,11 @@
 "credits.disclaimer" = "This app uses sandbox escape & bad_query (github.com/forcequitOS/bad_query).";
 "bg.pick" = "カスタム背景…";
 "bg.reset" = "背景をリセット";
+
+// More menu & app icon
+"tab.more" = "その他";
+"tab.files" = "ファイル";
+"icon.menu" = "アプリアイコン";
+"icon.default" = "クラシック WorkPlot";
+"icon.collage" = "WP コラージュ";
+"common.done" = "完了";

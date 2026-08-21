@@ -41,3 +41,11 @@
 "credits.disclaimer" = "This app uses sandbox escape & bad_query (github.com/forcequitOS/bad_query).";
 "bg.pick" = "Свой фон…";
 "bg.reset" = "Сбросить фон";
+
+// More menu & app icon
+"tab.more" = "Ещё";
+"tab.files" = "Файлы";
+"icon.menu" = "Иконка приложения";
+"icon.default" = "Классический WorkPlot";
+"icon.collage" = "Коллаж WP";
+"common.done" = "Готово";

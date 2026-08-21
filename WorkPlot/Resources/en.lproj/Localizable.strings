@@ -41,3 +41,11 @@
 "credits.disclaimer" = "This app uses sandbox escape & bad_query (github.com/forcequitOS/bad_query).";
 "bg.pick" = "Custom Background...";
 "bg.reset" = "Reset Background";
+
+// More menu & app icon
+"tab.more" = "More";
+"tab.files" = "Files";
+"icon.menu" = "App Icon";
+"icon.default" = "WorkPlot Classic";
+"icon.collage" = "WP Collage";
+"common.done" = "Done";

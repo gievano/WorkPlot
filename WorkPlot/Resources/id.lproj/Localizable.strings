@@ -41,3 +41,11 @@
 "credits.disclaimer" = "This app uses sandbox escape & bad_query (github.com/forcequitOS/bad_query).";
 "bg.pick" = "Background Kustom...";
 "bg.reset" = "Reset Background";
+
+// More menu & app icon
+"tab.more" = "Lainnya";
+"tab.files" = "File";
+"icon.menu" = "Icon Aplikasi";
+"icon.default" = "WorkPlot Klasik";
+"icon.collage" = "Kolase WP";
+"common.done" = "Selesai";

@@ -41,3 +41,11 @@
 "credits.disclaimer" = "This app uses sandbox escape & bad_query (github.com/forcequitOS/bad_query).";
 "bg.pick" = "自定义背景…";
 "bg.reset" = "重置背景";
+
+// More menu & app icon
+"tab.more" = "更多";
+"tab.files" = "文件";
+"icon.menu" = "应用图标";
+"icon.default" = "经典 WorkPlot";
+"icon.collage" = "WP 拼贴";
+"common.done" = "完成";

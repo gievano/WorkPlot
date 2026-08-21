@@ -41,3 +41,11 @@
 "credits.disclaimer" = "This app uses sandbox escape & bad_query (github.com/forcequitOS/bad_query).";
 "bg.pick" = "Nền tùy chỉnh…";
 "bg.reset" = "Đặt lại nền";
+
+// More menu & app icon
+"tab.more" = "Khác";
+"tab.files" = "Tệp";
+"icon.menu" = "Biểu tượng ứng dụng";
+"icon.default" = "WorkPlot Cổ điển";
+"icon.collage" = "Ghép WP";
+"common.done" = "Xong";

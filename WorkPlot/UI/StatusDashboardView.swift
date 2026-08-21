@@ -84,6 +84,7 @@ struct MainDashboardSettingsMenu: View {
     @ObservedObject private var l10n = L10n.shared
     @AppStorage("appearanceMode") private var appearanceMode = AppearanceMode.system.rawValue
     @State private var showBackgroundPicker = false
+    @State private var showIconSwitcher = false
 
     var body: some View {
         Menu {
@@ -104,11 +105,20 @@ struct MainDashboardSettingsMenu: View {
             } label: {
                 Label(l10n.tr("bg.pick"), systemImage: "photo")
             }
+
+            Button {
+                showIconSwitcher = true
+            } label: {
+                Label(l10n.tr("icon.menu"), systemImage: "paintbrush")
+            }
         } label: {
             Image(systemName: "gearshape.fill")
         }
         .sheet(isPresented: $showBackgroundPicker) {
             BackgroundPickerSheet()
+        }
+        .sheet(isPresented: $showIconSwitcher) {
+            AppIconSwitcherSheet()
         }
     }
 }
