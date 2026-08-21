@@ -128,3 +128,18 @@
 "backup.restoreOk" = "復元成功。自動で Respring します…";
 "fields.searchPrompt" = "キーや値を検索";
 "home.log" = "ログ";
+
+// Preset Lab
+"preset.confirm.message" = "このプリセットは識別情報関連のキーを変更するため、Face ID などが動作しなくなる可能性があります。適用前にバックアップを作成します。";
+"preset.applyFailed" = "プリセットの適用に失敗しました。";
+"preset.importFile" = "プリセットファイルを読み込む...";
+"preset.userEmpty" = "プリセットはまだありません。.json プリセットファイルを読み込むか、workplot://preset リンクを開いてください。";
+"preset.importOk" = "プリセットをインポートしました: %@。";
+"preset.importFail" = "プリセットのインポートに失敗しました。";
+"preset.keysCount" = "%d 個のキー";
+"preset.builtinHeader" = "内蔵プリセット";
+"preset.title" = "プリセットラボ";
+"preset.confirm.title" = "危険なプリセットを適用しますか？";
+"preset.footer" = "プリセットは MobileGestalt の CacheExtra キー群を一括で書き込みます。適用前に自動でバックアップが作成されます。";
+"preset.userHeader" = "マイプリセット";
+"preset.author" = "作成者: %@";

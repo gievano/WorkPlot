@@ -128,3 +128,18 @@
 "backup.restoreOk" = "Restore berhasil. Respring otomatis...";
 "fields.searchPrompt" = "Cari key atau value";
 "home.log" = "Log";
+
+// Preset Lab
+"preset.confirm.message" = "Preset ini mengubah key identitas perangkat dan bisa merusak Face ID atau layanan lain. Backup dibuat sebelum diterapkan.";
+"preset.applyFailed" = "Gagal menerapkan preset.";
+"preset.importFile" = "Impor File Preset...";
+"preset.userEmpty" = "Belum ada preset. Impor file preset .json atau buka link workplot://preset.";
+"preset.importOk" = "Preset diimpor: %@.";
+"preset.importFail" = "Gagal mengimpor preset.";
+"preset.keysCount" = "%d key";
+"preset.builtinHeader" = "Preset Bawaan";
+"preset.title" = "Preset Lab";
+"preset.confirm.title" = "Terapkan Preset Berisiko?";
+"preset.footer" = "Preset menulis sekumpulan key CacheExtra MobileGestalt sekaligus. Backup dibuat otomatis sebelum setiap penerapan.";
+"preset.userHeader" = "Preset Saya";
+"preset.author" = "oleh %@";

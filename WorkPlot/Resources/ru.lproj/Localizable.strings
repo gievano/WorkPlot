@@ -128,3 +128,18 @@
 "backup.restoreOk" = "Восстановлено. Автоматический respring…";
 "fields.searchPrompt" = "Поиск ключей и значений";
 "home.log" = "Журнал";
+
+// Preset Lab
+"preset.confirm.message" = "Этот пресет меняет ключи идентификации устройства и может сломать Face ID и другие сервисы. Перед применением создаётся резервная копия.";
+"preset.applyFailed" = "Не удалось применить пресет.";
+"preset.importFile" = "Импортировать файл пресета...";
+"preset.userEmpty" = "Пресетов пока нет. Импортируйте файл пресета .json или откройте ссылку workplot://preset.";
+"preset.importOk" = "Пресет импортирован: %@.";
+"preset.importFail" = "Не удалось импортировать пресет.";
+"preset.keysCount" = "Ключей: %d";
+"preset.builtinHeader" = "Встроенные пресеты";
+"preset.title" = "Лаборатория пресетов";
+"preset.confirm.title" = "Применить рискованный пресет?";
+"preset.footer" = "Пресет записывает набор ключей CacheExtra MobileGestalt за один проход. Перед каждым применением создаётся резервная копия.";
+"preset.userHeader" = "Мои пресеты";
+"preset.author" = "автор: %@";

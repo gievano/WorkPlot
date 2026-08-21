@@ -139,7 +139,20 @@ final class L10n: ObservableObject {
             "status.respring.refresh": "Respring (Refresh UI)",
             "tab.files": "Files",
             "tab.home": "Home",
-            "tab.more": "More"
+            "tab.more": "More",
+            "preset.title": "Preset Lab",
+            "preset.footer": "A preset writes a fixed set of MobileGestalt CacheExtra keys in one pass. A backup is created automatically before each apply.",
+            "preset.builtinHeader": "Built-in Presets",
+            "preset.userHeader": "My Presets",
+            "preset.userEmpty": "No presets yet. Import a .json preset file or open a workplot://preset link.",
+            "preset.author": "by %@",
+            "preset.keysCount": "%d keys",
+            "preset.applyFailed": "Failed to apply preset.",
+            "preset.importFile": "Import Preset File...",
+            "preset.importOk": "Preset imported: %@.",
+            "preset.importFail": "Failed to import preset.",
+            "preset.confirm.title": "Apply Risky Preset?",
+            "preset.confirm.message": "This preset changes identity-related keys and can break Face ID or other services. A backup is created before applying."
         ],
         .indonesian: [
             "tab.status": "Status",
@@ -195,7 +208,20 @@ final class L10n: ObservableObject {
             "status.respring.refresh": "Respring (Segarkan UI)",
             "tab.files": "File",
             "tab.home": "Home",
-            "tab.more": "Lainnya"
+            "tab.more": "Lainnya",
+            "preset.title": "Preset Lab",
+            "preset.footer": "Preset menulis sekumpulan key CacheExtra MobileGestalt sekaligus. Backup dibuat otomatis sebelum setiap penerapan.",
+            "preset.builtinHeader": "Preset Bawaan",
+            "preset.userHeader": "Preset Saya",
+            "preset.userEmpty": "Belum ada preset. Impor file preset .json atau buka link workplot://preset.",
+            "preset.author": "oleh %@",
+            "preset.keysCount": "%d key",
+            "preset.applyFailed": "Gagal menerapkan preset.",
+            "preset.importFile": "Impor File Preset...",
+            "preset.importOk": "Preset diimpor: %@.",
+            "preset.importFail": "Gagal mengimpor preset.",
+            "preset.confirm.title": "Terapkan Preset Berisiko?",
+            "preset.confirm.message": "Preset ini mengubah key identitas perangkat dan bisa merusak Face ID atau layanan lain. Backup dibuat sebelum diterapkan."
         ],
         .chinese: [
             "tab.status": "状态",
@@ -251,7 +277,20 @@ final class L10n: ObservableObject {
             "status.respring.refresh": "Respring（刷新界面）",
             "tab.files": "文件",
             "tab.home": "主页",
-            "tab.more": "更多"
+            "tab.more": "更多",
+            "preset.title": "预设实验室",
+            "preset.footer": "预设会一次性写入一组 MobileGestalt CacheExtra 键。每次应用前都会自动创建备份。",
+            "preset.builtinHeader": "内置预设",
+            "preset.userHeader": "我的预设",
+            "preset.userEmpty": "暂无预设。导入 .json 预设文件或打开 workplot://preset 链接。",
+            "preset.author": "作者：%@",
+            "preset.keysCount": "%d 个键",
+            "preset.applyFailed": "应用预设失败。",
+            "preset.importFile": "导入预设文件...",
+            "preset.importOk": "预设已导入：%@。",
+            "preset.importFail": "导入预设失败。",
+            "preset.confirm.title": "应用高风险预设？",
+            "preset.confirm.message": "该预设会修改设备标识相关的键，可能导致面容 ID 或其他服务失效。应用前会先创建备份。"
         ],
         .japanese: [
             "tab.status": "ステータス",
@@ -307,7 +346,20 @@ final class L10n: ObservableObject {
             "status.respring.refresh": "Respring（UI 更新）",
             "tab.files": "ファイル",
             "tab.home": "ホーム",
-            "tab.more": "その他"
+            "tab.more": "その他",
+            "preset.title": "プリセットラボ",
+            "preset.footer": "プリセットは MobileGestalt の CacheExtra キー群を一括で書き込みます。適用前に自動でバックアップが作成されます。",
+            "preset.builtinHeader": "内蔵プリセット",
+            "preset.userHeader": "マイプリセット",
+            "preset.userEmpty": "プリセットはまだありません。.json プリセットファイルを読み込むか、workplot://preset リンクを開いてください。",
+            "preset.author": "作成者: %@",
+            "preset.keysCount": "%d 個のキー",
+            "preset.applyFailed": "プリセットの適用に失敗しました。",
+            "preset.importFile": "プリセットファイルを読み込む...",
+            "preset.importOk": "プリセットをインポートしました: %@。",
+            "preset.importFail": "プリセットのインポートに失敗しました。",
+            "preset.confirm.title": "危険なプリセットを適用しますか？",
+            "preset.confirm.message": "このプリセットは識別情報関連のキーを変更するため、Face ID などが動作しなくなる可能性があります。適用前にバックアップを作成します。"
         ],
         .russian: [
             "tab.status": "Статус",
@@ -363,7 +415,20 @@ final class L10n: ObservableObject {
             "status.respring.refresh": "Respring (обновить интерфейс)",
             "tab.files": "Файлы",
             "tab.home": "Главная",
-            "tab.more": "Ещё"
+            "tab.more": "Ещё",
+            "preset.title": "Лаборатория пресетов",
+            "preset.footer": "Пресет записывает набор ключей CacheExtra MobileGestalt за один проход. Перед каждым применением создаётся резервная копия.",
+            "preset.builtinHeader": "Встроенные пресеты",
+            "preset.userHeader": "Мои пресеты",
+            "preset.userEmpty": "Пресетов пока нет. Импортируйте файл пресета .json или откройте ссылку workplot://preset.",
+            "preset.author": "автор: %@",
+            "preset.keysCount": "Ключей: %d",
+            "preset.applyFailed": "Не удалось применить пресет.",
+            "preset.importFile": "Импортировать файл пресета...",
+            "preset.importOk": "Пресет импортирован: %@.",
+            "preset.importFail": "Не удалось импортировать пресет.",
+            "preset.confirm.title": "Применить рискованный пресет?",
+            "preset.confirm.message": "Этот пресет меняет ключи идентификации устройства и может сломать Face ID и другие сервисы. Перед применением создаётся резервная копия."
         ],
         .vietnamese: [
             "tab.status": "Trạng thái",
@@ -419,7 +484,20 @@ final class L10n: ObservableObject {
             "status.respring.refresh": "Respring (làm mới giao diện)",
             "tab.files": "Tệp",
             "tab.home": "Trang chủ",
-            "tab.more": "Khác"
+            "tab.more": "Khác",
+            "preset.title": "Thư viện Preset",
+            "preset.footer": "Preset ghi một bộ khóa CacheExtra của MobileGestalt trong một lần. Bản sao lưu được tạo tự động trước mỗi lần áp dụng.",
+            "preset.builtinHeader": "Preset có sẵn",
+            "preset.userHeader": "Preset của tôi",
+            "preset.userEmpty": "Chưa có preset nào. Nhập tệp preset .json hoặc mở liên kết workplot://preset.",
+            "preset.author": "bởi %@",
+            "preset.keysCount": "%d khóa",
+            "preset.applyFailed": "Không thể áp dụng preset.",
+            "preset.importFile": "Nhập tệp preset...",
+            "preset.importOk": "Đã nhập preset: %@.",
+            "preset.importFail": "Không thể nhập preset.",
+            "preset.confirm.title": "Áp dụng preset rủi ro?",
+            "preset.confirm.message": "Preset này thay đổi các khóa định danh thiết bị và có thể làm hỏng Face ID hoặc dịch vụ khác. Bản sao lưu sẽ được tạo trước khi áp dụng."
         ]
     ]
 }

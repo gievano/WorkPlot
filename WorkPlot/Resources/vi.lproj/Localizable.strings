@@ -128,3 +128,18 @@
 "backup.restoreOk" = "Khôi phục thành công. Tự động respring…";
 "fields.searchPrompt" = "Tìm khóa hoặc giá trị";
 "home.log" = "Nhật ký";
+
+// Preset Lab
+"preset.confirm.message" = "Preset này thay đổi các khóa định danh thiết bị và có thể làm hỏng Face ID hoặc dịch vụ khác. Bản sao lưu sẽ được tạo trước khi áp dụng.";
+"preset.applyFailed" = "Không thể áp dụng preset.";
+"preset.importFile" = "Nhập tệp preset...";
+"preset.userEmpty" = "Chưa có preset nào. Nhập tệp preset .json hoặc mở liên kết workplot://preset.";
+"preset.importOk" = "Đã nhập preset: %@.";
+"preset.importFail" = "Không thể nhập preset.";
+"preset.keysCount" = "%d khóa";
+"preset.builtinHeader" = "Preset có sẵn";
+"preset.title" = "Thư viện Preset";
+"preset.confirm.title" = "Áp dụng preset rủi ro?";
+"preset.footer" = "Preset ghi một bộ khóa CacheExtra của MobileGestalt trong một lần. Bản sao lưu được tạo tự động trước mỗi lần áp dụng.";
+"preset.userHeader" = "Preset của tôi";
+"preset.author" = "bởi %@";

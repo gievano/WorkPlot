@@ -128,3 +128,18 @@
 "backup.restoreOk" = "Restored. Respringing automatically...";
 "fields.searchPrompt" = "Search keys or values";
 "home.log" = "Log";
+
+// Preset Lab
+"preset.title" = "Preset Lab";
+"preset.footer" = "A preset writes a fixed set of MobileGestalt CacheExtra keys in one pass. A backup is created automatically before each apply.";
+"preset.builtinHeader" = "Built-in Presets";
+"preset.userHeader" = "My Presets";
+"preset.userEmpty" = "No presets yet. Import a .json preset file or open a workplot://preset link.";
+"preset.author" = "by %@";
+"preset.keysCount" = "%d keys";
+"preset.applyFailed" = "Failed to apply preset.";
+"preset.importFile" = "Import Preset File...";
+"preset.importOk" = "Preset imported: %@.";
+"preset.importFail" = "Failed to import preset.";
+"preset.confirm.title" = "Apply Risky Preset?";
+"preset.confirm.message" = "This preset changes identity-related keys and can break Face ID or other services. A backup is created before applying.";
