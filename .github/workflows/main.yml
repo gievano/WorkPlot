@@ -59,3 +59,36 @@ jobs:
         with:
           files: WorkPlot.ipa
           generate_release_notes: true
+
+  latest-release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download built IPA
+        uses: actions/download-artifact@v4
+        with:
+          name: WorkPlot-IPA
+
+      - name: Delete previous rolling release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete latest --cleanup-tag -y -R "$GITHUB_REPOSITORY" || true
+
+      - name: Attach IPA to rolling 'latest' release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest Build (dev)
+          body: |
+            Build dev otomatis dari commit `${{ github.sha }}` di branch main.
+
+            ⚠️ Unsigned IPA prerelease yang selalu ditimpa oleh build terbaru.
+            Unduh permanen: https://github.com/gievano/work-plot2/releases/download/latest/WorkPlot.ipa
+          files: WorkPlot.ipa
+          prerelease: true
+          make_latest: false
+          generate_release_notes: false
