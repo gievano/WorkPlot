@@ -19,12 +19,50 @@ jobs:
         xcodebuild -version
         xcrun --sdk iphoneos --show-sdk-path
 
-    - name: Prepare Payload Directory Structure
+    - name: Prepare Payload Directory and Info.plist
       run: |
         mkdir -p build/Payload/work.plot.app
         mkdir -p build/Payload/work.plot.app/Frameworks
         mkdir -p build/Payload/work.plot.app/Assets
-        cp WorkPlot/Info.plist build/Payload/work.plot.app/Info.plist
+        
+        # Membuat Info.plist otomatis langsung di dalam direktori build agar tidak error missing file
+        cat << 'EOF' > build/Payload/work.plot.app/Info.plist
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>CFBundleDevelopmentRegion</key>
+            <string>en</string>
+            <key>CFBundleExecutable</key>
+            <string>work.plot</string>
+            <key>CFBundleIdentifier</key>
+            <string>com.workplot.customization.ios27</string>
+            <key>CFBundleInfoDictionaryVersion</key>
+            <string>6.0</string>
+            <key>CFBundleName</key>
+            <string>work.plot</string>
+            <key>CFBundlePackageType</key>
+            <string>APPL</string>
+            <key>CFBundleShortVersionString</key>
+            <string>1.0.0</string>
+            <key>CFBundleVersion</key>
+            <string>2026.1</string>
+            <key>MinimumOSVersion</key>
+            <string>27.0</string>
+            <key>UIDeviceFamily</key>
+            <array>
+                <integer>1</integer>
+                <integer>2</integer>
+            </array>
+            <key>UILaunchStoryboardName</key>
+            <string>LaunchScreen</string>
+            <key>UIRequiredDeviceCapabilities</key>
+            <array>
+                <string>arm64</string>
+            </array>
+        </dict>
+        </plist>
+        EOF
 
     - name: Compile Swift Project Sources
       run: |
