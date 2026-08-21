@@ -122,3 +122,4 @@
 // Compatibility check
 "compat.title" = "不受支持的 iOS 版本";
 "compat.message" = "检测到的版本 %@ 超出支持范围（iOS 27.0 开发者测试版 1-4）。功能可能失败或异常。";
+"pb.loading" = "正在加载已安装壁纸…";

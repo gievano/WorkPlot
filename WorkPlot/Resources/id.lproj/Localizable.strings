@@ -122,3 +122,4 @@
 // Compatibility check
 "compat.title" = "Versi iOS Tidak Didukung";
 "compat.message" = "Build terdeteksi %@ di luar rentang didukung (iOS 27.0 Dev Beta 1-4). Fitur bisa gagal atau tidak normal.";
+"pb.loading" = "Memuat wallpaper terpasang...";

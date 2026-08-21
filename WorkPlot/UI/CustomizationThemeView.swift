@@ -14,6 +14,7 @@ struct PosterBoardLabView: View {
     @State private var phase = ""
     @State private var installedWallpapers: [String] = []
     @State private var pendingRemoval: String?
+    @State private var isLoadingWallpapers = false
 
     var body: some View {
         NavigationView {
@@ -90,7 +91,9 @@ struct PosterBoardLabView: View {
             }
 
             Section(header: Text(l10n.tr("pb.installed"))) {
-                if installedWallpapers.isEmpty {
+                if isLoadingWallpapers {
+                    HStack { ProgressView(); Text(l10n.tr("pb.loading")).font(.caption) }
+                } else if installedWallpapers.isEmpty {
                     Text(l10n.tr("pb.empty"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -135,58 +138,79 @@ struct PosterBoardLabView: View {
 
     /// Pipeline: copy out of the security scope -> validate ZIP & structure ->
     /// extract descriptors -> locate the PosterBoard container -> write.
+    /// Runs entirely off the main thread: bad_query directory scans are heavy
+    /// and froze the UI when executed synchronously.
     private func installTendies(from sourceURL: URL) {
         isInstalling = true
-        defer { isInstalling = false }
+        phase = ""
 
         guard sourceURL.pathExtension.lowercased() == "tendies" else {
             phase = l10n.tr("pb.wrongext")
             manager.statusText = phase
+            isInstalling = false
             return
         }
 
-        let accessed = sourceURL.startAccessingSecurityScopedResource()
-        defer { if accessed { sourceURL.stopAccessingSecurityScopedResource() } }
+        DispatchQueue.global(qos: .userInitiated).async {
+            let accessed = sourceURL.startAccessingSecurityScopedResource()
+            defer { if accessed { sourceURL.stopAccessingSecurityScopedResource() } }
 
-        do {
-            phase = "Membaca paket..."
-            let data = try Data(contentsOf: sourceURL)
+            do {
+                let data = try Data(contentsOf: sourceURL)
 
-            phase = "Validasi struktur..."
-            try TendiesPackage.validate(data)
+                try TendiesPackage.validate(data)
 
-            phase = "Ekstrak descriptor..."
-            let descriptorFolders = try TendiesPackage.extract(data)
+                let descriptorFolders = try TendiesPackage.extract(data)
 
-            phase = "Mencari container PosterBoard..."
-            let appHash = try PosterBoardAccess.findPosterBoardHash()
+                DispatchQueue.main.async { self.phase = "Mencari container PosterBoard..." }
+                let appHash = try PosterBoardAccess.findPosterBoardHash()
 
-            phase = "Menulis wallpaper..."
-            try PosterBoardAccess.writeDescriptors(appHash: appHash, descriptorFolders: descriptorFolders)
+                DispatchQueue.main.async { self.phase = "Menulis wallpaper..." }
+                try PosterBoardAccess.writeDescriptors(appHash: appHash, descriptorFolders: descriptorFolders)
 
-            phase = "Wallpaper terpasang. Respring dalam 1 detik..."
-            reloadInstalled()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                manager.respringRequested = true
+                DispatchQueue.main.async {
+                    self.isInstalling = false
+                    self.phase = "Wallpaper terpasang. Respring dalam 1 detik..."
+                    self.reloadInstalled()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        self.manager.respringRequested = true
+                    }
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.isInstalling = false
+                    self.manager.statusText = "Gagal: \(error.localizedDescription)"
+                    self.phase = "Gagal: \(error.localizedDescription)"
+                }
             }
-        } catch {
-            manager.statusText = "Gagal: \(error.localizedDescription)"
-            phase = "Gagal: \(error.localizedDescription)"
         }
     }
 
     private func remove(_ name: String) {
-        do {
-            try PosterBoardAccess.removeWallpaper(named: name)
-            manager.statusText = "Wallpaper \(name) dihapus."
-            reloadInstalled()
-        } catch {
-            manager.statusText = "Gagal: \(error.localizedDescription)"
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                try PosterBoardAccess.removeWallpaper(named: name)
+                DispatchQueue.main.async {
+                    self.manager.statusText = "Wallpaper \(name) dihapus."
+                    self.reloadInstalled()
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.manager.statusText = "Gagal: \(error.localizedDescription)"
+                }
+            }
         }
     }
 
     private func reloadInstalled() {
-        guard PosterBoardAccess.isAvailable else { return }
-        installedWallpapers = (try? PosterBoardAccess.listInstalledWallpapers()) ?? []
+        guard manager.sandboxGranted, PosterBoardAccess.isAvailable, !isLoadingWallpapers else { return }
+        isLoadingWallpapers = true
+        DispatchQueue.global(qos: .userInitiated).async {
+            let result = (try? PosterBoardAccess.listInstalledWallpapers()) ?? []
+            DispatchQueue.main.async {
+                self.installedWallpapers = result
+                self.isLoadingWallpapers = false
+            }
+        }
     }
 }

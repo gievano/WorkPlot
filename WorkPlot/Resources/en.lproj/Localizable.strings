@@ -122,3 +122,4 @@
 // Compatibility check
 "compat.title" = "Unsupported iOS Version";
 "compat.message" = "Detected build %@ is outside the supported range (iOS 27.0 Developer Beta 1-4). Features may fail or behave unexpectedly.";
+"pb.loading" = "Loading installed wallpapers...";
