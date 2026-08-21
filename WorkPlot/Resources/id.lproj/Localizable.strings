@@ -1,0 +1,51 @@
+/* WorkPlot — Bahasa Indonesia */
+
+"tab.status" = "Status";
+"tab.gestalt" = "Gestalt";
+"tab.fields" = "Fields";
+"tab.siriai" = "Siri AI";
+"tab.liquidglass" = "Liquid Glass";
+"tab.posterboard" = "PosterBoard";
+"tab.backups" = "Backups";
+
+"settings.title" = "Pengaturan";
+"settings.language" = "Bahasa";
+"settings.appearance" = "Tampilan";
+"appearance.system" = "Sistem";
+"appearance.light" = "Terang";
+"appearance.dark" = "Gelap";
+
+"siriai.title" = "Siri AI Tweaks";
+"siriai.toggle" = "Aktifkan Siri AI Baru (CacheData)";
+"siriai.toggle.detail" = "Patch blob CacheData otomatis (metode Toto).";
+"siriai.spoof" = "Spoof Device ke:";
+"siriai.spoof.none" = "Tanpa Spoofing";
+"siriai.warning" = "Spoofing dapat merusak Face ID. Gunakan dengan risiko sendiri.";
+"siriai.ai.toggle" = "Aktifkan Apple Intelligence";
+"siriai.apply" = "Apply Changes";
+
+"siriai.restart.title" = "Restart Diperlukan";
+"siriai.restart.message" = "Siri AI baru aktif setelah perangkat direstart.";
+"siriai.restart.respring" = "Respring";
+"siriai.restart.later" = "Nanti";
+
+"posterboard.import" = "Impor Wallpaper .tendies";
+"fields.openEditor" = "Buka Field Editor";
+"status.checkaccess" = "Periksa Akses Sistem";
+"status.rdarfix" = "Perbaiki RDAR";
+"status.lg.disable" = "Matikan Liquid Glass";
+"status.respring.refresh" = "Respring (Segarkan)";
+"restart.rec.title" = "Restart Disarankan";
+"restart.rec.message" = "Restart penuh memberikan hasil paling maksimal. Respring juga bisa untuk menyegarkan cepat.";
+"credits.header" = "Kredit";
+"credits.disclaimer" = "This app uses sandbox escape & bad_query (github.com/forcequitOS/bad_query).";
+"bg.pick" = "Background Kustom...";
+"bg.reset" = "Reset Background";
+
+// More menu & app icon
+"tab.more" = "Lainnya";
+"tab.files" = "File";
+"icon.menu" = "Icon Aplikasi";
+"icon.default" = "WorkPlot Klasik";
+"icon.collage" = "Kolase WP";
+"common.done" = "Selesai";

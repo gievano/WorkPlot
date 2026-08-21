@@ -9,6 +9,7 @@ import Foundation
 
 enum AppleIntelligenceController {
     static let eligibilityKey = "A62OafQ85EJAiiqKn4agtg"
+    static let siriModeKey = "a3n5T9sFtyQ74NEp9ESxg"
 
     static func isEnabled(in plist: [String: Any]) -> Bool {
         let cacheExtra = plist["CacheExtra"] as? [String: Any] ?? [:]
@@ -19,8 +20,10 @@ enum AppleIntelligenceController {
         var cacheExtra = plist["CacheExtra"] as? [String: Any] ?? [:]
         if enabled {
             cacheExtra[eligibilityKey] = 1
+            cacheExtra[siriModeKey] = 2
         } else {
             cacheExtra.removeValue(forKey: eligibilityKey)
+            cacheExtra.removeValue(forKey: siriModeKey)
         }
         plist["CacheExtra"] = cacheExtra
     }

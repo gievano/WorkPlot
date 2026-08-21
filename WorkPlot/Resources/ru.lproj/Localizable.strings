@@ -1,0 +1,51 @@
+/* WorkPlot — Русский */
+
+"tab.status" = "Статус";
+"tab.gestalt" = "Gestalt";
+"tab.fields" = "Поля";
+"tab.siriai" = "Siri AI";
+"tab.liquidglass" = "Liquid Glass";
+"tab.posterboard" = "PosterBoard";
+"tab.backups" = "Резервные копии";
+
+"settings.title" = "Настройки";
+"settings.language" = "Язык";
+"settings.appearance" = "Оформление";
+"appearance.system" = "Системная";
+"appearance.light" = "Светлая";
+"appearance.dark" = "Тёмная";
+
+"siriai.title" = "Настройки Siri AI";
+"siriai.toggle" = "Включить новый Siri AI (CacheData)";
+"siriai.toggle.detail" = "Автоматически изменяет блок CacheData (метод Toto).";
+"siriai.spoof" = "Подменить устройство на:";
+"siriai.spoof.none" = "Без подмены";
+"siriai.warning" = "Подмена может сломать Face ID. Используйте на свой риск.";
+"siriai.ai.toggle" = "Включить Apple Intelligence";
+"siriai.apply" = "Применить изменения";
+
+"siriai.restart.title" = "Требуется перезагрузка";
+"siriai.restart.message" = "Новый Siri AI активируется после перезагрузки устройства.";
+"siriai.restart.respring" = "Respring";
+"siriai.restart.later" = "Позже";
+
+"posterboard.import" = "Импортировать обои .tendies";
+"fields.openEditor" = "Открыть редактор полей";
+"status.checkaccess" = "Проверить доступ к системе";
+"status.rdarfix" = "Исправить RDAR";
+"status.lg.disable" = "Выключить Liquid Glass";
+"status.respring.refresh" = "Respring (Обновить)";
+"restart.rec.title" = "Рекомендуется перезагрузка";
+"restart.rec.message" = "Полная перезагрузка даёт лучший результат. Respring подходит для быстрого обновления.";
+"credits.header" = "Авторы";
+"credits.disclaimer" = "This app uses sandbox escape & bad_query (github.com/forcequitOS/bad_query).";
+"bg.pick" = "Свой фон…";
+"bg.reset" = "Сбросить фон";
+
+// More menu & app icon
+"tab.more" = "Ещё";
+"tab.files" = "Файлы";
+"icon.menu" = "Иконка приложения";
+"icon.default" = "Классический WorkPlot";
+"icon.collage" = "Коллаж WP";
+"common.done" = "Готово";

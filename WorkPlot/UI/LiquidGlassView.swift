@@ -5,6 +5,7 @@ struct LiquidGlassView: View {
     @State private var mode: LiquidGlassMode = .systemDefault
     @State private var sliderDisabled = false
     @State private var isApplying = false
+    @State private var showRestartAlert = false
     @State private var didLoadState = false
 
     var body: some View {
@@ -68,6 +69,16 @@ struct LiquidGlassView: View {
                 }
             }
             .navigationTitle("Liquid Glass")
+            .scrollContentBackground(.hidden)
+            .alert(
+                L10n.shared.tr("restart.rec.title"),
+                isPresented: $showRestartAlert
+            ) {
+                Button(L10n.shared.tr("siriai.restart.respring")) { manager.respringRequested = true }
+                Button(L10n.shared.tr("siriai.restart.later"), role: .cancel) {}
+            } message: {
+                Text(L10n.shared.tr("restart.rec.message"))
+            }
             .onAppear(perform: loadCurrentState)
         }
     }
@@ -90,9 +101,7 @@ struct LiquidGlassView: View {
             return
         }
 
-        manager.statusText = "Liquid Glass diterapkan. Respring dalam 1 detik..."
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            manager.respringRequested = true
-        }
+        manager.statusText = "Liquid Glass diterapkan. \(L10n.shared.tr("restart.rec.title"))"
+        showRestartAlert = true
     }
 }

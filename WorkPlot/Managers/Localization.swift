@@ -28,6 +28,13 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         case .vietnamese: "Tiếng Việt"
         }
     }
+
+    var stringsCode: String {
+        switch self {
+        case .chinese: "zh-Hans"
+        default: rawValue
+        }
+    }
 }
 
 enum AppearanceMode: String, CaseIterable, Identifiable {
@@ -66,7 +73,14 @@ final class L10n: ObservableObject {
     }
 
     func tr(_ key: String) -> String {
-        Self.table[language]?[key] ?? Self.table[.english]?[key] ?? key
+        // Primary source: WorkPlot/Resources/<lang>.lproj/Localizable.strings
+        if let path = Bundle.main.path(forResource: language.stringsCode, ofType: "lproj"),
+           let bundle = Bundle(path: path) {
+            let localized = bundle.localizedString(forKey: key, value: nil, table: nil)
+            if localized != key { return localized }
+        }
+        // Fallback until the resource bundles are verified on-device.
+        return Self.table[language]?[key] ?? Self.table[.english]?[key] ?? key
     }
 
     private static let table: [AppLanguage: [String: String]] = [
@@ -92,6 +106,10 @@ final class L10n: ObservableObject {
             "siriai.warning": "Spoofing may break Face ID. Use at your own risk.",
             "siriai.ai.toggle": "Enable Apple Intelligence",
             "siriai.apply": "Apply Changes",
+            "siriai.restart.title": "Restart Required",
+            "siriai.restart.message": "The new Siri AI becomes active after the device restarts.",
+            "siriai.restart.respring": "Respring",
+            "siriai.restart.later": "Later",
             "posterboard.import": "Import .tendies Wallpaper",
             "fields.openEditor": "View Field Editor"
         ],
@@ -117,6 +135,10 @@ final class L10n: ObservableObject {
             "siriai.warning": "Spoofing dapat merusak Face ID. Gunakan dengan risiko sendiri.",
             "siriai.ai.toggle": "Aktifkan Apple Intelligence",
             "siriai.apply": "Apply Changes",
+            "siriai.restart.title": "Restart Diperlukan",
+            "siriai.restart.message": "Siri AI baru aktif setelah perangkat direstart.",
+            "siriai.restart.respring": "Respring",
+            "siriai.restart.later": "Nanti",
             "posterboard.import": "Impor Wallpaper .tendies",
             "fields.openEditor": "Buka Field Editor"
         ],
@@ -142,6 +164,10 @@ final class L10n: ObservableObject {
             "siriai.warning": "伪装可能导致面容 ID 失效，风险自负。",
             "siriai.ai.toggle": "启用 Apple 智能",
             "siriai.apply": "应用更改",
+            "siriai.restart.title": "需要重新启动",
+            "siriai.restart.message": "新版 Siri AI 将在设备重新启动后生效。",
+            "siriai.restart.respring": "Respring",
+            "siriai.restart.later": "稍后",
             "posterboard.import": "导入 .tendies 壁纸",
             "fields.openEditor": "打开字段编辑器"
         ],
@@ -167,6 +193,10 @@ final class L10n: ObservableObject {
             "siriai.warning": "偽装により Face ID が動作しなくなる可能性があります。自己責任でお願いします。",
             "siriai.ai.toggle": "Apple Intelligence を有効化",
             "siriai.apply": "変更を適用",
+            "siriai.restart.title": "再起動が必要です",
+            "siriai.restart.message": "新しい Siri AI はデバイスの再起動後に有効になります。",
+            "siriai.restart.respring": "Respring",
+            "siriai.restart.later": "後で",
             "posterboard.import": ".tendies 壁紙を読み込む",
             "fields.openEditor": "フィールドエディタを開く"
         ],
@@ -192,6 +222,10 @@ final class L10n: ObservableObject {
             "siriai.warning": "Подмена может сломать Face ID. Используйте на свой риск.",
             "siriai.ai.toggle": "Включить Apple Intelligence",
             "siriai.apply": "Применить изменения",
+            "siriai.restart.title": "Требуется перезагрузка",
+            "siriai.restart.message": "Новый Siri AI активируется после перезагрузки устройства.",
+            "siriai.restart.respring": "Respring",
+            "siriai.restart.later": "Позже",
             "posterboard.import": "Импортировать обои .tendies",
             "fields.openEditor": "Открыть редактор полей"
         ],
@@ -215,8 +249,12 @@ final class L10n: ObservableObject {
             "siriai.spoof": "Giả lập thiết bị thành:",
             "siriai.spoof.none": "Không giả lập",
             "siriai.warning": "Việc giả lập có thể làm hỏng Face ID. Hãy tự chịu rủi ro.",
-            "siriai.ai.toggle": "Bật Apple Intelligence",
+                    "siriai.ai.toggle": "Bật Apple Intelligence",
             "siriai.apply": "Áp dụng thay đổi",
+            "siriai.restart.title": "Cần khởi động lại",
+            "siriai.restart.message": "Siri AI mới sẽ hoạt động sau khi khởi động lại thiết bị.",
+            "siriai.restart.respring": "Respring",
+            "siriai.restart.later": "Để sau",
             "posterboard.import": "Nhập hình nền .tendies",
             "fields.openEditor": "Mở trình soạn thảo trường"
         ]

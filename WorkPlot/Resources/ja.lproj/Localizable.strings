@@ -1,0 +1,51 @@
+/* WorkPlot — 日本語 */
+
+"tab.status" = "ステータス";
+"tab.gestalt" = "Gestalt";
+"tab.fields" = "フィールド";
+"tab.siriai" = "Siri AI";
+"tab.liquidglass" = "リキッドグラス";
+"tab.posterboard" = "ポスターボード";
+"tab.backups" = "バックアップ";
+
+"settings.title" = "設定";
+"settings.language" = "言語";
+"settings.appearance" = "外観";
+"appearance.system" = "システムに従う";
+"appearance.light" = "ライト";
+"appearance.dark" = "ダーク";
+
+"siriai.title" = "Siri AI 設定";
+"siriai.toggle" = "新しい Siri AI を有効化 (CacheData)";
+"siriai.toggle.detail" = "CacheData を自動でパッチします（Toto 方式）。";
+"siriai.spoof" = "デバイスの偽装先:";
+"siriai.spoof.none" = "偽装しない";
+"siriai.warning" = "偽装により Face ID が動作しなくなる可能性があります。自己責任でお願いします。";
+"siriai.ai.toggle" = "Apple Intelligence を有効化";
+"siriai.apply" = "変更を適用";
+
+"siriai.restart.title" = "再起動が必要です";
+"siriai.restart.message" = "新しい Siri AI はデバイスの再起動後に有効になります。";
+"siriai.restart.respring" = "Respring";
+"siriai.restart.later" = "後で";
+
+"posterboard.import" = ".tendies 壁紙を読み込む";
+"fields.openEditor" = "フィールドエディタを開く";
+"status.checkaccess" = "システムアクセスを確認";
+"status.rdarfix" = "RDAR を修正";
+"status.lg.disable" = "リキッドグラスをオフ";
+"status.respring.refresh" = "Respring（更新）";
+"restart.rec.title" = "再起動をおすすめします";
+"restart.rec.message" = "完全な再起動で最良の結果が得られます。Respring でも素早く更新できます。";
+"credits.header" = "クレジット";
+"credits.disclaimer" = "This app uses sandbox escape & bad_query (github.com/forcequitOS/bad_query).";
+"bg.pick" = "カスタム背景…";
+"bg.reset" = "背景をリセット";
+
+// More menu & app icon
+"tab.more" = "その他";
+"tab.files" = "ファイル";
+"icon.menu" = "アプリアイコン";
+"icon.default" = "クラシック WorkPlot";
+"icon.collage" = "WP コラージュ";
+"common.done" = "完了";

@@ -291,8 +291,55 @@
 - ZIP reader tidak mendukung ZIP64/enkripsi/data-descriptor (bit 3); paket .tendies umumnya aman tapi perlu uji lapangan.
 - PosterBoard Lab belum bisa list/hapus wallpaper terpasang (Placard punya; bisa ditambah belakangan).
 
+## 2026-08-22 - Mapping Final Spoofing, SiriMode, Lokalisasi .strings, Popup Restart
+
+### The Change
+
+- Merge PR #14 (Siri AI suite + PosterBoard) — CI hijau.
+- `DeviceSpoofingManager`: mapping final sesuai spesifikasi terbaru — iPhone 16 Pro = `iPhone17,1`, tambah target **iPhone 16 Pro Max** (`iPhone17,2`); keduanya D74AP. Board config kini menulis **9 keys sekaligus** (bukan cuma hardware model), plus `CompatibleDeviceFallback` di dalam dict ArtworkDevice (`oPeik/9e8lQWMszEjbPzng`) diisi ProductType target.
+- `AppleIntelligenceController`: toggle AI sekarang juga set/hapus **SiriMode** (`a3n5T9sFtyQ74NEp9ESxg` = 2).
+- Lokalisasi migrasi ke file `WorkPlot/Resources/{en,id,zh-Hans,ja,ru,vi}.lproj/Localizable.strings`; `L10n.tr` membaca bundle .lproj dulu, fallback ke tabel in-code sampai resource terverifikasi on-device.
+- Tab Siri AI: setelah Apply sukses muncul **alert "Restart Diperlukan"** dengan pilihan Respring / Nanti (tidak lagi auto-respring diam-diam) — restart memang wajib untuk mengaktifkan Siri AI baru.
+
+### The Reasoning
+
+- Spesifikasi mapping dikunci user setelah diskusi: 16 Pro pakai identifier real-world (iPhone17,1) dan 16 Pro Max masuk katalog.
+- Popup restart eksplisit lebih jujur daripada auto-respring karena tweak CacheData Siri AI butuh restart penuh; respring NeoSpring tetap disediakan sebagai opsi cepat.
+
+### The Tech Debt
+
+- Tabel in-code di Localization.swift duplikat sementara dengan .strings files; hapus begitu on-device test membuktikan bundle termuat.
+- CI belum lulus untuk commit ini (menunggu round-trip).
+
+## 2026-08-22 - UX Pass: Bahasa, Alert Restart, Credits, Custom Background
+
+### The Change
+
+- **Bug bahasa**: retrofit tab Status/Gestalt/Liquid Glass ke `L10n.tr` (tombol aksi & section) — switcher bahasa kini mengubah lebih banyak teks, bukan cuma label slider.
+- **Alert "Restart Disarankan"** menggantikan auto-respring di semua apply tweaks: Gestalt, Liquid Glass (termasuk disable global dari Status), dan RDAR Fix. Tombol alert: Respring / Nanti. Tab Siri AI tetap pakai alert "Restart Diperlukan" yang lebih tegas.
+- **Respring tetap di menu utama** (tab Status) sebagai tombol refresh.
+- **Credits** di tab Status: link gievano (github.com/gievano) & Adnan 120Hz (github.com/adnan120hz), plus disclaimer bahasa Inggris soal sandbox escape & bad_query.
+- **Custom background**: `AppBackgroundStore` simpan gambar pilihan user (PhotosPicker) ke Documents/background.jpg; layer background di root ZStack dengan opacity 0.35; `scrollContentBackground(.hidden)` di semua List/Form utama. Menu ada di gear Settings dan tombol di tab Status.
+
+### The Reasoning
+
+- Auto-respring diam-diam terasa seperti tweak "gagal" kalau efek tidak muncul; alert eksplisit memberi kontrol ke user dan jujur bahwa restart penuh hasilnya maksimal.
+- Background dibuat layer terpisah + opacity rendah supaya kontras teks tetap aman di light/dark mode.
+
+### The Tech Debt
+
+- Layar Fields/Files/Backups/PosterBoard belum sepenuhnya dilokalisasi (masih campur Indonesia); keys baru hanya di .strings files, belum masuk tabel fallback in-code.
+- Background image tidak di-blur; bisa ditambahkan material effect nanti.
 
 
 
 
 
+
+
+
+
+## 2026-08-22 — Icon Switcher, More Menu Sendiri, Tab Bar Lebih Besar
+**The Change:** `Support/Info.plist` baru (GENERATE_INFOPLIST_FILE=NO di pbxproj, INFOPLIST_FILE relatif) dengan CFBundleAlternateIcons "WPCollage" -> AppIconCollage.png (placeholder 1024x1024 digenerate lokal, GANTI dengan artwork asli user). `AppIconSwitcherSheet.swift` (setAlternateIconName), tombol di gear menu. `MainDashboardView.swift`: 5 tab (Status/Gestalt/Fields/SiriAI/More) + font tab bar 13 semibold + symbol pointSize 26 via UIImage config. `MoreMenuView.swift` baru: NavigationLink baris besar (icon 30pt, teks 19pt) utk LiquidGlass/PosterBoard/Backups/Files — menggantikan "More" bawaan sistem yang Inggris & kecil.
+**The Reasoning:** Info.plist ditaruh DI LUAR folder synced WorkPlot/ supaya PBXFileSystemSynchronizedRootGroup tidak menyalinnya sbg resource (hindari "Multiple commands produce"). 8 tab bikin SwiftUI jatuh ke system More yang tidak terlokalisasi; menu sendiri = kontrol bahasa + ukuran.
+**The Tech Debt:** Icon alternatif masih placeholder hasil generate Windows — user harus replace WorkPlot/Resources/AppIconCollage.png dengan artwork aslinya. Keys lokalisasi belum masuk fallback in-code table (bundle .strings cukup).
