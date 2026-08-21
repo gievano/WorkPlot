@@ -6,50 +6,50 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8300012128E0234B00778B50 /* WorkPlotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011128E0234B00778B50 /* WorkPlotApp.swift */; };
-		8300012228E0234B00778B50 /* ExploitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011228E0234B00778B50 /* ExploitManager.swift */; };
-		8300012328E0234B00778B50 /* FileSystemAccessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011328E0234B00778B50 /* FileSystemAccessor.swift */; };
-		8300012428E0234B00778B50 /* LiquidGlassController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011428E0234B00778B50 /* LiquidGlassController.swift */; };
-		8300012528E0234B00778B50 /* RDARFix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011528E0234B00778B50 /* RDARFix.swift */; };
-		8300012628E0234B00778B50 /* MainDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011628E0234B00778B50 /* MainDashboardView.swift */; };
-		8300012728E0234B00778B50 /* StatusDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011728E0234B00778B50 /* StatusDashboardView.swift */; };
-		8300012828E0234B00778B50 /* GestaltPresetManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011828E0234B00778B50 /* GestaltPresetManagerView.swift */; };
-		8300012928E0234B00778B50 /* CustomizationThemeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011928E0234B00778B50 /* CustomizationThemeView.swift */; };
-		8300012A28E0234B00778B50 /* FilePatchWorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011A28E0234B00778B50 /* FilePatchWorkspaceView.swift */; };
-		8300012B28E0234B00778B50 /* BackupRestoreManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300011B28E0234B00778B50 /* BackupRestoreManagerView.swift */; };
-		8300012C28E0234B00778B50 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8300011C28E0234B00778B50 /* Assets.xcassets */; };
-		8300012D28E0234B00778B50 /* BadQueryBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 8300011E28E0234B00778B50 /* BadQueryBridge.m */; };
-		8300012E28E0234B00778B50 /* GestaltAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = 8300012028E0234B00778B50 /* GestaltAccess.m */; };
-		8300012F28E0234B00778B50 /* GestaltBackupStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300012328E0234B00778B51 /* GestaltBackupStore.swift */; };
-		8300013028E0234B00778B51 /* GestaltTweaks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8300012428E0234B00778B51 /* GestaltTweaks.swift */; };
+		AA00000128E0234B00000001 /* WorkPlotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000001 /* WorkPlotApp.swift */; };
+		AA00000228E0234B00000002 /* ExploitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000002 /* ExploitManager.swift */; };
+		AA00000328E0234B00000003 /* FileSystemAccessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000003 /* FileSystemAccessor.swift */; };
+		AA00000428E0234B00000004 /* LiquidGlassController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000004 /* LiquidGlassController.swift */; };
+		AA00000528E0234B00000005 /* RDARFix.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000005 /* RDARFix.swift */; };
+		AA00000628E0234B00000006 /* GestaltBackupStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000006 /* GestaltBackupStore.swift */; };
+		AA00000728E0234B00000007 /* GestaltTweaks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000007 /* GestaltTweaks.swift */; };
+		AA00000828E0234B00000008 /* MainDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000008 /* MainDashboardView.swift */; };
+		AA00000928E0234B00000009 /* StatusDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000009 /* StatusDashboardView.swift */; };
+		AA00000A28E0234B0000000A /* GestaltPresetManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B0000000A /* GestaltPresetManagerView.swift */; };
+		AA00000B28E0234B0000000B /* CustomizationThemeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B0000000B /* CustomizationThemeView.swift */; };
+		AA00000C28E0234B0000000C /* FilePatchWorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B0000000C /* FilePatchWorkspaceView.swift */; };
+		AA00000D28E0234B0000000D /* BackupRestoreManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B0000000D /* BackupRestoreManagerView.swift */; };
+		AA00000E28E0234B0000000E /* BadQueryBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B0000000E /* BadQueryBridge.m */; };
+		AA00000F28E0234B0000000F /* GestaltAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B0000000F /* GestaltAccess.m */; };
+		AA00001028E0234B00000010 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA00010128E0234B00000010 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		8300010128E0234B00778B50 /* WorkPlot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WorkPlot.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		8300011128E0234B00778B50 /* WorkPlotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkPlotApp.swift; sourceTree = "<group>"; };
-		8300011228E0234B00778B50 /* ExploitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploitManager.swift; sourceTree = "<group>"; };
-		8300011328E0234B00778B50 /* FileSystemAccessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSystemAccessor.swift; sourceTree = "<group>"; };
-		8300011428E0234B00778B50 /* LiquidGlassController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassController.swift; sourceTree = "<group>"; };
-		8300011528E0234B00778B50 /* RDARFix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDARFix.swift; sourceTree = "<group>"; };
-		8300011628E0234B00778B50 /* MainDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainDashboardView.swift; sourceTree = "<group>"; };
-		8300011728E0234B00778B50 /* StatusDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusDashboardView.swift; sourceTree = "<group>"; };
-		8300011828E0234B00778B50 /* GestaltPresetManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestaltPresetManagerView.swift; sourceTree = "<group>"; };
-		8300011928E0234B00778B50 /* CustomizationThemeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomizationThemeView.swift; sourceTree = "<group>"; };
-		8300011A28E0234B00778B50 /* FilePatchWorkspaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePatchWorkspaceView.swift; sourceTree = "<group>"; };
-		8300011B28E0234B00778B50 /* BackupRestoreManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRestoreManagerView.swift; sourceTree = "<group>"; };
-		8300011C28E0234B00778B50 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		8300011D28E0234B00778B50 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8300011E28E0234B00778B50 /* BadQueryBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BadQueryBridge.m; sourceTree = "<group>"; };
-		8300011F28E0234B00778B50 /* BadQueryBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BadQueryBridge.h; sourceTree = "<group>"; };
-		8300012028E0234B00778B50 /* GestaltAccess.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GestaltAccess.m; sourceTree = "<group>"; };
-		8300012128E0234B00778B51 /* GestaltAccess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GestaltAccess.h; sourceTree = "<group>"; };
-		8300012228E0234B00778B51 /* WorkPlot-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WorkPlot-Bridging-Header.h"; sourceTree = "<group>"; };
-		8300012328E0234B00778B51 /* GestaltBackupStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestaltBackupStore.swift; sourceTree = "<group>"; };
-		8300012428E0234B00778B51 /* GestaltTweaks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestaltTweaks.swift; sourceTree = "<group>"; };
+		AA00020128E0234B00000001 /* WorkPlot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WorkPlot.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA00030128E0234B00000001 /* WorkPlotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkPlotApp.swift; sourceTree = "<group>"; };
+		AA00030128E0234B00000002 /* ExploitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploitManager.swift; sourceTree = "<group>"; };
+		AA00030128E0234B00000003 /* FileSystemAccessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSystemAccessor.swift; sourceTree = "<group>"; };
+		AA00030128E0234B00000004 /* LiquidGlassController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassController.swift; sourceTree = "<group>"; };
+		AA00030128E0234B00000005 /* RDARFix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDARFix.swift; sourceTree = "<group>"; };
+		AA00030128E0234B00000006 /* GestaltBackupStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestaltBackupStore.swift; sourceTree = "<group>"; };
+		AA00030128E0234B00000007 /* GestaltTweaks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestaltTweaks.swift; sourceTree = "<group>"; };
+		AA00030128E0234B00000008 /* MainDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainDashboardView.swift; sourceTree = "<group>"; };
+		AA00030128E0234B00000009 /* StatusDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusDashboardView.swift; sourceTree = "<group>"; };
+		AA00030128E0234B0000000A /* GestaltPresetManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestaltPresetManagerView.swift; sourceTree = "<group>"; };
+		AA00030128E0234B0000000B /* CustomizationThemeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomizationThemeView.swift; sourceTree = "<group>"; };
+		AA00030128E0234B0000000C /* FilePatchWorkspaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePatchWorkspaceView.swift; sourceTree = "<group>"; };
+		AA00030128E0234B0000000D /* BackupRestoreManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRestoreManagerView.swift; sourceTree = "<group>"; };
+		AA00030128E0234B0000000E /* BadQueryBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BadQueryBridge.m; sourceTree = "<group>"; };
+		AA00030128E0234B0000000F /* GestaltAccess.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GestaltAccess.m; sourceTree = "<group>"; };
+		AA00030128E0234B00000010 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AA00030128E0234B00000011 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA00030128E0234B00000012 /* BadQueryBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BadQueryBridge.h; sourceTree = "<group>"; };
+		AA00030128E0234B00000013 /* GestaltAccess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GestaltAccess.h; sourceTree = "<group>"; };
+		AA00030128E0234B00000014 /* WorkPlot-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WorkPlot-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		8300020128E0234B00778B50 /* Frameworks */ = {
+		AA00040128E0234B00000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = {};
@@ -58,106 +58,106 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8300030128E0234B00778B50 /* App */ = {
+		AA00050128E0234B00000001 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				8300011128E0234B00778B50 /* WorkPlotApp.swift */,
+				AA00030128E0234B00000001 /* WorkPlotApp.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
 		};
-		8300030228E0234B00778B50 /* Managers */ = {
+		AA00050128E0234B00000002 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
-				8300011228E0234B00778B50 /* ExploitManager.swift */,
-				8300011328E0234B00778B50 /* FileSystemAccessor.swift */,
-				8300011428E0234B00778B50 /* LiquidGlassController.swift */,
-				8300011528E0234B00778B50 /* RDARFix.swift */,
-				8300012328E0234B00778B51 /* GestaltBackupStore.swift */,
-				8300012428E0234B00778B51 /* GestaltTweaks.swift */,
+				AA00030128E0234B00000002 /* ExploitManager.swift */,
+				AA00030128E0234B00000003 /* FileSystemAccessor.swift */,
+				AA00030128E0234B00000004 /* LiquidGlassController.swift */,
+				AA00030128E0234B00000005 /* RDARFix.swift */,
+				AA00030128E0234B00000006 /* GestaltBackupStore.swift */,
+				AA00030128E0234B00000007 /* GestaltTweaks.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
 		};
-		8300030328E0234B00778B50 /* UI */ = {
+		AA00050128E0234B00000003 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				8300011628E0234B00778B50 /* MainDashboardView.swift */,
-				8300011728E0234B00778B50 /* StatusDashboardView.swift */,
-				8300011828E0234B00778B50 /* GestaltPresetManagerView.swift */,
-				8300011928E0234B00778B50 /* CustomizationThemeView.swift */,
-				8300011A28E0234B00778B50 /* FilePatchWorkspaceView.swift */,
-				8300011B28E0234B00778B50 /* BackupRestoreManagerView.swift */,
+				AA00030128E0234B00000008 /* MainDashboardView.swift */,
+				AA00030128E0234B00000009 /* StatusDashboardView.swift */,
+				AA00030128E0234B0000000A /* GestaltPresetManagerView.swift */,
+				AA00030128E0234B0000000B /* CustomizationThemeView.swift */,
+				AA00030128E0234B0000000C /* FilePatchWorkspaceView.swift */,
+				AA00030128E0234B0000000D /* BackupRestoreManagerView.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
 		};
-		8300030428E0234B00778B50 /* Products */ = {
+		AA00050128E0234B00000004 /* Exploit */ = {
 			isa = PBXGroup;
 			children = (
-				8300010128E0234B00778B50 /* WorkPlot.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		8300030528E0234B00778B50 /* Exploit */ = {
-			isa = PBXGroup;
-			children = (
-				8300011F28E0234B00778B50 /* BadQueryBridge.h */,
-				8300011E28E0234B00778B50 /* BadQueryBridge.m */,
-				8300012128E0234B00778B51 /* GestaltAccess.h */,
-				8300012028E0234B00778B50 /* GestaltAccess.m */,
-				8300012228E0234B00778B51 /* WorkPlot-Bridging-Header.h */,
+				AA00030128E0234B00000012 /* BadQueryBridge.h */,
+				AA00030128E0234B0000000E /* BadQueryBridge.m */,
+				AA00030128E0234B00000013 /* GestaltAccess.h */,
+				AA00030128E0234B0000000F /* GestaltAccess.m */,
+				AA00030128E0234B00000014 /* WorkPlot-Bridging-Header.h */,
 			);
 			path = Exploit;
 			sourceTree = "<group>";
 		};
-		83C901C228E0234B00778B50 /* WorkPlot */ = {
+		AA00050128E0234B00000005 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8300030128E0234B00778B50 /* App */,
-				8300030228E0234B00778B50 /* Managers */,
-				8300030328E0234B00778B50 /* UI */,
-				8300030528E0234B00778B50 /* Exploit */,
-				8300011C28E0234B00778B50 /* Assets.xcassets */,
-				8300011D28E0234B00778B50 /* Info.plist */,
-				8300030428E0234B00778B50 /* Products */,
+				AA00020128E0234B00000001 /* WorkPlot.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AA00050128E0234B00000006 /* WorkPlot */ = {
+			isa = PBXGroup;
+			children = (
+				AA00050128E0234B00000001 /* App */,
+				AA00050128E0234B00000002 /* Managers */,
+				AA00050128E0234B00000003 /* UI */,
+				AA00050128E0234B00000004 /* Exploit */,
+				AA00030128E0234B00000010 /* Assets.xcassets */,
+				AA00030128E0234B00000011 /* Info.plist */,
+				AA00050128E0234B00000005 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		83C901C028E0234B00778B50 /* WorkPlot */ = {
+		AA00060128E0234B00000001 /* WorkPlot */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8300050128E0234B00778B50;
+			buildConfigurationList = AA00080128E0234B00000002;
 			buildPhases = (
-				8300020028E0234B00778B50 /* Sources */,
-				8300020128E0234B00778B50 /* Frameworks */,
-				8300020228E0234B00778B50 /* Resources */,
+				AA00070128E0234B00000001 /* Sources */,
+				AA00040128E0234B00000001 /* Frameworks */,
+				AA00070128E0234B00000002 /* Resources */,
 			);
-			buildRules = {};
-			dependencies = {};
+			buildRules = ();
+			dependencies = ();
 			name = WorkPlot;
 			productName = WorkPlot;
-			productReference = 8300010128E0234B00778B50 /* WorkPlot.app */;
+			productReference = AA00020128E0234B00000001 /* WorkPlot.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		83C901BF28E0234B00778B50 /* Project object */ = {
+		AA00090128E0234B00000001 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					83C901C028E0234B00778B50 = {
+					AA00060128E0234B00000001 = {
 						CreatedOnToolsVersion = 15.0;
 					};
 				};
 			};
-			buildConfigurationList = 8300050028E0234B00778B50;
+			buildConfigurationList = AA00080128E0234B00000001;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -165,54 +165,54 @@
 				en,
 				Base,
 			);
-			mainGroup = 83C901C228E0234B00778B50;
-			productRefGroup = 8300030428E0234B00778B50 /* Products */;
+			mainGroup = AA00050128E0234B00000006;
+			productRefGroup = AA00050128E0234B00000005;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				83C901C028E0234B00778B50 /* WorkPlot */,
+				AA00060128E0234B00000001 /* WorkPlot */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		8300020228E0234B00778B50 /* Resources */ = {
+		AA00070128E0234B00000002 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8300012C28E0234B00778B50 /* Assets.xcassets in Resources */,
+				AA00001028E0234B00000010 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		8300020028E0234B00778B50 /* Sources */ = {
+		AA00070128E0234B00000001 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8300012128E0234B00778B50 /* WorkPlotApp.swift in Sources */,
-				8300012228E0234B00778B50 /* ExploitManager.swift in Sources */,
-				8300012328E0234B00778B50 /* FileSystemAccessor.swift in Sources */,
-				8300012428E0234B00778B50 /* LiquidGlassController.swift in Sources */,
-				8300012528E0234B00778B50 /* RDARFix.swift in Sources */,
-				8300012628E0234B00778B50 /* MainDashboardView.swift in Sources */,
-				8300012728E0234B00778B50 /* StatusDashboardView.swift in Sources */,
-				8300012828E0234B00778B50 /* GestaltPresetManagerView.swift in Sources */,
-				8300012928E0234B00778B50 /* CustomizationThemeView.swift in Sources */,
-				8300012A28E0234B00778B50 /* FilePatchWorkspaceView.swift in Sources */,
-				8300012B28E0234B00778B50 /* BackupRestoreManagerView.swift in Sources */,
-				8300012D28E0234B00778B50 /* BadQueryBridge.m in Sources */,
-				8300012E28E0234B00778B50 /* GestaltAccess.m in Sources */,
-				8300012F28E0234B00778B50 /* GestaltBackupStore.swift in Sources */,
-				8300013028E0234B00778B51 /* GestaltTweaks.swift in Sources */,
+				AA00000128E0234B00000001 /* WorkPlotApp.swift in Sources */,
+				AA00000228E0234B00000002 /* ExploitManager.swift in Sources */,
+				AA00000328E0234B00000003 /* FileSystemAccessor.swift in Sources */,
+				AA00000428E0234B00000004 /* LiquidGlassController.swift in Sources */,
+				AA00000528E0234B00000005 /* RDARFix.swift in Sources */,
+				AA00000628E0234B00000006 /* GestaltBackupStore.swift in Sources */,
+				AA00000728E0234B00000007 /* GestaltTweaks.swift in Sources */,
+				AA00000828E0234B00000008 /* MainDashboardView.swift in Sources */,
+				AA00000928E0234B00000009 /* StatusDashboardView.swift in Sources */,
+				AA00000A28E0234B0000000A /* GestaltPresetManagerView.swift in Sources */,
+				AA00000B28E0234B0000000B /* CustomizationThemeView.swift in Sources */,
+				AA00000C28E0234B0000000C /* FilePatchWorkspaceView.swift in Sources */,
+				AA00000D28E0234B0000000D /* BackupRestoreManagerView.swift in Sources */,
+				AA00000E28E0234B0000000E /* BadQueryBridge.m in Sources */,
+				AA00000F28E0234B0000000F /* GestaltAccess.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		8300040128E0234B00778B50 /* Debug */ = {
+		AA000A0128E0234B00000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -230,13 +230,12 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "Exploit/WorkPlot-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		8300040228E0234B00778B50 /* Release */ = {
+		AA000A0128E0234B00000002 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -249,7 +248,7 @@
 			};
 			name = Release;
 		};
-		8300040328E0234B00778B50 /* Debug */ = {
+		AA000A0128E0234B00000003 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -264,11 +263,11 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "Exploit/WorkPlot-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = Exploit/WorkPlot-Bridging-Header.h;
 			};
 			name = Debug;
 		};
-		8300040428E0234B00778B50 /* Release */ = {
+		AA000A0128E0234B00000004 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -283,6 +282,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.work.plot.system";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = Exploit/WorkPlot-Bridging-Header.h;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -290,25 +290,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8300050028E0234B00778B50 /* Build configuration list for PBXProject "WorkPlot" */ = {
+		AA00080128E0234B00000001 /* Build configuration list for PBXProject "WorkPlot" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8300040128E0234B00778B50 /* Debug */,
-				8300040228E0234B00778B50 /* Release */,
+				AA000A0128E0234B00000001 /* Debug */,
+				AA000A0128E0234B00000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8300050128E0234B00778B50 /* Build configuration list for PBXNativeTarget "WorkPlot" */ = {
+		AA00080128E0234B00000002 /* Build configuration list for PBXNativeTarget "WorkPlot" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8300040328E0234B00778B50 /* Debug */,
-				8300040428E0234B00778B50 /* Release */,
+				AA000A0128E0234B00000003 /* Debug */,
+				AA000A0128E0234B00000004 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 83C901BF28E0234B00778B50 /* Project object */;
+	rootObject = AA00090128E0234B00000001 /* Project object */;
 }
