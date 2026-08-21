@@ -150,7 +150,6 @@
 
 - None.
 
-
 ## 2026-08-21 - Align CI Workflow with GestaltEdit Pattern
 
 ### The Change
@@ -165,4 +164,20 @@
 ### The Tech Debt
 
 - None.
+
+## 2026-08-21 - Hapus Info.plist Redundan (Archive Gagal)
+
+### The Change
+
+- Menghapus `WorkPlot/Info.plist` (commit `e2985f9`, PR #12).
+
+### The Reasoning
+
+- Project pakai `PBXFileSystemSynchronizedRootGroup` yang otomatis meng-copy seluruh isi folder sebagai resource — termasuk `Info.plist`. Bersamaan, `GENERATE_INFOPLIST_FILE = YES` juga generate Info.plist sendiri. Dua command produce output yang sama → `error: Multiple commands produce '.../WorkPlot.app/Info.plist'`.
+- Isi plist lama 100% redundan: semua key sudah dicover oleh `GENERATE_INFOPLIST_FILE` + `INFOPLIST_KEY_*` di pbxproj, jadi aman dihapus tanpa tambahan exception set di pbxproj.
+
+### The Tech Debt
+
+- CI runner pakai Xcode 26.6 (SDK max 26.5.99) sementara deployment target 27.0 — hanya warning, tapi perlu runner image dengan SDK iOS 27 untuk build final.
+- File untracked `.tmp-pbxproj-check.txt` dan `gestaltedit-ref.pbxproj` masih ada di working tree (sengaja tidak di-commit).
 
