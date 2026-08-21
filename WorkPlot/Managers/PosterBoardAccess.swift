@@ -112,9 +112,11 @@ enum PosterBoardAccess {
     }
 
     private static func list(_ path: String) throws -> [String] {
-        guard let raw = path.utf8CString.withUnsafeMutableBufferPointer(({ buffer in
+        var cPath = path.utf8CString
+        let raw = cPath.withUnsafeMutableBufferPointer { buffer in
             bad_query_list(buffer.baseAddress, 2_000_000)
-        })) else { throw PosterBoardError.listFailed }
+        }
+        guard let raw else { throw PosterBoardError.listFailed }
         defer { free(raw) }
         return String(cString: raw)
             .split(whereSeparator: \.isNewline)

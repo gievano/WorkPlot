@@ -89,7 +89,7 @@ struct AIRegionProfile: Equatable {
         self.regulatoryModel = regulatoryModel
     }
 
-    private init(marketingName: String, regulatoryModel: String) {
+    init(marketingName: String, regulatoryModel: String) {
         self.marketingName = marketingName
         self.regulatoryModel = regulatoryModel
     }

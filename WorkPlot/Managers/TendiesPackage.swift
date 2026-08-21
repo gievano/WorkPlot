@@ -161,7 +161,7 @@ enum TendiesPackage {
                 path: path,
                 isDirectory: path.hasSuffix("/"),
                 compressedData: data.subdata(in: dataStart..<(dataStart + compressedSize)),
-                method: method,
+                method: UInt16(truncatingIfNeeded: method),
                 uncompressedSize: uncompressedSize
             ))
 
