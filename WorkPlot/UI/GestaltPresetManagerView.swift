@@ -3,7 +3,16 @@ import SwiftUI
 struct GestaltPresetManagerView: View {
     @ObservedObject private var manager = ExploitManager.shared
     @State private var selectedTweaks: Set<GestaltTweakID> = []
+    @State private var dynamicIslandSubtype: Int?
+    @State private var changesModelName = false
+    @State private var modelName = ""
     @State private var isApplying = false
+
+    private var stagedChangeCount: Int {
+        selectedTweaks.count
+            + (dynamicIslandSubtype == nil ? 0 : 1)
+            + ((changesModelName && !modelName.trimmingCharacters(in: .whitespaces).isEmpty) ? 1 : 0)
+    }
 
     var body: some View {
         NavigationView {
@@ -38,16 +47,36 @@ struct GestaltPresetManagerView: View {
                                 }
                             }
                         }
+
+                        Section(
+                            header: Text("Dynamic Island"),
+                            footer: Text("Mengubah ArtworkDeviceSubType; pilih tipe layar yang ingin ditiru.")
+                        ) {
+                            Picker("Tipe", selection: $dynamicIslandSubtype) {
+                                Text("Bawaan").tag(Int?.none)
+                                ForEach(DynamicIslandOption.all) { option in
+                                    Text("\(option.title) (\(option.subtype))").tag(Int?.some(option.subtype))
+                                }
+                            }
+                        }
+
+                        Section(header: Text("Nama Model")) {
+                            Toggle("Ubah Nama Model", isOn: $changesModelName)
+                            if changesModelName {
+                                TextField("cth. iPhone 16 Pro", text: $modelName)
+                                    .autocorrectionDisabled()
+                            }
+                        }
                     }
                 }
             }
             .navigationTitle("Gestalt")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(selectedTweaks.isEmpty ? "Apply" : "Apply (\(selectedTweaks.count))") {
+                    Button(stagedChangeCount == 0 ? "Apply" : "Apply (\(stagedChangeCount))") {
                         applySelected()
                     }
-                    .disabled(selectedTweaks.isEmpty || isApplying || !manager.sandboxGranted)
+                    .disabled(stagedChangeCount == 0 || isApplying || !manager.sandboxGranted)
                 }
             }
         }
@@ -87,13 +116,41 @@ struct GestaltPresetManagerView: View {
             }
         }
 
+        do {
+            if selectedTweaks.contains(.aiRegionUS) {
+                try AIRegionApplier.apply(to: &plist)
+            }
+            if let subtype = dynamicIslandSubtype {
+                try GestaltArtwork.setDynamicIslandSubtype(subtype, in: &plist)
+            }
+            if changesModelName {
+                let name = modelName.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !name.isEmpty else {
+                    throw PlistValueError.invalid("Nama model tidak boleh kosong.")
+                }
+                try GestaltArtwork.setModelName(name, in: &plist)
+            }
+            if selectedTweaks.contains(.iPadOS) {
+                try GestaltCacheDataPatch.applyiPadOSMode(to: &plist)
+            }
+        } catch {
+            manager.statusText = "Gagal: \(error.localizedDescription)"
+            return
+        }
+
         isApplying = true
         let success = manager.saveGestalt(plist)
         isApplying = false
 
         if success {
             selectedTweaks.removeAll()
-            manager.statusText = "Tweak diterapkan. Restart device untuk melihat efek."
+            dynamicIslandSubtype = nil
+            changesModelName = false
+            modelName = ""
+            manager.statusText = "Tweak diterapkan. Respring dalam 1 detik..."
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                manager.respringRequested = true
+            }
         } else {
             manager.statusText = "Gagal menyimpan MobileGestalt."
         }
