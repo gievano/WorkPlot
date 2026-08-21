@@ -110,3 +110,15 @@
 "lg.renderMode" = "Render Mode";
 "lg.globalFooter" = "Disables the Liquid Glass slider globally across the system.";
 "pb.labFooter" = "Import .tendies packages (PocketPoster format), validate the descriptor structure, then install to PosterBoard. Respring after installing.";
+// Danger zone warnings
+"danger.header" = "Danger Zone";
+"danger.spoof.title" = "Device Spoofing Risk";
+"danger.spoof.continue" = "Continue Anyway";
+"danger.spoof.message" = "Spoofing can break Face ID, FaceTime, and OTA updates. Keep a backup before continuing.";
+"danger.filepatch.message" = "Patching system files incorrectly can cause a boot loop. Always keep a fresh backup.";
+"filepatch.ready" = "Sandbox access active. File browsing will be available in an upcoming build.";
+"filepatch.needaccess" = "Grant system access on the Home tab first.";
+
+// Compatibility check
+"compat.title" = "Unsupported iOS Version";
+"compat.message" = "Detected build %@ is outside the supported range (iOS 27.0 Developer Beta 1-4). Features may fail or behave unexpectedly.";

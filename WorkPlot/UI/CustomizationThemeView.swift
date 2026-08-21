@@ -97,7 +97,7 @@ struct PosterBoardLabView: View {
                 } else {
                     ForEach(installedWallpapers, id: \.self) { name in
                         HStack {
-                            Image(uiImage: MainDashboardView.bigSymbol("photo.fill", size: 22))
+                            Image(systemName: "photo.fill")
                                 .foregroundStyle(.pink)
                             Text(name)
                                 .font(.system(size: 15, weight: .medium))

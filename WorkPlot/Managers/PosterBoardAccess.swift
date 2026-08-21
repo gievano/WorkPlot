@@ -98,6 +98,8 @@ enum PosterBoardAccess {
     }
 
     /// Lists installed wallpaper descriptor folders (UUID directory names).
+    /// Intentionally does NOT parse Descriptor.plist here: reading sandboxed
+    /// files during list rendering caused UI freezes on device.
     static func listInstalledWallpapers() throws -> [String] {
         let appHash = try findPosterBoardHash()
         let destination = descriptorsPath(appHash: appHash)

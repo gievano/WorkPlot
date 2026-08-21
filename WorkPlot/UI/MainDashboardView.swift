@@ -3,42 +3,33 @@ import SwiftUI
 struct MainDashboardView: View {
     @ObservedObject private var l10n = L10n.shared
     @AppStorage("appearanceMode") private var appearanceMode = AppearanceMode.system.rawValue
-
-    init() {
-        let appearance = UITabBarAppearance()
-        let item = UITabBarItemAppearance()
-        let font = UIFont.systemFont(ofSize: 13, weight: .semibold)
-        item.normal.titleTextAttributes = [.font: font]
-        item.selected.titleTextAttributes = [.font: font]
-        appearance.stackedLayoutAppearance = item
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
-    }
+    @State private var showCompatWarning = false
+    @State private var detectedBuild = ""
 
     var body: some View {
         ZStack {
             AppBackground()
             TabView {
-                StatusDashboardView().tabItem { tabLabel(l10n.tr("tab.home"), "house.fill") }
-                GestaltPresetManagerView().tabItem { tabLabel(l10n.tr("tab.gestalt"), "cpu") }
-                GestaltFieldEditorView().tabItem { tabLabel(l10n.tr("tab.fields"), "list.bullet.rectangle") }
-                SiriAITweaksView().tabItem { tabLabel(l10n.tr("tab.siriai"), "waveform") }
-                MoreMenuView().tabItem { tabLabel(l10n.tr("tab.more"), "ellipsis.circle.fill") }
+                StatusDashboardView().tabItem { Label(l10n.tr("tab.home"), systemImage: "house.fill") }
+                GestaltPresetManagerView().tabItem { Label(l10n.tr("tab.gestalt"), systemImage: "cpu") }
+                GestaltFieldEditorView().tabItem { Label(l10n.tr("tab.fields"), systemImage: "list.bullet.rectangle") }
+                SiriAITweaksView().tabItem { Label(l10n.tr("tab.siriai"), systemImage: "waveform") }
+                MoreMenuView().tabItem { Label(l10n.tr("tab.more"), systemImage: "ellipsis.circle.fill") }
             }
         }
         .preferredColorScheme(AppearanceMode(rawValue: appearanceMode)?.colorScheme)
-    }
-
-    private func tabLabel(_ title: String, _ systemImage: String) -> some View {
-        Label {
-            Text(title)
-        } icon: {
-            Image(uiImage: Self.bigSymbol(systemImage))
+        .onAppear(perform: checkCompatibility)
+        .alert(l10n.tr("compat.title"), isPresented: $showCompatWarning) {
+            Button(l10n.tr("common.done"), role: .cancel) {}
+        } message: {
+            Text(String(format: l10n.tr("compat.message"), detectedBuild))
         }
     }
 
-    static func bigSymbol(_ name: String, size: CGFloat = 26) -> UIImage {
-        let config = UIImage.SymbolConfiguration(pointSize: size, weight: .semibold)
-        return UIImage(systemName: name, withConfiguration: config) ?? UIImage()
+    private func checkCompatibility() {
+        let build = GestaltAccess.currentOSBuild()
+        guard !build.isEmpty, !GestaltAccess.isRunningSupportedOS() else { return }
+        detectedBuild = build
+        showCompatWarning = true
     }
 }

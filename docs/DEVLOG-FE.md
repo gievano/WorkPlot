@@ -383,3 +383,7 @@
 **The Change:** .scrollContentBackground(.hidden) di 7 view diganti modifier kondisional workPlotScrollBackground(): background sistem list hanya disembunyikan kalau user pasang custom background image. Tanpa background, kartu grouped-table default iOS kembali tampil (fix laporan "gada shape di back textnya" di light theme).
 **The Reasoning:** scrollContentBackground(.hidden) permanen bikin teks melayang tanpa bentuk kartu di light mode.
 **The Tech Debt:** -
+## 2026-08-22 — Hardening Batch + Revert UI ke Versi Awal + Fix Freeze PosterBoard
+**The Change:** (1) LICENSE GPLv3 ditambahkan. (2) Fallback table Localization.swift disinkronkan: 28 keys baru x 6 bahasa. (3) Warning berjenjang: alert konfirmasi spoofing di SiriAITweaksView, section Danger Zone di FilePatchWorkspaceView. (4) Cek kompatibilitas build otomatis saat launch via GestaltAccess.currentOSBuild(). (5) REVERT UI: tab bar kembali ke styling standar iOS (tanpa UITabBarAppearance/bigSymbol custom), MoreMenuView balik ke Label default. (6) FIX FREEZE: parsing Descriptor.plist di listInstalledWallpapers dibuang total (NSDictionary(contentsOfFile:) di path sandbox bikin hang) - kembali ke nama folder UUID. (7) Separator Special Thanks diganti koma.
+**The Reasoning:** User lapor UI jadi aneh (tab bar gedhe, spasi jadi titik) dan PosterBoard freeze setelah batch sebelumnya; diminta balik ke versi awal tanpa mengubah fitur.
+**The Tech Debt:** Nama wallpaper tetap UUID; health check Gestalt & preset export/import ditunda ke batch berikutnya; filepatch.ready masih placeholder teks.

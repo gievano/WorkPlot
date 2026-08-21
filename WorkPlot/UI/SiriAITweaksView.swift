@@ -10,6 +10,7 @@ struct SiriAITweaksView: View {
     @State private var spoofTarget: SpoofTarget?
     @State private var isApplying = false
     @State private var showRestartAlert = false
+    @State private var showSpoofWarning = false
     @State private var didLoadState = false
 
     private var stagedCount: Int {
@@ -49,6 +50,15 @@ struct SiriAITweaksView: View {
                 Button(l10n.tr("siriai.restart.later"), role: .cancel) {}
             } message: {
                 Text(l10n.tr("siriai.restart.message"))
+            }
+            .alert(
+                l10n.tr("danger.spoof.title"),
+                isPresented: $showSpoofWarning
+            ) {
+                Button(l10n.tr("danger.spoof.continue"), role: .destructive) { applyChanges() }
+                Button(l10n.tr("siriai.restart.later"), role: .cancel) {}
+            } message: {
+                Text(l10n.tr("danger.spoof.message"))
             }
             .onAppear(perform: loadCurrentState)
         }
@@ -96,7 +106,11 @@ struct SiriAITweaksView: View {
     private var applySection: some View {
         Section {
             Button {
-                applyChanges()
+                if spoofTarget != nil {
+                    showSpoofWarning = true
+                } else {
+                    applyChanges()
+                }
             } label: {
                 if isApplying {
                     HStack { ProgressView(); Text(l10n.tr("siriai.apply") + "...") }

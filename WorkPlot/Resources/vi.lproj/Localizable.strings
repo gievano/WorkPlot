@@ -110,3 +110,15 @@
 "lg.renderMode" = "Chế độ kết xuất";
 "lg.globalFooter" = "Tắt thanh trượt Liquid Glass trên toàn hệ thống.";
 "pb.labFooter" = "Nhập gói .tendies (định dạng PocketPoster), xác thực cấu trúc descriptor, rồi cài vào PosterBoard. Cần respring sau khi cài.";
+// Danger zone warnings
+"danger.header" = "Vùng nguy hiểm";
+"danger.spoof.title" = "Rủi ro giả lập thiết bị";
+"danger.spoof.continue" = "Vẫn tiếp tục";
+"danger.spoof.message" = "Giả lập có thể làm hỏng Face ID, FaceTime và cập nhật OTA. Hãy sao lưu trước khi tiếp tục.";
+"danger.filepatch.message" = "Sửa tệp hệ thống sai cách có thể gây boot loop. Luôn giữ bản sao lưu mới.";
+"filepatch.ready" = "Quyền sandbox đã kích hoạt. Trình duyệt tệp sẽ có trong bản dựng sau.";
+"filepatch.needaccess" = "Hãy cấp quyền hệ thống ở tab Trang chủ trước.";
+
+// Compatibility check
+"compat.title" = "Phiên bản iOS không được hỗ trợ";
+"compat.message" = "Build phát hiện được %@ nằm ngoài phạm vi hỗ trợ (iOS 27.0 Dev Beta 1-4). Tính năng có thể lỗi.";
