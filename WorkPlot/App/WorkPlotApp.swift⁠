@@ -1,0 +1,51 @@
+import SwiftUI
+
+@main
+struct WorkPlotApp: App {
+    var body: some Scene {
+        WindowGroup {
+            MainDashboardView()
+        }
+    }
+}
+
+struct MainDashboardView: View {
+    @StateObject private var exploitManager = ExploitManager.shared
+    @State private var selectedTab = 0
+    
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            StatusDashboardView()
+                .tabItem {
+                    Label("Status", systemImage: "cpu.fill")
+                }
+                .tag(0)
+            
+            GestaltPresetManagerView()
+                .tabItem {
+                    Label("Gestalt", systemImage: "slider.horizontal.3")
+                }
+                .tag(1)
+            
+            CustomizationThemeView()
+                .tabItem {
+                    Label("Liquid Glass", systemImage: "drop.triangle.fill")
+                }
+                .tag(2)
+            
+            FilePatchWorkspaceView()
+                .tabItem {
+                    Label("RDAR & Res", systemImage: "aspectratio.fill")
+                }
+                .tag(3)
+            
+            BackupRestoreManagerView()
+                .tabItem {
+                    Label("Console Logs", systemImage: "terminal.fill")
+                }
+                .tag(4)
+        }
+        .accentColor(.blue)
+    }
+}
+
