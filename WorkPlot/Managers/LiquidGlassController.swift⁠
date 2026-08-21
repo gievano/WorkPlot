@@ -1,0 +1,35 @@
+import Foundation
+
+public final class LiquidGlassController {
+    public static let shared = LiquidGlassController()
+    private let gestaltCachePath = "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist"
+    
+    private init() {}
+    
+    public func setGlobalCompatibilityMode(disabled: Bool) -> Bool {
+        do {
+            var plist = (try? FileSystemAccessor.shared.readPlist(from: gestaltCachePath)) ?? [:]
+            plist["UIDesignRequiresCompatibility"] = disabled
+            try FileSystemAccessor.shared.writePlist(plist, to: gestaltCachePath)
+            ExploitManager.shared.appendLog("Liquid Glass global compatibility set to: \(disabled)")
+            return true
+        } catch {
+            ExploitManager.shared.appendLog("Failed to modify Liquid Glass compatibility: \(error.localizedDescription)")
+            return false
+        }
+    }
+    
+    public func setTransparencySliderLevel(_ level: Int) -> Bool {
+        let clamped = max(0, min(100, level))
+        do {
+            var plist = (try? FileSystemAccessor.shared.readPlist(from: gestaltCachePath)) ?? [:]
+            plist["LiquidGlassTransparencySlider"] = clamped
+            try FileSystemAccessor.shared.writePlist(plist, to: gestaltCachePath)
+            ExploitManager.shared.appendLog("Liquid Glass transparency slider set to: \(clamped)%")
+            return true
+        } catch {
+            return false
+        }
+    }
+}
+
