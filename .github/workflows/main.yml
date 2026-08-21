@@ -1,4 +1,5 @@
-name: Build iOS IPA
+name: Build unsigned IPA
+
 on:
   push:
     branches: [ main ]
@@ -10,32 +11,32 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Select Xcode 26.6 (iOS 27 SDK)
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Build unsigned archive
         run: |
-          test -d "/Applications/Xcode_26.6.app/Contents/Developer"
-          sudo xcode-select -s "/Applications/Xcode_26.6.app/Contents/Developer"
-          xcodebuild -version
-          sdk_version="$(xcrun --sdk iphoneos --show-sdk-version)"
-          test "$sdk_version" = "27.0"
-          echo "iOS SDK: $sdk_version"
-      - name: Build iOS App
-        run: |
-          xcodebuild -project WorkPlot/WorkPlot.xcodeproj \
+          xcodebuild archive \
+            -project WorkPlot/WorkPlot.xcodeproj \
             -scheme WorkPlot \
-            -sdk iphoneos \
             -configuration Release \
-            -derivedDataPath build \
+            -destination "generic/platform=iOS" \
+            -archivePath "$RUNNER_TEMP/WorkPlot.xcarchive" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
-      - name: Create IPA
+
+      - name: Package unsigned IPA
         run: |
-          mkdir -p Payload
-          cp -R build/Build/Products/Release-iphoneos/WorkPlot.app Payload/
-          zip -r WorkPlot.ipa Payload
+          mkdir -p "$RUNNER_TEMP/Payload"
+          cp -R \
+            "$RUNNER_TEMP/WorkPlot.xcarchive/Products/Applications/WorkPlot.app" \
+            "$RUNNER_TEMP/Payload/"
+          cd "$RUNNER_TEMP"
+          zip -qry WorkPlot.ipa Payload
+
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
           name: WorkPlot-IPA
-          path: WorkPlot.ipa
+          path: ${{ runner.temp }}/WorkPlot.ipa

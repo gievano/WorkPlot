@@ -134,3 +134,35 @@
 ### The Tech Debt
 
 - GitHub-hosted runner availability for Xcode 26.6 must be confirmed; the workflow now reports this directly instead of falling through to compiler errors.
+
+## 2026-08-21 - Fix GitHub Actions Xcode Selection Error
+
+### The Change
+
+- Removed invalid step `Select Xcode 26.6 (iOS 27 SDK)` from `.github/workflows/main.yml`.
+
+### The Reasoning
+
+- Xcode 26.6 / iOS SDK 27.0 path does not exist on GitHub-hosted `macos-latest` runners, causing job execution failure at step 2.
+- Using default Xcode bundled in `macos-latest` allows `xcodebuild` to execute properly.
+
+### The Tech Debt
+
+- None.
+
+
+## 2026-08-21 - Align CI Workflow with GestaltEdit Pattern
+
+### The Change
+
+- Updated `.github/workflows/main.yml` to use `xcodebuild archive` with `-destination "generic/platform=iOS"` into `$RUNNER_TEMP`.
+- Extracted `.app` from `.xcarchive/Products/Applications/` into `Payload/` and zipped it to `$RUNNER_TEMP/WorkPlot.ipa`.
+
+### The Reasoning
+
+- Follows the exact build and packaging workflow pattern used in `frs0n/GestaltEdit`.
+
+### The Tech Debt
+
+- None.
+
