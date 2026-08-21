@@ -49,3 +49,26 @@
 "icon.default" = "WorkPlot Cổ điển";
 "icon.collage" = "Ghép WP";
 "common.done" = "Xong";
+
+// Icon grid, credits detail, posterboard list, background slider
+"icon.dark" = "Tối";
+"icon.neon" = "Neon";
+"icon.minimal" = "Tối giản";
+"icon.retro" = "Cổ điển";
+"icon.gradient" = "Chuyển màu";
+"icon.confirm.title" = "Đổi biểu tượng ứng dụng?";
+"icon.confirm.change" = "Đổi";
+"icon.confirm.message" = "iOS sẽ áp dụng biểu tượng mới ngay lập tức và khởi động lại ứng dụng.";
+"credits.owner" = "Chủ sở hữu";
+"credits.projects" = "Dự án";
+"credits.thanks" = "Cảm ơn đặc biệt";
+"credits.exploit.detail" = "Khai thác - bad_query bởi forcequitOS";
+"credits.sandbox.detail" = "Thoát sandbox iOS 27 (lỗi lớp MCM)";
+"pb.installed" = "Hình nền đã cài";
+"pb.empty" = "Chưa có hình nền nào.";
+"pb.apply" = "Áp dụng";
+"pb.remove" = "Xóa";
+"pb.remove.confirm" = "Xóa hình nền này?";
+"pb.wrongext" = "Chỉ hỗ trợ tệp .tendies.";
+"bg.opacity" = "Độ mờ hình nền";
+"bg.opacity.hint" = "Độ trong suốt của hình nền tùy chỉnh";

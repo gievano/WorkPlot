@@ -49,3 +49,26 @@
 "icon.default" = "经典 WorkPlot";
 "icon.collage" = "WP 拼贴";
 "common.done" = "完成";
+
+// Icon grid, credits detail, posterboard list, background slider
+"icon.dark" = "深色";
+"icon.neon" = "霓虹";
+"icon.minimal" = "极简";
+"icon.retro" = "复古";
+"icon.gradient" = "渐变";
+"icon.confirm.title" = "更换应用图标？";
+"icon.confirm.change" = "更换";
+"icon.confirm.message" = "iOS 将立即应用新图标并重启应用。";
+"credits.owner" = "所有者";
+"credits.projects" = "项目";
+"credits.thanks" = "特别感谢";
+"credits.exploit.detail" = "漏洞 - forcequitOS 的 bad_query";
+"credits.sandbox.detail" = "iOS 27 沙盒逃逸（MCM 漏洞类）";
+"pb.installed" = "已安装壁纸";
+"pb.empty" = "尚未安装壁纸。";
+"pb.apply" = "应用";
+"pb.remove" = "移除";
+"pb.remove.confirm" = "移除此壁纸？";
+"pb.wrongext" = "仅支持 .tendies 文件。";
+"bg.opacity" = "背景不透明度";
+"bg.opacity.hint" = "自定义背景的透明度";

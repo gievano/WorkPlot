@@ -89,6 +89,37 @@ enum PosterBoardAccess {
         }
     }
 
+    // MARK: - Installed wallpaper management
+
+    private static func descriptorsPath(appHash: String) -> String {
+        applicationContainerPath(hash: appHash)
+            + "/Library/Application Support/PRBPosterExtensionDataStore/61/Extensions/"
+            + extensionID + "/descriptors"
+    }
+
+    /// Lists installed wallpaper descriptor folders (UUID directory names).
+    static func listInstalledWallpapers() throws -> [String] {
+        let appHash = try findPosterBoardHash()
+        let destination = descriptorsPath(appHash: appHash)
+        guard FileManager.default.fileExists(atPath: destination) else { return [] }
+        return try list(destination).sorted()
+    }
+
+    /// Removes one installed wallpaper descriptor folder by name.
+    static func removeWallpaper(named name: String) throws {
+        let appHash = try findPosterBoardHash()
+        let target = URL(fileURLWithPath: descriptorsPath(appHash: appHash), isDirectory: true)
+            .appendingPathComponent(name, isDirectory: true)
+
+        guard let handle = consume(path: target.path, create: false) else {
+            throw PosterBoardError.writeFailed("sandbox extension tidak diperoleh.")
+        }
+        defer { bad_query_release(handle) }
+
+        guard FileManager.default.fileExists(atPath: target.path) else { return }
+        try FileManager.default.removeItem(at: target)
+    }
+
     // MARK: - Internals
 
     private static func applicationContainerPath(hash: String) -> String {

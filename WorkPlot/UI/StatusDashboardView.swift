@@ -43,6 +43,8 @@ struct StatusDashboardView: View {
                     }
                 }
                 Section(header: Text(l10n.tr("credits.header"))) {
+                    Link("Owner: Adnan.120hz & Gievano", destination: URL(string: "https://github.com/adnan120hz")!)
+                        .font(.system(size: 15, weight: .semibold))
                     Link("gievano", destination: URL(string: "https://github.com/gievano")!)
                     Link("Adnan 120Hz", destination: URL(string: "https://github.com/adnan120hz")!)
                     Text(l10n.tr("credits.disclaimer"))

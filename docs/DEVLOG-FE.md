@@ -358,3 +358,13 @@
 **The Change:** Prose README ditulis ulang dengan aturan skill stop-slop: hapus em dash di credits, adverba ("directly"), lazy extreme ("every write"), staccato ("*Always.*"), dan kalimat dramatis. Struktur tabel/panduan dipertahankan.
 **The Reasoning:** Versi pertama masih penuh pola tulisan AI; user minta gaya yang lebih manusiawi via stop-slop + humanizer.
 **The Tech Debt:** Header kolom "What it does" dipertahankan sebagai label tabel (bukan kalimat), di luar scope aturan sentence-level.
+
+## 2026-08-22 — Batch Upgrade: Icon Grid, PosterBoard Manager, Credits, Slider
+**The Change:**
+- PosterBoardLabView: fileImporter kini filter khusus .tendies (UTType filenameExtension), guard ekstensi ganda, section Wallpaper Terpasang dengan tombol apply/respring & remove berkonfirmasi. PosterBoardAccess dapat listInstalledWallpapers() + removeWallpaper(named:) via bad_query list/consume.
+- Icon switcher jadi grid 7 pilihan (Default, Collage, Dark, Neon, Minimal, Retro, Gradient) + alert konfirmasi sebelum setAlternateIconName; 5 PNG baru digenerate; Info.plist daftar WPDark/WPNeon/WPMinimal/WPRetro/WPGradient. Entry point ditambah di menu Lainnya (gear tetap).
+- CreditsView baru (Owner Adnan.120hz & Gievano, bad_query forcequitOS, MCM bug class 0xjohnnydev, special thanks Mond/GestaltEdit/Ketamine/3105/Placard/FilzaSlop) dari menu Lainnya; footer Owner di tab Status.
+- Slider opasitas background nyata (0.05-1.0) di BackgroundPickerSheet dengan label 11pt sesuai spek slider kecil; AppBackground baca @AppStorage backgroundOpacity (default 0.35, perilaku lama utuh).
+- 21 key lokalisasi baru x 6 bahasa.
+**The Reasoning:** Spek minta slider label kecil tapi tidak ada slider eksisting; menambah slider palsu = gimmick (dilarang spek), jadi dipakai slider nyata untuk fitur background yang sudah ada. Semua upgrade incremental, tidak ada file inti ditulis ulang.
+**The Tech Debt:** Icon PNG hasil generate programatik (bukan desain hand-crafted); nama wallpaper tampil sebagai UUID folder karena Descriptor.plist tidak diparsing.
