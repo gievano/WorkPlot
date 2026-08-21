@@ -78,7 +78,7 @@
 "home.info" = "Информация о системе";
 
 // Full in-app translation sweep
-"common.accessLocked" = "Доступ к системе не активен.\nОткройте вкладку Главная и нажмите ""Проверить доступ к системе"".";
+"common.accessLocked" = "Доступ к системе не активен.\nОткройте вкладку «Главная» и нажмите «Проверить доступ к системе».";
 "common.respring" = "Respring";
 "common.apply" = "Применить";
 "common.applying" = "Применение…";
@@ -95,7 +95,7 @@
 "gestalt.modelHeader" = "Название модели";
 "gestalt.islandFooter" = "Изменяет ArtworkDeviceSubType; выберите тип экрана для имитации.";
 "fields.readFail" = "Не удалось прочитать MobileGestalt.";
-"fields.noMatch" = "Нет ключей, соответствующих \\"%@\\".";
+"fields.noMatch" = "Нет ключей, соответствующих «%@».";
 "fields.hexPreview" = "Hex (первые 512 байт)";
 "fields.base64Full" = "Base64 (полностью)";
 "fields.cacheDataMissing" = "CacheData отсутствует в этом plist.";
@@ -103,7 +103,7 @@
 "fields.valueHeader" = "Значение";
 "fields.newKeyHeader" = "Новый ключ (CacheExtra)";
 "fields.addField" = "Добавить поле";
-"backup.empty" = "Резервных копий пока нет.\nНажмите ""Проверить доступ к системе"" на вкладке Главная.";
+"backup.empty" = "Резервных копий пока нет.\nНажмите «Проверить доступ к системе» на вкладке «Главная», чтобы начать.";
 "backup.create" = "Создать копию сейчас";
 "backup.importMenu" = "Импортировать копию…";
 "backup.restoreMsg" = "Текущее состояние сначала сохраняется автоматически, поэтому восстановление можно отменить.";

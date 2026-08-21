@@ -392,3 +392,8 @@
 **The Change:** (1) Auto-check akses sistem 0.5 dtk setelah launch di WorkPlotApp. (2) Restore backup sukses -> respring otomatis. (3) Sweep lokalisasi total: semua teks hardcoded diganti l10n.tr (89 keys x 6 bahasa, terverifikasi lengkap & seimbang). (4) RDARFix: canvas tidak lagi hardcoded 1290x2868, ambil UIScreen.main.nativeBounds runtime. (5) Merge main ke feat/auto-release + resolusi konflik 8 file.
 **The Reasoning:** Persiapan release v1.0.0 - user lapor RDARFix tidak berfungsi (hardcoded canvas hanya cocok satu model), teks campur bahasa, dan ingin UX tanpa tap manual.
 **The Tech Debt:** Teks fase progres import PosterBoard ("Mencari container...") masih Indonesia; FilePatchWorkspaceView masih placeholder menunggu port metode filesystem dari IPA 3105.
+
+## 2026-08-22 — Fix Localizable.strings Invalid (6 Bahasa)
+**The Change:** Tulis ulang 3 baris per bahasa di WorkPlot/Resources/{en,id,zh-Hans,ja,ru,vi}.lproj/Localizable.strings: fields.noMatch (escape `\"%@\"` yang benar), common.accessLocked & backup.empty (kutip ganda dobel `""...""` diganti `\"...\"`). vi.lproj mojibake ikut terganti dengan konten bersih. Semua file ditulis UTF-8 tanpa BOM via script temp pwsh.
+**The Reasoning:** Escape salah + kutip dobel bikin Xcode gagal validasi plist .strings. Baris ditulis ulang utuh satu baris per key (bukan patch substring) supaya deterministik; verifikasi regex ketat `^"(?:[^"\\]|\\.)*" = "(?:[^"\\]|\\.)*";$` PASS di 6 file, 113 key/file tetap, 0 kontrol char & 0 U+FFFD.
+**The Tech Debt:** Indentasi baris fields.noMatch hilang (sekarang rata kolom 0) — kosmetik saja, tidak mempengaruhi kompilasi.

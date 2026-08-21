@@ -78,7 +78,7 @@
 "home.info" = "Informasi Sistem";
 
 // Full in-app translation sweep
-"common.accessLocked" = "Akses sistem belum aktif.\nBuka tab Home dan tekan ""Periksa Akses Sistem"".";
+"common.accessLocked" = "Akses sistem belum aktif.\nBuka tab Home dan tekan \"Periksa Akses Sistem\".";
 "common.respring" = "Respring";
 "common.apply" = "Terapkan";
 "common.applying" = "Menerapkan...";
@@ -95,7 +95,7 @@
 "gestalt.modelHeader" = "Nama Model";
 "gestalt.islandFooter" = "Mengubah ArtworkDeviceSubType; pilih tipe layar yang ingin ditiru.";
 "fields.readFail" = "Gagal membaca MobileGestalt.";
-"fields.noMatch" = "Tidak ada key yang cocok dengan \\"%@\\".";
+"fields.noMatch" = "Tidak ada key yang cocok dengan \"%@\".";
 "fields.hexPreview" = "Hex (512 byte pertama)";
 "fields.base64Full" = "Base64 (lengkap)";
 "fields.cacheDataMissing" = "CacheData tidak ada di plist ini.";
@@ -103,7 +103,7 @@
 "fields.valueHeader" = "Nilai";
 "fields.newKeyHeader" = "Key Baru (CacheExtra)";
 "fields.addField" = "Tambah Field";
-"backup.empty" = "Belum ada backup.\nTekan ""Periksa Akses Sistem"" di tab Home untuk memulai.";
+"backup.empty" = "Belum ada backup.\nTekan \"Periksa Akses Sistem\" di tab Home untuk memulai.";
 "backup.create" = "Buat Backup Sekarang";
 "backup.importMenu" = "Impor Backup...";
 "backup.restoreMsg" = "Kondisi saat ini akan dibackup otomatis dulu, jadi restore bisa dibatalkan.";

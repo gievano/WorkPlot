@@ -78,7 +78,7 @@
 "home.info" = "システム情報";
 
 // Full in-app translation sweep
-"common.accessLocked" = "システムアクセスが有効ではありません。\nホームタブで""システムアクセスを確認""をタップしてください。";
+"common.accessLocked" = "システムアクセスが有効ではありません。\nホームタブで「システムアクセスを確認」をタップしてください。";
 "common.respring" = "Respring";
 "common.apply" = "適用";
 "common.applying" = "適用中…";
@@ -95,7 +95,7 @@
 "gestalt.modelHeader" = "モデル名";
 "gestalt.islandFooter" = "ArtworkDeviceSubType を変更します。模倣する画面タイプを選択してください。";
 "fields.readFail" = "MobileGestalt の読み取りに失敗しました。";
-"fields.noMatch" = "\\"%@\"" に一致するキーはありません。";
+"fields.noMatch" = "「%@」に一致するキーはありません。";
 "fields.hexPreview" = "16進数（最初の512バイト）";
 "fields.base64Full" = "Base64（全体）";
 "fields.cacheDataMissing" = "この plist に CacheData がありません。";
@@ -103,7 +103,7 @@
 "fields.valueHeader" = "値";
 "fields.newKeyHeader" = "新しいキー（CacheExtra）";
 "fields.addField" = "フィールドを追加";
-"backup.empty" = "バックアップはまだありません。\nホームタブで""システムアクセスを確認""をタップして開始してください。";
+"backup.empty" = "バックアップはまだありません。\nホームタブで「システムアクセスを確認」をタップして開始してください。";
 "backup.create" = "今すぐバックアップを作成";
 "backup.importMenu" = "バックアップを読み込む…";
 "backup.restoreMsg" = "現在の状態を自動でバックアップするので、復元は取り消せます。";

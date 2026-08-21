@@ -78,7 +78,7 @@
 "home.info" = "Thông tin hệ thống";
 
 // Full in-app translation sweep
-"common.accessLocked" = "Quyền hệ thống chưa kích hoạt.\nMở tab Trang chủ và nhấn ""Kiểm tra quyền truy cập hệ thống"".";
+"common.accessLocked" = "Quyền hệ thống chưa hoạt động.\nMở tab Trang chủ và nhấn «Kiểm tra quyền truy cập hệ thống».";
 "common.respring" = "Respring";
 "common.apply" = "Áp dụng";
 "common.applying" = "Đang áp dụng…";
@@ -95,7 +95,7 @@
 "gestalt.modelHeader" = "Tên thiết bị";
 "gestalt.islandFooter" = "Thay đổi ArtworkDeviceSubType; chọn loại màn hình muốn mô phỏng.";
 "fields.readFail" = "Không đọc được MobileGestalt.";
-"fields.noMatch" = "Không có khóa nào khớp \\"%@\\".";
+"fields.noMatch" = "Không có khóa nào khớp «%@».";
 "fields.hexPreview" = "Hex (512 byte đầu)";
 "fields.base64Full" = "Base64 (đầy đủ)";
 "fields.cacheDataMissing" = "CacheData không có trong plist này.";
@@ -103,7 +103,7 @@
 "fields.valueHeader" = "Giá trị";
 "fields.newKeyHeader" = "Khóa mới (CacheExtra)";
 "fields.addField" = "Thêm trường";
-"backup.empty" = "Chưa có bản sao lưu.\nNhấn ""Kiểm tra quyền truy cập hệ thống"" ở tab Trang chủ để bắt đầu.";
+"backup.empty" = "Chưa có bản sao lưu.\nNhấn «Kiểm tra quyền truy cập hệ thống» ở tab Trang chủ để bắt đầu.";
 "backup.create" = "Tạo sao lưu ngay";
 "backup.importMenu" = "Nhập bản sao lưu…";
 "backup.restoreMsg" = "Trạng thái hiện tại sẽ được sao lưu trước, nên việc khôi phục có thể hoàn tác.";
