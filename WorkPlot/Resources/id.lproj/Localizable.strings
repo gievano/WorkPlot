@@ -77,6 +77,39 @@
 "tab.home" = "Home";
 "home.info" = "Informasi Sistem";
 
+// Full in-app translation sweep
+"common.accessLocked" = "Akses sistem belum aktif.\nBuka tab Home dan tekan \"Periksa Akses Sistem\".";
+"common.respring" = "Respring";
+"common.apply" = "Terapkan";
+"common.applying" = "Menerapkan...";
+"common.save" = "Simpan";
+"common.cancel" = "Batal";
+"common.add" = "Tambah";
+"common.retry" = "Coba Lagi";
+"common.risky" = "RISIKO";
+"home.buildLabel" = "Build";
+"home.statusLabel" = "Status";
+"home.active" = "Aktif";
+"home.locked" = "Terkunci";
+"home.actionsHeader" = "Aksi";
+"gestalt.modelHeader" = "Nama Model";
+"gestalt.islandFooter" = "Mengubah ArtworkDeviceSubType; pilih tipe layar yang ingin ditiru.";
+"fields.readFail" = "Gagal membaca MobileGestalt.";
+"fields.noMatch" = "Tidak ada key yang cocok dengan \"%@\".";
+"fields.hexPreview" = "Hex (512 byte pertama)";
+"fields.base64Full" = "Base64 (lengkap)";
+"fields.cacheDataMissing" = "CacheData tidak ada di plist ini.";
+"fields.typeHeader" = "Tipe";
+"fields.valueHeader" = "Nilai";
+"fields.newKeyHeader" = "Key Baru (CacheExtra)";
+"fields.addField" = "Tambah Field";
+"backup.empty" = "Belum ada backup.\nTekan \"Periksa Akses Sistem\" di tab Home untuk memulai.";
+"backup.create" = "Buat Backup Sekarang";
+"backup.importMenu" = "Impor Backup...";
+"backup.restoreMsg" = "Kondisi saat ini akan dibackup otomatis dulu, jadi restore bisa dibatalkan.";
+"lg.renderMode" = "Mode Render";
+"lg.globalFooter" = "Menonaktifkan Liquid Glass Slider secara global di seluruh sistem.";
+"pb.labFooter" = "Impor paket .tendies (format PocketPoster), validasi struktur descriptor, lalu pasang ke PosterBoard. Respring diperlukan setelah pemasangan.";
 // Danger zone warnings
 "danger.header" = "Zona Berbahaya";
 "danger.spoof.title" = "Risiko Spoofing Device";
@@ -89,3 +122,9 @@
 // Compatibility check
 "compat.title" = "Versi iOS Tidak Didukung";
 "compat.message" = "Build terdeteksi %@ di luar rentang didukung (iOS 27.0 Dev Beta 1-4). Fitur bisa gagal atau tidak normal.";
+"pb.loading" = "Memuat wallpaper terpasang...";
+"common.default" = "Bawaan";
+"backup.restoreConfirm" = "Restore %@?";
+"backup.restoreOk" = "Restore berhasil. Respring otomatis...";
+"fields.searchPrompt" = "Cari key atau value";
+"home.log" = "Log";

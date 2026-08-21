@@ -77,6 +77,39 @@
 "tab.home" = "Home";
 "home.info" = "System Information";
 
+// Full in-app translation sweep
+"common.accessLocked" = "System access is not active.\nOpen the Home tab and tap \"Check System Access\".";
+"common.respring" = "Respring";
+"common.apply" = "Apply";
+"common.applying" = "Applying...";
+"common.save" = "Save";
+"common.cancel" = "Cancel";
+"common.add" = "Add";
+"common.retry" = "Try Again";
+"common.risky" = "RISKY";
+"home.buildLabel" = "Build";
+"home.statusLabel" = "Status";
+"home.active" = "Active";
+"home.locked" = "Locked";
+"home.actionsHeader" = "Actions";
+"gestalt.modelHeader" = "Model Name";
+"gestalt.islandFooter" = "Changes ArtworkDeviceSubType; pick the screen type to mimic.";
+"fields.readFail" = "Failed to read MobileGestalt.";
+"fields.noMatch" = "No keys match \"%@\".";
+"fields.hexPreview" = "Hex (first 512 bytes)";
+"fields.base64Full" = "Base64 (full)";
+"fields.cacheDataMissing" = "CacheData is missing from this plist.";
+"fields.typeHeader" = "Type";
+"fields.valueHeader" = "Value";
+"fields.newKeyHeader" = "New Key (CacheExtra)";
+"fields.addField" = "Add Field";
+"backup.empty" = "No backups yet.\nTap \"Check System Access\" on the Home tab to start.";
+"backup.create" = "Create Backup Now";
+"backup.importMenu" = "Import Backup...";
+"backup.restoreMsg" = "Your current state is backed up first, so a restore can be undone.";
+"lg.renderMode" = "Render Mode";
+"lg.globalFooter" = "Disables the Liquid Glass slider globally across the system.";
+"pb.labFooter" = "Import .tendies packages (PocketPoster format), validate the descriptor structure, then install to PosterBoard. Respring after installing.";
 // Danger zone warnings
 "danger.header" = "Danger Zone";
 "danger.spoof.title" = "Device Spoofing Risk";
@@ -89,3 +122,9 @@
 // Compatibility check
 "compat.title" = "Unsupported iOS Version";
 "compat.message" = "Detected build %@ is outside the supported range (iOS 27.0 Developer Beta 1-4). Features may fail or behave unexpectedly.";
+"pb.loading" = "Loading installed wallpapers...";
+"common.default" = "Default";
+"backup.restoreConfirm" = "Restore %@?";
+"backup.restoreOk" = "Restored. Respringing automatically...";
+"fields.searchPrompt" = "Search keys or values";
+"home.log" = "Log";

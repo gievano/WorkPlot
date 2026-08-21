@@ -77,6 +77,39 @@
 "tab.home" = "主页";
 "home.info" = "系统信息";
 
+// Full in-app translation sweep
+"common.accessLocked" = "系统访问尚未激活。\n打开主屏幕标签并点击「检查系统访问」。";
+"common.respring" = "注销重载";
+"common.apply" = "应用";
+"common.applying" = "应用中…";
+"common.save" = "保存";
+"common.cancel" = "取消";
+"common.add" = "添加";
+"common.retry" = "重试";
+"common.risky" = "有风险";
+"home.buildLabel" = "Build";
+"home.statusLabel" = "状态";
+"home.active" = "已激活";
+"home.locked" = "未解锁";
+"home.actionsHeader" = "操作";
+"gestalt.modelHeader" = "设备名称";
+"gestalt.islandFooter" = "修改 ArtworkDeviceSubType；选择要模拟的屏幕类型。";
+"fields.readFail" = "读取 MobileGestalt 失败。";
+"fields.noMatch" = "没有匹配「%@」的键。";
+"fields.hexPreview" = "十六进制（前 512 字节）";
+"fields.base64Full" = "Base64（完整）";
+"fields.cacheDataMissing" = "此 plist 中没有 CacheData。";
+"fields.typeHeader" = "类型";
+"fields.valueHeader" = "数值";
+"fields.newKeyHeader" = "新键（CacheExtra）";
+"fields.addField" = "添加字段";
+"backup.empty" = "暂无备份。\n在主屏幕标签上点击「检查系统访问」以开始。";
+"backup.create" = "立即创建备份";
+"backup.importMenu" = "导入备份…";
+"backup.restoreMsg" = "会先自动备份当前状态，因此可以撤销恢复。";
+"lg.renderMode" = "渲染模式";
+"lg.globalFooter" = "在整个系统中全局禁用 Liquid Glass 滑块。";
+"pb.labFooter" = "导入 .tendies 包（PocketPoster 格式），校验描述符结构，然后安装到海报板。安装后需要注销重载。";
 // Danger zone warnings
 "danger.header" = "危险区域";
 "danger.spoof.title" = "设备伪装风险";
@@ -89,3 +122,9 @@
 // Compatibility check
 "compat.title" = "不受支持的 iOS 版本";
 "compat.message" = "检测到的版本 %@ 超出支持范围（iOS 27.0 开发者测试版 1-4）。功能可能失败或异常。";
+"pb.loading" = "正在加载已安装壁纸…";
+"common.default" = "默认";
+"backup.restoreConfirm" = "恢复 %@？";
+"backup.restoreOk" = "恢复成功。自动注销重载…";
+"fields.searchPrompt" = "搜索键或值";
+"home.log" = "日志";

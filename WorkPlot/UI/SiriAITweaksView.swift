@@ -25,7 +25,7 @@ struct SiriAITweaksView: View {
                 if !manager.sandboxGranted {
                     VStack(spacing: 12) {
                         Image(systemName: "lock.icloud").font(.largeTitle).foregroundColor(.orange)
-                        Text("Akses sistem belum aktif.\nBuka tab Status dan tekan \"Periksa Akses Sistem\".")
+                        Text(L10n.shared.tr("common.accessLocked"))
                             .multilineTextAlignment(.center)
                             .foregroundColor(.secondary)
                     }
@@ -39,7 +39,7 @@ struct SiriAITweaksView: View {
                 }
             }
             .navigationTitle(l10n.tr("siriai.title"))
-            .scrollContentBackground(.hidden)
+            .workPlotScrollBackground()
             .alert(
                 l10n.tr("siriai.restart.title"),
                 isPresented: $showRestartAlert

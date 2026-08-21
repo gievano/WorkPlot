@@ -77,6 +77,39 @@
 "tab.home" = "Главная";
 "home.info" = "Информация о системе";
 
+// Full in-app translation sweep
+"common.accessLocked" = "Доступ к системе не активен.\nОткройте вкладку «Главная» и нажмите «Проверить доступ к системе».";
+"common.respring" = "Respring";
+"common.apply" = "Применить";
+"common.applying" = "Применение…";
+"common.save" = "Сохранить";
+"common.cancel" = "Отмена";
+"common.add" = "Добавить";
+"common.retry" = "Повторить";
+"common.risky" = "РИСК";
+"home.buildLabel" = "Сборка";
+"home.statusLabel" = "Статус";
+"home.active" = "Активно";
+"home.locked" = "Заблокировано";
+"home.actionsHeader" = "Действия";
+"gestalt.modelHeader" = "Название модели";
+"gestalt.islandFooter" = "Изменяет ArtworkDeviceSubType; выберите тип экрана для имитации.";
+"fields.readFail" = "Не удалось прочитать MobileGestalt.";
+"fields.noMatch" = "Нет ключей, соответствующих «%@».";
+"fields.hexPreview" = "Hex (первые 512 байт)";
+"fields.base64Full" = "Base64 (полностью)";
+"fields.cacheDataMissing" = "CacheData отсутствует в этом plist.";
+"fields.typeHeader" = "Тип";
+"fields.valueHeader" = "Значение";
+"fields.newKeyHeader" = "Новый ключ (CacheExtra)";
+"fields.addField" = "Добавить поле";
+"backup.empty" = "Резервных копий пока нет.\nНажмите «Проверить доступ к системе» на вкладке «Главная», чтобы начать.";
+"backup.create" = "Создать копию сейчас";
+"backup.importMenu" = "Импортировать копию…";
+"backup.restoreMsg" = "Текущее состояние сначала сохраняется автоматически, поэтому восстановление можно отменить.";
+"lg.renderMode" = "Режим рендера";
+"lg.globalFooter" = "Глобально отключает ползунок Liquid Glass во всей системе.";
+"pb.labFooter" = "Импорт пакетов .tendies (формат PocketPoster), проверка структуры дескриптора, затем установка в PosterBoard. После установки нужен respring.";
 // Danger zone warnings
 "danger.header" = "Опасная зона";
 "danger.spoof.title" = "Риск подмены устройства";
@@ -89,3 +122,9 @@
 // Compatibility check
 "compat.title" = "Неподдерживаемая версия iOS";
 "compat.message" = "Обнаруженная сборка %@ вне поддерживаемого диапазона (iOS 27.0 Dev Beta 1-4). Функции могут не работать.";
+"pb.loading" = "Загрузка установленных обоев…";
+"common.default" = "По умолчанию";
+"backup.restoreConfirm" = "Восстановить %@?";
+"backup.restoreOk" = "Восстановлено. Автоматический respring…";
+"fields.searchPrompt" = "Поиск ключей и значений";
+"home.log" = "Журнал";

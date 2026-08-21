@@ -2,6 +2,7 @@ import SwiftUI
 
 struct GestaltFieldEditorView: View {
     @ObservedObject private var manager = ExploitManager.shared
+    @ObservedObject private var l10n = L10n.shared
     @State private var plist: [String: Any]?
     @State private var searchText = ""
     @State private var isShowingAddSheet = false
@@ -12,7 +13,7 @@ struct GestaltFieldEditorView: View {
                 if !manager.sandboxGranted {
                     VStack(spacing: 12) {
                         Image(systemName: "lock.icloud").font(.largeTitle).foregroundColor(.orange)
-                        Text("Akses sistem belum aktif.\nBuka tab Status dan tekan \"Periksa Akses Sistem\".")
+                        Text(L10n.shared.tr("common.accessLocked"))
                             .multilineTextAlignment(.center)
                             .foregroundColor(.secondary)
                     }
@@ -21,14 +22,14 @@ struct GestaltFieldEditorView: View {
                 } else {
                     VStack(spacing: 12) {
                         Image(systemName: "exclamationmark.triangle").font(.largeTitle).foregroundColor(.orange)
-                        Text("Gagal membaca MobileGestalt.")
-                        Button("Coba Lagi") { load() }
+                        Text(l10n.tr("fields.readFail"))
+                        Button(l10n.tr("common.retry")) { load() }
                     }
                 }
             }
-            .navigationTitle("Fields")
-            .scrollContentBackground(.hidden)
-            .searchable(text: $searchText, prompt: "Cari key atau value")
+            .navigationTitle(l10n.tr("tab.fields"))
+            .workPlotScrollBackground()
+            .searchable(text: $searchText, prompt: l10n.tr("fields.searchPrompt"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
@@ -39,7 +40,7 @@ struct GestaltFieldEditorView: View {
                     .disabled(!manager.sandboxGranted)
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Respring") { manager.respringRequested = true }
+                    Button(l10n.tr("common.respring")) { manager.respringRequested = true }
                 }
             }
             .sheet(isPresented: $isShowingAddSheet) {
@@ -101,7 +102,7 @@ struct GestaltFieldEditorView: View {
 
             if cacheKeys.isEmpty && topLevelKeys.isEmpty {
                 Section {
-                    Text("Tidak ada key yang cocok dengan \"\(searchText)\".")
+                    Text(String(format: l10n.tr("fields.noMatch"), searchText))
                         .foregroundColor(.secondary)
                 }
             }
@@ -228,6 +229,8 @@ struct GestaltFieldEditorView: View {
 private struct CacheDataView: View {
     let plist: [String: Any]
 
+    @ObservedObject private var l10n = L10n.shared
+
     private var cacheData: Data? { plist["CacheData"] as? Data }
 
     var body: some View {
@@ -246,7 +249,7 @@ private struct CacheDataView: View {
                         .font(.system(size: 9, design: .monospaced))
                         .textSelection(.enabled)
                 } else {
-                    Text("CacheData tidak ada di plist ini.")
+                    Text(l10n.tr("fields.cacheDataMissing"))
                         .foregroundColor(.secondary)
                 }
             }
@@ -302,6 +305,7 @@ private struct ValueEditor: View {
     let initialText: String
     let onCommit: (String) -> Void
 
+    @ObservedObject private var l10n = L10n.shared
     @State private var text: String
     @Environment(\.dismiss) private var dismiss
 
@@ -315,10 +319,10 @@ private struct ValueEditor: View {
 
     var body: some View {
         Form {
-            Section(header: Text("Tipe")) {
+            Section(header: Text(l10n.tr("fields.typeHeader"))) {
                 Text(kind.label).foregroundColor(.blue)
             }
-            Section(header: Text("Nilai")) {
+            Section(header: Text(l10n.tr("fields.valueHeader"))) {
                 if kind == .array || kind == .dictionary || kind == .data {
                     TextEditor(text: $text)
                         .font(.system(.footnote, design: .monospaced))
@@ -330,7 +334,7 @@ private struct ValueEditor: View {
                         .textInputAutocapitalization(.never)
                 }
             }
-            Button("Simpan") {
+            Button(l10n.tr("common.save")) {
                 onCommit(text)
                 dismiss()
             }
@@ -343,6 +347,7 @@ private struct ValueEditor: View {
 private struct AddCacheExtraFieldView: View {
     let onSave: (String, PlistValueKind, String) -> Void
 
+    @ObservedObject private var l10n = L10n.shared
     @State private var key = ""
     @State private var kind: PlistValueKind = .string
     @State private var valueText = ""
@@ -351,33 +356,33 @@ private struct AddCacheExtraFieldView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Key Baru (CacheExtra)")) {
+                Section(header: Text(l10n.tr("fields.newKeyHeader"))) {
                     TextField("Key", text: $key)
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                 }
-                Section(header: Text("Tipe")) {
+                Section(header: Text(l10n.tr("fields.typeHeader"))) {
                     Picker("Tipe", selection: $kind) {
                         ForEach(PlistValueKind.allCases) { k in
                             Text(k.label).tag(k)
                         }
                     }
                 }
-                Section(header: Text("Nilai")) {
+                Section(header: Text(l10n.tr("fields.valueHeader"))) {
                     TextField("Nilai", text: $valueText)
                         .font(.system(.body, design: .monospaced))
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                 }
             }
-            .navigationTitle("Tambah Field")
+            .navigationTitle(l10n.tr("fields.addField"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Batal") { dismiss() }
+                    Button(l10n.tr("common.cancel")) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Tambah") {
+                    Button(l10n.tr("common.add")) {
                         onSave(key, kind, valueText)
                         dismiss()
                     }

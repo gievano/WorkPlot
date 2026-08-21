@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 struct RDARFixError: LocalizedError {
     let message: String
@@ -7,11 +8,18 @@ struct RDARFixError: LocalizedError {
 
 struct RDARFix {
     static let path = "/var/preferences/com.apple.iomobilegraphicsfamily.plist"
-    static let defaultCanvasWidth = 1290
-    static let defaultCanvasHeight = 2868
 
-    static func apply(canvasWidth: Int = defaultCanvasWidth,
-                      canvasHeight: Int = defaultCanvasHeight) throws {
+    /// Canvas size is detected from the device's native screen bounds at
+    /// runtime: a hardcoded resolution only matched one iPhone model and
+    /// caused the fix to misbehave on every other device.
+    static func apply() throws {
+        let bounds = UIScreen.main.nativeBounds
+        try apply(canvasWidth: Int(bounds.width),
+                  canvasHeight: Int(bounds.height))
+    }
+
+    static func apply(canvasWidth: Int,
+                      canvasHeight: Int) throws {
         var leaseError: NSString? = nil
         guard let lease = BadQueryLease.lease(forPath: path, error: &leaseError) else {
             throw RDARFixError(message: "bad_query gagal: \(leaseError ?? "tidak diketahui")")

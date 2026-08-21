@@ -77,6 +77,39 @@
 "tab.home" = "ホーム";
 "home.info" = "システム情報";
 
+// Full in-app translation sweep
+"common.accessLocked" = "システムアクセスが有効ではありません。\nホームタブで「システムアクセスを確認」をタップしてください。";
+"common.respring" = "Respring";
+"common.apply" = "適用";
+"common.applying" = "適用中…";
+"common.save" = "保存";
+"common.cancel" = "キャンセル";
+"common.add" = "追加";
+"common.retry" = "再試行";
+"common.risky" = "リスクあり";
+"home.buildLabel" = "Build";
+"home.statusLabel" = "ステータス";
+"home.active" = "有効";
+"home.locked" = "ロック中";
+"home.actionsHeader" = "アクション";
+"gestalt.modelHeader" = "モデル名";
+"gestalt.islandFooter" = "ArtworkDeviceSubType を変更します。模倣する画面タイプを選択してください。";
+"fields.readFail" = "MobileGestalt の読み取りに失敗しました。";
+"fields.noMatch" = "「%@」に一致するキーはありません。";
+"fields.hexPreview" = "16進数（最初の512バイト）";
+"fields.base64Full" = "Base64（全体）";
+"fields.cacheDataMissing" = "この plist に CacheData がありません。";
+"fields.typeHeader" = "タイプ";
+"fields.valueHeader" = "値";
+"fields.newKeyHeader" = "新しいキー（CacheExtra）";
+"fields.addField" = "フィールドを追加";
+"backup.empty" = "バックアップはまだありません。\nホームタブで「システムアクセスを確認」をタップして開始してください。";
+"backup.create" = "今すぐバックアップを作成";
+"backup.importMenu" = "バックアップを読み込む…";
+"backup.restoreMsg" = "現在の状態を自動でバックアップするので、復元は取り消せます。";
+"lg.renderMode" = "描画モード";
+"lg.globalFooter" = "システム全体で Liquid Glass スライダーを無効化します。";
+"pb.labFooter" = ".tendies パッケージ（PocketPoster 形式）を読み込み、記述子構造を検証して PosterBoard へインストールします。インストール後は Respring が必要です。";
 // Danger zone warnings
 "danger.header" = "危険ゾーン";
 "danger.spoof.title" = "デバイス偽装のリスク";
@@ -89,3 +122,9 @@
 // Compatibility check
 "compat.title" = "未対応の iOS バージョン";
 "compat.message" = "検出されたビルド %@ はサポート範囲外です（iOS 27.0 開発者ベータ 1-4）。機能が失敗する可能性があります。";
+"pb.loading" = "壁紙を読み込み中…";
+"common.default" = "デフォルト";
+"backup.restoreConfirm" = "%@ を復元しますか？";
+"backup.restoreOk" = "復元成功。自動で Respring します…";
+"fields.searchPrompt" = "キーや値を検索";
+"home.log" = "ログ";

@@ -9,10 +9,10 @@ struct StatusDashboardView: View {
         NavigationView {
             Form {
                 Section(header: Text(l10n.tr("home.info"))) {
-                    HStack { Text("Build"); Spacer(); Text(manager.osBuild.isEmpty ? "—" : manager.osBuild).foregroundColor(.blue) }
-                    HStack { Text("Status"); Spacer(); Text(manager.sandboxGranted ? "Aktif" : "Terkunci").foregroundColor(manager.sandboxGranted ? .green : .orange) }
+                    HStack { Text(l10n.tr("home.buildLabel")); Spacer(); Text(manager.osBuild.isEmpty ? "—" : manager.osBuild).foregroundColor(.blue) }
+                    HStack { Text(l10n.tr("home.statusLabel")); Spacer(); Text(manager.sandboxGranted ? l10n.tr("home.active") : l10n.tr("home.locked")).foregroundColor(manager.sandboxGranted ? .green : .orange) }
                 }
-                Section(header: Text("Aksi")) {
+                Section(header: Text(l10n.tr("home.actionsHeader"))) {
                     Button(l10n.tr("status.checkaccess")) { _ = manager.checkSystemPathAccess() }
                     Button(l10n.tr("status.rdarfix")) {
                         do {
@@ -36,14 +36,14 @@ struct StatusDashboardView: View {
                     // Respring tetap di menu utama: fungsinya menyegarkan UI saja.
                     Button(l10n.tr("status.respring.refresh")) { manager.respringRequested = true }
                 }
-                Section(header: Text("Log")) {
+                Section(header: Text(l10n.tr("home.log"))) {
                     Text(manager.statusText)
                         .font(.system(.caption, design: .monospaced))
                         .foregroundColor(manager.statusText.hasPrefix("Gagal") ? .orange : .green)
                 }
             }
             .navigationTitle("work.plot")
-            .scrollContentBackground(.hidden)
+            .workPlotScrollBackground()
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     MainDashboardSettingsMenu()

@@ -3,6 +3,7 @@ import UniformTypeIdentifiers
 
 struct BackupRestoreManagerView: View {
     @ObservedObject private var manager = ExploitManager.shared
+    @ObservedObject private var l10n = L10n.shared
     @State private var isShowingImporter = false
     @State private var backupPendingRestore: GestaltBackup?
 
@@ -10,7 +11,7 @@ struct BackupRestoreManagerView: View {
         NavigationView {
             Group {
                 if manager.backups.isEmpty {
-                    Text("Belum ada backup.\nTekan \"Periksa Akses Sistem\" di tab Status untuk memulai.")
+                    Text(L10n.shared.tr("backup.empty"))
                         .multilineTextAlignment(.center)
                         .foregroundColor(.secondary)
                 } else {
@@ -45,22 +46,22 @@ struct BackupRestoreManagerView: View {
                     }
                 }
             }
-            .navigationTitle("Backups")
-            .scrollContentBackground(.hidden)
+            .navigationTitle(l10n.tr("tab.backups"))
+            .workPlotScrollBackground()
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
                         Button {
                             createBackup()
                         } label: {
-                            Label("Buat Backup Sekarang", systemImage: "plus.circle")
+                            Label(l10n.tr("backup.create"), systemImage: "plus.circle")
                         }
                         .disabled(!manager.sandboxGranted)
 
                         Button {
                             isShowingImporter = true
                         } label: {
-                            Label("Impor Backup...", systemImage: "square.and.arrow.down")
+                            Label(l10n.tr("backup.importMenu"), systemImage: "square.and.arrow.down")
                         }
 
                         EditButton()
@@ -82,22 +83,25 @@ struct BackupRestoreManagerView: View {
                 }
             }
             .confirmationDialog(
-                "Restore \(backupPendingRestore?.name ?? "")?",
+                String(format: l10n.tr("backup.restoreConfirm"), backupPendingRestore?.name ?? ""),
                 isPresented: Binding(
                     get: { backupPendingRestore != nil },
                     set: { if !$0 { backupPendingRestore = nil } }
                 ),
                 titleVisibility: .visible
             ) {
-                Button("Restore", role: .destructive) {
+                Button(l10n.tr("pb.apply"), role: .destructive) {
                     if let backup = backupPendingRestore {
-                        _ = manager.restore(backup)
+                        if manager.restore(backup) {
+                            manager.statusText = l10n.tr("backup.restoreOk")
+                            manager.respringRequested = true
+                        }
                     }
                     backupPendingRestore = nil
                 }
-                Button("Batal", role: .cancel) { backupPendingRestore = nil }
+                Button(l10n.tr("common.cancel"), role: .cancel) { backupPendingRestore = nil }
             } message: {
-                Text("Kondisi saat ini akan dibackup otomatis dulu, jadi restore bisa dibatalkan.")
+                Text(l10n.tr("backup.restoreMsg"))
             }
             .onAppear { manager.refreshBackups() }
         }
