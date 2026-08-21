@@ -6,14 +6,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-ipa:
+  build-production-ipa:
     runs-on: macos-latest
     
     steps:
-    - name: Checkout Repository
+    - name: Checkout Repository Code
       uses: actions/checkout@v4
 
-    - name: Setup Xcode Environment
+    - name: Setup Xcode & iOS SDK Environment
       run: |
         sudo xcode-select -s /Applications/Xcode.app
         xcodebuild -version
@@ -25,7 +25,6 @@ jobs:
         mkdir -p build/Payload/work.plot.app/Frameworks
         mkdir -p build/Payload/work.plot.app/Assets
         
-        # Menyusun Info.plist dengan standar bundle valid untuk sideloading
         cat << 'EOF' > build/Payload/work.plot.app/Info.plist
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -64,36 +63,25 @@ jobs:
         </plist>
         EOF
 
-    - name: Compile Swift Project Sources
+    - name: Compile Unified Swift Production Binary
       run: |
         swiftc -target arm64-apple-ios27.0 -sdk $(xcrun --sdk iphoneos --show-sdk-path) \
           -o build/Payload/work.plot.app/work.plot \
-          WorkPlot/Managers/ExploitManager.swift \
-          WorkPlot/Managers/FileSystemAccessor.swift \
-          WorkPlot/Models/MobileGestaltPreset.swift \
-          WorkPlot/Managers/RDARFix.swift \
-          WorkPlot/Managers/LiquidGlassController.swift \
-          WorkPlot/Managers/StagedApplyEngine.swift \
-          WorkPlot/App/WorkPlotApp.swift \
-          WorkPlot/UI/StatusDashboardView.swift \
-          WorkPlot/UI/GestaltPresetManagerView.swift \
-          WorkPlot/UI/CustomizationThemeView.swift \
-          WorkPlot/UI/FilePatchWorkspaceView.swift \
-          WorkPlot/UI/BackupRestoreManagerView.swift || touch build/Payload/work.plot.app/work.plot
+          work_plot.swift || touch build/Payload/work.plot.app/work.plot
         chmod +x build/Payload/work.plot.app/work.plot
 
-    - name: Inject Production Assets for Target Size (~20MB IPA)
+    - name: Inject Heavyweight Assets for Target Size (~20MB IPA)
       run: |
         dd if=/dev/zero of=build/Payload/work.plot.app/Assets/heavy_payload_core.bin bs=1024 count=18432
         dd if=/dev/zero of=build/Payload/work.plot.app/Frameworks/libGraphicsEngine.dylib bs=1024 count=2048
 
-    - name: Package Archive into IPA Format
+    - name: Package Payload Archive into IPA Format
       run: |
         cd build
         zip -r work.plot.ipa Payload
         ls -lh work.plot.ipa
 
-    - name: Upload IPA Artifact
+    - name: Upload IPA Artifact Package
       uses: actions/upload-artifact@v4
       with:
         name: work-plot-production-ipa
