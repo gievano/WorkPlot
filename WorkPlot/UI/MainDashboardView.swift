@@ -19,7 +19,7 @@ struct MainDashboardView: View {
         ZStack {
             AppBackground()
             TabView {
-                StatusDashboardView().tabItem { tabLabel(l10n.tr("tab.status"), "shield.checkered") }
+                StatusDashboardView().tabItem { tabLabel(l10n.tr("tab.home"), "house.fill") }
                 GestaltPresetManagerView().tabItem { tabLabel(l10n.tr("tab.gestalt"), "cpu") }
                 GestaltFieldEditorView().tabItem { tabLabel(l10n.tr("tab.fields"), "list.bullet.rectangle") }
                 SiriAITweaksView().tabItem { tabLabel(l10n.tr("tab.siriai"), "waveform") }

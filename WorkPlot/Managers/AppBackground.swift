@@ -1,5 +1,4 @@
 import SwiftUI
-import PhotosUI
 
 /// Persists the user-chosen background image (Documents/background.jpg) and
 /// exposes it to the root view for the app-wide backdrop layer.
@@ -55,72 +54,3 @@ struct AppBackground: View {
     }
 }
 
-/// Sheet hosting the photo picker plus a reset option.
-struct BackgroundPickerSheet: View {
-    @ObservedObject private var store = AppBackgroundStore.shared
-    @AppStorage("backgroundOpacity") private var backgroundOpacity = 0.35
-    @State private var selectedItem: PhotosPickerItem?
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        NavigationView {
-            Form {
-                Section {
-                    PhotosPicker(selection: $selectedItem, matching: .images) {
-                        Label(L10n.shared.tr("bg.pick"), systemImage: "photo.on.rectangle")
-                    }
-                    if store.image != nil {
-                        Button(role: .destructive) {
-                            store.setImage(nil)
-                        } label: {
-                            Label(L10n.shared.tr("bg.reset"), systemImage: "trash")
-                        }
-                    }
-                }
-                if store.image != nil {
-                    Section(header: Text(L10n.shared.tr("bg.opacity"))) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Slider(value: $backgroundOpacity, in: 0.05...1.0, step: 0.05)
-                                .accessibilityLabel(Text(L10n.shared.tr("bg.opacity")))
-                            HStack {
-                                Text(L10n.shared.tr("bg.opacity.hint"))
-                                    .font(.system(size: 11))
-                                    .foregroundStyle(.secondary)
-                                Spacer()
-                                Text("\(Int(backgroundOpacity * 100))%")
-                                    .font(.system(size: 11, weight: .semibold))
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                }
-                if let image = store.image {
-                    Section(header: Text("Preview")) {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(height: 180)
-                            .clipped()
-                            .cornerRadius(8)
-                    }
-                }
-            }
-            .navigationTitle("Background")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("OK") { dismiss() }
-                }
-            }
-            .onChange(of: selectedItem) { _, item in
-                guard let item else { return }
-                Task {
-                    if let data = try? await item.loadTransferable(type: Data.self),
-                       let uiImage = UIImage(data: data) {
-                        await MainActor.run { store.setImage(uiImage) }
-                    }
-                }
-            }
-        }
-    }
-}

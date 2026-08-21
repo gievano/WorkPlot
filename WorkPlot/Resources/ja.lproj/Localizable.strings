@@ -72,3 +72,7 @@
 "pb.wrongext" = ".tendies ファイルのみ対応しています。";
 "bg.opacity" = "背景の不透明度";
 "bg.opacity.hint" = "カスタム背景の透過度";
+
+// Home tab
+"tab.home" = "ホーム";
+"home.info" = "システム情報";

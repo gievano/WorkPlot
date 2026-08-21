@@ -72,3 +72,7 @@
 "pb.wrongext" = "Only .tendies files are supported.";
 "bg.opacity" = "Background Opacity";
 "bg.opacity.hint" = "Transparency of your custom background";
+
+// Home tab
+"tab.home" = "Home";
+"home.info" = "System Information";

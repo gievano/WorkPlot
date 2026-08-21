@@ -72,3 +72,7 @@
 "pb.wrongext" = "Chỉ hỗ trợ tệp .tendies.";
 "bg.opacity" = "Độ mờ hình nền";
 "bg.opacity.hint" = "Độ trong suốt của hình nền tùy chỉnh";
+
+// Home tab
+"tab.home" = "Trang chủ";
+"home.info" = "Thông tin hệ thống";
