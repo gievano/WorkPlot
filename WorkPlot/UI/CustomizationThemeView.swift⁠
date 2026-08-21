@@ -1,0 +1,48 @@
+import SwiftUI
+
+struct CustomizationThemeView: View {
+    @State private var disableCompatibility = true
+    @State private var transparencyValue: Double = 50.0
+    @State private var statusText = "Ready for configuration"
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Liquid Glass UI Engine")) {
+                    Toggle("Disable Liquid Glass (iOS 18 Style)", isOn: $disableCompatibility)
+                        .onChange(of: disableCompatibility) { value in
+                            let success = LiquidGlassController.shared.setGlobalCompatibilityMode(disabled: value)
+                            statusText = success ? "Compatibility flag updated." : "Failed to update flag."
+                        }
+                    
+                    VStack(alignment: .leading) {
+                        Text("Transparency Slider: \(Int(transparencyValue))%")
+                        Slider(value: $transparencyValue, in: 0...100, step: 1) {
+                            Text("Transparency Level")
+                        } onEditingChanged: { _ in
+                            _ = LiquidGlassController.shared.setTransparencySliderLevel(Int(transparencyValue))
+                        }
+                    }
+                }
+                
+                Section {
+                    Button("Apply & Safe Respring") {
+                        _ = SpringBoardManager.safeRespring()
+                        statusText = "SpringBoard safely reloaded."
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .listRowBackground(Color.blue)
+                }
+                
+                Section(header: Text("Operation Status")) {
+                    Text(statusText)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .navigationTitle("Liquid Glass Control")
+        }
+    }
+}
+
