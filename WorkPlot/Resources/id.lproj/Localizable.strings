@@ -142,3 +142,24 @@
 "preset.footer" = "Preset menulis sekumpulan key CacheExtra MobileGestalt sekaligus. Backup dibuat otomatis sebelum setiap penerapan.";
 "preset.userHeader" = "Preset Saya";
 "preset.author" = "oleh %@";
+// Jalur error Liquid Glass & error icon
+"icon.error.prefix" = "Gagal: ";
+"lg.error.read" = "Gagal membaca MobileGestalt.";
+"lg.error.save" = "Gagal menyimpan MobileGestalt.";
+"error.backup" = "Gagal membuat backup.";
+"lg.applied" = "Liquid Glass diterapkan.";
+"lg.disabled" = "Liquid Glass dinonaktifkan.";
+"lg.disableFailed" = "Liquid Glass gagal dinonaktifkan.";
+"lg.state.loadFail" = "Tidak dapat membaca status Liquid Glass saat ini.";
+"lg.mode.default" = "Bawaan Sistem";
+"lg.mode.off" = "Low Performance Mati";
+"lg.mode.on" = "Low Performance Nyala";
+"lg.desc.default" = "Menghapus override dan mengikuti nilai bawaan perangkat.";
+"lg.desc.off" = "Liquid Glass dirender penuh (butuh GPU kuat, boros baterai).";
+"lg.desc.on" = "Efek glass disederhanakan untuk hemat performa.";
+"lg.section.global" = "Global";
+"lg.toggle.disable" = "Matikan Liquid Glass";
+// Wallpaper tendies bawaan
+"pb.builtin.header" = "Wallpaper Siap Pakai";
+"pb.builtin.install" = "Pasang";
+"pb.builtin.none" = "Tidak ada wallpaper bawaan.";

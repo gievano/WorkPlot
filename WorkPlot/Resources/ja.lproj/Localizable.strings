@@ -142,3 +142,24 @@
 "preset.footer" = "プリセットは MobileGestalt の CacheExtra キー群を一括で書き込みます。適用前に自動でバックアップが作成されます。";
 "preset.userHeader" = "マイプリセット";
 "preset.author" = "作成者: %@";
+// Liquid Glass のエラー経路とアイコンエラー
+"icon.error.prefix" = "失敗: ";
+"lg.error.read" = "MobileGestalt の読み取りに失敗しました。";
+"lg.error.save" = "MobileGestalt の保存に失敗しました。";
+"error.backup" = "バックアップの作成に失敗しました。";
+"lg.applied" = "Liquid Glass を適用しました。";
+"lg.disabled" = "Liquid Glass を無効にしました。";
+"lg.disableFailed" = "Liquid Glass の無効化に失敗しました。";
+"lg.state.loadFail" = "現在の Liquid Glass の状態を読み取れません。";
+"lg.mode.default" = "システムデフォルト";
+"lg.mode.off" = "低パフォーマンス オフ";
+"lg.mode.on" = "低パフォーマンス オン";
+"lg.desc.default" = "上書きを削除し、デバイスの既定値に従います。";
+"lg.desc.off" = "Liquid Glass をフル品質で描画します（高性能 GPU が必要で電池を消費します）。";
+"lg.desc.on" = "ガラス効果を簡略化してパフォーマンスを節約します。";
+"lg.section.global" = "グローバル";
+"lg.toggle.disable" = "Liquid Glass を無効化";
+// 内蔵 tendies 壁紙
+"pb.builtin.header" = "すぐに使える壁紙";
+"pb.builtin.install" = "インストール";
+"pb.builtin.none" = "内蔵壁紙はありません。";

@@ -142,3 +142,24 @@
 "preset.footer" = "Preset ghi một bộ khóa CacheExtra của MobileGestalt trong một lần. Bản sao lưu được tạo tự động trước mỗi lần áp dụng.";
 "preset.userHeader" = "Preset của tôi";
 "preset.author" = "bởi %@";
+// Đường dẫn lỗi Liquid Glass và lỗi biểu tượng
+"icon.error.prefix" = "Lỗi: ";
+"lg.error.read" = "Không thể đọc MobileGestalt.";
+"lg.error.save" = "Không thể lưu MobileGestalt.";
+"error.backup" = "Không thể tạo bản sao lưu.";
+"lg.applied" = "Đã áp dụng Liquid Glass.";
+"lg.disabled" = "Đã tắt Liquid Glass.";
+"lg.disableFailed" = "Không thể tắt Liquid Glass.";
+"lg.state.loadFail" = "Không thể đọc trạng thái Liquid Glass hiện tại.";
+"lg.mode.default" = "Mặc định hệ thống";
+"lg.mode.off" = "Hiệu năng thấp: Tắt";
+"lg.mode.on" = "Hiệu năng thấp: Bật";
+"lg.desc.default" = "Xóa ghi đè và theo giá trị mặc định của thiết bị.";
+"lg.desc.off" = "Liquid Glass được render đầy đủ (cần GPU mạnh, tốn pin hơn).";
+"lg.desc.on" = "Đơn giản hóa hiệu ứng kính để tiết kiệm hiệu năng.";
+"lg.section.global" = "Toàn cục";
+"lg.toggle.disable" = "Tắt Liquid Glass";
+// Hình nền tendies tích hợp
+"pb.builtin.header" = "Hình nền sẵn dùng";
+"pb.builtin.install" = "Cài đặt";
+"pb.builtin.none" = "Chưa có hình nền tích hợp.";

@@ -7,6 +7,7 @@ struct LiquidGlassView: View {
     @State private var isApplying = false
     @State private var showRestartAlert = false
     @State private var didLoadState = false
+    @State private var loadError: String?
 
     var body: some View {
         NavigationView {
@@ -20,6 +21,14 @@ struct LiquidGlassView: View {
                     }
                 } else {
                     List {
+                        if let loadError {
+                            Section {
+                                Text(loadError)
+                                    .font(.caption)
+                                    .foregroundColor(.orange)
+                            }
+                        }
+
                         Section(header: Text(L10n.shared.tr("lg.renderMode"))) {
                             Picker("Mode", selection: $mode) {
                                 ForEach(LiquidGlassMode.allCases) { m in
@@ -28,23 +37,13 @@ struct LiquidGlassView: View {
                             }
                             .pickerStyle(.inline)
 
-                            let stateDescription: String = {
-                                switch mode {
-                                case .systemDefault:
-                                    return "Menghapus override dan mengikuti nilai bawaan perangkat."
-                                case .lowPerformanceOff:
-                                    return "Liquid Glass dirender penuh (butuh GPU kuat, boros baterai)."
-                                case .lowPerformanceOn:
-                                    return "Efek glass disederhanakan untuk hemat performa."
-                                }
-                            }()
-                            Text(stateDescription)
+                            Text(L10n.shared.tr(mode.descriptionKey))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
 
-                        Section(header: Text("Global"), footer: Text(L10n.shared.tr("lg.globalFooter"))) {
-                            Toggle("Matikan Liquid Glass", isOn: $sliderDisabled)
+                        Section(header: Text(L10n.shared.tr("lg.section.global")), footer: Text(L10n.shared.tr("lg.globalFooter"))) {
+                            Toggle(L10n.shared.tr("lg.toggle.disable"), isOn: $sliderDisabled)
                         }
 
                         Section {
@@ -84,24 +83,37 @@ struct LiquidGlassView: View {
     }
 
     private func loadCurrentState() {
-        guard !didLoadState, let state = LiquidGlassController.currentState() else { return }
+        guard !didLoadState else { return }
+        didLoadState = true
+        guard let state = LiquidGlassController.currentState() else {
+            loadError = L10n.shared.tr("lg.state.loadFail")
+            return
+        }
         mode = LiquidGlassMode.allCases.first {
             $0 != .systemDefault && $0.cacheExtraValue == state.cacheExtraValue
         } ?? .systemDefault
         sliderDisabled = state.sliderDisabled
-        didLoadState = true
     }
 
     private func applyChanges() {
         isApplying = true
-        defer { isApplying = false }
+        let mode = mode
+        let sliderDisabled = sliderDisabled
 
-        guard LiquidGlassController.apply(mode: mode, sliderDisabled: sliderDisabled) else {
-            manager.statusText = "Gagal menyimpan Liquid Glass."
-            return
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                try LiquidGlassController.apply(mode: mode, sliderDisabled: sliderDisabled)
+                DispatchQueue.main.async {
+                    self.isApplying = false
+                    self.manager.statusText = "\(L10n.shared.tr("lg.applied")) \(L10n.shared.tr("restart.rec.title"))"
+                    self.showRestartAlert = true
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.isApplying = false
+                    self.manager.statusText = "Gagal: \(error.localizedDescription)"
+                }
+            }
         }
-
-        manager.statusText = "Liquid Glass diterapkan. \(L10n.shared.tr("restart.rec.title"))"
-        showRestartAlert = true
     }
 }
