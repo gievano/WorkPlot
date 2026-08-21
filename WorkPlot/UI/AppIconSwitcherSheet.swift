@@ -116,11 +116,14 @@ struct AppIconSwitcherSheet: View {
         .buttonStyle(.plain)
     }
 
-    private func apply(_ altName: String?) {
+    /// Empty id means the primary icon: setAlternateIconName requires nil
+    /// there — passing "" fails with "no icon named" on device.
+    private func apply(_ iconId: String) {
+        let altName: String? = iconId.isEmpty ? nil : iconId
         UIApplication.shared.setAlternateIconName(altName) { error in
             DispatchQueue.main.async {
                 if let error {
-                    errorMessage = error.localizedDescription
+                    errorMessage = "\(l10n.tr("icon.error.prefix"))\(error.localizedDescription)"
                 } else {
                     currentAltName = altName
                     errorMessage = nil
