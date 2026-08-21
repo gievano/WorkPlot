@@ -291,6 +291,27 @@
 - ZIP reader tidak mendukung ZIP64/enkripsi/data-descriptor (bit 3); paket .tendies umumnya aman tapi perlu uji lapangan.
 - PosterBoard Lab belum bisa list/hapus wallpaper terpasang (Placard punya; bisa ditambah belakangan).
 
+## 2026-08-22 - Mapping Final Spoofing, SiriMode, Lokalisasi .strings, Popup Restart
+
+### The Change
+
+- Merge PR #14 (Siri AI suite + PosterBoard) — CI hijau.
+- `DeviceSpoofingManager`: mapping final sesuai spesifikasi terbaru — iPhone 16 Pro = `iPhone17,1`, tambah target **iPhone 16 Pro Max** (`iPhone17,2`); keduanya D74AP. Board config kini menulis **9 keys sekaligus** (bukan cuma hardware model), plus `CompatibleDeviceFallback` di dalam dict ArtworkDevice (`oPeik/9e8lQWMszEjbPzng`) diisi ProductType target.
+- `AppleIntelligenceController`: toggle AI sekarang juga set/hapus **SiriMode** (`a3n5T9sFtyQ74NEp9ESxg` = 2).
+- Lokalisasi migrasi ke file `WorkPlot/Resources/{en,id,zh-Hans,ja,ru,vi}.lproj/Localizable.strings`; `L10n.tr` membaca bundle .lproj dulu, fallback ke tabel in-code sampai resource terverifikasi on-device.
+- Tab Siri AI: setelah Apply sukses muncul **alert "Restart Diperlukan"** dengan pilihan Respring / Nanti (tidak lagi auto-respring diam-diam) — restart memang wajib untuk mengaktifkan Siri AI baru.
+
+### The Reasoning
+
+- Spesifikasi mapping dikunci user setelah diskusi: 16 Pro pakai identifier real-world (iPhone17,1) dan 16 Pro Max masuk katalog.
+- Popup restart eksplisit lebih jujur daripada auto-respring karena tweak CacheData Siri AI butuh restart penuh; respring NeoSpring tetap disediakan sebagai opsi cepat.
+
+### The Tech Debt
+
+- Tabel in-code di Localization.swift duplikat sementara dengan .strings files; hapus begitu on-device test membuktikan bundle termuat.
+- CI belum lulus untuk commit ini (menunggu round-trip).
+
+
 
 
 
