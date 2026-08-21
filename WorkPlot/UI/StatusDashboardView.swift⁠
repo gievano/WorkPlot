@@ -1,0 +1,59 @@
+import SwiftUI
+
+struct StatusDashboardView: View {
+    @ObservedObject var exploitManager = ExploitManager.shared
+    @State private var selectedBuild = "24A5380h"
+    @State private var alertMessage = ""
+    @State private var showAlert = false
+    
+    let builds = ["24A5355q", "24A5370h", "24A5380h", "24A5390f"]
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("iOS 27 Build Compatibility")) {
+                    Picker("Select Target Build", selection: $selectedBuild) {
+                        ForEach(builds, id: \.self) { build in
+                            Text(build).tag(build)
+                        }
+                    }
+                    
+                    HStack {
+                        Text("bad_query Exploit Status")
+                        Spacer()
+                        Text(exploitManager.isExploitActive ? "ACTIVE" : "STANDBY")
+                            .foregroundColor(exploitManager.isExploitActive ? .green : .red)
+                            .bold()
+                    }
+                    
+                    Button(action: {
+                        do {
+                            try exploitManager.initialize(buildVersion: selectedBuild)
+                            alertMessage = "bad_query sandbox escape initialized successfully."
+                            showAlert = true
+                        } catch {
+                            alertMessage = "Initialization failed: \(error.localizedDescription)"
+                            showAlert = true
+                        }
+                    }) {
+                        Text("Initialize bad_query Exploit")
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                
+                Section(header: Text("System Container Path Access")) {
+                    Text("MobileGestalt Cache:\n/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist")
+                        .font(.system(size: 10, design: .monospaced))
+                    Text("Graphics Configuration:\n/var/preferences/com.apple.iomobilegraphicsfamily.plist")
+                        .font(.system(size: 10, design: .monospaced))
+                }
+            }
+            .navigationTitle("work.plot Status")
+            .alert(isPresented: $showAlert) {
+                Alert(title: Text("Exploit Integration"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+            }
+        }
+    }
+}
+
