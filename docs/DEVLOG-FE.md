@@ -348,3 +348,8 @@
 **The Change:** Replace WorkPlot/Resources/AppIconCollage.png dari placeholder hasil generate jadi artwork asli user (WhatsApp image, center-crop persegi + resize 1024x1024 via System.Drawing).
 **The Reasoning:** iOS mensyaratkan alternate icon persegi tanpa alpha; crop tengah menjaga komposisi kolase tetap utuh.
 **The Tech Debt:** Sumber JPEG tidak di-commit (bukan bagian app); kalau mau ganti icon lagi tinggal replace PNG dengan nama sama.
+
+## 2026-08-22 — README Baru
+**The Change:** Rewrite README.md: logo icon utama di atas (copy AppIcon.png -> docs/assets/logo.png), badges, tabel fitur lengkap, panduan install/sideload, quick start, troubleshooting, credits, disclaimer.
+**The Reasoning:** README lama cuma 20 baris dan tidak mencerminkan fitur aktual; logo dari appiconset biar identik dengan icon app.
+**The Tech Debt:** Belum ada file LICENSE di repo root padahal bad_query GPLv3 - perlu ditambahkan sebelum distribusi luas.
