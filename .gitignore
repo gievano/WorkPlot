@@ -1,7 +1,5 @@
-# graphify-out internals (jangan commit; hanya output utama yang di-commit)
-graphify-out/.graphify_*
-graphify-out/manifest.json
-graphify-out/cache/
+# Local Graphify artifacts
+graphify-out/
 .tmp-gestaltedit/
 *.xcuserdatad/
 xcuserdata/
