@@ -10,6 +10,7 @@ struct PosterBoardLabView: View {
     @ObservedObject private var l10n = L10n.shared
 
     @State private var isShowingImporter = false
+    @State private var isShowingCatalog = false
     @State private var isInstalling = false
     @State private var phase = ""
     @State private var installedWallpapers: [String] = []
@@ -93,6 +94,16 @@ struct PosterBoardLabView: View {
                     isShowingImporter = true
                 } label: {
                     Label(L10n.shared.tr("posterboard.import"), systemImage: "square.and.arrow.down")
+                }
+                .disabled(isInstalling)
+
+                Button {
+                    isShowingCatalog = true
+                } label: {
+                    Label(L10n.shared.tr("cat.openCatalog"), systemImage: "sparkles")
+                }
+                .sheet(isPresented: $isShowingCatalog) {
+                    WallpaperCatalogView()
                 }
                 .disabled(isInstalling)
 

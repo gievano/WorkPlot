@@ -3,6 +3,7 @@ import SwiftUI
 struct MoreMenuView: View {
     @ObservedObject private var l10n = L10n.shared
     @State private var showIconSwitcher = false
+    @State private var showUpdateChecker = false
 
     var body: some View {
         NavigationStack {
@@ -27,8 +28,16 @@ struct MoreMenuView: View {
                 }
 
                 Section {
+                    NavigationLink { AppContainersView() } label: {
+                        Label(l10n.tr("ac.title"), systemImage: "shippingbox")
+                    }
                     NavigationLink { SessionLogView() } label: {
                         Label(l10n.tr("sessionlog.title"), systemImage: "scroll.text.fill")
+                    }
+                    Button {
+                        showUpdateChecker = true
+                    } label: {
+                        Label(l10n.tr("upd.check"), systemImage: "arrow.triangle.down.circle")
                     }
                     Button {
                         showIconSwitcher = true
@@ -45,6 +54,9 @@ struct MoreMenuView: View {
         }
         .sheet(isPresented: $showIconSwitcher) {
             AppIconSwitcherSheet()
+        }
+        .sheet(isPresented: $showUpdateChecker) {
+            UpdateCheckerSheet()
         }
     }
 }

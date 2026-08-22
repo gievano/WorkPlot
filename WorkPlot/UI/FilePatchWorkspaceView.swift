@@ -38,6 +38,7 @@ struct FilePatchWorkspaceView: View {
     @State private var isLoading = false
 
     @State private var selectedEntry: FileEntry?
+    @State private var hexViewerEntry: FileEntry?
     @State private var pendingDelete: FileEntry?
     @State private var renameEntry: FileEntry?
     @State private var renameText = ""
@@ -78,6 +79,9 @@ struct FilePatchWorkspaceView: View {
         .onAppear(perform: refreshOSCheck)
         .sheet(item: $selectedEntry) { entry in
             viewer(for: entry)
+        }
+        .sheet(item: $hexViewerEntry) { entry in
+            FileHexViewerSheet(entry: entry)
         }
         .sheet(item: $exportedFile, onDismiss: removeExportedFile) { file in
             ActivityShareSheet(items: [file.url])
@@ -186,6 +190,10 @@ struct FilePatchWorkspaceView: View {
                         }
                     }
                     .foregroundColor(.primary)
+                }
+                NavigationLink { AppContainersView() } label: {
+                    Label(l10n.tr("ac.title"), systemImage: "shippingbox")
+                        .font(.system(size: 15))
                 }
             }
         }
@@ -345,6 +353,13 @@ struct FilePatchWorkspaceView: View {
                     Label(l10n.tr("fp.action.view"), systemImage: "eye")
                 }
             }
+            if !entry.isDirectory {
+                Button {
+                    hexViewerEntry = entry
+                } label: {
+                    Label(l10n.tr("fp.action.hexView"), systemImage: "number.square")
+                }
+            }
             Button {
                 renameText = entry.name
                 renameEntry = entry
@@ -385,10 +400,18 @@ struct FilePatchWorkspaceView: View {
             FilePlistViewerSheet(entry: entry)
         case .image:
             FileImagePreviewSheet(entry: entry)
-        case .directory, .binary:
+        case .binary:
+            if Self.sqliteExtensions.contains(where: { entry.name.lowercased().hasSuffix($0) }) {
+                FileSqliteViewerSheet(entry: entry)
+            } else {
+                FileHexViewerSheet(entry: entry)
+            }
+        case .directory:
             FileBinaryInfoSheet(entry: entry)
         }
     }
+
+    private static let sqliteExtensions = [".db", ".sqlite", ".sqlite3", ".sqlitedb"]
 
     // MARK: State helpers
 
