@@ -67,10 +67,40 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 10
+
       - name: Download built IPA
         uses: actions/download-artifact@v4
         with:
           name: WorkPlot-IPA
+
+      - name: Prepare dynamic release metadata
+        id: meta
+        env:
+          SHA_FULL: ${{ github.sha }}
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: |
+          SHORT_SHA="${SHA_FULL::7}"
+          echo "title=WorkPlot dev 1.0.${BUILD_NUMBER} (${SHORT_SHA})" >> "$GITHUB_OUTPUT"
+          BODY_FILE="${RUNNER_TEMP}/release-body.md"
+          {
+            echo "Build otomatis dari commit \`${SHA_FULL}\` di branch main."
+            echo ""
+            echo "### Commit terbaru"
+            echo ""
+            echo '```'
+            git log --oneline -5 --no-decorate
+            echo '```'
+            echo ""
+            echo "Dibangun: $(date -u '+%Y-%m-%d %H:%M UTC')"
+            echo ""
+            echo "> ⚠️ Ini prerelease dev (unsigned IPA) yang selalu ditimpa build berikutnya."
+            echo "> Untuk rilis stabil, gunakan tag \`v*\`."
+          } > "$BODY_FILE"
+          echo "body_path=${BODY_FILE}" >> "$GITHUB_OUTPUT"
 
       - name: Delete previous rolling release
         env:
@@ -82,12 +112,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
-          name: Latest Build (dev)
-          body: |
-            Build dev otomatis dari commit `${{ github.sha }}` di branch main.
-
-            ⚠️ Unsigned IPA prerelease yang selalu ditimpa oleh build terbaru.
-            Unduh permanen: https://github.com/gievano/work-plot2/releases/download/latest/WorkPlot.ipa
+          name: ${{ steps.meta.outputs.title }}
+          body_path: ${{ steps.meta.outputs.body_path }}
           files: WorkPlot.ipa
           prerelease: true
           make_latest: false
