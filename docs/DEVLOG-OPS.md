@@ -1,5 +1,20 @@
 # DEVLOG-OPS
 
+## 2026-08-22 — Judul & deskripsi dinamis pada rolling release `latest`
+
+**The Change:**
+- `.github/workflows/main.yml` job `latest-release`: judul dinamis "WorkPlot dev 1.0.<run_number> (<short-sha>)", body digenerate ke file (`release-body.md` di RUNNER_TEMP) berisi header commit, 5 commit terbaru via `git log --oneline -5`, tanggal build UTC, dan catatan prerelease/stabil.
+- Tambah step `actions/checkout@v4` (fetch-depth: 10) di job ini karena butuh riwayat git untuk daftar commit; metadata disiapkan di step `meta` sebelum delete-then-create release.
+
+**The Reasoning:**
+- `body_path` dipilih daripada multiline GITHUB_OUTPUT agar aman dari masalah escaping (delimiter EOF rentan bentrok).
+- `git log --oneline -5` sederhana dipilih daripada diff vs tag lama — cukup sesuai spek dan tidak rawan gagal saat tag `latest` belum ada (run pertama).
+
+**The Tech Debt:**
+- GitHub melarang fork publik diubah jadi private (HTTP 422 "Public forks can't be made private"). Kalau repo harus private: detach fork via GitHub Support atau buat repo baru non-fork — perlu keputusan user.
+
+---
+
 ## 2026-08-22 — Rolling release `latest` dari build main
 
 **The Change:**
