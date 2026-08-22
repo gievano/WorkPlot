@@ -182,7 +182,7 @@ enum SQLiteDatabase {
                 &statement,
                 nil
             ) == SQLITE_OK, let statement else {
-                throw SQLiteError(String(cString: sqlite3_errmsg(database)))
+                throw SQLiteError(message: String(cString: sqlite3_errmsg(database)))
             }
             defer { sqlite3_finalize(statement) }
 
@@ -206,7 +206,7 @@ enum SQLiteDatabase {
 
             var statement: OpaquePointer?
             guard sqlite3_prepare_v2(database, sql, -1, &statement, nil) == SQLITE_OK, let statement else {
-                throw SQLiteError(String(cString: sqlite3_errmsg(database)))
+                throw SQLiteError(message: String(cString: sqlite3_errmsg(database)))
             }
             defer { sqlite3_finalize(statement) }
 
@@ -252,7 +252,7 @@ enum SQLiteDatabase {
               let database = handle else {
             let detail = handle.map { String(cString: sqlite3_errmsg($0)) } ?? "sqlite3_open_v2 failed"
             sqlite3_close(handle)
-            throw SQLiteError(detail)
+            throw SQLiteError(message: detail)
         }
         defer { sqlite3_close(database) }
         return try body(database)
