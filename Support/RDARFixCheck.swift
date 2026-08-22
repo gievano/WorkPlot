@@ -40,15 +40,15 @@ enum RDARFixCheck {
     private static let targetPath = "/private/var/preferences/com.apple.iomobilegraphicsfamily.plist"
 
     private static func checkSanitizedBackupName() throws {
-        expect(
+        try expect(
             RDARFix.sanitizedBackupName(forPath: targetPath)
                 == "_private_var_preferences_com.apple.iomobilegraphicsfamily.plist",
             "system path must sanitize deterministically")
-        expect(RDARFix.sanitizedBackupName(forPath: "") == "backup",
+        try expect(RDARFix.sanitizedBackupName(forPath: "") == "backup",
                "empty path must fall back to a usable name")
-        expect(RDARFix.sanitizedBackupName(forPath: "..") == "backup",
+        try expect(RDARFix.sanitizedBackupName(forPath: "..") == "backup",
                "'..' must not survive sanitization as a traversal name")
-        expect(RDARFix.sanitizedBackupName(forPath: "a b:c/d") == "a_b_c_d",
+        try expect(RDARFix.sanitizedBackupName(forPath: "a b:c/d") == "a_b_c_d",
                "unsafe characters must each map to '_'")
     }
 
@@ -62,21 +62,21 @@ enum RDARFixCheck {
                                       "canvas_height": 50,
                                       "unrelated_key": "keep me"])
 
-        expect(!RDARFix.plistIsAlreadyFixed(original, canvasWidth: 100, canvasHeight: 51),
+        try expect(!RDARFix.plistIsAlreadyFixed(original, canvasWidth: 100, canvasHeight: 51),
                "mismatched height must not count as fixed")
-        expect(!RDARFix.plistIsAlreadyFixed(original, canvasWidth: 101, canvasHeight: 50),
+        try expect(!RDARFix.plistIsAlreadyFixed(original, canvasWidth: 101, canvasHeight: 50),
                "mismatched width must not count as fixed")
 
         let patched = try RDARFix.patchedPlistData(original, canvasWidth: 390, canvasHeight: 844)
-        expect(RDARFix.plistIsAlreadyFixed(patched, canvasWidth: 390, canvasHeight: 844),
+        try expect(RDARFix.plistIsAlreadyFixed(patched, canvasWidth: 390, canvasHeight: 844),
                "patched plist must detect as already fixed")
 
         let reparsed = try PropertyListSerialization.propertyList(
             from: patched, options: [], format: nil) as? [String: Any]
-        expect(reparsed?["unrelated_key"] as? String == "keep me",
+        try expect(reparsed?["unrelated_key"] as? String == "keep me",
                "patching must preserve unrelated plist keys")
 
-        expect(!RDARFix.plistIsAlreadyFixed(Data("not a plist".utf8),
+        try expect(!RDARFix.plistIsAlreadyFixed(Data("not a plist".utf8),
                                             canvasWidth: 390, canvasHeight: 844),
                "unparseable data must count as not fixed")
     }
@@ -92,25 +92,25 @@ enum RDARFixCheck {
         let createdFirst = try RDARFix.createPersistentBackupIfMissing(
             originalData: stock, forPath: targetPath, in: root,
             now: Date(timeIntervalSince1970: 1_700_000_000), appVersion: "1.0.test")
-        expect(createdFirst, "first backup must be created")
+        try expect(createdFirst, "first backup must be created")
 
         let createdSecond = try RDARFix.createPersistentBackupIfMissing(
             originalData: Data("PATCHED-NOT-STOCK".utf8), forPath: targetPath, in: root,
             now: Date(), appVersion: "9.9")
-        expect(!createdSecond, "second backup attempt must be skipped (idempotent)")
+        try expect(!createdSecond, "second backup attempt must be skipped (idempotent)")
 
         guard let bundle = RDARFix.storedBackup(in: root, forPath: targetPath) else {
             throw CheckFailed(reason: "backup must be readable after creation")
         }
-        expect(bundle.data == stock,
+        try expect(bundle.data == stock,
                "round-trip bytes must stay identical to the stock content")
-        expect(bundle.metadata.originalPath == targetPath,
+        try expect(bundle.metadata.originalPath == targetPath,
                "metadata must record the original path")
-        expect(bundle.metadata.byteCount == stock.count,
+        try expect(bundle.metadata.byteCount == stock.count,
                "metadata must record the byte size")
-        expect(bundle.metadata.appVersion == "1.0.test",
+        try expect(bundle.metadata.appVersion == "1.0.test",
                "metadata must record the app version")
-        expect(bundle.metadata.backedUpAt == Date(timeIntervalSince1970: 1_700_000_000),
+        try expect(bundle.metadata.backedUpAt == Date(timeIntervalSince1970: 1_700_000_000),
                "metadata must record the backup date")
 
         // A sidecar lost mid-crash is rebuilt from context without touching bytes.
@@ -118,7 +118,7 @@ enum RDARFixCheck {
         _ = try RDARFix.createPersistentBackupIfMissing(
             originalData: stock, forPath: targetPath, in: root,
             now: Date(), appVersion: "1.0.test")
-        expect(RDARFix.storedBackup(in: root, forPath: targetPath)?.data == stock,
+        try expect(RDARFix.storedBackup(in: root, forPath: targetPath)?.data == stock,
                "sidecar rebuild must preserve the original stock bytes")
 
         // Metadata pointing at another origin must never be served back.
@@ -128,7 +128,7 @@ enum RDARFixCheck {
                                            appVersion: "1.0.test")
         try JSONEncoder().encode(wrong)
             .write(to: RDARFix.backupURLs(in: root, forPath: targetPath).metadata)
-        expect(RDARFix.storedBackup(in: root, forPath: targetPath) == nil,
+        try expect(RDARFix.storedBackup(in: root, forPath: targetPath) == nil,
                "mismatched metadata origin must invalidate the backup")
     }
 }
