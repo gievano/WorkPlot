@@ -19,13 +19,15 @@ enum InodeWriterCheck {
             .fileResourceIdentifier
 
         try InodeWriter.writeVerifiedInPlace(replacement, to: file.path)
-        precondition(try Data(contentsOf: file) == replacement)
+        let written = try Data(contentsOf: file)
+        precondition(written == replacement)
 
         do {
             try InodeWriter.writeVerifiedInPlace(rejected, to: file.path) { _ in false }
             preconditionFailure("Validation rejection must throw")
         } catch {
-            precondition(try Data(contentsOf: file) == replacement)
+            let restored = try Data(contentsOf: file)
+            precondition(restored == replacement)
         }
 
         let inodeAfter = try file.resourceValues(forKeys: [.fileResourceIdentifierKey])
