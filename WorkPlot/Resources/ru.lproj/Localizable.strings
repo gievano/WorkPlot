@@ -175,3 +175,7 @@
 "siriai.sirimode.header" = "Режим Siri (iOS 27)";
 "siriai.sirimode.toggle" = "Включить режим Siri AI";
 "siriai.sirimode.detail" = "Устанавливает ключ CacheExtra a3n5T9sFtyQ74NEp9ESxg в 2; при отключении ключ удаляется. Вступает в силу после Respring или перезагрузки.";
+
+// Siri в камере (F2, экспериментально)
+"siriai.siricam.header" = "Siri в камере";
+"siriai.siricam.note" = "ЭКСПЕРИМЕНТАЛЬНО: iOS 27 открывает Siri в приложении камеры через режим Siri AI выше плюс Apple Intelligence. Отдельный проверенный ключ MobileGestalt пока не подтверждён; включение обоих переключателей - единственный проверенный путь. Специальный ключ будет добавлен после подтверждения сообществом.";

@@ -35,6 +35,7 @@ struct SiriAITweaksView: View {
                     List {
                         siriAISection
                         siriModeSection
+                        siriCameraSection
                         spoofSection
                         appleIntelligenceSection
                         applySection
@@ -92,6 +93,24 @@ struct SiriAITweaksView: View {
             )) {
                 Text(l10n.tr("siriai.sirimode.toggle"))
             }
+        }
+    }
+
+    /// EXPERIMENTAL: iOS 27 exposes Siri in the Camera through the same
+    /// Siri AI mode; no dedicated verified CacheExtra key exists yet, so we
+    /// only surface guidance instead of writing unverified keys.
+    private var siriCameraSection: some View {
+        Section(header: Text(l10n.tr("siriai.siricam.header"))) {
+            HStack(spacing: 4) {
+                Text(l10n.tr("common.experimental")).font(.caption2).bold()
+                    .foregroundColor(.orange)
+                    .padding(.horizontal, 4).padding(.vertical, 1)
+                    .background(Color.orange.opacity(0.15))
+                    .cornerRadius(4)
+            }
+            Text(l10n.tr("siriai.siricam.note"))
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
     }
 

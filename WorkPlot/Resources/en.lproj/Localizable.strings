@@ -175,3 +175,7 @@
 "siriai.sirimode.header" = "Siri Mode (iOS 27)";
 "siriai.sirimode.toggle" = "Enable Siri AI Mode";
 "siriai.sirimode.detail" = "Sets CacheExtra key a3n5T9sFtyQ74NEp9ESxg to 2. Disabling removes the key again. Takes effect after respring or restart.";
+
+// Siri in Camera (F2, experimental)
+"siriai.siricam.header" = "Siri in Camera";
+"siriai.siricam.note" = "EXPERIMENTAL: iOS 27 exposes Siri inside the Camera app through the Siri AI mode above plus Apple Intelligence. No separate verified MobileGestalt key exists yet; enabling both toggles is the only verified path. A future update will add a dedicated key once it is confirmed by the community.";

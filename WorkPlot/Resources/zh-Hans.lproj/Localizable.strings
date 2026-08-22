@@ -175,3 +175,7 @@
 "siriai.sirimode.header" = "Siri 模式 (iOS 27)";
 "siriai.sirimode.toggle" = "启用 Siri AI 模式";
 "siriai.sirimode.detail" = "将 CacheExtra 键 a3n5T9sFtyQ74NEp9ESxg 设为 2；关闭时会移除该键。Respring 或重启后生效。";
+
+// 相机中的 Siri (F2，实验性)
+"siriai.siricam.header" = "相机中的 Siri";
+"siriai.siricam.note" = "实验性：iOS 27 通过上方的 Siri AI 模式加 Apple Intelligence 在相机应用中提供 Siri。目前尚无经验证的独立 MobileGestalt 键；同时开启这两个开关是唯一经过验证的途径。待社区确认后，后续更新会加入专用键。";
