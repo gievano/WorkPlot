@@ -67,4 +67,14 @@ Require ($access -match 'static BOOL GestaltRestoreOriginal') "Gestalt write fai
 Require ($access -match '(?s)if \(!\[verification isEqualToData:data\]\).*?GestaltRestoreOriginal\(fd, targetPath, original\)') "Post-write verification failure must restore the original plist"
 Require ($access -notmatch '(?s)close\(fd\);\s*NSData \*verification') "The write descriptor must remain open until verification finishes"
 
-Write-Host "Feature OK: 9 ProductType + 9 board keys, 4 gated dual-cache tweaks, scoped CacheData patch, single save, verified rollback, modal restart alert."
+$project = Read-ProjectFile "WorkPlot\WorkPlot.xcodeproj\project.pbxproj"
+Require (([regex]::Matches($project, 'PRODUCT_BUNDLE_IDENTIFIER = com\.apple\.mobile\.MobileHouseArrest;')).Count -eq 2) "Both build configurations must preserve the MobileHouseArrest bundle identifier"
+Require ($project -notmatch 'PRODUCT_BUNDLE_IDENTIFIER = com\.workplot\.app;') "The incompatible WorkPlot bundle identifier is still configured"
+$bridge = Read-ProjectFile "WorkPlot\Exploit\BadQueryBridge.m"
+Require ($bridge -match 'kBadQueryExpectedBundleIdentifier') "bad_query must validate the runtime sideload identity"
+Require ($bridge -match 'stage=identity') "bad_query identity failures must name their stage"
+Require ($bridge -match 'stage=query') "ContainerManager rejection must name the query stage"
+$exploitManager = Read-ProjectFile "WorkPlot\Managers\ExploitManager.swift"
+Require ($exploitManager -match 'BadQueryLeaseScope\.withLease') "System access check must surface Objective-C bad_query lease diagnostics"
+
+Write-Host "Feature OK: dual-cache checks, verified rollback, sideload identity, and staged bad_query diagnostics."
