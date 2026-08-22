@@ -48,17 +48,7 @@ struct SiriAITweaksView: View {
             }
             .navigationTitle(l10n.tr("siriai.title"))
             .workPlotScrollBackground()
-            .alert(
-                l10n.tr("siriai.restart.title"),
-                isPresented: $showRestartAlert
-            ) {
-                Button(l10n.tr("siriai.restart.respring")) {
-                    manager.respringRequested = true
-                }
-                Button(l10n.tr("siriai.restart.later"), role: .cancel) {}
-            } message: {
-                Text(l10n.tr("siriai.restart.message"))
-            }
+            .heavyRestartFlow(isPresented: $showRestartAlert)
             .alert(
                 l10n.tr("danger.spoof.title"),
                 isPresented: $showSpoofWarning
@@ -193,6 +183,8 @@ struct SiriAITweaksView: View {
             } label: {
                 Label("Respring", systemImage: "arrow.counterclockwise")
             }
+        } footer: {
+            Text(l10n.tr("restart.options.message"))
         }
     }
 

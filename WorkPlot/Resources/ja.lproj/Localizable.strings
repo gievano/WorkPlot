@@ -247,3 +247,20 @@
 "siriai.modelkey.detail" = "選択した偽装ターゲットの値をキー h9jDsbgj7xIVeIQ8S3/X3Q に書き込みます。オフにするとキーを削除します。";
 "siriai.eligibility.toggle" = "Apple Intelligenceの適格性を強制";
 "siriai.eligibility.detail" = "キー A62OafQ85EJAiiqKn4agtg = 1 のみを書き込み、他のキーには触れません。";
+
+// Restart escalation
+"restart.options.title" = "どの方法で変更を適用しますか？";
+"restart.options.message" = "軽い調整ならRespringで十分です。機種偽装、Siri AIモード、Color Paletteはより深い再起動が必要です。";
+"restart.action.userspace" = "ユーザースペースを再起動（推奨）";
+"restart.action.full" = "完全に再起動";
+"restart.limit.title" = "アプリの制限";
+"restart.limit.message" = "このアプリはbad_query経由でのファイル書き込みのみ可能で、サンドボックスからlaunchctlなどのプロセスを実行できません。そのためユーザースペース/完全な再起動は、下記の手順で手動で行う必要があります。";
+"restart.guide.userspace.title" = "ユーザースペース再起動ガイド";
+"restart.guide.userspace.step1" = "脱獄していない純正iOSにはユーザースペースのみを再起動するジェスチャーがありません。最も近い手動の方法は電源オフ後の再起動です。";
+"restart.guide.userspace.step2" = "「設定 > 一般 > 系統終了」からデバイスをシャットダウンします。";
+"restart.guide.userspace.step3" = "サイドボタンをAppleロゴが表示されるまで長押しして起動します。";
+"restart.guide.full.title" = "完全再起動ガイド";
+"restart.guide.full.step1" = "音量を上げるボタンを押して離します。";
+"restart.guide.full.step2" = "音量を下げるボタンを押して離します。";
+"restart.guide.full.step3" = "画面が暗くなりAppleロゴが表示されるまでサイドボタンを長押しします。";
+"restart.guide.full.step4" = "起動が完了するまでお待ちください。MobileGestaltの調整は起動時に再読み込みされます。";

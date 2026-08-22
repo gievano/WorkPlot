@@ -74,15 +74,7 @@ struct GestaltPresetManagerView: View {
                 }
             }
             .navigationTitle("Gestalt")
-            .alert(
-                L10n.shared.tr("restart.rec.title"),
-                isPresented: $showRestartAlert
-            ) {
-                Button(L10n.shared.tr("siriai.restart.respring")) { manager.respringRequested = true }
-                Button(L10n.shared.tr("siriai.restart.later"), role: .cancel) {}
-            } message: {
-                Text(L10n.shared.tr("restart.rec.message"))
-            }
+            .heavyRestartFlow(isPresented: $showRestartAlert)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(stagedChangeCount == 0 ? "Apply" : "Apply (\(stagedChangeCount))") {
