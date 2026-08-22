@@ -2,9 +2,13 @@
 //  DeviceSpoofingManager.swift
 //  WorkPlot
 //
-//  Full-device spoofing over MobileGestalt CacheExtra. Selecting a target
-//  updates all nine ProductType keys, the hardware/board model string, and
-//  both device marketing-name keys simultaneously.
+//  Full-device spoofing over MobileGestalt CacheExtra. One target maps to
+//  EVERY model-identity key at once: all ProductType variants, all
+//  HWModel/board variants, HardwarePlatform (CPU), RegulatoryModelNumber,
+//  marketing-name keys, and the ArtworkDevice dictionary entries.
+//
+//  Key-to-value mapping verified against The Apple Wiki "List of MobileGestalt
+//  keys" plus Nugget's AI-enabler spoof set (leminlimez/Nugget, MIT).
 //
 
 import Foundation
@@ -12,7 +16,9 @@ import Foundation
 struct SpoofTarget: Identifiable, Hashable {
     let marketingName: String
     let productType: String
-    let boardConfig: String
+    let hwModel: String
+    let cpuName: String
+    let regulatoryModel: String
 
     var id: String { productType }
 }
@@ -30,18 +36,26 @@ enum DeviceSpoofingError: LocalizedError {
 
 enum DeviceSpoofingManager {
 
-    /// Confirmed identifier/board mapping per device generation.
+    /// Confirmed identifier/board/CPU/regulatory mapping per device.
+    /// Board configs & CPU platforms cross-checked against IPSW metadata:
+    /// iPhone16,1=D83AP/t8130, iPhone16,2=D84AP/t8130,
+    /// iPhone17,1=D93AP/t8140, iPhone17,2=D94AP/t8140,
+    /// iPhone18,1=V53AP/t8150, iPhone18,2=V54AP/t8150.
     static let targets: [SpoofTarget] = [
-        SpoofTarget(marketingName: "iPhone 15 Pro", productType: "iPhone16,1", boardConfig: "D74AP"),
-        SpoofTarget(marketingName: "iPhone 15 Pro Max", productType: "iPhone16,2", boardConfig: "D74AP"),
-        SpoofTarget(marketingName: "iPhone 16 Pro", productType: "iPhone17,1", boardConfig: "D74AP"),
-        SpoofTarget(marketingName: "iPhone 16 Pro Max", productType: "iPhone17,2", boardConfig: "D74AP"),
-        SpoofTarget(marketingName: "iPhone 17 Pro", productType: "iPhone18,1", boardConfig: "D97AP"),
-        SpoofTarget(marketingName: "iPhone 17 Pro Max", productType: "iPhone18,2", boardConfig: "D97AP")
+        SpoofTarget(marketingName: "iPhone 15 Pro", productType: "iPhone16,1", hwModel: "D83AP", cpuName: "t8130", regulatoryModel: "A2848"),
+        SpoofTarget(marketingName: "iPhone 15 Pro Max", productType: "iPhone16,2", hwModel: "D84AP", cpuName: "t8130", regulatoryModel: "A2849"),
+        SpoofTarget(marketingName: "iPhone 16 Pro", productType: "iPhone17,1", hwModel: "D93AP", cpuName: "t8140", regulatoryModel: "A3083"),
+        SpoofTarget(marketingName: "iPhone 16 Pro Max", productType: "iPhone17,2", hwModel: "D94AP", cpuName: "t8140", regulatoryModel: "A3084"),
+        SpoofTarget(marketingName: "iPhone 17 Pro", productType: "iPhone18,1", hwModel: "V53AP", cpuName: "t8150", regulatoryModel: "A3256"),
+        SpoofTarget(marketingName: "iPhone 17 Pro Max", productType: "iPhone18,2", hwModel: "V54AP", cpuName: "t8150", regulatoryModel: "A3257")
     ]
 
-    /// All nine keys in CacheExtra that store a ProductType string.
-    /// `h9jDsbgj7xIVeIQ8S3/X3Q` is the primary one read by most services.
+    // MARK: Key groups (all values written per target in one pass)
+
+    /// Every ProductType-string key in CacheExtra.
+    /// `h9jDsbgj7xIVeIQ8S3/X3Q` is the primary one read by most services;
+    /// the rest are the iOS 26 ProductTypeDescFor* variants plus
+    /// SubProductType and ThinningProductType.
     static let productTypeKeys = [
         "xNN67KktpWp7syTT3S1BFA",
         "+1TeoctsaQC55zwHZ6MESg",
@@ -54,22 +68,69 @@ enum DeviceSpoofingManager {
         "G91h5IuJvXISeyngNFqEpg"
     ]
 
-    /// All nine keys in CacheExtra that store a board config string
-    /// (D27AP on iPhone 14, D74AP, D97AP, ...).
-    static let boardConfigKeys = [
-        "oQNDePXjSD1z7W0ddqt9tg",
+    /// Every HWModel-string key in CacheExtra: HWModelStr,
+    /// HWModelUniqueStr, and the six HWModelDescriptionFor* variants.
+    /// Nugget also writes the board config into TargetSubType
+    /// (`oYicEKzVTz4/CxxE05pEgQ`), so it belongs here too.
+    static let hwModelKeys = [
         "/YYygAofPDbhrwToVsXdeA",
-        "b4e7mEbjqfewD6oXmo9U5g",
-        "dW5fpt/6HhaTbnK/UqL6cA",
         "GGIIDN/ANr8X2WrgS6nBYQ",
-        "ZGraRMW0TsxCvONeeJ5C2w",
         "uCIk6n9Am5fsV2cTjhqFQw",
-        "oYicEKzVTz4/CxxE05pEgQ",
-        "yAfB6E2v0++rHtdW7SDg8w"
+        "dW5fpt/6HhaTbnK/UqL6cA",
+        "oQNDePXjSD1z7W0ddqt9tg",
+        "yAfB6E2v0++rHtdW7SDg8w",
+        "b4e7mEbjqfewD6oXmo9U5g",
+        "ZGraRMW0TsxCvONeeJ5C2w",
+        "oYicEKzVTz4/CxxE05pEgQ"
     ]
 
-    /// Both device marketing-name keys.
-    static let deviceNameKeys = ["Z/dqyWS6OZTRy10UcmUAhw", "bbtR9jQx50Fv5Af/affNtA"]
+    /// HardwarePlatform stores the CPU platform string (t8130 = A17 Pro,
+    /// t8140 = A18 Pro, t8150 = A19 Pro) — Nugget's third spoof axis.
+    static let cpuKeys = ["5pYKlGnYYBzGvAlIU8RjEQ"]
+
+    /// RegulatoryModelNumber is the "A" model number of the hardware.
+    static let regulatoryModelKeys = ["97JDvERpVwO+GHtthIh7hA"]
+
+    /// Marketing-name keys. Only overwritten when already present so we
+    /// never invent keys on devices that do not cache them.
+    static let deviceNameKeys = [
+        "Z/dqyWS6OZTRy10UcmUAhw",
+        "bbtR9jQx50Fv5Af/affNtA",
+        "vme9Buk6XiWFCXoHApxNFA",
+        "j9Th5smJpdztHwc+i39zIg"
+    ]
+
+    /// Number of CacheExtra keys this target would change on the given
+    /// plist (artwork subkeys count individually). Used for the UI summary.
+    static func changedKeyCount(in plist: [String: Any], target: SpoofTarget) -> Int {
+        guard let cacheExtra = plist["CacheExtra"] as? [String: Any] else { return 0 }
+        var count = 0
+
+        func countsChange(_ key: String, _ value: String) {
+            if cacheExtra[key] as? String != value { count += 1 }
+        }
+
+        for key in productTypeKeys { countsChange(key, target.productType) }
+        for key in hwModelKeys { countsChange(key, target.hwModel) }
+        for key in cpuKeys { countsChange(key, target.cpuName) }
+        for key in regulatoryModelKeys { countsChange(key, target.regulatoryModel) }
+        for key in deviceNameKeys where cacheExtra[key] != nil {
+            countsChange(key, target.marketingName)
+        }
+
+        if let artwork = cacheExtra[GestaltArtwork.artworkKey] as? [String: Any] {
+            if artwork["CompatibleDeviceFallback"] as? String != target.productType { count += 1 }
+            if artwork["ArtworkDeviceProductDescription"] as? String != target.marketingName { count += 1 }
+        }
+
+        return count
+    }
+
+    /// Real hardware identity from sysctl, deliberately ignoring any
+    /// spoofed CacheExtra ProductType.
+    static var realMachineIdentifier: String {
+        DeviceCapability.machineIdentifier
+    }
 
     /// Returns the currently spoofed target by matching any ProductType key,
     /// or nil when no ProductType matches a known spoof entry.
@@ -90,8 +151,14 @@ enum DeviceSpoofingManager {
         for key in productTypeKeys {
             cacheExtra[key] = target.productType
         }
-        for key in boardConfigKeys {
-            cacheExtra[key] = target.boardConfig
+        for key in hwModelKeys {
+            cacheExtra[key] = target.hwModel
+        }
+        for key in cpuKeys {
+            cacheExtra[key] = target.cpuName
+        }
+        for key in regulatoryModelKeys {
+            cacheExtra[key] = target.regulatoryModel
         }
 
         // Only overwrite names that already exist so we never invent keys.
@@ -99,18 +166,20 @@ enum DeviceSpoofingManager {
             cacheExtra[key] = target.marketingName
         }
 
-        // CompatibleDeviceFallback lives inside the ArtworkDevice dictionary.
+        // ArtworkDevice dictionary entries ride along with the same pass.
         if var artwork = cacheExtra[GestaltArtwork.artworkKey] as? [String: Any] {
             artwork["CompatibleDeviceFallback"] = target.productType
+            artwork["ArtworkDeviceProductDescription"] = target.marketingName
             cacheExtra[GestaltArtwork.artworkKey] = artwork
         }
 
         plist["CacheExtra"] = cacheExtra
     }
 
-    /// Restores genuine identity is not possible from within the app — use a
-    /// pre-spoof backup instead. This helper only clears the spoofed name
-    /// overrides, leaving ProductType untouched.
+    /// Restoring the genuine identity requires a pre-spoof backup — restore
+    /// it from the Backups tab and every key above reverts atomically with
+    /// the whole plist. This helper only clears the spoofed name overrides,
+    /// leaving identifier keys untouched.
     @discardableResult
     static func clearDeviceNames(in plist: inout [String: Any]) -> Bool {
         guard var cacheExtra = plist["CacheExtra"] as? [String: Any] else { return false }
