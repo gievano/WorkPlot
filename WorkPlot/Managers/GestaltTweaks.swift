@@ -22,6 +22,7 @@ enum GestaltTweakID: String, CaseIterable, Identifiable {
     case siriMode
     case disableParallax, enableLiquidGlassLowPerformance, disableLiquidGlassLowPerformance
     case colorPaletteGraphics
+    case graphicsStyle
     case bootChime, chargeLimit, tapToWake, cameraButton, cameraZoom2x
     case pencil, actionButton, collisionSOS
     case stageManager, iPadOS, iPadApps
@@ -63,6 +64,12 @@ enum GestaltTweakCatalog {
         .init(id: .alwaysOnDisplay, category: .display, title: "Always-On Display", detail: "May increase burn-in risk on unsupported devices.", values: ["2OOJf1VhaM7NxfRok3HbWQ": 1, "j8/Omm6s1lsmTDFsXjsBfA": 1], isRisky: true),
         .init(id: .alwaysOnDisplayVibrancy, category: .display, title: "AOD Vibrancy", detail: "Use when AOD rendering looks incorrect.", values: ["ykpu7qyhqFweVMKtxNylWA": 1]),
         .init(id: .disableParallax, category: .display, title: "Disable Wallpaper Parallax", detail: "Stops wallpaper motion based on device movement.", values: ["UIParallaxCapability": 0]),
+        // TODO(F3): Tidak ada key CacheExtra yang terverifikasi khusus untuk
+        // Color Palette (gaya iPhone 16). Key CameraLiveEffectsCapability
+        // (03hWmMtMs+4nzama4/PzHQ) adalah kandidat paling plausibel dari daftar
+        // key MobileGestalt resmi ("supports live effects"); verifikasi on-device
+        // masih diperlukan.
+        .init(id: .colorPaletteGraphics, category: .display, title: L10n.shared.tr("tweak.colorpalette.title"), detail: L10n.shared.tr("tweak.colorpalette.detail"), values: ["03hWmMtMs+4nzama4/PzHQ": 1], isExperimental: true, deviceGate: .iphone13OrLater),
         .init(id: .enableLiquidGlassLowPerformance, category: .display, title: "Liquid Glass Low-Performance ON", detail: "For iOS 26 and later.", values: ["SAGvsp6O6kAQ4fEfDJpC4Q": 1]),
         .init(id: .disableLiquidGlassLowPerformance, category: .display, title: "Liquid Glass Low-Performance OFF", detail: "Mutually exclusive with the option above.", values: ["SAGvsp6O6kAQ4fEfDJpC4Q": 0]),
 

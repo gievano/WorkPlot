@@ -179,3 +179,7 @@
 // Siri in Camera (F2, experimental)
 "siriai.siricam.header" = "Siri in Camera";
 "siriai.siricam.note" = "EXPERIMENTAL: iOS 27 exposes Siri inside the Camera app through the Siri AI mode above plus Apple Intelligence. No separate verified MobileGestalt key exists yet; enabling both toggles is the only verified path. A future update will add a dedicated key once it is confirmed by the community.";
+
+// Color Palette (F3, experimental)
+"tweak.colorpalette.title" = "Color Palette (iPhone 16 style)";
+"tweak.colorpalette.detail" = "EXPERIMENTAL: attempts to unlock the iPhone 16 color palette via CameraLiveEffectsCapability. Only shown on iPhone 13 and newer; the exact key is not yet community-verified.";

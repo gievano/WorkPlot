@@ -179,3 +179,7 @@
 // Siri trong Camera (F2, thử nghiệm)
 "siriai.siricam.header" = "Siri trong Camera";
 "siriai.siricam.note" = "THỬ NGHIỆM: iOS 27 hiển thị Siri bên trong ứng dụng Camera thông qua chế độ Siri AI ở trên cùng với Apple Intelligence. Chưa có khóa MobileGestalt riêng nào được xác minh; bật cả hai công tắc là con đường duy nhất đã được xác minh. Bản cập nhật sau sẽ thêm khóa riêng khi cộng đồng xác nhận.";
+
+// Bảng màu (F3, thử nghiệm)
+"tweak.colorpalette.title" = "Bảng màu (phong cách iPhone 16)";
+"tweak.colorpalette.detail" = "THỬ NGHIỆM: cố gắng mở khóa bảng màu iPhone 16 qua CameraLiveEffectsCapability. Chỉ hiển thị trên iPhone 13 trở lên; khóa chính xác chưa được cộng đồng xác minh.";

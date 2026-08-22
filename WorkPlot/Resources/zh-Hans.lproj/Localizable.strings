@@ -179,3 +179,7 @@
 // 相机中的 Siri (F2，实验性)
 "siriai.siricam.header" = "相机中的 Siri";
 "siriai.siricam.note" = "实验性：iOS 27 通过上方的 Siri AI 模式加 Apple Intelligence 在相机应用中提供 Siri。目前尚无经验证的独立 MobileGestalt 键；同时开启这两个开关是唯一经过验证的途径。待社区确认后，后续更新会加入专用键。";
+
+// 色彩调色板 (F3，实验性)
+"tweak.colorpalette.title" = "色彩调色板 (iPhone 16 风格)";
+"tweak.colorpalette.detail" = "实验性：尝试通过 CameraLiveEffectsCapability 解锁 iPhone 16 的色彩调色板。仅在 iPhone 13 及更新机型上显示；确切键值尚未经社区验证。";

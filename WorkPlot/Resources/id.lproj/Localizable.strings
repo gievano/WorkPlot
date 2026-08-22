@@ -179,3 +179,7 @@
 // Siri di Kamera (F2, eksperimental)
 "siriai.siricam.header" = "Siri di Kamera";
 "siriai.siricam.note" = "EKSPERIMENTAL: iOS 27 menampilkan Siri di dalam aplikasi Kamera melalui mode Siri AI di atas ditambah Apple Intelligence. Belum ada key MobileGestalt terpisah yang terverifikasi; mengaktifkan kedua toggle tersebut adalah satu-satunya jalur terverifikasi. Pembaruan berikutnya akan menambahkan key khusus begitu dikonfirmasi komunitas.";
+
+// Color Palette (F3, eksperimental)
+"tweak.colorpalette.title" = "Color Palette (gaya iPhone 16)";
+"tweak.colorpalette.detail" = "EKSPERIMENTAL: mencoba membuka color palette iPhone 16 lewat CameraLiveEffectsCapability. Hanya tampil di iPhone 13 ke atas; key pastinya belum terverifikasi komunitas.";
