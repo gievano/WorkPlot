@@ -183,3 +183,7 @@
 // Color Palette (F3, eksperimental)
 "tweak.colorpalette.title" = "Color Palette (gaya iPhone 16)";
 "tweak.colorpalette.detail" = "EKSPERIMENTAL: mencoba membuka color palette iPhone 16 lewat CameraLiveEffectsCapability. Hanya tampil di iPhone 13 ke atas; key pastinya belum terverifikasi komunitas.";
+
+// Zoom 2x kamera (F4, eksperimental)
+"tweak.zoom2x.title" = "Toggle Zoom 2x Kamera";
+"tweak.zoom2x.detail" = "EKSPERIMENTAL: menaikkan faktor zoom foto/video menjadi 2 agar aplikasi Kamera stok bisa menampilkan toggle 2x di perangkat 12MP (di bawah iPhone 15). Belum terverifikasi komunitas.";
