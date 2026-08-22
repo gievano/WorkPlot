@@ -80,8 +80,8 @@ enum PatchPackageStore {
     }
 
     static func loadInfo(name: String) -> PatchPackageManifest? {
-        guard let url = try? packageURL(name: name)?.appendingPathComponent("manifest.json"),
-              let data = try? Data(contentsOf: url),
+        guard let packageDir = try? packageURL(name: name),
+              let data = try? Data(contentsOf: packageDir.appendingPathComponent("manifest.json")),
               let manifest = try? decodeManifest(data) else {
             return nil
         }
