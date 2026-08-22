@@ -387,3 +387,27 @@
 // Siri AI restart expectations
 "siri.rebootHint" = "Restart your iPhone after the respring to finish Siri AI setup.";
 "siri.waitlistNote" = "After the restart, Siri may show Join Waitlist until Apple enables your device; model download can take a while.";
+
+// Wallpaper install journal (F3)
+"wpj.title" = "Install Journal";
+"wpj.reset" = "Remove All Wallpapers Added by WorkPlot";
+"wpj.resetConfirm" = "Remove %d wallpaper descriptor(s) added by WorkPlot from this installation?";
+"wpj.empty" = "No wallpapers added by WorkPlot yet.";
+"wpj.removedOk" = "Removed %d wallpaper(s).";
+"wpj.countLabel" = "%d added by WorkPlot";
+
+// Patch packages (F4)
+"pp.title" = "Patch Packages";
+"pp.import" = "Import Package Folder";
+"pp.apply" = "Apply Package";
+"pp.rollback" = "Roll Back";
+"pp.deletePkg" = "Delete Package";
+"pp.appliedOk" = "Package applied. Use Roll Back to undo.";
+"pp.rolledBackOk" = "Original files restored.";
+"pp.deletedOk" = "Package deleted.";
+"pp.passwordPrompt" = "Package password";
+"pp.wrongPassword" = "Wrong package password.";
+"pp.manifestInvalid" = "Invalid package manifest (manifest.json with name and rules required).";
+"pp.empty" = "No patch packages imported yet.";
+"pp.rulesHeader" = "%d rule(s)";
+"pp.ruleFormat" = "%@ : %@";

@@ -16,6 +16,8 @@ struct PosterBoardLabView: View {
     @State private var pendingRemoval: String?
     @State private var isLoadingWallpapers = false
     @State private var bundledWallpapers: [URL] = []
+    @State private var journalCount = 0
+    @State private var isShowingJournalReset = false
 
     var body: some View {
         NavigationView {
@@ -68,6 +70,15 @@ struct PosterBoardLabView: View {
                 Button(l10n.tr("siriai.restart.later"), role: .cancel) { pendingRemoval = nil }
             } message: {
                 Text(pendingRemoval ?? "")
+            }
+            .alert(
+                l10n.tr("wpj.reset"),
+                isPresented: $isShowingJournalReset
+            ) {
+                Button(l10n.tr("pb.remove"), role: .destructive) { resetJournal() }
+                Button(l10n.tr("siriai.restart.later"), role: .cancel) {}
+            } message: {
+                Text(String(format: l10n.tr("wpj.resetConfirm"), journalCount))
             }
         }
     }
@@ -164,6 +175,22 @@ struct PosterBoardLabView: View {
                     }
                 }
             }
+
+            Section(header: Text(l10n.tr("wpj.title"))) {
+                if journalCount == 0 {
+                    Text(l10n.tr("wpj.empty"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Label(String(format: l10n.tr("wpj.countLabel"), journalCount), systemImage: "list.badge.rectangle")
+                        .font(.system(size: 15, weight: .medium))
+                    Button(role: .destructive) {
+                        isShowingJournalReset = true
+                    } label: {
+                        Label(l10n.tr("wpj.reset"), systemImage: "trash")
+                    }
+                }
+            }
         }
     }
 
@@ -244,6 +271,30 @@ struct PosterBoardLabView: View {
         }
     }
 
+    private func resetJournal() {
+        let names = WallpaperJournal.shared.addedDescriptors
+        DispatchQueue.global(qos: .userInitiated).async {
+            var removed: [String] = []
+            for name in names {
+                if (try? PosterBoardAccess.removeWallpaper(named: name)) != nil {
+                    removed.append(name)
+                }
+            }
+            // Only journal entries whose descriptor actually went away.
+            if removed.count == names.count {
+                WallpaperJournal.shared.removeAll()
+            } else {
+                WallpaperJournal.shared.remove(removed)
+            }
+            SessionLogger.shared.log("wallpaper journal reset: \(removed.count) removed")
+            DispatchQueue.main.async {
+                self.manager.statusText = String(format: self.l10n.tr("wpj.removedOk"), removed.count)
+                self.journalCount = WallpaperJournal.shared.addedDescriptors.count
+                self.reloadInstalled()
+            }
+        }
+    }
+
     private func reloadInstalled() {
         guard manager.sandboxGranted, PosterBoardAccess.isAvailable, !isLoadingWallpapers else { return }
         isLoadingWallpapers = true
@@ -252,6 +303,7 @@ struct PosterBoardLabView: View {
             DispatchQueue.main.async {
                 self.installedWallpapers = result
                 self.isLoadingWallpapers = false
+                self.journalCount = WallpaperJournal.shared.addedDescriptors.count
             }
         }
     }

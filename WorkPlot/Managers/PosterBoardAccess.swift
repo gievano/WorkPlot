@@ -67,7 +67,10 @@ enum PosterBoardAccess {
     }
 
     /// Copies prepared descriptor folders into PosterBoard's extension store.
-    static func writeDescriptors(appHash: String, descriptorFolders: [URL]) throws {
+    /// Returns the UUID folder names created; they are journaled so installs
+    /// can be undone from the theme view.
+    @discardableResult
+    static func writeDescriptors(appHash: String, descriptorFolders: [URL]) throws -> [String] {
         let destination = applicationContainerPath(hash: appHash)
             + "/Library/Application Support/PRBPosterExtensionDataStore/61/Extensions/"
             + extensionID + "/descriptors"
@@ -82,11 +85,18 @@ enum PosterBoardAccess {
             try fileManager.createDirectory(atPath: destination, withIntermediateDirectories: true)
         }
 
+        var createdNames: [String] = []
         for descriptor in descriptorFolders {
             let target = URL(fileURLWithPath: destination, isDirectory: true)
                 .appendingPathComponent(UUID().uuidString, isDirectory: true)
             try fileManager.copyItem(at: descriptor, to: target)
+            createdNames.append(target.lastPathComponent)
         }
+
+        // Journal only after every copy succeeded so partial installs are
+        // never recorded as fully added.
+        WallpaperJournal.shared.record(createdNames)
+        return createdNames
     }
 
     // MARK: - Installed wallpaper management
