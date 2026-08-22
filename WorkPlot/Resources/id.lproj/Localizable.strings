@@ -175,3 +175,7 @@
 "siriai.sirimode.header" = "Siri Mode (iOS 27)";
 "siriai.sirimode.toggle" = "Aktifkan Siri AI Mode";
 "siriai.sirimode.detail" = "Mengubah key CacheExtra a3n5T9sFtyQ74NEp9ESxg menjadi 2. Menonaktifkan akan menghapus key tersebut. Aktif setelah respring atau restart.";
+
+// Siri di Kamera (F2, eksperimental)
+"siriai.siricam.header" = "Siri di Kamera";
+"siriai.siricam.note" = "EKSPERIMENTAL: iOS 27 menampilkan Siri di dalam aplikasi Kamera melalui mode Siri AI di atas ditambah Apple Intelligence. Belum ada key MobileGestalt terpisah yang terverifikasi; mengaktifkan kedua toggle tersebut adalah satu-satunya jalur terverifikasi. Pembaruan berikutnya akan menambahkan key khusus begitu dikonfirmasi komunitas.";
