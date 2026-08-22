@@ -139,7 +139,7 @@ struct WorkPlotPreset: Codable, Hashable, Identifiable {
 
 enum BuiltinPresets {
     static let all: [WorkPlotPreset] = [
-        // ProductType/boardConfig only: device-name keys are intentionally not
+        // Identity keys only: device-name keys are intentionally not
         // invented, matching DeviceSpoofingManager's never-invent-keys rule.
         WorkPlotPreset(
             name: "iPhone 17 Pro Max Spoof",
@@ -147,7 +147,9 @@ enum BuiltinPresets {
             risky: true,
             values: Dictionary(uniqueKeysWithValues:
                 DeviceSpoofingManager.productTypeKeys.map { ($0, .string("iPhone18,2")) }
-                + DeviceSpoofingManager.boardConfigKeys.map { ($0, .string("D97AP")) }
+                + DeviceSpoofingManager.hwModelKeys.map { ($0, .string("V54AP")) }
+                + DeviceSpoofingManager.cpuKeys.map { ($0, .string("t8150")) }
+                + DeviceSpoofingManager.regulatoryModelKeys.map { ($0, .string("A3257")) }
             )
         ),
         WorkPlotPreset(
@@ -165,7 +167,7 @@ enum BuiltinPresets {
             name: "Reset Wajar",
             author: "WorkPlot",
             values: [
-                "EqrsVvjcYDdxHBiQ": .integer(0),
+                "EqrsVvjcYDdxHBiQmGhAWw": .integer(0),
                 "LBJfwOEzExRxzlAnSuI7eg": .integer(0),
                 "XYlJKKkj2hztRP1NWWnhlw": .integer(0),
                 "SAGvsp6O6kAQ4fEfDJpC4Q": .integer(0)
