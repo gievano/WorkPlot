@@ -3,9 +3,10 @@
 //  WorkPlot
 //
 //  Fixes the rdar canvas/wallpaper blur bug by patching canvas dimensions
-//  into com.apple.iomobilegraphicsfamily.plist through the transactional
-//  InodeWriter. Keeps a one-time persistent backup of the stock plist so the
-//  original state can always be restored.
+//  into the device's com.apple.iokit.IOMobileGraphicsFamily plist (probing
+//  several known locations) through the transactional InodeWriter. Keeps a
+//  one-time persistent backup of the stock plist so the original state can
+//  always be restored.
 //
 
 import Foundation
@@ -25,9 +26,24 @@ enum RDARFixApplyResult {
 }
 
 struct RDARFix {
-    static let leasePath = "/var/preferences/com.apple.iomobilegraphicsfamily.plist"
-    static let filePath = "/private/var/preferences/com.apple.iomobilegraphicsfamily.plist"
     static let backupDirectoryName = "RDAR Backups"
+
+    /// Candidate locations of the canvas plist, tried in order. The classic
+    /// jailbreak-era location is the IOKit-cased filename under
+    /// /var/mobile/Library/Preferences (BetterRes/misakaX/FixRDAR4XR11);
+    /// lowercase daemon-pref variants exist on some builds. ContainerManager
+    /// rejects queries for absent targets, so probing candidates is how we
+    /// find the one that exists on this build.
+    /// ponytail: linear probe of 3 known paths; add Data/System container
+    /// discovery only if a build ships none of these.
+    static let candidatePaths: [(lease: String, file: String)] = [
+        ("/var/mobile/Library/Preferences/com.apple.iokit.IOMobileGraphicsFamily.plist",
+         "/private/var/mobile/Library/Preferences/com.apple.iokit.IOMobileGraphicsFamily.plist"),
+        ("/var/preferences/com.apple.iokit.IOMobileGraphicsFamily.plist",
+         "/private/var/preferences/com.apple.iokit.IOMobileGraphicsFamily.plist"),
+        ("/var/preferences/com.apple.iomobilegraphicsfamily.plist",
+         "/private/var/preferences/com.apple.iomobilegraphicsfamily.plist"),
+    ]
 
     struct BackupMetadata: Codable {
         let originalPath: String
@@ -157,7 +173,7 @@ struct RDARFix {
     }
 
     static var hasPersistentBackup: Bool {
-        storedBackup(in: persistentBackupRoot(), forPath: filePath) != nil
+        candidatePaths.contains { storedBackup(in: persistentBackupRoot(), forPath: $0.file) != nil }
     }
 
     static var currentAppVersion: String {
@@ -169,6 +185,34 @@ struct RDARFix {
     // only built on iOS; the macOS CI harness compiles the pure helpers above.
 
     #if canImport(UIKit)
+    /// Marker thrown while probing a candidate: lease or read failed, so the
+    /// resolver should try the next location instead of surfacing an error.
+    private struct CandidateUnavailable: Error {}
+
+    /// Probes every candidate until one yields a readable plist through its
+    /// bad_query lease, then runs `body` inside that lease.
+    private static func withResolvedTarget<T>(_ body: (String) throws -> T) throws -> T {
+        var failures: [String] = []
+        for candidate in candidatePaths {
+            do {
+                return try BadQueryLeaseScope.withLease(forPath: candidate.lease) {
+                    guard FileManager.default.fileExists(atPath: candidate.file) ||
+                          FileManager.default.contents(atPath: candidate.file) != nil else {
+                        throw CandidateUnavailable()
+                    }
+                    return try body(candidate.file)
+                }
+            } catch let error as BadQueryLeaseError {
+                failures.append("\(candidate.file): \(error.localizedDescription)")
+            } catch is CandidateUnavailable {
+                failures.append("\(candidate.file): not present on this build")
+            }
+        }
+        throw RDARFixError(message:
+            "No canvas plist location is reachable on this build. Tried:\n" +
+            failures.joined(separator: "\n"))
+    }
+
     /// Canvas size is detected from the device's native screen bounds at
     /// runtime: a hardcoded resolution only matched one iPhone model and
     /// caused the fix to misbehave on every other device.
@@ -182,59 +226,46 @@ struct RDARFix {
     @discardableResult
     static func apply(canvasWidth: Int,
                       canvasHeight: Int) throws -> RDARFixApplyResult {
-        do {
-            return try BadQueryLeaseScope.withLease(forPath: leasePath) {
-                guard let current = FileManager.default.contents(atPath: filePath) else {
-                    throw RDARFixError(message: "The plist at \(filePath) could not be read.")
-                }
-
-                if plistIsAlreadyFixed(current,
-                                       canvasWidth: canvasWidth,
-                                       canvasHeight: canvasHeight) {
-                    return .alreadyFixed
-                }
-
-                // Snapshot the stock plist before any write succeeds or fails.
-                try createPersistentBackupIfMissing(
-                    originalData: current, forPath: filePath,
-                    in: persistentBackupRoot())
-
-                let outData = try patchedPlistData(current,
-                                                   canvasWidth: canvasWidth,
-                                                   canvasHeight: canvasHeight)
-                try InodeWriter.writeVerifiedInPlace(outData, to: filePath)
-                return .applied
+        try withResolvedTarget { filePath in
+            guard let current = FileManager.default.contents(atPath: filePath) else {
+                throw RDARFixError(message: "The plist at \(filePath) could not be read.")
             }
-        } catch let error as BadQueryLeaseError {
-            throw RDARFixError(message:
-                "Access to \(filePath) was denied. This RDAR path needs an active " +
-                "bad_query sandbox lease for that exact path; the CMG fallback cannot " +
-                "provide it because it only opens the MobileGestaltCache container, " +
-                "not arbitrary preference paths. Retry after the exploit reports a " +
-                "successful connection. (\(error.localizedDescription))")
+
+            if plistIsAlreadyFixed(current,
+                                   canvasWidth: canvasWidth,
+                                   canvasHeight: canvasHeight) {
+                return .alreadyFixed
+            }
+
+            // Snapshot the stock plist before any write succeeds or fails.
+            try createPersistentBackupIfMissing(
+                originalData: current, forPath: filePath,
+                in: persistentBackupRoot())
+
+            let outData = try patchedPlistData(current,
+                                               canvasWidth: canvasWidth,
+                                               canvasHeight: canvasHeight)
+            try InodeWriter.writeVerifiedInPlace(outData, to: filePath)
+            return .applied
         }
     }
 
     /// Writes the persisted stock bytes back over the live plist using the
     /// same verified + rollback write as apply().
     static func restoreOriginalCanvas() throws {
-        guard let backup = storedBackup(in: persistentBackupRoot(),
-                                        forPath: filePath) else {
-            throw RDARFixError(message: "No persistent backup exists yet for \(filePath). " +
-                "Run the fix once first; the backup is taken from the stock plist.")
+        guard let target = candidatePaths.first(where: {
+            storedBackup(in: persistentBackupRoot(), forPath: $0.file) != nil
+        }) else {
+            throw RDARFixError(message:
+                "No persistent canvas backup exists yet. Run the fix once first; " +
+                "the backup captures the stock plist before any patch.")
+        }
+        guard let backup = storedBackup(in: persistentBackupRoot(), forPath: target.file) else {
+            throw RDARFixError(message: "The canvas backup disappeared mid-restore.")
         }
 
-        do {
-            try BadQueryLeaseScope.withLease(forPath: leasePath) {
-                try InodeWriter.writeVerifiedInPlace(backup.data, to: filePath)
-            }
-        } catch let error as BadQueryLeaseError {
-            throw RDARFixError(message:
-                "Access to \(filePath) was denied during restore. This RDAR path needs " +
-                "an active bad_query sandbox lease for that exact path; the CMG fallback " +
-                "cannot provide it because it only opens the MobileGestaltCache container. " +
-                "Retry after the exploit reports a successful connection. " +
-                "(\(error.localizedDescription))")
+        try BadQueryLeaseScope.withLease(forPath: target.lease) {
+            try InodeWriter.writeVerifiedInPlace(backup.data, to: target.file)
         }
     }
     #endif
