@@ -37,6 +37,7 @@ jobs:
         run: |
           CHECK_BIN="$RUNNER_TEMP/check-file-operations"
           xcrun swiftc -parse-as-library \
+            WorkPlot/Managers/SafeFileOperations.swift \
             Support/FileBrowserServiceCheck.swift \
             -o "$CHECK_BIN"
           "$CHECK_BIN"
