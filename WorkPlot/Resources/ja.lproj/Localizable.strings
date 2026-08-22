@@ -187,3 +187,7 @@
 // カメラ 2倍ズーム (F4、実験的)
 "tweak.zoom2x.title" = "カメラ 2倍ズーム切替";
 "tweak.zoom2x.detail" = "実験的機能：写真/動画のズーム倍率を 2 に引き上げ、1200 万画素機種（iPhone 15 未満）の標準カメラに 2 倍切替が表示されるようにします。まだコミュニティで検証されていません。";
+
+// グラフィックススタイル (F5、実験的)
+"tweak.graphicsstyle.title" = "グラフィックススタイル";
+"tweak.graphicsstyle.detail" = "実験的機能：iPhone 13 までのデバイスで高いグラフィックス性能ティア (apple-graphics-performance-tier) を強制します。新しいグラフィックススタイルとの対応はまだコミュニティで検証されていません。";

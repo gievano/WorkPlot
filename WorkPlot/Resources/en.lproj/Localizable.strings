@@ -187,3 +187,7 @@
 // Camera 2x zoom (F4, experimental)
 "tweak.zoom2x.title" = "Camera 2x Zoom Toggle";
 "tweak.zoom2x.detail" = "EXPERIMENTAL: raises photo/video zoom factor to 2 so the stock Camera may offer a 2x toggle on 12MP devices (below iPhone 15). Not yet community-verified.";
+
+// Graphics Style (F5, experimental)
+"tweak.graphicsstyle.title" = "Graphics Style";
+"tweak.graphicsstyle.detail" = "EXPERIMENTAL: forces the higher graphics performance tier (apple-graphics-performance-tier) on devices up to iPhone 13. The exact mapping to the newer graphics style is not yet community-verified.";
