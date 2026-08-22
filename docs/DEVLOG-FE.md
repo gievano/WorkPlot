@@ -505,3 +505,59 @@
 **The Reasoning:** Squash-merge meninggalkan histori branch yang tumpang tindih dengan main sehingga PR berikutnya selalu CONFLICTING; pola realign setelah merge menyelesaikan itu permanen. Guard traversal ditambahkan setelah review mandiri kode agen: rule.path "/../../x" lolos validasi lama dan bisa keluar container/originals.
 
 **The Tech Debt:** Katalog online Nugget-Wallpapers (F3b) belum dikerjakan; Sprint 3 (App Containers root discovery ala FilzaSlop, hex/sqlite viewer, cache cleaner, onboarding+update checker) masih pending. Semua fitur malam ini butuh validasi device user: RDAR harus mencari plist di salah satu 3 kandidat; patch package end-to-end; journal reset.
+
+## 2026-08-23 - Wallpaper Catalog Online (F3b, Nugget-Wallpapers)
+
+**The Change:** File baru `WorkPlot/Managers/WallpaperCatalogService.swift` - `CatalogKind` (.custom/.apple -> wallpapers-<kind>.json), `CatalogEntry: Decodable`, `WallpaperCatalogService` static-only: `fetchCatalog(kind:)` (URLSession async), `previewURL(for:)`, `downloadAndExtract(entry:)` (unduh .tendies ke folder tmp unik -> `FileManager.unzipItem` via ZIPFoundation SPM -> kembalikan folder anak dari subfolder "descriptor"/"descriptors"; format "container" ditolak dengan error eksplisit; tmp dibersihkan via defer), dan `install(descriptorFolders:name:)` (findPosterBoardHash + writeDescriptors; journal tercatat otomatis di writeDescriptors; log SessionLogger sukses). File baru `WorkPlot/UI/WallpaperCatalogView.swift` - NavigationStack + List + workPlotScrollBackground(), segmented Picker Community/Apple (cache per kind via `.task(id:)`, tanpa refetch), AsyncImage preview h=120 scaledToFit cornerRadius, nama + description lineLimit(2) + caption "by %@", tombol Install per baris yang disabled saat gate `manager.sandboxGranted && PosterBoardAccess.isAvailable` gagal atau sedang ada instalasi berjalan; state installing = ProgressView + cat.installing; sukses -> statusText cat.appliedOk + respringRequested; gagal unduh/instal -> alert cat.downloadFail dengan localizedDescription + log SessionLogger. Fetch katalog gagal -> pesan cat.catalogFail + tombol retry (common.retry). `CustomizationThemeView` hanya dapat 11 baris: @State isShowingCatalog + Button Label cat.openCatalog icon sparkles (di section labHeader, dekat import tendies) + .sheet membuka WallpaperCatalogView. Checker check-feature + check-l10n hijau; semua key cat.* sudah tersedia sebelumnya - nol key Localizable baru.
+
+**The Reasoning:** Sheet alih-alih NavigationLink karena PosterBoardLabView masih NavigationView iOS-klasik; menumpuk NavigationStack di dalam push NavigationView menghasilkan double nav bar. Gate install diperiksa ulang di view (bukan hanya menyembunyikan list) supaya tombol tetap terlihat tapi nonaktif saat sandbox/bad_query tidak siap. ZIPFoundation hanya diimport di service file sesuai batasan work order.
+
+**The Tech Debt:** Tidak ada compiler Swift lokal (Windows) sehingga verifikasi bergantung checker statis + CI xcodebuild; decode JSON dan unzip belum diuji runtime. Cache katalog in-memory per sesi saja (tidak persist). Preview gif dimuat penuh oleh AsyncImage tanpa downsampling - kalau berat, ganti ke thumbnail generator.
+
+## 2026-08-23 - App Containers & Cache Cleaner
+
+### The Change
+
+- Added `WorkPlot/Managers/AppContainerScanner.swift`: scans the three MCM data-container roots via bad_query_list, reads MCMMetadataIdentifier from each container metadata plist through consume/release, measures Library/Caches (+ SplashBoard/Snapshots) size under lease, wipes Caches contents best-effort inside BadQueryLeaseScope, logs to SessionLogger.
+- Added `WorkPlot/UI/AppContainersView.swift`: gated list of containers (bundleID monospaced, path caption truncated middle), searchable by bundleID, rows NavigationLink to CacheCleanerView, toolbar clean-all menu with progress state.
+- Added `WorkPlot/UI/CacheCleanerView.swift`: per-app cache size (ByteCountFormatter), destructive confirm + clean, refresh after wipe, statusText feedback.
+
+### The Reasoning
+
+- Mirrored PatchPackageStore's private scan/consume helpers locally instead of exposing them (parallel-agent ownership boundaries).
+- `cleanCache` returns freed bytes as @discardableResult so clean-all can summarize totals without re-scanning; signature stays compatible with a void call site.
+- Unreachable scan roots are skipped unless nothing lists at all, so partial results still render on device.
+- Only existing ac.*/cc.* keys used (plus pre-existing home.locked/common.failPrefix); zero Localizable additions.
+
+### The Tech Debt
+
+- cacheBytes treats unreadable directories as 0 bytes (marked with ponytail comment); exact per-dir error reporting only if ever needed.
+- SplashBoard/Snapshots are counted but not deleted; wire deletion later if desired.
+- Wiring pending (other agents): FilePatchWorkspaceView/MoreMenuView shortcuts should point at AppContainersView(); files are auto-included via PBXFileSystemSynchronizedRootGroup so no pbxproj edit was needed.
+
+## 2026-08-23 - Hex/SQLite Viewers + Update Checker (F5b/F6)
+
+### The Change
+
+- Added `FileHexViewerSheet.swift`: first-4KB hex dump (offset / 16-byte hex / ASCII gutter), monospaced 11pt, bidirectional scroll, copy-to-pasteboard via UIPasteboard.
+- Added `FileSqliteViewerSheet.swift` + `SQLiteDatabase` helper: db copied to tmp then opened `sqlite3_open_v2` READONLY; table list from sqlite_master, per-table SELECT limited to 200 rows via localized `sqlite.selectFirst`, NULL-safe column text.
+- Added `UpdaterService.swift`: GitHub releases/latest fetch (Accept: application/vnd.github+json), honest HTTP/payload errors, numeric-only semver compare (`isNewer`).
+- Added `UpdateCheckerSheet.swift`: check -> loading -> newer tag (+openURL) / up-to-date / failure with retry.
+
+### The Reasoning
+
+- Each SQLite operation copies-reads-closes-deletes in one scoped call (`withReadOnlyCopy`) so no handle or tmp file can outlive the sheet and no shared OpaquePointer crosses views; pushed row view reopens its own connection.
+- No new Localizable keys were added (constraint); the hex "first 4 KB" note is a plain English literal, which check-l10n permits.
+
+### The Tech Debt
+
+- `FileBrowser.readData` reads whole files into memory before the 4KB slice; fine for prefs-scale files, needs offset-based reads if huge binaries are browsed.
+- Hex grid scrolls both axes on narrow iPhones (16 bytes/line mandated by spec).
+
+## 2026-08-23 - Batch F3b/F5/F6: Katalog Online, Containers, Viewers, Updater
+
+**The Change:** (1) F3b katalog online Nugget-Wallpapers (WallpaperCatalogService + WallpaperCatalogView; download .tendies -> unzip ZIPFoundation -> descriptor folders -> writeDescriptors; journal otomatis tercatat). (2) Dependency SPM pertama: ZIPFoundation 0.9.x via XCRemoteSwiftPackageReference di pbxproj (dibutuhkan untuk unzip .tendies). (3) F5a AppContainerScanner (MCM metadata scan 3 root) + AppContainersView + CacheCleanerView (clean isi Library/Caches dalam lease). (4) F5b FileHexViewerSheet (4KB dump) + FileSqliteViewerSheet (SQLite3 readonly copy-to-tmp). (5) F6 UpdaterService + UpdateCheckerSheet (GitHub releases latest). Wiring manual gue: routing viewer .binary -> sqlite/hex, Hex View di context menu, NavigationLink AppContainersView di shortcut Files + More menu, tombol Update Checker di More menu, tombol Browse Online Catalog di CustomizationThemeView.
+
+**The Reasoning:** ZIPFoundation dipilih daripada menulis parser ZIP sendiri (battle-tested, MIT, satu produk dependency). SQLite viewer bekerja pada salinan tmp supaya lease sandbox tidak perlu hidup selama sesi baca. Container scanner memakai pola MCM metadata yang sama dengan PatchPackageStore agar konsisten.
+
+**The Tech Debt:** Descriptor ID internal wallpaper katalog belum dirandomisasi ulang (folder-level UUID saja) - potensi tabrakan ID kalau install wallpaper yang sama dua kali; ikuti pola randomize Nugget kalau jadi masalah. SplashBoard/Snapshots dihitung tapi belum dihapus oleh cleaner.

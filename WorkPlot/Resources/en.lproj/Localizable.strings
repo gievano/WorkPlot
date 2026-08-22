@@ -411,3 +411,40 @@
 "pp.empty" = "No patch packages imported yet.";
 "pp.rulesHeader" = "%d rule(s)";
 "pp.ruleFormat" = "%@ : %@";
+
+// Wallpaper online catalog (F3b)
+"cat.title" = "Wallpaper Catalog";
+"cat.custom" = "Community";
+"cat.apple" = "Apple";
+"cat.apply" = "Install";
+"cat.installing" = "Installing %@...";
+"cat.appliedOk" = "%@ installed.";
+"cat.downloadFail" = "Download failed: %@";
+"cat.catalogFail" = "Could not load the catalog: %@";
+"cat.byAuthor" = "by %@";
+"cat.openCatalog" = "Browse Online Catalog";
+
+// App containers + cache cleaner (F5a/F5c)
+"ac.title" = "App Containers";
+"ac.loading" = "Scanning containers...";
+"ac.empty" = "No app containers found.";
+"cc.clean" = "Clean Cache";
+"cc.cleanedOk" = "Cleared %@ for %@.";
+"cc.allApps" = "All Apps";
+"cc.cleanAll" = "Clean All Caches";
+"cc.noCache" = "No cache";
+
+// Hex/sqlite viewers (F5b)
+"hex.title" = "Hex Viewer";
+"fp.action.hexView" = "Hex View";
+"sqlite.tables" = "Tables";
+"sqlite.rows" = "%d row(s)";
+"sqlite.queryFail" = "Cannot open SQLite database: %@";
+"sqlite.selectFirst" = "SELECT * FROM \"%@\" LIMIT 200";
+
+// Update checker (F6)
+"upd.check" = "Check for Updates";
+"upd.latest" = "You are on the latest version (%@).";
+"upd.newVersion" = "Version %@ is available";
+"upd.openRelease" = "Open Release Page";
+"upd.fail" = "Update check failed: %@";
