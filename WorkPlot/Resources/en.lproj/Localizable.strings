@@ -182,7 +182,7 @@
 
 // Color Palette (F3, experimental)
 "tweak.colorpalette.title" = "Color Palette (iPhone 16 style)";
-"tweak.colorpalette.detail" = "EXPERIMENTAL: attempts to unlock the iPhone 16 color palette via CameraLiveEffectsCapability. Only shown on iPhone 13 and newer; the exact key is not yet community-verified.";
+"tweak.colorpalette.detail" = "EXPERIMENTAL: no community-verified Color Palette key exists yet. Writes a candidate set (CameraLiveEffectsCapability + apple-graphics-performance-tier = 1) based on the closest official keys; the visual effect is not guaranteed.";
 
 // Camera 2x zoom (F4, experimental)
 "tweak.zoom2x.title" = "Camera 2x Zoom Toggle";

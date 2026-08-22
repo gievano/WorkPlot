@@ -182,7 +182,7 @@
 
 // カラーパレット (F3、実験的)
 "tweak.colorpalette.title" = "カラーパレット (iPhone 16 スタイル)";
-"tweak.colorpalette.detail" = "実験的機能：CameraLiveEffectsCapability により iPhone 16 のカラーパレットの解放を試みます。iPhone 13 以降でのみ表示されます。正確なキーはまだコミュニティで検証されていません。";
+"tweak.colorpalette.detail" = "実験的機能：コミュニティで検証済みのColor Palette用キーはまだ存在しません。最も近い公式キーによる候補セット（CameraLiveEffectsCapability + apple-graphics-performance-tier = 1）を書き込みます。視覚効果は保証されません。";
 
 // カメラ 2倍ズーム (F4、実験的)
 "tweak.zoom2x.title" = "カメラ 2倍ズーム切替";
