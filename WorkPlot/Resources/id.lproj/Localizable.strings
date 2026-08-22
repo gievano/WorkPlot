@@ -236,3 +236,14 @@
 "fp.error.exists" = "Sudah ada item dengan nama tersebut.";
 "fp.error.binarytext" = "File ini tampaknya bukan teks UTF-8.";
 "fp.error.imagedecode" = "Tidak dapat mendekode data gambar.";
+
+// Spoof summary
+"siriai.spoof.keysCount" = "Key yang akan diubah: %d";
+"siriai.spoof.detected" = "Perangkat asli terdeteksi: %@";
+"siriai.spoof.revert" = "Revert mengembalikan semua key sekaligus dari backup sebelum spoof (tab Backup).";
+
+// Siri AI extra toggles
+"siriai.modelkey.toggle" = "Sinkron Key ProductType Utama";
+"siriai.modelkey.detail" = "Menulis key h9jDsbgj7xIVeIQ8S3/X3Q dengan target spoof yang dipilih. Mematikan akan menghapus key.";
+"siriai.eligibility.toggle" = "Paksa Eligibility Apple Intelligence";
+"siriai.eligibility.detail" = "Menulis key A62OafQ85EJAiiqKn4agtg = 1 saja, tanpa menyentuh key lain.";

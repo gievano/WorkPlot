@@ -236,3 +236,14 @@
 "fp.error.exists" = "An item with that name already exists.";
 "fp.error.binarytext" = "The file does not look like UTF-8 text.";
 "fp.error.imagedecode" = "Could not decode the image data.";
+
+// Spoof summary
+"siriai.spoof.keysCount" = "Keys that will change: %d";
+"siriai.spoof.detected" = "Detected real device: %@";
+"siriai.spoof.revert" = "Revert restores every key at once from a pre-spoof backup (Backups tab).";
+
+// Siri AI extra toggles
+"siriai.modelkey.toggle" = "Sync Primary ProductType Key";
+"siriai.modelkey.detail" = "Writes key h9jDsbgj7xIVeIQ8S3/X3Q with the selected spoof target. Disabling removes the key.";
+"siriai.eligibility.toggle" = "Force Apple Intelligence Eligibility";
+"siriai.eligibility.detail" = "Writes key A62OafQ85EJAiiqKn4agtg = 1 only, without touching other keys.";
