@@ -18,13 +18,13 @@ enum PosterBoardError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .unsupportedSystem:
-            "bad_query tidak tersedia di sistem ini."
+            "bad_query is unavailable on this system."
         case .containerNotFound:
-            "Container data PosterBoard tidak ditemukan."
+            "The PosterBoard data container was not found."
         case .listFailed:
-            "Gagal meng enumerasi container aplikasi."
+            "Failed to enumerate application containers."
         case .writeFailed(let detail):
-            "Gagal menulis wallpaper: \(detail)"
+            "Failed to write wallpaper: \(detail)"
         }
     }
 }
@@ -73,7 +73,7 @@ enum PosterBoardAccess {
             + extensionID + "/descriptors"
 
         guard let handle = consume(path: destination, create: true) else {
-            throw PosterBoardError.writeFailed("sandbox extension tidak diperoleh.")
+            throw PosterBoardError.writeFailed("sandbox extension was not acquired.")
         }
         defer { bad_query_release(handle) }
 
@@ -114,7 +114,7 @@ enum PosterBoardAccess {
             .appendingPathComponent(name, isDirectory: true)
 
         guard let handle = consume(path: target.path, create: false) else {
-            throw PosterBoardError.writeFailed("sandbox extension tidak diperoleh.")
+            throw PosterBoardError.writeFailed("sandbox extension was not acquired.")
         }
         defer { bad_query_release(handle) }
 

@@ -19,7 +19,7 @@ struct StatusDashboardView: View {
                             manager.statusText = "\(l10n.tr("status.rdarfix")) OK. \(l10n.tr("restart.rec.title"))"
                             showRestartAlert = true
                         } catch {
-                            manager.statusText = "Gagal: \(error.localizedDescription)"
+                            manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
                         }
                     }
                     .disabled(!manager.sandboxGranted)
@@ -29,7 +29,7 @@ struct StatusDashboardView: View {
                             manager.statusText = L10n.shared.tr("lg.disabled")
                             showRestartAlert = true
                         } catch {
-                            manager.statusText = "Gagal: \(error.localizedDescription)"
+                            manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
                         }
                     }
                     .disabled(!manager.sandboxGranted)
@@ -39,10 +39,10 @@ struct StatusDashboardView: View {
                 Section(header: Text(l10n.tr("home.log"))) {
                     Text(manager.statusText)
                         .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(manager.statusText.hasPrefix("Gagal") ? .orange : .green)
+                        .foregroundColor(manager.statusText.hasPrefix(l10n.failPrefix) ? .orange : .green)
                 }
             }
-            .navigationTitle("work.plot")
+            .navigationTitle("WorkPlot")
             .workPlotScrollBackground()
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -69,12 +69,6 @@ struct MainDashboardSettingsMenu: View {
 
     var body: some View {
         Menu {
-            Picker(l10n.tr("settings.language"), selection: $l10n.language) {
-                ForEach(AppLanguage.allCases) { language in
-                    Text(language.label).tag(language)
-                }
-            }
-
             Picker(l10n.tr("settings.appearance"), selection: $appearanceMode) {
                 ForEach(AppearanceMode.allCases) { mode in
                     Text(l10n.tr(mode.labelKey)).tag(mode.rawValue)

@@ -28,10 +28,10 @@ struct GestaltPresetManagerView: View {
                 } else {
                     List {
                         Section(
-                            header: Text("Dynamic Island"),
+                            header: Text(L10n.shared.tr("gestalt.islandHeader")),
                             footer: Text(L10n.shared.tr("gestalt.islandFooter"))
                         ) {
-                            Picker("Tipe", selection: $dynamicIslandSubtype) {
+                            Picker(L10n.shared.tr("fields.typeHeader"), selection: $dynamicIslandSubtype) {
                                 Text(L10n.shared.tr("common.default")).tag(Int?.none)
                                 ForEach(DynamicIslandOption.all) { option in
                                     Text("\(option.title) (\(option.subtype))").tag(Int?.some(option.subtype))
@@ -40,9 +40,9 @@ struct GestaltPresetManagerView: View {
                         }
 
                         Section(header: Text(L10n.shared.tr("gestalt.modelHeader"))) {
-                            Toggle("Ubah Nama Model", isOn: $changesModelName)
+                            Toggle(L10n.shared.tr("gestalt.changeModelName"), isOn: $changesModelName)
                             if changesModelName {
-                                TextField("cth. iPhone 16 Pro", text: $modelName)
+                                TextField(L10n.shared.tr("gestalt.modelNamePlaceholder"), text: $modelName)
                                     .autocorrectionDisabled()
                             }
                         }
@@ -73,11 +73,13 @@ struct GestaltPresetManagerView: View {
                     .workPlotScrollBackground()
                 }
             }
-            .navigationTitle("Gestalt")
+            .navigationTitle(L10n.shared.tr("tab.gestalt"))
             .heavyRestartFlow(isPresented: $showRestartAlert)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(stagedChangeCount == 0 ? "Apply" : "Apply (\(stagedChangeCount))") {
+                    Button(stagedChangeCount == 0
+                           ? L10n.shared.tr("common.apply")
+                           : "\(L10n.shared.tr("common.apply")) (\(stagedChangeCount))") {
                         applySelected()
                     }
                     .disabled(stagedChangeCount == 0 || isApplying || !manager.sandboxGranted)
@@ -130,7 +132,7 @@ struct GestaltPresetManagerView: View {
 
     private func applySelected() {
         guard var plist = manager.readGestalt() else {
-            manager.statusText = "Gagal: tidak dapat membaca MobileGestalt."
+            manager.statusText = L10n.shared.tr("common.readFail")
             return
         }
 
@@ -153,31 +155,42 @@ struct GestaltPresetManagerView: View {
             if changesModelName {
                 let name = modelName.trimmingCharacters(in: .whitespacesAndNewlines)
                 guard !name.isEmpty else {
-                    throw PlistValueError.invalid("Nama model tidak boleh kosong.")
+                    throw PlistValueError.invalid(L10n.shared.tr("gestalt.error.emptyName"))
                 }
                 try GestaltArtwork.setModelName(name, in: &plist)
             }
             if selectedTweaks.contains(.iPadOS) {
                 try GestaltCacheDataPatch.applyiPadOSMode(to: &plist)
             }
+            // Dual-cache tweaks share one idempotent capability-flag flip
+            // inside CacheData; applying it here keeps every selected toggle
+            // in the SAME read-modify-write transaction as the CacheExtra
+            // mutations above.
+            if selectedTweaks.contains(where: {
+                GestaltTweakCatalog.definition(for: $0)?.requiresCacheDataFlag == true
+            }) {
+                try CacheDataPatcher.applyCapabilityFlag(to: &plist)
+            }
         } catch {
-            manager.statusText = "Gagal: \(error.localizedDescription)"
+            manager.statusText = String(format: L10n.shared.tr("common.failPrefix"), error.localizedDescription)
             return
         }
 
         isApplying = true
-        let success = manager.saveGestalt(plist)
-        isApplying = false
-
-        if success {
+        defer { isApplying = false }
+        do {
+            try manager.saveGestaltOrThrow(plist)
             selectedTweaks.removeAll()
             dynamicIslandSubtype = nil
             changesModelName = false
             modelName = ""
-            manager.statusText = "Tweak diterapkan. \(L10n.shared.tr("restart.rec.title"))"
+            manager.statusText = "\(L10n.shared.tr("gestalt.status.applied")) \(L10n.shared.tr("restart.rec.title"))"
             showRestartAlert = true
-        } else {
-            manager.statusText = "Gagal menyimpan MobileGestalt."
+        } catch {
+            manager.statusText = String(
+                format: L10n.shared.tr("common.failPrefix"),
+                error.localizedDescription
+            )
         }
     }
 }

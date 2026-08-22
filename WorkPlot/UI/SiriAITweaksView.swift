@@ -181,7 +181,7 @@ struct SiriAITweaksView: View {
             Button {
                 manager.respringRequested = true
             } label: {
-                Label("Respring", systemImage: "arrow.counterclockwise")
+                Label(l10n.tr("siriai.restart.respring"), systemImage: "arrow.counterclockwise")
             }
         } footer: {
             Text(l10n.tr("restart.options.message"))
@@ -241,7 +241,7 @@ struct SiriAITweaksView: View {
     /// backup → mutate → save (verified write) → respring.
     private func applyChanges() {
         guard var plist = loadedPlist else {
-            manager.statusText = "Gagal: tidak dapat membaca MobileGestalt."
+            manager.statusText = l10n.tr("common.readFail")
             return
         }
 
@@ -267,15 +267,14 @@ struct SiriAITweaksView: View {
                 AIRegionEligibilityApplier.setEnabled(enabled, in: &plist)
             }
         } catch {
-            manager.statusText = "Gagal: \(error.localizedDescription)"
+            manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
             return
         }
 
         isApplying = true
-        let success = manager.saveGestalt(plist)
-        isApplying = false
-
-        if success {
+        defer { isApplying = false }
+        do {
+            try manager.saveGestaltOrThrow(plist)
             siriAIStaged = nil
             siriModeStaged = nil
             appleIntelligenceStaged = nil
@@ -283,11 +282,14 @@ struct SiriAITweaksView: View {
             eligibilityStaged = nil
             spoofTarget = nil
             manager.statusText = "\(l10n.tr("siriai.apply")) OK. \(l10n.tr("siriai.restart.title"))"
-            // Siri AI tweaks require a device restart before they take
-            // effect; the user picks between respring now or later.
+            // Siri AI tweaks require a restart; the shared flow offers
+            // respring or manual userspace/full restart guidance.
             showRestartAlert = true
-        } else {
-            manager.statusText = "Gagal menyimpan MobileGestalt."
+        } catch {
+            manager.statusText = String(
+                format: l10n.tr("common.failPrefix"),
+                error.localizedDescription
+            )
         }
     }
 }

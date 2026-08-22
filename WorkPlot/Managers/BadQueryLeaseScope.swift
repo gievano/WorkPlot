@@ -14,7 +14,10 @@ enum BadQueryLeaseError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .acquisitionFailed(let detail):
-            "bad_query gagal: \(detail ?? "tidak diketahui")"
+            String(
+                format: L10n.shared.tr("badquery.error.failed"),
+                detail ?? L10n.shared.tr("badquery.error.unknown")
+            )
         }
     }
 }

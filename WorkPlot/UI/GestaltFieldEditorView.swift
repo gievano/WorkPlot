@@ -83,7 +83,7 @@ struct GestaltFieldEditorView: View {
 
             let topLevelKeys = filtered(plist.keys.sorted())
             if !topLevelKeys.isEmpty {
-                Section(header: Text("Top Level")) {
+                Section(header: Text(l10n.tr("fields.topLevel"))) {
                     ForEach(topLevelKeys, id: \.self) { key in
                         NavigationLink {
                             ValueEditor(
@@ -110,7 +110,7 @@ struct GestaltFieldEditorView: View {
     }
 
     private func cacheSection(_ plist: [String: Any]) -> some View {
-        Section(header: Text("Cache")) {
+        Section(header: Text(l10n.tr("fields.cacheHeader"))) {
             HStack {
                 Text("CacheUUID").font(.callout)
                 Spacer()
@@ -180,10 +180,10 @@ struct GestaltFieldEditorView: View {
             plist["CacheExtra"] = cacheExtra
             self.plist = plist
             manager.statusText = persist()
-                ? "\(key) diperbarui."
-                : "Gagal menyimpan \(key)."
+                ? String(format: l10n.tr("fields.status.updated"), key)
+                : String(format: l10n.tr("fields.status.saveFailed"), key)
         } catch {
-            manager.statusText = "Gagal: \(error.localizedDescription)"
+            manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
         }
     }
 
@@ -194,10 +194,10 @@ struct GestaltFieldEditorView: View {
             plist[key] = try PlistValueInfo.parse(valueText, as: kind)
             self.plist = plist
             manager.statusText = persist()
-                ? "\(key) diperbarui."
-                : "Gagal menyimpan \(key)."
+                ? String(format: l10n.tr("fields.status.updated"), key)
+                : String(format: l10n.tr("fields.status.saveFailed"), key)
         } catch {
-            manager.statusText = "Gagal: \(error.localizedDescription)"
+            manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
         }
     }
 
@@ -209,10 +209,10 @@ struct GestaltFieldEditorView: View {
             plist["CacheExtra"] = cacheExtra
             self.plist = plist
             manager.statusText = persist()
-                ? "Field \(key) ditambahkan."
-                : "Gagal menyimpan \(key)."
+                ? String(format: l10n.tr("fields.status.added"), key)
+                : String(format: l10n.tr("fields.status.saveFailed"), key)
         } catch {
-            manager.statusText = "Gagal: \(error.localizedDescription)"
+            manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
         }
     }
 
@@ -222,7 +222,9 @@ struct GestaltFieldEditorView: View {
         cacheExtra.removeValue(forKey: key)
         plist["CacheExtra"] = cacheExtra
         self.plist = plist
-        manager.statusText = persist() ? "\(key) dihapus." : "Gagal menghapus \(key)."
+        manager.statusText = persist()
+            ? String(format: l10n.tr("fields.status.deleted"), key)
+            : String(format: l10n.tr("fields.status.deleteFailed"), key)
     }
 }
 
@@ -237,13 +239,13 @@ private struct CacheDataView: View {
         ScrollView(.vertical) {
             VStack(alignment: .leading, spacing: 12) {
                 if let data = cacheData {
-                    Text("Hex (512 byte pertama)")
+                    Text(l10n.tr("fields.hexPreview"))
                         .font(.headline)
                     Text(Self.hexDump(data, limit: 512))
                         .font(.system(size: 10, design: .monospaced))
                         .textSelection(.enabled)
 
-                    Text("Base64 (lengkap)")
+                    Text(l10n.tr("fields.base64Full"))
                         .font(.headline)
                     Text(data.base64EncodedString())
                         .font(.system(size: 9, design: .monospaced))
@@ -271,7 +273,7 @@ private struct CacheDataView: View {
             lines.append(String(format: "%08x", offset) + "  " + paddedHex + "  " + ascii)
         }
         if data.count > limit {
-            lines.append("... (+\(data.count - limit) byte lagi, lihat Base64)")
+            lines.append("... (+\(data.count - limit) more bytes; see Base64)")
         }
         return lines.joined(separator: "\n")
     }
@@ -328,7 +330,7 @@ private struct ValueEditor: View {
                         .font(.system(.footnote, design: .monospaced))
                         .frame(minHeight: 160)
                 } else {
-                    TextField("Nilai", text: $text)
+                    TextField(l10n.tr("fields.valuePlaceholder"), text: $text)
                         .font(.system(.body, design: .monospaced))
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
@@ -357,19 +359,19 @@ private struct AddCacheExtraFieldView: View {
         NavigationView {
             Form {
                 Section(header: Text(l10n.tr("fields.newKeyHeader"))) {
-                    TextField("Key", text: $key)
+                    TextField(l10n.tr("fields.keyPlaceholder"), text: $key)
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                 }
                 Section(header: Text(l10n.tr("fields.typeHeader"))) {
-                    Picker("Tipe", selection: $kind) {
+                    Picker(l10n.tr("fields.typeHeader"), selection: $kind) {
                         ForEach(PlistValueKind.allCases) { k in
                             Text(k.label).tag(k)
                         }
                     }
                 }
                 Section(header: Text(l10n.tr("fields.valueHeader"))) {
-                    TextField("Nilai", text: $valueText)
+                    TextField(l10n.tr("fields.valuePlaceholder"), text: $valueText)
                         .font(.system(.body, design: .monospaced))
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
