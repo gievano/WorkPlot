@@ -102,7 +102,7 @@ Require ($bridgingHeader -match '#import "CmgBridge\.h"') "The bridging header m
 
 $exploitManager = Read-ProjectFile "WorkPlot\Managers\ExploitManager.swift"
 Require ($exploitManager -match 'try access\.connect\(\)') "System access check must let GestaltAccess pick the method (no fatal preflight)"
-Require ($exploitManager -match 'exploitMethod = access\.activeMethod\(\)') "The manager must publish which method provided access"
+Require ($exploitManager -match 'exploitMethod = access\.activeMethod') "The manager must publish which method provided access"
 Require ($exploitManager -match 'showsSigningHint') "A rewritten bundle identifier must surface the signing hint"
 Require ($exploitManager -match 'captureStockSnapshotIfNeeded') "First successful connect must capture the stock snapshot"
 

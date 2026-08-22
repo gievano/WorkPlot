@@ -72,10 +72,10 @@ struct BackupRestoreManagerView: View {
                                 try RDARFix.restoreOriginalCanvas()
                                 manager.statusText = "\(l10n.tr("rdar.restoreCanvas")) OK. \(l10n.tr("restart.rec.title"))"
                                 manager.respringRequested = true
-                                SessionLogger.log("rdar original canvas restored")
+                                SessionLogger.shared.log("rdar original canvas restored")
                             } catch {
                                 manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
-                                SessionLogger.log("rdar canvas restore failed: \(error.localizedDescription)")
+                                SessionLogger.shared.log("rdar canvas restore failed: \(error.localizedDescription)")
                             }
                         } label: {
                             Label(l10n.tr("rdar.restoreCanvas"), systemImage: "photo")
