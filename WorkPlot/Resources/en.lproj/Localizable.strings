@@ -163,3 +163,8 @@
 "pb.builtin.header" = "Ready-to-Use Wallpapers";
 "pb.builtin.install" = "Install";
 "pb.builtin.none" = "No bundled wallpapers.";
+
+
+// Device gating
+"common.experimental" = "EXPERIMENTAL";
+"gestalt.deviceUnsupported" = "Not supported on this device.";

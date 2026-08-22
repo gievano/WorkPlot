@@ -50,19 +50,19 @@ struct GestaltPresetManagerView: View {
                         ForEach(GestaltTweakCategory.allCases) { category in
                             Section(header: Text(category.label)) {
                                 ForEach(tweaks(in: category)) { tweak in
-                                    Toggle(isOn: binding(for: tweak.id)) {
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            HStack(spacing: 4) {
-                                                Text(tweak.title)
-                                                if tweak.isRisky {
-                                                    Text(L10n.shared.tr("common.risky")).font(.caption2).bold()
-                                                        .foregroundColor(.red)
-                                                        .padding(.horizontal, 4).padding(.vertical, 1)
-                                                        .background(Color.red.opacity(0.15))
-                                                        .cornerRadius(4)
-                                                }
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        if tweak.isSupportedOnThisDevice {
+                                            Toggle(isOn: binding(for: tweak.id)) {
+                                                tweakLabel(tweak)
                                             }
-                                            Text(tweak.detail).font(.caption).foregroundColor(.secondary)
+                                        } else {
+                                            Toggle(isOn: .constant(false)) {
+                                                tweakLabel(tweak)
+                                            }
+                                            .disabled(true)
+                                            Text(L10n.shared.tr("gestalt.deviceUnsupported"))
+                                                .font(.caption2)
+                                                .foregroundColor(.secondary)
                                         }
                                     }
                                 }
@@ -96,6 +96,29 @@ struct GestaltPresetManagerView: View {
 
     private func tweaks(in category: GestaltTweakCategory) -> [GestaltTweakDefinition] {
         GestaltTweakCatalog.definitions.filter { $0.category == category }
+    }
+
+    private func tweakLabel(_ tweak: GestaltTweakDefinition) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            HStack(spacing: 4) {
+                Text(tweak.title)
+                if tweak.isRisky {
+                    Text(L10n.shared.tr("common.risky")).font(.caption2).bold()
+                        .foregroundColor(.red)
+                        .padding(.horizontal, 4).padding(.vertical, 1)
+                        .background(Color.red.opacity(0.15))
+                        .cornerRadius(4)
+                }
+                if tweak.isExperimental {
+                    Text(L10n.shared.tr("common.experimental")).font(.caption2).bold()
+                        .foregroundColor(.orange)
+                        .padding(.horizontal, 4).padding(.vertical, 1)
+                        .background(Color.orange.opacity(0.15))
+                        .cornerRadius(4)
+                }
+            }
+            Text(tweak.detail).font(.caption).foregroundColor(.secondary)
+        }
     }
 
     private func binding(for id: GestaltTweakID) -> Binding<Bool> {

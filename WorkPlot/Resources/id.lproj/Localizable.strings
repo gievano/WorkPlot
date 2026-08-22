@@ -163,3 +163,8 @@
 "pb.builtin.header" = "Wallpaper Siap Pakai";
 "pb.builtin.install" = "Pasang";
 "pb.builtin.none" = "Tidak ada wallpaper bawaan.";
+
+
+// Device gating
+"common.experimental" = "EKSPERIMENTAL";
+"gestalt.deviceUnsupported" = "Tidak didukung di perangkat ini.";
