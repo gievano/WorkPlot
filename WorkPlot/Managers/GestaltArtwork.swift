@@ -6,7 +6,7 @@ enum GestaltArtworkError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .artworkDictionaryMissing:
-            "MobileGestalt tidak punya dictionary ArtworkDevice, jadi Dynamic Island atau nama model tidak bisa diubah."
+            L10n.shared.tr("artwork.error.noDict")
         }
     }
 }

@@ -176,7 +176,7 @@ enum AIRegionApplier {
     @discardableResult
     static func apply(to plist: inout [String: Any]) throws -> AIRegionConfiguration {
         guard var cacheExtra = plist["CacheExtra"] as? [String: Any] else {
-            throw PlistValueError.invalid("MobileGestalt tidak punya CacheExtra.")
+            throw PlistValueError.invalid("MobileGestalt has no CacheExtra.")
         }
 
         let configuration = AIRegionConfiguration.resolve(for: plist)

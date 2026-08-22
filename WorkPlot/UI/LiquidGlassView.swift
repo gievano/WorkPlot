@@ -30,7 +30,7 @@ struct LiquidGlassView: View {
                         }
 
                         Section(header: Text(L10n.shared.tr("lg.renderMode"))) {
-                            Picker("Mode", selection: $mode) {
+                            Picker(L10n.shared.tr("lg.renderMode"), selection: $mode) {
                                 ForEach(LiquidGlassMode.allCases) { m in
                                     Text(m.label).tag(m)
                                 }
@@ -67,7 +67,7 @@ struct LiquidGlassView: View {
                     }
                 }
             }
-            .navigationTitle("Liquid Glass")
+            .navigationTitle(L10n.shared.tr("tab.liquidglass"))
             .workPlotScrollBackground()
             .alert(
                 L10n.shared.tr("restart.rec.title"),
@@ -111,7 +111,10 @@ struct LiquidGlassView: View {
             } catch {
                 DispatchQueue.main.async {
                     self.isApplying = false
-                    self.manager.statusText = "Gagal: \(error.localizedDescription)"
+                    self.manager.statusText = String(
+                        format: L10n.shared.tr("common.failPrefix"),
+                        error.localizedDescription
+                    )
                 }
             }
         }

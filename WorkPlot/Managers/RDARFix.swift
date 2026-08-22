@@ -22,13 +22,13 @@ struct RDARFix {
                       canvasHeight: Int) throws {
         try BadQueryLeaseScope.withLease(forPath: path) {
             guard let data = FileManager.default.contents(atPath: path) else {
-                throw RDARFixError(message: "Plist tidak dapat dibaca di \(path).")
+                throw RDARFixError(message: "The plist at \(path) could not be read.")
             }
 
             var format = PropertyListSerialization.PropertyListFormat.binary
             guard var plist = try? PropertyListSerialization.propertyList(
                 from: data, options: [], format: &format) as? [String: Any] else {
-                throw RDARFixError(message: "Isi plist bukan dictionary yang valid.")
+                throw RDARFixError(message: "The plist contents are not a valid dictionary.")
             }
 
             plist["canvas_width"] = canvasWidth
@@ -36,14 +36,14 @@ struct RDARFix {
 
             guard let outData = try? PropertyListSerialization.data(
                 fromPropertyList: plist, format: format, options: 0) else {
-                throw RDARFixError(message: "Gagal serialisasi plist.")
+                throw RDARFixError(message: "Failed to serialize the plist.")
             }
 
             try InodeWriter.writeInPlace(outData, to: path)
 
             guard let verification = FileManager.default.contents(atPath: path),
                   verification == outData else {
-                throw RDARFixError(message: "Verifikasi pasca-tulis gagal.")
+                throw RDARFixError(message: "Post-write verification failed.")
             }
         }
     }

@@ -49,7 +49,7 @@ struct PlistValueInfo {
 
         switch kind {
         case .string:
-            summary = text.isEmpty ? "(string kosong)" : text
+            summary = text.isEmpty ? "(empty string)" : text
         case .integer, .float, .boolean:
             summary = text
         case .data:
@@ -86,12 +86,12 @@ struct PlistValueInfo {
             return text
         case .integer:
             guard let value = Int64(trimmed) else {
-                throw PlistValueError.invalid("Bukan integer yang valid.")
+                throw PlistValueError.invalid("Not a valid integer.")
             }
             return NSNumber(value: value)
         case .float:
             guard let value = Double(trimmed) else {
-                throw PlistValueError.invalid("Bukan angka desimal yang valid.")
+                throw PlistValueError.invalid("Not a valid decimal number.")
             }
             return NSNumber(value: value)
         case .boolean:
@@ -101,11 +101,11 @@ struct PlistValueInfo {
             case "false", "0", "no":
                 return NSNumber(value: false)
             default:
-                throw PlistValueError.invalid("Isi true atau false.")
+                throw PlistValueError.invalid("Enter true or false.")
             }
         case .data:
             guard let data = Data(base64Encoded: trimmed) else {
-                throw PlistValueError.invalid("Bukan Base64 yang valid.")
+                throw PlistValueError.invalid("Not valid Base64.")
             }
             return data
         case .array:
@@ -128,7 +128,7 @@ struct PlistValueInfo {
         guard let data = text.data(using: .utf8),
               let object = try? JSONSerialization.jsonObject(with: data),
               object is T else {
-            throw PlistValueError.invalid("JSON tidak valid untuk tipe \(String(describing: T.self)).")
+            throw PlistValueError.invalid("Invalid JSON for type \(String(describing: T.self)).")
         }
         return object
     }
