@@ -168,3 +168,10 @@
 // Device gating
 "common.experimental" = "実験的";
 "gestalt.deviceUnsupported" = "このデバイスでは対応していません。";
+
+// Siri Mode (F1)
+"tweak.siriaimode.title" = "Siri AI モード (iOS 27)";
+"tweak.siriaimode.detail" = "SiriMode キー a3n5T9sFtyQ74NEp9ESxg = 2 を書き込み、iOS 27+ の Siri AI モードを有効にします。";
+"siriai.sirimode.header" = "Siri モード (iOS 27)";
+"siriai.sirimode.toggle" = "Siri AI モードを有効化";
+"siriai.sirimode.detail" = "CacheExtra キー a3n5T9sFtyQ74NEp9ESxg を 2 に設定します。無効化するとキーを削除します。Respring または再起動後に有効になります。";

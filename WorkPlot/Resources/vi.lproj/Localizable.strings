@@ -168,3 +168,10 @@
 // Device gating
 "common.experimental" = "THỬ NGHIỆM";
 "gestalt.deviceUnsupported" = "Không được hỗ trợ trên thiết bị này.";
+
+// Siri Mode (F1)
+"tweak.siriaimode.title" = "Chế độ Siri AI (iOS 27)";
+"tweak.siriaimode.detail" = "Ghi khóa SiriMode a3n5T9sFtyQ74NEp9ESxg = 2 để bật chế độ Siri AI trên iOS 27+.";
+"siriai.sirimode.header" = "Chế độ Siri (iOS 27)";
+"siriai.sirimode.toggle" = "Bật chế độ Siri AI";
+"siriai.sirimode.detail" = "Đặt khóa CacheExtra a3n5T9sFtyQ74NEp9ESxg thành 2; tắt sẽ xóa khóa này. Có hiệu lực sau khi Respring hoặc khởi động lại.";

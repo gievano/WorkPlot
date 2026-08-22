@@ -172,7 +172,12 @@ final class L10n: ObservableObject {
             "pb.builtin.install": "Install",
             "pb.builtin.none": "No bundled wallpapers.",
             "common.experimental": "EXPERIMENTAL",
-            "gestalt.deviceUnsupported": "Not supported on this device."
+            "gestalt.deviceUnsupported": "Not supported on this device.",
+            "tweak.siriaimode.title": "Siri AI Mode (iOS 27)",
+            "tweak.siriaimode.detail": "Writes SiriMode key a3n5T9sFtyQ74NEp9ESxg = 2 to enable the iOS 27+ Siri AI mode.",
+            "siriai.sirimode.header": "Siri Mode (iOS 27)",
+            "siriai.sirimode.toggle": "Enable Siri AI Mode",
+            "siriai.sirimode.detail": "Sets CacheExtra key a3n5T9sFtyQ74NEp9ESxg to 2. Disabling removes the key again. Takes effect after respring or restart."
         ],
         .indonesian: [
             "tab.status": "Status",
@@ -261,7 +266,12 @@ final class L10n: ObservableObject {
             "pb.builtin.install": "Pasang",
             "pb.builtin.none": "Tidak ada wallpaper bawaan.",
             "common.experimental": "EKSPERIMENTAL",
-            "gestalt.deviceUnsupported": "Tidak didukung di perangkat ini."
+            "gestalt.deviceUnsupported": "Tidak didukung di perangkat ini.",
+            "tweak.siriaimode.title": "Siri AI Mode (iOS 27)",
+            "tweak.siriaimode.detail": "Menulis key SiriMode a3n5T9sFtyQ74NEp9ESxg = 2 untuk mengaktifkan mode Siri AI iOS 27+.",
+            "siriai.sirimode.header": "Siri Mode (iOS 27)",
+            "siriai.sirimode.toggle": "Aktifkan Siri AI Mode",
+            "siriai.sirimode.detail": "Mengubah key CacheExtra a3n5T9sFtyQ74NEp9ESxg menjadi 2. Menonaktifkan akan menghapus key tersebut. Aktif setelah respring atau restart."
         ],
         .chinese: [
             "tab.status": "状态",
@@ -350,7 +360,12 @@ final class L10n: ObservableObject {
             "pb.builtin.install": "安装",
             "pb.builtin.none": "暂无内置壁纸。",
             "common.experimental": "实验性",
-            "gestalt.deviceUnsupported": "此设备不支持。"
+            "gestalt.deviceUnsupported": "此设备不支持。",
+            "tweak.siriaimode.title": "Siri AI 模式 (iOS 27)",
+            "tweak.siriaimode.detail": "写入 SiriMode 键 a3n5T9sFtyQ74NEp9ESxg = 2 以启用 iOS 27+ 的 Siri AI 模式。",
+            "siriai.sirimode.header": "Siri 模式 (iOS 27)",
+            "siriai.sirimode.toggle": "启用 Siri AI 模式",
+            "siriai.sirimode.detail": "将 CacheExtra 键 a3n5T9sFtyQ74NEp9ESxg 设为 2；关闭时会移除该键。Respring 或重启后生效。"
         ],
         .japanese: [
             "tab.status": "ステータス",
@@ -439,7 +454,12 @@ final class L10n: ObservableObject {
             "pb.builtin.install": "インストール",
             "pb.builtin.none": "内蔵壁紙はありません。",
             "common.experimental": "実験的",
-            "gestalt.deviceUnsupported": "このデバイスでは対応していません。"
+            "gestalt.deviceUnsupported": "このデバイスでは対応していません。",
+            "tweak.siriaimode.title": "Siri AI モード (iOS 27)",
+            "tweak.siriaimode.detail": "SiriMode キー a3n5T9sFtyQ74NEp9ESxg = 2 を書き込み、iOS 27+ の Siri AI モードを有効にします。",
+            "siriai.sirimode.header": "Siri モード (iOS 27)",
+            "siriai.sirimode.toggle": "Siri AI モードを有効化",
+            "siriai.sirimode.detail": "CacheExtra キー a3n5T9sFtyQ74NEp9ESxg を 2 に設定します。無効化するとキーを削除します。Respring または再起動後に有効になります。"
         ],
         .russian: [
             "tab.status": "Статус",
@@ -528,7 +548,12 @@ final class L10n: ObservableObject {
             "pb.builtin.install": "Установить",
             "pb.builtin.none": "Встроенных обоев нет.",
             "common.experimental": "ЭКСПЕРИМЕНТАЛЬНО",
-            "gestalt.deviceUnsupported": "Не поддерживается на этом устройстве."
+            "gestalt.deviceUnsupported": "Не поддерживается на этом устройстве.",
+            "tweak.siriaimode.title": "Режим Siri AI (iOS 27)",
+            "tweak.siriaimode.detail": "Записывает ключ SiriMode a3n5T9sFtyQ74NEp9ESxg = 2 для включения режима Siri AI в iOS 27+.",
+            "siriai.sirimode.header": "Режим Siri (iOS 27)",
+            "siriai.sirimode.toggle": "Включить режим Siri AI",
+            "siriai.sirimode.detail": "Устанавливает ключ CacheExtra a3n5T9sFtyQ74NEp9ESxg в 2; при отключении ключ удаляется. Вступает в силу после Respring или перезагрузки."
         ],
         .vietnamese: [
             "tab.status": "Trạng thái",
@@ -617,7 +642,12 @@ final class L10n: ObservableObject {
             "pb.builtin.install": "Cài đặt",
             "pb.builtin.none": "Chưa có hình nền tích hợp.",
             "common.experimental": "THỬ NGHIỆM",
-            "gestalt.deviceUnsupported": "Không được hỗ trợ trên thiết bị này."
+            "gestalt.deviceUnsupported": "Không được hỗ trợ trên thiết bị này.",
+            "tweak.siriaimode.title": "Chế độ Siri AI (iOS 27)",
+            "tweak.siriaimode.detail": "Ghi khóa SiriMode a3n5T9sFtyQ74NEp9ESxg = 2 để bật chế độ Siri AI trên iOS 27+.",
+            "siriai.sirimode.header": "Chế độ Siri (iOS 27)",
+            "siriai.sirimode.toggle": "Bật chế độ Siri AI",
+            "siriai.sirimode.detail": "Đặt khóa CacheExtra a3n5T9sFtyQ74NEp9ESxg thành 2; tắt sẽ xóa khóa này. Có hiệu lực sau khi Respring hoặc khởi động lại."
         ]
     ]
 }
