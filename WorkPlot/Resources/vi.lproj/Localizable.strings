@@ -163,3 +163,8 @@
 "pb.builtin.header" = "Hình nền sẵn dùng";
 "pb.builtin.install" = "Cài đặt";
 "pb.builtin.none" = "Chưa có hình nền tích hợp.";
+
+
+// Device gating
+"common.experimental" = "THỬ NGHIỆM";
+"gestalt.deviceUnsupported" = "Không được hỗ trợ trên thiết bị này.";

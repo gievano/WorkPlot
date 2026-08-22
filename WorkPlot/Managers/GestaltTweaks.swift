@@ -19,13 +19,24 @@ enum GestaltTweakCategory: String, CaseIterable, Identifiable {
 enum GestaltTweakID: String, CaseIterable, Identifiable {
     case supportsDynamicIsland, alwaysOnDisplay, alwaysOnDisplayVibrancy
     case aiRegionUS
+    case siriMode
     case disableParallax, enableLiquidGlassLowPerformance, disableLiquidGlassLowPerformance
-    case bootChime, chargeLimit, tapToWake, cameraButton
+    case colorPaletteGraphics
+    case bootChime, chargeLimit, tapToWake, cameraButton, cameraZoom2x
     case pencil, actionButton, collisionSOS
     case stageManager, iPadOS, iPadApps
     case internalInstall, internalStorage, securityResearchDevice
 
     var id: String { rawValue }
+}
+
+enum GestaltDeviceGate {
+    /// Marketing iPhone 13 series and newer (machine family >= 14).
+    case iphone13OrLater
+    /// Marketing iPhone 13 series and older (machine family <= 14).
+    case iphone13OrBelow
+    /// Devices below the iPhone 15 series (12MP-era cameras).
+    case belowIPhone15
 }
 
 struct GestaltTweakDefinition: Identifiable {
@@ -35,11 +46,18 @@ struct GestaltTweakDefinition: Identifiable {
     let detail: String
     let values: [String: Any]
     var isRisky = false
+    var isExperimental = false
+    var deviceGate: GestaltDeviceGate? = nil
+
+    var isSupportedOnThisDevice: Bool {
+        DeviceCapability.supports(deviceGate)
+    }
 }
 
 enum GestaltTweakCatalog {
     static let definitions: [GestaltTweakDefinition] = [
         .init(id: .aiRegionUS, category: .region, title: "AI Region: US (LL/A)", detail: "Spoofs US region untuk Apple Intelligence; bisa spoof model device.", values: [:], isRisky: true),
+        .init(id: .siriMode, category: .region, title: L10n.shared.tr("tweak.siriaimode.title"), detail: L10n.shared.tr("tweak.siriaimode.detail"), values: ["a3n5T9sFtyQ74NEp9ESxg": 2]),
 
         .init(id: .supportsDynamicIsland, category: .display, title: "Dynamic Island", detail: "Enable Dynamic Island capability.", values: ["YlEtTtHlNesRBMal1CqRaA": 1]),
         .init(id: .alwaysOnDisplay, category: .display, title: "Always-On Display", detail: "May increase burn-in risk on unsupported devices.", values: ["2OOJf1VhaM7NxfRok3HbWQ": 1, "j8/Omm6s1lsmTDFsXjsBfA": 1], isRisky: true),

@@ -170,7 +170,9 @@ final class L10n: ObservableObject {
             "lg.toggle.disable": "Disable Liquid Glass",
             "pb.builtin.header": "Ready-to-Use Wallpapers",
             "pb.builtin.install": "Install",
-            "pb.builtin.none": "No bundled wallpapers."
+            "pb.builtin.none": "No bundled wallpapers.",
+            "common.experimental": "EXPERIMENTAL",
+            "gestalt.deviceUnsupported": "Not supported on this device."
         ],
         .indonesian: [
             "tab.status": "Status",
@@ -257,7 +259,9 @@ final class L10n: ObservableObject {
             "lg.toggle.disable": "Matikan Liquid Glass",
             "pb.builtin.header": "Wallpaper Siap Pakai",
             "pb.builtin.install": "Pasang",
-            "pb.builtin.none": "Tidak ada wallpaper bawaan."
+            "pb.builtin.none": "Tidak ada wallpaper bawaan.",
+            "common.experimental": "EKSPERIMENTAL",
+            "gestalt.deviceUnsupported": "Tidak didukung di perangkat ini."
         ],
         .chinese: [
             "tab.status": "状态",
@@ -344,7 +348,9 @@ final class L10n: ObservableObject {
             "lg.toggle.disable": "禁用 Liquid Glass",
             "pb.builtin.header": "内置壁纸",
             "pb.builtin.install": "安装",
-            "pb.builtin.none": "暂无内置壁纸。"
+            "pb.builtin.none": "暂无内置壁纸。",
+            "common.experimental": "实验性",
+            "gestalt.deviceUnsupported": "此设备不支持。"
         ],
         .japanese: [
             "tab.status": "ステータス",
@@ -431,7 +437,9 @@ final class L10n: ObservableObject {
             "lg.toggle.disable": "Liquid Glass を無効化",
             "pb.builtin.header": "すぐに使える壁紙",
             "pb.builtin.install": "インストール",
-            "pb.builtin.none": "内蔵壁紙はありません。"
+            "pb.builtin.none": "内蔵壁紙はありません。",
+            "common.experimental": "実験的",
+            "gestalt.deviceUnsupported": "このデバイスでは対応していません。"
         ],
         .russian: [
             "tab.status": "Статус",
@@ -518,7 +526,9 @@ final class L10n: ObservableObject {
             "lg.toggle.disable": "Отключить Liquid Glass",
             "pb.builtin.header": "Готовые обои",
             "pb.builtin.install": "Установить",
-            "pb.builtin.none": "Встроенных обоев нет."
+            "pb.builtin.none": "Встроенных обоев нет.",
+            "common.experimental": "ЭКСПЕРИМЕНТАЛЬНО",
+            "gestalt.deviceUnsupported": "Не поддерживается на этом устройстве."
         ],
         .vietnamese: [
             "tab.status": "Trạng thái",
@@ -605,7 +615,9 @@ final class L10n: ObservableObject {
             "lg.toggle.disable": "Tắt Liquid Glass",
             "pb.builtin.header": "Hình nền sẵn dùng",
             "pb.builtin.install": "Cài đặt",
-            "pb.builtin.none": "Chưa có hình nền tích hợp."
+            "pb.builtin.none": "Chưa có hình nền tích hợp.",
+            "common.experimental": "THỬ NGHIỆM",
+            "gestalt.deviceUnsupported": "Không được hỗ trợ trên thiết bị này."
         ]
     ]
 }

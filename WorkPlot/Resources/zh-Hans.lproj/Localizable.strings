@@ -163,3 +163,8 @@
 "pb.builtin.header" = "内置壁纸";
 "pb.builtin.install" = "安装";
 "pb.builtin.none" = "暂无内置壁纸。";
+
+
+// Device gating
+"common.experimental" = "实验性";
+"gestalt.deviceUnsupported" = "此设备不支持。";

@@ -163,3 +163,8 @@
 "pb.builtin.header" = "Готовые обои";
 "pb.builtin.install" = "Установить";
 "pb.builtin.none" = "Встроенных обоев нет.";
+
+
+// Device gating
+"common.experimental" = "ЭКСПЕРИМЕНТАЛЬНО";
+"gestalt.deviceUnsupported" = "Не поддерживается на этом устройстве.";

@@ -163,3 +163,8 @@
 "pb.builtin.header" = "すぐに使える壁紙";
 "pb.builtin.install" = "インストール";
 "pb.builtin.none" = "内蔵壁紙はありません。";
+
+
+// Device gating
+"common.experimental" = "実験的";
+"gestalt.deviceUnsupported" = "このデバイスでは対応していません。";
