@@ -97,9 +97,9 @@ enum SafeFileOperations {
             throw SafeFileOperationsError.invalidName(rawName)
         }
 
-        var isDirectory: ObjCBool = false
-        guard FileManager.default.fileExists(atPath: directory.path, isDirectory: &isDirectory),
-              isDirectory.boolValue else {
+        var directoryFlag: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: directory.path, isDirectory: &directoryFlag),
+              directoryFlag.boolValue else {
             throw SafeFileOperationsError.invalidDirectory(directory.path)
         }
 
