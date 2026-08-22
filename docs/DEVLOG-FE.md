@@ -497,3 +497,11 @@
 **The Reasoning:** ContainerManager menolak query untuk file yang tidak exist, sehingga probing kandidat adalah cara paling murah menemukan lokasi yang benar per build tanpa asumsi keras. Patch package sengaja pakai folder+manifest.json alih-alih ZIP agar tidak menambah dependency; rollback idempotent mengikuti pola backup-pertama-stock seperti RDAR.
 
 **The Tech Debt:** Belum ada bukti device bahwa salah satu kandidat RDAR benar-benar exist di iOS 27 beta user (kalau ketiganya gagal, langkah berikutnya: discovery dinamis /var/containers/Data/System ala FilzaSlop). Rollback package belum menghapus originals. Katalog online wallpaper (Nugget-Wallpapers JSON) ditunda ke sesi berikutnya.
+
+## 2026-08-23 (dini hari) - Merge PR #28 & #29, Guard Traversal
+
+**The Change:** PR #28 (RDAR multi-candidate + wallpaper journal + patch packages) dan #29 (guard ".." pada rule path manifest) squash-merged ke main; kedua CI hijau dengan artifact WorkPlot-IPA. Branch feat di-realign ke origin/main via reset --hard setelah tiap squash-merge untuk menghindari konflik historis berulang.
+
+**The Reasoning:** Squash-merge meninggalkan histori branch yang tumpang tindih dengan main sehingga PR berikutnya selalu CONFLICTING; pola realign setelah merge menyelesaikan itu permanen. Guard traversal ditambahkan setelah review mandiri kode agen: rule.path "/../../x" lolos validasi lama dan bisa keluar container/originals.
+
+**The Tech Debt:** Katalog online Nugget-Wallpapers (F3b) belum dikerjakan; Sprint 3 (App Containers root discovery ala FilzaSlop, hex/sqlite viewer, cache cleaner, onboarding+update checker) masih pending. Semua fitur malam ini butuh validasi device user: RDAR harus mencari plist di salah satu 3 kandidat; patch package end-to-end; journal reset.
