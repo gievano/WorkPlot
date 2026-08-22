@@ -182,7 +182,7 @@
 
 // Bảng màu (F3, thử nghiệm)
 "tweak.colorpalette.title" = "Bảng màu (phong cách iPhone 16)";
-"tweak.colorpalette.detail" = "THỬ NGHIỆM: cố gắng mở khóa bảng màu iPhone 16 qua CameraLiveEffectsCapability. Chỉ hiển thị trên iPhone 13 trở lên; khóa chính xác chưa được cộng đồng xác minh.";
+"tweak.colorpalette.detail" = "THỬ NGHIỆM: chưa có khóa Color Palette nào được cộng đồng xác nhận. Sẽ ghi một bộ khóa ứng viên (CameraLiveEffectsCapability + apple-graphics-performance-tier = 1) từ các khóa chính thức gần nhất; hiệu ứng hình ảnh không được đảm bảo.";
 
 // Zoom 2x camera (F4, thử nghiệm)
 "tweak.zoom2x.title" = "Công tắc zoom 2x camera";

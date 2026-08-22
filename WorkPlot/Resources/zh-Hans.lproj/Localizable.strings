@@ -182,7 +182,7 @@
 
 // 色彩调色板 (F3，实验性)
 "tweak.colorpalette.title" = "色彩调色板 (iPhone 16 风格)";
-"tweak.colorpalette.detail" = "实验性：尝试通过 CameraLiveEffectsCapability 解锁 iPhone 16 的色彩调色板。仅在 iPhone 13 及更新机型上显示；确切键值尚未经社区验证。";
+"tweak.colorpalette.detail" = "实验性功能：目前还没有社区验证的 Color Palette 键。会写入一组候选键（CameraLiveEffectsCapability + apple-graphics-performance-tier = 1，均为最接近的官方键）；视觉效果不保证。";
 
 // 相机 2 倍变焦 (F4，实验性)
 "tweak.zoom2x.title" = "相机 2 倍变焦开关";
