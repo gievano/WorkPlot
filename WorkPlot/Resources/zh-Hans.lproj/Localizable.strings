@@ -247,3 +247,20 @@
 "siriai.modelkey.detail" = "将键 h9jDsbgj7xIVeIQ8S3/X3Q 写入选定的伪装目标。关闭时会删除该键。";
 "siriai.eligibility.toggle" = "强制 Apple Intelligence 资格";
 "siriai.eligibility.detail" = "仅写入键 A62OafQ85EJAiiqKn4agtg = 1，不改动其他键。";
+
+// Restart escalation
+"restart.options.title" = "想用哪种方式应用更改？";
+"restart.options.message" = "轻量调整只需注销（respring）。机型伪装、Siri AI 模式和 Color Palette 需要更深层的重启。";
+"restart.action.userspace" = "重启用户空间（推荐）";
+"restart.action.full" = "完整重启";
+"restart.limit.title" = "应用限制";
+"restart.limit.message" = "本应用只能通过 bad_query 写入文件 - 无法在沙盒中运行 launchctl 或其他进程，因此用户空间/完整重启需按以下步骤手动完成。";
+"restart.guide.userspace.title" = "用户空间重启指南";
+"restart.guide.userspace.step1" = "未越狱的原版 iOS 没有仅重启用户空间的手势；最接近的手动方法是关机后再开机。";
+"restart.guide.userspace.step2" = "通过「设置 > 通用 > 关机」关闭设备。";
+"restart.guide.userspace.step3" = "按住侧边按钮直到出现 Apple 标志即可重新开机。";
+"restart.guide.full.title" = "完整重启指南";
+"restart.guide.full.step1" = "按下并松开音量加按钮。";
+"restart.guide.full.step2" = "按下并松开音量减按钮。";
+"restart.guide.full.step3" = "长按侧边按钮，直到屏幕变黑并出现 Apple 标志。";
+"restart.guide.full.step4" = "等待设备完成开机；MobileGestalt 调整会在启动时重新读取。";

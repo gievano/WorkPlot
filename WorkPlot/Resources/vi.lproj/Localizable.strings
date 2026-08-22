@@ -247,3 +247,20 @@
 "siriai.modelkey.detail" = "Ghi khóa h9jDsbgj7xIVeIQ8S3/X3Q bằng mục tiêu giả lập đã chọn. Tắt sẽ xóa khóa.";
 "siriai.eligibility.toggle" = "Ép điều kiện Apple Intelligence";
 "siriai.eligibility.detail" = "Chỉ ghi khóa A62OafQ85EJAiiqKn4agtg = 1, không đụng đến khóa khác.";
+
+// Restart escalation
+"restart.options.title" = "Bạn muốn áp dụng thay đổi theo cách nào?";
+"restart.options.message" = "Respring đủ cho tinh chỉnh nhẹ. Giả lập máy, chế độ Siri AI và Color Palette cần khởi động sâu hơn.";
+"restart.action.userspace" = "Khởi động lại Userspace (Đề xuất)";
+"restart.action.full" = "Khởi động lại toàn bộ";
+"restart.limit.title" = "Giới hạn của ứng dụng";
+"restart.limit.message" = "Ứng dụng chỉ ghi được tệp qua bad_query - không thể chạy launchctl hay tiến trình nào khác từ sandbox, nên khởi động lại userspace/toàn bộ phải làm thủ công theo các bước dưới đây.";
+"restart.guide.userspace.title" = "Hướng dẫn khởi động lại Userspace";
+"restart.guide.userspace.step1" = "iOS gốc chưa jailbreak không có cú chỉ riêng cho việc khởi động lại userspace; cách thủ công gần nhất là tắt máy rồi bật lại.";
+"restart.guide.userspace.step2" = "Tắt máy qua Cài đặt > Chung > Tắt máy.";
+"restart.guide.userspace.step3" = "Bật lại bằng cách giữ nút bên cho đến khi logo Apple hiện ra.";
+"restart.guide.full.title" = "Hướng dẫn khởi động lại toàn bộ";
+"restart.guide.full.step1" = "Nhấn và thả nút tăng âm lượng.";
+"restart.guide.full.step2" = "Nhấn và thả nút giảm âm lượng.";
+"restart.guide.full.step3" = "Giữ nút bên cho đến khi màn hình tắt và logo Apple hiện ra.";
+"restart.guide.full.step4" = "Chờ máy khởi động xong; các tinh chỉnh MobileGestalt được đọc lại lúc khởi động.";
