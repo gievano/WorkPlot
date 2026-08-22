@@ -195,7 +195,7 @@ struct FilePatchWorkspaceView: View {
         let visibleEntries = searchText.isEmpty
             ? entries
             : entries.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
-        List {
+        return List {
             dangerSection
 
             Section {
