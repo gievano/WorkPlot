@@ -61,17 +61,26 @@ enum FileBrowserError: LocalizedError {
     var errorDescription: String? {
         let l10n = L10n.shared
         switch self {
-        case .listingFailed(let d): "\(l10n.tr("fp.error.list")) \(d)"
-        case .readFailed(let d): "\(l10n.tr("fp.error.read")) \(d)"
-        case .writeFailed(let d): "\(l10n.tr("fp.error.write")) \(d)"
-        case .verifyFailed(let d): "\(l10n.tr("fp.error.verify")) \(d)"
-        case .deleteFailed(let d): "\(l10n.tr("fp.error.delete")) \(d)"
-        case .renameFailed(let d): "\(l10n.tr("fp.error.rename")) \(d)"
-        case .plistParseFailed(let d): "\(l10n.tr("fp.error.plist")) \(d)"
-        case .folderNotEmpty(let d): "\(l10n.tr("fp.error.notempty")) \(d)"
-        case .nameInvalid(let d): "\(l10n.tr("fp.error.name")) \(d)"
+        case .listingFailed(let d):
+            return "\(l10n.tr("fp.error.list")) \(d)"
+        case .readFailed(let d):
+            return "\(l10n.tr("fp.error.read")) \(d)"
+        case .writeFailed(let d):
+            return "\(l10n.tr("fp.error.write")) \(d)"
+        case .verifyFailed(let d):
+            return "\(l10n.tr("fp.error.verify")) \(d)"
+        case .deleteFailed(let d):
+            return "\(l10n.tr("fp.error.delete")) \(d)"
+        case .renameFailed(let d):
+            return "\(l10n.tr("fp.error.rename")) \(d)"
+        case .plistParseFailed(let d):
+            return "\(l10n.tr("fp.error.plist")) \(d)"
+        case .folderNotEmpty(let d):
+            return "\(l10n.tr("fp.error.notempty")) \(d)"
+        case .nameInvalid(let d):
+            return "\(l10n.tr("fp.error.name")) \(d)"
         case .osUnsupported(let build):
-            String(format: l10n.tr("fp.oswarning"), build.isEmpty ? "?" : build)
+            return String(format: l10n.tr("fp.oswarning"), build.isEmpty ? "?" : build)
         }
     }
 }
