@@ -318,7 +318,8 @@ enum PatchPackageStore {
             guard !rule.bundleID.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                 throw PatchPackageError.manifestInvalid("rule bundleID must not be empty")
             }
-            guard rule.path.hasPrefix("/"), rule.path.count > 1, !rule.path.hasSuffix("/") else {
+            guard rule.path.hasPrefix("/"), rule.path.count > 1, !rule.path.hasSuffix("/"),
+                  !rule.path.contains("..") else {
                 throw PatchPackageError.manifestInvalid("rule path must be absolute: \(rule.path)")
             }
         }
