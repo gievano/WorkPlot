@@ -24,6 +24,9 @@ struct MoreMenuView: View {
                 }
 
                 Section {
+                    NavigationLink { SessionLogView() } label: {
+                        Label(l10n.tr("sessionlog.title"), systemImage: "scroll.text.fill")
+                    }
                     Button {
                         showIconSwitcher = true
                     } label: {

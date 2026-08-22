@@ -59,6 +59,29 @@ struct BackupRestoreManagerView: View {
                         .disabled(!manager.sandboxGranted)
 
                         Button {
+                            if let stock = manager.backups.first(where: { $0.name == "Stock Snapshot" }) {
+                                backupPendingRestore = stock
+                            }
+                        } label: {
+                            Label(l10n.tr("backup.revertStock"), systemImage: "arrow.uturn.backward.circle")
+                        }
+                        .disabled(!manager.sandboxGranted || !manager.backups.contains { $0.name == "Stock Snapshot" })
+
+                        Button {
+                            do {
+                                try RDARFix.restoreOriginalCanvas()
+                                manager.statusText = "\(l10n.tr("rdar.restoreCanvas")) OK. \(l10n.tr("restart.rec.title"))"
+                                manager.respringRequested = true
+                                SessionLogger.shared.log("rdar original canvas restored")
+                            } catch {
+                                manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
+                                SessionLogger.shared.log("rdar canvas restore failed: \(error.localizedDescription)")
+                            }
+                        } label: {
+                            Label(l10n.tr("rdar.restoreCanvas"), systemImage: "photo")
+                        }
+
+                        Button {
                             isShowingImporter = true
                         } label: {
                             Label(l10n.tr("backup.importMenu"), systemImage: "square.and.arrow.down")

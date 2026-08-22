@@ -65,12 +65,12 @@ struct GestaltTweakDefinition: Identifiable {
 enum GestaltTweakCatalog {
     static let definitions: [GestaltTweakDefinition] = [
         .init(id: .aiRegionUS, category: .region, title: L10n.shared.tr("tweak.airegion.title"), detail: L10n.shared.tr("tweak.airegion.detail"), values: [:], isRisky: true),
-        .init(id: .siriMode, category: .region, title: L10n.shared.tr("tweak.siriaimode.title"), detail: L10n.shared.tr("tweak.siriaimode.detail"), values: ["a3n5T9sFtyQ74NEp9ESxg": 2]),
+        .init(id: .siriMode, category: .region, title: L10n.shared.tr("tweak.siriaimode.title"), detail: L10n.shared.tr("tweak.siriaimode.detail"), values: ["a3n5T9sFtlyQ74NEp9ESxg": 2]),
 
         .init(id: .supportsDynamicIsland, category: .display, title: L10n.shared.tr("tweak.dynamicisland.title"), detail: L10n.shared.tr("tweak.dynamicisland.detail"), values: ["YlEtTtHlNesRBMal1CqRaA": 1]),
         .init(id: .alwaysOnDisplay, category: .display, title: L10n.shared.tr("tweak.aod.title"), detail: L10n.shared.tr("tweak.aod.detail"), values: ["2OOJf1VhaM7NxfRok3HbWQ": 1, "j8/Omm6s1lsmTDFsXjsBfA": 1], isRisky: true),
         .init(id: .alwaysOnDisplayVibrancy, category: .display, title: L10n.shared.tr("tweak.aodvibrancy.title"), detail: L10n.shared.tr("tweak.aodvibrancy.detail"), values: ["ykpu7qyhqFweVMKtxNylWA": 1]),
-        .init(id: .disableParallax, category: .display, title: L10n.shared.tr("tweak.parallax.title"), detail: L10n.shared.tr("tweak.parallax.detail"), values: ["UIParallaxCapability": 0]),
+        .init(id: .disableParallax, category: .display, title: L10n.shared.tr("tweak.parallax.title"), detail: L10n.shared.tr("tweak.parallax.detail"), values: ["mmu76v66k1dAtghToInT8g": 0]),
         // F3 riset ulang (The Apple Wiki + Nugget/GestaltEdit): TIDAK ada
         // key CacheExtra terverifikasi komunitas untuk Color Palette. Key
         // lama (03hWmMtMs+4nzama4/PzHQ = CameraLiveEffectsCapability,

@@ -169,10 +169,10 @@
 
 // Siri Mode (F1)
 "tweak.siriaimode.title" = "Siri AI Mode (iOS 27)";
-"tweak.siriaimode.detail" = "Writes SiriMode key a3n5T9sFtyQ74NEp9ESxg = 2 to enable the iOS 27+ Siri AI mode.";
+"tweak.siriaimode.detail" = "Writes SiriMode key a3n5T9sFtlyQ74NEp9ESxg = 2 to enable the iOS 27+ Siri AI mode.";
 "siriai.sirimode.header" = "Siri Mode (iOS 27)";
 "siriai.sirimode.toggle" = "Enable Siri AI Mode";
-"siriai.sirimode.detail" = "Sets CacheExtra key a3n5T9sFtyQ74NEp9ESxg to 2. Disabling removes the key again. Takes effect after respring or restart.";
+"siriai.sirimode.detail" = "Sets CacheExtra key a3n5T9sFtlyQ74NEp9ESxg to 2. Disabling removes the key again. Takes effect after respring or restart.";
 
 // Siri in Camera (F2, experimental)
 "siriai.siricam.header" = "Siri in Camera";
@@ -371,3 +371,19 @@
 "tweak.internalstorage.detail" = "Shows internal files in Storage settings; high risk on some iPads.";
 "tweak.securityresearch.title" = "Security Research Device Mode";
 "tweak.securityresearch.detail" = "Marks the device as a Security Research Device.";
+
+// Status, session log, backup revert
+"status.exploitActive" = "Exploit Active (%@)";
+"status.methodLabel" = "Method";
+"status.signingHint" = "Your signer rewrote the app bundle identifier. bad_query skips installs like this, but WorkPlot falls back to the CMG method automatically so tweaks keep working.";
+"sessionlog.title" = "Session Log";
+"sessionlog.copy" = "Copy Log";
+"sessionlog.share" = "Share Log";
+"sessionlog.clear" = "Clear Log";
+"backup.revertStock" = "Revert to Stock Snapshot";
+"backup.revertStock.detail" = "Restores the MobileGestalt plist captured before your first successful tweak.";
+"rdar.restoreCanvas" = "Restore Original Wallpaper Canvas";
+
+// Siri AI restart expectations
+"siri.rebootHint" = "Restart your iPhone after the respring to finish Siri AI setup.";
+"siri.waitlistNote" = "After the restart, Siri may show Join Waitlist until Apple enables your device; model download can take a while.";
