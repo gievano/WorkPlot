@@ -87,18 +87,17 @@ jobs:
           echo "title=WorkPlot dev 1.0.${BUILD_NUMBER} (${SHORT_SHA})" >> "$GITHUB_OUTPUT"
           BODY_FILE="${RUNNER_TEMP}/release-body.md"
           {
-            echo "Build otomatis dari commit \`${SHA_FULL}\` di branch main."
+            echo "Automated build from commit \`${SHA_FULL}\` on main."
             echo ""
-            echo "### Commit terbaru"
+            echo "### Latest changes"
             echo ""
             echo '```'
             git log --oneline -5 --no-decorate
             echo '```'
             echo ""
-            echo "Dibangun: $(date -u '+%Y-%m-%d %H:%M UTC')"
+            echo "Built: $(date -u '+%Y-%m-%d %H:%M UTC')"
             echo ""
-            echo "> ⚠️ Ini prerelease dev (unsigned IPA) yang selalu ditimpa build berikutnya."
-            echo "> Untuk rilis stabil, gunakan tag \`v*\`."
+            echo "> ⚠️ This is a dev prerelease (unsigned IPA) that gets overwritten by the next build. For stable releases, use \`v*\` tags."
           } > "$BODY_FILE"
           echo "body_path=${BODY_FILE}" >> "$GITHUB_OUTPUT"
 

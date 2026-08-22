@@ -1,5 +1,18 @@
 # DEVLOG-OPS
 
+## 2026-08-22 — Body rolling release `latest` diubah ke English
+
+**The Change:**
+- `.github/workflows/main.yml` job `latest-release`, step `meta`: seluruh body release diganti dari Bahasa Indonesia ke English — header "Automated build from commit <sha> on main.", section "### Latest changes", "Built: <tanggal> UTC", dan warning blockquote satu baris ("⚠️ This is a dev prerelease (unsigned IPA) that gets overwritten by the next build. For stable releases, use `v*` tags."). Judul tetap "WorkPlot dev 1.0.<run_number> (<short-sha>)".
+
+**The Reasoning:**
+- Konsistensi audiens internasional; release notes adalah surface publik yang lebih tepat berbahasa Inggris. Warning dipadatkan jadi satu baris blockquote agar ringkas tanpa mengubah substansi.
+
+**The Tech Debt:**
+- Tidak ada; perubahan murni copy body.
+
+---
+
 ## 2026-08-22 — Judul & deskripsi dinamis pada rolling release `latest`
 
 **The Change:**
