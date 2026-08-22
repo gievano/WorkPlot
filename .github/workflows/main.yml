@@ -36,7 +36,7 @@ jobs:
       - name: Check safe file operations
         run: |
           CHECK_BIN="$RUNNER_TEMP/check-file-operations"
-          xcrun swiftc \
+          xcrun swiftc -parse-as-library \
             Support/FileBrowserServiceCheck.swift \
             -o "$CHECK_BIN"
           "$CHECK_BIN"
