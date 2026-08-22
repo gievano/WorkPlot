@@ -168,3 +168,10 @@
 // Device gating
 "common.experimental" = "ЭКСПЕРИМЕНТАЛЬНО";
 "gestalt.deviceUnsupported" = "Не поддерживается на этом устройстве.";
+
+// Siri Mode (F1)
+"tweak.siriaimode.title" = "Режим Siri AI (iOS 27)";
+"tweak.siriaimode.detail" = "Записывает ключ SiriMode a3n5T9sFtyQ74NEp9ESxg = 2 для включения режима Siri AI в iOS 27+.";
+"siriai.sirimode.header" = "Режим Siri (iOS 27)";
+"siriai.sirimode.toggle" = "Включить режим Siri AI";
+"siriai.sirimode.detail" = "Устанавливает ключ CacheExtra a3n5T9sFtyQ74NEp9ESxg в 2; при отключении ключ удаляется. Вступает в силу после Respring или перезагрузки.";

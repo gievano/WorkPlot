@@ -7,6 +7,7 @@ struct SiriAITweaksView: View {
     // Staged changes; nil = leave untouched.
     @State private var siriAIStaged: Bool?
     @State private var appleIntelligenceStaged: Bool?
+    @State private var siriModeStaged: Bool?
     @State private var spoofTarget: SpoofTarget?
     @State private var isApplying = false
     @State private var showRestartAlert = false
@@ -16,6 +17,7 @@ struct SiriAITweaksView: View {
     private var stagedCount: Int {
         (siriAIStaged == nil ? 0 : 1)
             + (appleIntelligenceStaged == nil ? 0 : 1)
+            + (siriModeStaged == nil ? 0 : 1)
             + (spoofTarget == nil ? 0 : 1)
     }
 
@@ -32,6 +34,7 @@ struct SiriAITweaksView: View {
                 } else {
                     List {
                         siriAISection
+                        siriModeSection
                         spoofSection
                         appleIntelligenceSection
                         applySection
@@ -74,6 +77,20 @@ struct SiriAITweaksView: View {
                 set: { siriAIStaged = $0 }
             )) {
                 Text(l10n.tr("siriai.toggle"))
+            }
+        }
+    }
+
+    private var siriModeSection: some View {
+        Section(
+            header: Text(l10n.tr("siriai.sirimode.header")),
+            footer: Text(l10n.tr("siriai.sirimode.detail"))
+        ) {
+            Toggle(isOn: Binding(
+                get: { siriModeStaged ?? currentSiriMode },
+                set: { siriModeStaged = $0 }
+            )) {
+                Text(l10n.tr("siriai.sirimode.toggle"))
             }
         }
     }
@@ -145,6 +162,13 @@ struct SiriAITweaksView: View {
         return AppleIntelligenceController.isEnabled(in: plist)
     }
 
+    private var currentSiriMode: Bool {
+        guard let plist = loadedPlist,
+              let cacheExtra = plist["CacheExtra"] as? [String: Any],
+              let value = cacheExtra[SiriModeApplier.cacheExtraKey] as? Int else { return false }
+        return value == SiriModeApplier.enabledValue
+    }
+
     private func loadCurrentState() {
         guard !didLoadState else { return }
         didLoadState = true
@@ -164,6 +188,9 @@ struct SiriAITweaksView: View {
             if let enabled = siriAIStaged {
                 try SiriAIModifier.setEnabled(enabled, in: &plist)
             }
+            if let enabled = siriModeStaged {
+                SiriModeApplier.setEnabled(enabled, in: &plist)
+            }
             if let enabled = appleIntelligenceStaged {
                 AppleIntelligenceController.setEnabled(enabled, in: &plist)
             }
@@ -181,6 +208,7 @@ struct SiriAITweaksView: View {
 
         if success {
             siriAIStaged = nil
+            siriModeStaged = nil
             appleIntelligenceStaged = nil
             spoofTarget = nil
             manager.statusText = "\(l10n.tr("siriai.apply")) OK. \(l10n.tr("siriai.restart.title"))"

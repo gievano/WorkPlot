@@ -168,3 +168,10 @@
 // Device gating
 "common.experimental" = "实验性";
 "gestalt.deviceUnsupported" = "此设备不支持。";
+
+// Siri Mode (F1)
+"tweak.siriaimode.title" = "Siri AI 模式 (iOS 27)";
+"tweak.siriaimode.detail" = "写入 SiriMode 键 a3n5T9sFtyQ74NEp9ESxg = 2 以启用 iOS 27+ 的 Siri AI 模式。";
+"siriai.sirimode.header" = "Siri 模式 (iOS 27)";
+"siriai.sirimode.toggle" = "启用 Siri AI 模式";
+"siriai.sirimode.detail" = "将 CacheExtra 键 a3n5T9sFtyQ74NEp9ESxg 设为 2；关闭时会移除该键。Respring 或重启后生效。";
