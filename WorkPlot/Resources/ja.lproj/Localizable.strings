@@ -191,3 +191,48 @@
 // グラフィックススタイル (F5、実験的)
 "tweak.graphicsstyle.title" = "グラフィックススタイル";
 "tweak.graphicsstyle.detail" = "実験的機能：iPhone 13 までのデバイスで高いグラフィックス性能ティア (apple-graphics-performance-tier) を強制します。新しいグラフィックススタイルとの対応はまだコミュニティで検証されていません。";
+
+
+// ファイルブラウザ（FilePatch ワークスペース）
+"common.error" = "エラー";
+"filepatch.ready" = "サンドボックスアクセスが有効です。以下でシステムファイルの閲覧と修正ができます。";
+"fp.shortcut.header" = "クイックロケーション";
+"fp.shortcut.preferences" = "環境設定 (/var/mobile)";
+"fp.shortcut.gestaltcache" = "Gestalt キャッシュ";
+"fp.shortcut.varprefs" = "システム設定 (/var)";
+"fp.shortcut.jb" = "脱獄ルート (/var/jb)";
+"fp.shortcut.jailbreak" = "脱獄ルート (/var/jailbreak)";
+"fp.loading" = "フォルダを一覧中...";
+"fp.empty" = "フォルダは空です。";
+"fp.oswarning" = "iOS ビルド %@ はエクスプロイトチェーン未対応です（iOS 27 ベータ 1-4 が必要）。書き込み操作はブロックされます。";
+"fp.action.view" = "表示";
+"fp.action.rename" = "名称変更";
+"fp.action.delete" = "削除";
+"fp.action.save" = "保存";
+"fp.delete.title" = "削除しますか？";
+"fp.delete.message" = "\"%@\" を完全に削除しますか？この操作は取り消せません。";
+"fp.delete.success" = "%@ を削除しました。";
+"fp.rename.title" = "名称変更";
+"fp.rename.message" = "\"%@\" の新しい名前:";
+"fp.rename.placeholder" = "新しい名前";
+"fp.rename.success" = "%@ に変更しました。";
+"fp.save.confirm.title" = "変更を保存しますか？";
+"fp.save.confirm.message" = "検証後、\"%@\" はその場で上書きされます（inode 維持）。事前にバックアップを取ってください。";
+"fp.save.success" = "%@ を保存しました。";
+"fp.success.title" = "成功";
+"fp.info.name" = "名前";
+"fp.info.size" = "サイズ";
+"fp.info.path" = "パス";
+"fp.binary.nopreview" = "このファイルタイプはプレビューできません。";
+"fp.error.list" = "ディレクトリの一覧に失敗:";
+"fp.error.read" = "ファイルの読み取りに失敗:";
+"fp.error.write" = "ファイルの書き込みに失敗:";
+"fp.error.verify" = "書き込み後の検証に失敗:";
+"fp.error.delete" = "削除に失敗:";
+"fp.error.rename" = "名称変更に失敗:";
+"fp.error.plist" = "plist の解析に失敗:";
+"fp.error.notempty" = "フォルダが空ではありません:";
+"fp.error.name" = "無効な名前:";
+"fp.error.exists" = "同じ名前の項目が既に存在します。";
+"fp.error.binarytext" = "このファイルは UTF-8 テキストではないようです。";
+"fp.error.imagedecode" = "画像データをデコードできませんでした。";

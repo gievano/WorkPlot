@@ -191,3 +191,48 @@
 // Графический стиль (F5, экспериментально)
 "tweak.graphicsstyle.title" = "Графический стиль";
 "tweak.graphicsstyle.detail" = "ЭКСПЕРИМЕНТАЛЬНО: принудительно включает более высокий уровень графической производительности (apple-graphics-performance-tier) на устройствах вплоть до iPhone 13. Точное соответствие новому графическому стилю пока не подтверждено сообществом.";
+
+
+// Браузер файлов (рабочая область FilePatch)
+"common.error" = "Ошибка";
+"filepatch.ready" = "Доступ к песочнице активен. Ниже можно просматривать и править системные файлы.";
+"fp.shortcut.header" = "Быстрые пути";
+"fp.shortcut.preferences" = "Настройки (/var/mobile)";
+"fp.shortcut.gestaltcache" = "Кэш Gestalt";
+"fp.shortcut.varprefs" = "Системные настройки (/var)";
+"fp.shortcut.jb" = "Корень JB (/var/jb)";
+"fp.shortcut.jailbreak" = "Корень JB (/var/jailbreak)";
+"fp.loading" = "Чтение папки...";
+"fp.empty" = "Папка пуста.";
+"fp.oswarning" = "Сборка iOS %@ не поддерживается эксплойт-цепочкой (нужны iOS 27 бета 1-4). Операции записи заблокированы.";
+"fp.action.view" = "Просмотр";
+"fp.action.rename" = "Переименовать";
+"fp.action.delete" = "Удалить";
+"fp.action.save" = "Сохранить";
+"fp.delete.title" = "Удалить?";
+"fp.delete.message" = "Безвозвратно удалить \"%@\"? Отменить это нельзя.";
+"fp.delete.success" = "%@ удален.";
+"fp.rename.title" = "Переименовать";
+"fp.rename.message" = "Новое имя для \"%@\":";
+"fp.rename.placeholder" = "Новое имя";
+"fp.rename.success" = "Переименовано в %@.";
+"fp.save.confirm.title" = "Сохранить изменения?";
+"fp.save.confirm.message" = "\"%@\" будет перезаписан на месте (с сохранением inode) после проверки. Сделайте резервную копию файла.";
+"fp.save.success" = "%@ успешно сохранен.";
+"fp.success.title" = "Готово";
+"fp.info.name" = "Имя";
+"fp.info.size" = "Размер";
+"fp.info.path" = "Путь";
+"fp.binary.nopreview" = "Предпросмотр этого типа файлов недоступен.";
+"fp.error.list" = "Не удалось прочитать каталог:";
+"fp.error.read" = "Не удалось прочитать файл:";
+"fp.error.write" = "Не удалось записать файл:";
+"fp.error.verify" = "Проверка после записи не пройдена:";
+"fp.error.delete" = "Не удалось удалить:";
+"fp.error.rename" = "Не удалось переименовать:";
+"fp.error.plist" = "Не удалось разобрать plist:";
+"fp.error.notempty" = "Папка не пуста:";
+"fp.error.name" = "Недопустимое имя:";
+"fp.error.exists" = "Элемент с таким именем уже существует.";
+"fp.error.binarytext" = "Файл не похож на текст UTF-8.";
+"fp.error.imagedecode" = "Не удалось декодировать изображение.";

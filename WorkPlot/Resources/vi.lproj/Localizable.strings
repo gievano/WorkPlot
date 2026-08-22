@@ -191,3 +191,48 @@
 // Kiểu đồ họa (F5, thử nghiệm)
 "tweak.graphicsstyle.title" = "Kiểu đồ họa";
 "tweak.graphicsstyle.detail" = "THỬ NGHIỆM: buộc dùng cấp hiệu năng đồ họa cao hơn (apple-graphics-performance-tier) trên thiết bị đến iPhone 13. Tương ứng với kiểu đồ họa mới nhất chưa được cộng đồng xác minh.";
+
+
+// Trình duyệt tệp (không gian FilePatch)
+"common.error" = "Lỗi";
+"filepatch.ready" = "Quyền sandbox đã kích hoạt. Duyệt và vá tệp hệ thống bên dưới.";
+"fp.shortcut.header" = "Vị trí nhanh";
+"fp.shortcut.preferences" = "Tùy chọn (/var/mobile)";
+"fp.shortcut.gestaltcache" = "Bộ nhớ đệm Gestalt";
+"fp.shortcut.varprefs" = "Tùy chọn hệ thống (/var)";
+"fp.shortcut.jb" = "Gốc JB (/var/jb)";
+"fp.shortcut.jailbreak" = "Gốc JB (/var/jailbreak)";
+"fp.loading" = "Đang đọc thư mục...";
+"fp.empty" = "Thư mục trống.";
+"fp.oswarning" = "Bản dựng iOS %@ không được chuỗi khai thác hỗ trợ (cần iOS 27 beta 1-4). Thao tác ghi bị chặn.";
+"fp.action.view" = "Xem";
+"fp.action.rename" = "Đổi tên";
+"fp.action.delete" = "Xóa";
+"fp.action.save" = "Lưu";
+"fp.delete.title" = "Xóa?";
+"fp.delete.message" = "Xóa vĩnh viễn \"%@\"? Không thể hoàn tác.";
+"fp.delete.success" = "Đã xóa %@.";
+"fp.rename.title" = "Đổi tên";
+"fp.rename.message" = "Tên mới cho \"%@\":";
+"fp.rename.placeholder" = "Tên mới";
+"fp.rename.success" = "Đã đổi thành %@.";
+"fp.save.confirm.title" = "Lưu thay đổi?";
+"fp.save.confirm.message" = "\"%@\" sẽ được ghi đè tại chỗ (giữ nguyên inode) sau khi xác minh. Hãy sao lưu tệp này trước.";
+"fp.save.success" = "Đã lưu %@ thành công.";
+"fp.success.title" = "Thành công";
+"fp.info.name" = "Tên";
+"fp.info.size" = "Kích thước";
+"fp.info.path" = "Đường dẫn";
+"fp.binary.nopreview" = "Không xem trước được loại tệp này.";
+"fp.error.list" = "Không thể liệt kê thư mục:";
+"fp.error.read" = "Không thể đọc tệp:";
+"fp.error.write" = "Không thể ghi tệp:";
+"fp.error.verify" = "Xác minh sau ghi thất bại:";
+"fp.error.delete" = "Không thể xóa:";
+"fp.error.rename" = "Không thể đổi tên:";
+"fp.error.plist" = "Không thể phân tích plist:";
+"fp.error.notempty" = "Thư mục không trống:";
+"fp.error.name" = "Tên không hợp lệ:";
+"fp.error.exists" = "Đã có mục trùng tên.";
+"fp.error.binarytext" = "Tệp có vẻ không phải văn bản UTF-8.";
+"fp.error.imagedecode" = "Không thể giải mã dữ liệu ảnh.";

@@ -191,3 +191,48 @@
 // Graphics Style (F5, experimental)
 "tweak.graphicsstyle.title" = "Graphics Style";
 "tweak.graphicsstyle.detail" = "EXPERIMENTAL: forces the higher graphics performance tier (apple-graphics-performance-tier) on devices up to iPhone 13. The exact mapping to the newer graphics style is not yet community-verified.";
+
+
+// File browser (FilePatch workspace)
+"common.error" = "Error";
+"filepatch.ready" = "Sandbox access active. Browse and patch system files below.";
+"fp.shortcut.header" = "Quick Locations";
+"fp.shortcut.preferences" = "Preferences (/var/mobile)";
+"fp.shortcut.gestaltcache" = "Gestalt Cache";
+"fp.shortcut.varprefs" = "System Preferences (/var)";
+"fp.shortcut.jb" = "JB Root (/var/jb)";
+"fp.shortcut.jailbreak" = "JB Root (/var/jailbreak)";
+"fp.loading" = "Listing folder...";
+"fp.empty" = "Folder is empty.";
+"fp.oswarning" = "iOS build %@ is not supported by the exploit chain (needs iOS 27 beta 1-4). Write operations are blocked.";
+"fp.action.view" = "View";
+"fp.action.rename" = "Rename";
+"fp.action.delete" = "Delete";
+"fp.action.save" = "Save";
+"fp.delete.title" = "Delete?";
+"fp.delete.message" = "Permanently delete \"%@\"? This cannot be undone.";
+"fp.delete.success" = "%@ deleted.";
+"fp.rename.title" = "Rename";
+"fp.rename.message" = "New name for \"%@\":";
+"fp.rename.placeholder" = "New name";
+"fp.rename.success" = "Renamed to %@.";
+"fp.save.confirm.title" = "Save Changes?";
+"fp.save.confirm.message" = "\"%@\" will be rewritten in place (inode preserved) after verification. Keep a backup of this file.";
+"fp.save.success" = "%@ saved successfully.";
+"fp.success.title" = "Success";
+"fp.info.name" = "Name";
+"fp.info.size" = "Size";
+"fp.info.path" = "Path";
+"fp.binary.nopreview" = "No preview available for this file type.";
+"fp.error.list" = "Failed to list directory:";
+"fp.error.read" = "Failed to read file:";
+"fp.error.write" = "Failed to write file:";
+"fp.error.verify" = "Post-write verification failed:";
+"fp.error.delete" = "Failed to delete:";
+"fp.error.rename" = "Failed to rename:";
+"fp.error.plist" = "Failed to parse plist:";
+"fp.error.notempty" = "Folder is not empty:";
+"fp.error.name" = "Invalid name:";
+"fp.error.exists" = "An item with that name already exists.";
+"fp.error.binarytext" = "The file does not look like UTF-8 text.";
+"fp.error.imagedecode" = "Could not decode the image data.";

@@ -191,3 +191,48 @@
 // 图形风格 (F5，实验性)
 "tweak.graphicsstyle.title" = "图形风格";
 "tweak.graphicsstyle.detail" = "实验性：在最高到 iPhone 13 的设备上强制使用更高的图形性能档位 (apple-graphics-performance-tier)。与最新图形风格的对应关系尚未经社区验证。";
+
+
+// 文件浏览器（FilePatch 工作区）
+"common.error" = "错误";
+"filepatch.ready" = "沙盒访问已激活。可在下方浏览并修改系统文件。";
+"fp.shortcut.header" = "快速位置";
+"fp.shortcut.preferences" = "偏好设置 (/var/mobile)";
+"fp.shortcut.gestaltcache" = "Gestalt 缓存";
+"fp.shortcut.varprefs" = "系统偏好 (/var)";
+"fp.shortcut.jb" = "越狱根目录 (/var/jb)";
+"fp.shortcut.jailbreak" = "越狱根目录 (/var/jailbreak)";
+"fp.loading" = "正在列出文件夹...";
+"fp.empty" = "文件夹为空。";
+"fp.oswarning" = "iOS 构建 %@ 不受漏洞链支持（需要 iOS 27 测试版 1-4）。写入操作已被阻止。";
+"fp.action.view" = "查看";
+"fp.action.rename" = "重命名";
+"fp.action.delete" = "删除";
+"fp.action.save" = "保存";
+"fp.delete.title" = "删除？";
+"fp.delete.message" = "永久删除 \"%@\"？此操作无法撤销。";
+"fp.delete.success" = "已删除 %@。";
+"fp.rename.title" = "重命名";
+"fp.rename.message" = "\"%@\" 的新名称：";
+"fp.rename.placeholder" = "新名称";
+"fp.rename.success" = "已重命名为 %@。";
+"fp.save.confirm.title" = "保存更改？";
+"fp.save.confirm.message" = "验证后 \"%@\" 将被原地重写（保留 inode）。请先备份此文件。";
+"fp.save.success" = "%@ 保存成功。";
+"fp.success.title" = "成功";
+"fp.info.name" = "名称";
+"fp.info.size" = "大小";
+"fp.info.path" = "路径";
+"fp.binary.nopreview" = "此文件类型无法预览。";
+"fp.error.list" = "列出目录失败：";
+"fp.error.read" = "读取文件失败：";
+"fp.error.write" = "写入文件失败：";
+"fp.error.verify" = "写入后验证失败：";
+"fp.error.delete" = "删除失败：";
+"fp.error.rename" = "重命名失败：";
+"fp.error.plist" = "解析 plist 失败：";
+"fp.error.notempty" = "文件夹非空：";
+"fp.error.name" = "名称无效：";
+"fp.error.exists" = "同名项目已存在。";
+"fp.error.binarytext" = "该文件看起来不是 UTF-8 文本。";
+"fp.error.imagedecode" = "无法解码图像数据。";

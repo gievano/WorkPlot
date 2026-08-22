@@ -191,3 +191,48 @@
 // Graphics Style (F5, eksperimental)
 "tweak.graphicsstyle.title" = "Graphics Style";
 "tweak.graphicsstyle.detail" = "EKSPERIMENTAL: memaksa tier performa grafis lebih tinggi (apple-graphics-performance-tier) di perangkat sampai iPhone 13. Pemetaan pastinya ke graphics style terbaru belum terverifikasi komunitas.";
+
+
+// Browser file (FilePatch workspace)
+"common.error" = "Kesalahan";
+"filepatch.ready" = "Akses sandbox aktif. Jelajahi dan patch file sistem di bawah.";
+"fp.shortcut.header" = "Lokasi Cepat";
+"fp.shortcut.preferences" = "Preferences (/var/mobile)";
+"fp.shortcut.gestaltcache" = "Cache Gestalt";
+"fp.shortcut.varprefs" = "Preferensi Sistem (/var)";
+"fp.shortcut.jb" = "Root JB (/var/jb)";
+"fp.shortcut.jailbreak" = "Root JB (/var/jailbreak)";
+"fp.loading" = "Membuka folder...";
+"fp.empty" = "Folder kosong.";
+"fp.oswarning" = "Build iOS %@ tidak didukung rantai exploit (butuh iOS 27 beta 1-4). Operasi tulis diblokir.";
+"fp.action.view" = "Lihat";
+"fp.action.rename" = "Ganti Nama";
+"fp.action.delete" = "Hapus";
+"fp.action.save" = "Simpan";
+"fp.delete.title" = "Hapus?";
+"fp.delete.message" = "Hapus permanen \"%@\"? Tindakan ini tidak bisa dibatalkan.";
+"fp.delete.success" = "%@ dihapus.";
+"fp.rename.title" = "Ganti Nama";
+"fp.rename.message" = "Nama baru untuk \"%@\":";
+"fp.rename.placeholder" = "Nama baru";
+"fp.rename.success" = "Diubah menjadi %@.";
+"fp.save.confirm.title" = "Simpan Perubahan?";
+"fp.save.confirm.message" = "\"%@\" akan ditulis ulang langsung (inode dipertahankan) setelah verifikasi. Simpan backup file ini.";
+"fp.save.success" = "%@ tersimpan dengan sukses.";
+"fp.success.title" = "Berhasil";
+"fp.info.name" = "Nama";
+"fp.info.size" = "Ukuran";
+"fp.info.path" = "Path";
+"fp.binary.nopreview" = "Tidak ada preview untuk tipe file ini.";
+"fp.error.list" = "Gagal membaca isi direktori:";
+"fp.error.read" = "Gagal membaca file:";
+"fp.error.write" = "Gagal menulis file:";
+"fp.error.verify" = "Verifikasi pasca-tulis gagal:";
+"fp.error.delete" = "Gagal menghapus:";
+"fp.error.rename" = "Gagal mengganti nama:";
+"fp.error.plist" = "Gagal mem-parse plist:";
+"fp.error.notempty" = "Folder tidak kosong:";
+"fp.error.name" = "Nama tidak valid:";
+"fp.error.exists" = "Sudah ada item dengan nama tersebut.";
+"fp.error.binarytext" = "File ini tampaknya bukan teks UTF-8.";
+"fp.error.imagedecode" = "Tidak dapat mendekode data gambar.";
