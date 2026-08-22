@@ -8,6 +8,8 @@ struct SiriAITweaksView: View {
     @State private var siriAIStaged: Bool?
     @State private var appleIntelligenceStaged: Bool?
     @State private var siriModeStaged: Bool?
+    @State private var modelKeyStaged: Bool?
+    @State private var eligibilityStaged: Bool?
     @State private var spoofTarget: SpoofTarget?
     @State private var isApplying = false
     @State private var showRestartAlert = false
@@ -18,6 +20,8 @@ struct SiriAITweaksView: View {
         (siriAIStaged == nil ? 0 : 1)
             + (appleIntelligenceStaged == nil ? 0 : 1)
             + (siriModeStaged == nil ? 0 : 1)
+            + (modelKeyStaged == nil ? 0 : 1)
+            + (eligibilityStaged == nil ? 0 : 1)
             + (spoofTarget == nil ? 0 : 1)
     }
 
@@ -79,6 +83,24 @@ struct SiriAITweaksView: View {
             )) {
                 Text(l10n.tr("siriai.toggle"))
             }
+            Toggle(isOn: Binding(
+                get: { modelKeyStaged ?? currentModelKeyOn },
+                set: { modelKeyStaged = $0 }
+            )) {
+                Text(l10n.tr("siriai.modelkey.toggle"))
+            }
+            Text(l10n.tr("siriai.modelkey.detail"))
+                .font(.caption)
+                .foregroundColor(.secondary)
+            Toggle(isOn: Binding(
+                get: { eligibilityStaged ?? currentEligibilityOnly },
+                set: { eligibilityStaged = $0 }
+            )) {
+                Text(l10n.tr("siriai.eligibility.toggle"))
+            }
+            Text(l10n.tr("siriai.eligibility.detail"))
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
     }
 
@@ -115,13 +137,23 @@ struct SiriAITweaksView: View {
     }
 
     private var spoofSection: some View {
-        Section(header: Text(l10n.tr("siriai.spoof"))) {
+        Section(header: Text(l10n.tr("siriai.spoof")), footer: Text(l10n.tr("siriai.spoof.revert"))) {
             Picker(l10n.tr("siriai.spoof"), selection: $spoofTarget) {
                 Text(l10n.tr("siriai.spoof.none")).tag(SpoofTarget?.none)
                 ForEach(DeviceSpoofingManager.targets) { target in
                     Text(target.marketingName).tag(SpoofTarget?.some(target))
                 }
             }
+            if let target = spoofTarget, let plist = loadedPlist {
+                Text(String(format: l10n.tr("siriai.spoof.keysCount"),
+                            DeviceSpoofingManager.changedKeyCount(in: plist, target: target)))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            Text(String(format: l10n.tr("siriai.spoof.detected"),
+                        DeviceSpoofingManager.realMachineIdentifier))
+                .font(.caption)
+                .foregroundColor(.secondary)
             Text(l10n.tr("siriai.warning"))
                 .font(.caption).bold()
                 .foregroundColor(.red)
@@ -188,6 +220,24 @@ struct SiriAITweaksView: View {
         return value == SiriModeApplier.enabledValue
     }
 
+    /// Effective spoof target: the picker selection, or what is already
+    /// written on the device when the user did not stage a new one.
+    private var effectiveSpoofTarget: SpoofTarget? {
+        if let spoofTarget { return spoofTarget }
+        guard let plist = loadedPlist else { return nil }
+        return DeviceSpoofingManager.currentTarget(in: plist)
+    }
+
+    private var currentModelKeyOn: Bool {
+        guard let plist = loadedPlist else { return false }
+        return ModelSpoofKeyApplier.isEnabled(in: plist, target: effectiveSpoofTarget)
+    }
+
+    private var currentEligibilityOnly: Bool {
+        guard let plist = loadedPlist else { return false }
+        return AIRegionEligibilityApplier.isEnabled(in: plist)
+    }
+
     private func loadCurrentState() {
         guard !didLoadState else { return }
         didLoadState = true
@@ -213,8 +263,16 @@ struct SiriAITweaksView: View {
             if let enabled = appleIntelligenceStaged {
                 AppleIntelligenceController.setEnabled(enabled, in: &plist)
             }
+            // Spoof first so the single-key toggle below either re-asserts
+            // the same ProductType or deliberately clears the primary key.
             if let target = spoofTarget {
                 try DeviceSpoofingManager.apply(target, to: &plist)
+            }
+            if let enabled = modelKeyStaged {
+                try ModelSpoofKeyApplier.setEnabled(enabled, target: effectiveSpoofTarget, in: &plist)
+            }
+            if let enabled = eligibilityStaged {
+                AIRegionEligibilityApplier.setEnabled(enabled, in: &plist)
             }
         } catch {
             manager.statusText = "Gagal: \(error.localizedDescription)"
@@ -229,6 +287,8 @@ struct SiriAITweaksView: View {
             siriAIStaged = nil
             siriModeStaged = nil
             appleIntelligenceStaged = nil
+            modelKeyStaged = nil
+            eligibilityStaged = nil
             spoofTarget = nil
             manager.statusText = "\(l10n.tr("siriai.apply")) OK. \(l10n.tr("siriai.restart.title"))"
             // Siri AI tweaks require a device restart before they take

@@ -236,3 +236,14 @@
 "fp.error.exists" = "同名项目已存在。";
 "fp.error.binarytext" = "该文件看起来不是 UTF-8 文本。";
 "fp.error.imagedecode" = "无法解码图像数据。";
+
+// Spoof summary
+"siriai.spoof.keysCount" = "将要修改的键数量：%d";
+"siriai.spoof.detected" = "检测到的真实设备：%@";
+"siriai.spoof.revert" = "恢复操作会从「备份」标签页的备份一次性还原所有键。";
+
+// Siri AI extra toggles
+"siriai.modelkey.toggle" = "同步主要 ProductType 键";
+"siriai.modelkey.detail" = "将键 h9jDsbgj7xIVeIQ8S3/X3Q 写入选定的伪装目标。关闭时会删除该键。";
+"siriai.eligibility.toggle" = "强制 Apple Intelligence 资格";
+"siriai.eligibility.detail" = "仅写入键 A62OafQ85EJAiiqKn4agtg = 1，不改动其他键。";

@@ -236,3 +236,14 @@
 "fp.error.exists" = "Đã có mục trùng tên.";
 "fp.error.binarytext" = "Tệp có vẻ không phải văn bản UTF-8.";
 "fp.error.imagedecode" = "Không thể giải mã dữ liệu ảnh.";
+
+// Spoof summary
+"siriai.spoof.keysCount" = "Số khóa sẽ bị thay đổi: %d";
+"siriai.spoof.detected" = "Thiết bị thật đã phát hiện: %@";
+"siriai.spoof.revert" = "Khôi phục sẽ trả lại toàn bộ khóa cùng lúc từ bản sao lưu trước khi giả lập (tab Sao lưu).";
+
+// Siri AI extra toggles
+"siriai.modelkey.toggle" = "Đồng bộ khóa ProductType chính";
+"siriai.modelkey.detail" = "Ghi khóa h9jDsbgj7xIVeIQ8S3/X3Q bằng mục tiêu giả lập đã chọn. Tắt sẽ xóa khóa.";
+"siriai.eligibility.toggle" = "Ép điều kiện Apple Intelligence";
+"siriai.eligibility.detail" = "Chỉ ghi khóa A62OafQ85EJAiiqKn4agtg = 1, không đụng đến khóa khác.";

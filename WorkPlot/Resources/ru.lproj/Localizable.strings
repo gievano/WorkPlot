@@ -236,3 +236,14 @@
 "fp.error.exists" = "Элемент с таким именем уже существует.";
 "fp.error.binarytext" = "Файл не похож на текст UTF-8.";
 "fp.error.imagedecode" = "Не удалось декодировать изображение.";
+
+// Spoof summary
+"siriai.spoof.keysCount" = "Ключей будет изменено: %d";
+"siriai.spoof.detected" = "Обнаружено реальное устройство: %@";
+"siriai.spoof.revert" = "Откат возвращает все ключи сразу из резервной копии до спуфа (вкладка «Резервные копии»).";
+
+// Siri AI extra toggles
+"siriai.modelkey.toggle" = "Синхронизировать основной ключ ProductType";
+"siriai.modelkey.detail" = "Записывает в ключ h9jDsbgj7xIVeIQ8S3/X3Q выбранную цель спуфа. При выключении ключ удаляется.";
+"siriai.eligibility.toggle" = "Принудительная допустимость Apple Intelligence";
+"siriai.eligibility.detail" = "Записывает только ключ A62OafQ85EJAiiqKn4agtg = 1, не трогая остальные.";
