@@ -200,17 +200,82 @@ enum FileBrowser {
         }
 
         try BadQueryLeaseScope.withLease(forPath: path) {
-            try InodeWriter.writeInPlace(newData, to: path)
-
-            guard FileManager.default.contents(atPath: path) == newData else {
-                throw FileBrowserError.verifyFailed(path)
-            }
+            try InodeWriter.writeVerifiedInPlace(newData, to: path)
         }
     }
 
-    // MARK: - Delete / Rename
+    // MARK: - File operations
+
+    static func createFile(named name: String, in directoryPath: String) throws {
+        try ensureSupportedOSForWrite()
+        try BadQueryLeaseScope.withLease(forPath: directoryPath) {
+            _ = try SafeFileOperations.createFile(
+                named: name,
+                contents: Data(),
+                in: URL(fileURLWithPath: directoryPath)
+            )
+        }
+    }
+
+    static func createDirectory(named name: String, in directoryPath: String) throws {
+        try ensureSupportedOSForWrite()
+        try BadQueryLeaseScope.withLease(forPath: directoryPath) {
+            _ = try SafeFileOperations.createDirectory(
+                named: name,
+                in: URL(fileURLWithPath: directoryPath)
+            )
+        }
+    }
+
+    static func copyItem(at sourcePath: String, to directoryPath: String) throws {
+        try ensureSupportedOSForWrite()
+        try withSourceAndDestinationLease(sourcePath: sourcePath, directoryPath: directoryPath) {
+            _ = try SafeFileOperations.copyItem(
+                at: URL(fileURLWithPath: sourcePath),
+                to: URL(fileURLWithPath: directoryPath)
+            )
+        }
+    }
+
+    static func moveItem(at sourcePath: String, to directoryPath: String) throws {
+        try ensureSupportedOSForWrite()
+        try withSourceAndDestinationLease(sourcePath: sourcePath, directoryPath: directoryPath) {
+            _ = try SafeFileOperations.moveItem(
+                at: URL(fileURLWithPath: sourcePath),
+                to: URL(fileURLWithPath: directoryPath)
+            )
+        }
+    }
+
+    static func importItem(from sourceURL: URL, to directoryPath: String) throws {
+        try ensureSupportedOSForWrite()
+        try BadQueryLeaseScope.withLease(forPath: directoryPath) {
+            _ = try SafeFileOperations.copyItem(
+                at: sourceURL,
+                to: URL(fileURLWithPath: directoryPath)
+            )
+        }
+    }
+
+    static func exportItem(at sourcePath: String) throws -> URL {
+        let exportDirectory = URL(fileURLWithPath: NSTemporaryDirectory())
+            .appendingPathComponent("workplot-export-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: exportDirectory, withIntermediateDirectories: false)
+        do {
+            return try BadQueryLeaseScope.withLease(forPath: sourcePath) {
+                try SafeFileOperations.copyItem(
+                    at: URL(fileURLWithPath: sourcePath),
+                    to: exportDirectory
+                )
+            }
+        } catch {
+            try? FileManager.default.removeItem(at: exportDirectory)
+            throw error
+        }
+    }
 
     static func deleteItem(at path: String, isDirectory: Bool) throws {
+        try ensureSupportedOSForWrite()
         if isDirectory {
             // Safety net: only empty folders may be removed from the UI.
             let children = try listDirectory(path)
@@ -228,6 +293,7 @@ enum FileBrowser {
     }
 
     static func renameItem(at path: String, to newName: String) throws {
+        try ensureSupportedOSForWrite()
         let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, !trimmed.contains("/"), trimmed != ".", trimmed != ".." else {
             throw FileBrowserError.nameInvalid(newName)
@@ -274,5 +340,15 @@ enum FileBrowser {
     static func parentPath(of path: String) -> String {
         let parent = (path as NSString).deletingLastPathComponent
         return parent.isEmpty ? "/" : parent
+    }
+
+    private static func withSourceAndDestinationLease<T>(
+        sourcePath: String,
+        directoryPath: String,
+        _ operation: () throws -> T
+    ) throws -> T {
+        try BadQueryLeaseScope.withLease(forPath: sourcePath) {
+            try BadQueryLeaseScope.withLease(forPath: directoryPath, operation)
+        }
     }
 }
