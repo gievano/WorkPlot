@@ -77,6 +77,14 @@ enum GestaltTweakCatalog {
         .init(id: .chargeLimit, category: .hardware, title: "Charge Limit Menu", detail: "Shows Settings menu; actual limiting depends on hardware.", values: ["37NVydb//GP/GrhuTN+exg": 1]),
         .init(id: .tapToWake, category: .hardware, title: "Tap to Wake", detail: "Primarily for iPhone SE where unavailable.", values: ["yZf3GTRMGTuwSV/lD7Cagw": 1]),
         .init(id: .cameraButton, category: .hardware, title: "Camera Control Settings", detail: "Shows Camera Control settings and capabilities.", values: ["CwvKxM2cEogD3p+HYgaW0Q": 1, "oOV1jhJbdV3AddkcCg0AEA": 1]),
+        // TODO(F4): Belum ada key yang terverifikasi secara spesifik memaksa
+        // toggle zoom 2x di aplikasi Kamera stok perangkat < iPhone 15.
+        // AggregateDevicePhotoZoomFactor (JLP/IinyzetEPztvoNUNKg) dan
+        // RearFacingCameraMaxVideoZoomFactor (WC6wwFV23k19BlUQIAwDTg) adalah
+        // key resmi terdokumentasi ("maximum zoom level in photo/video mode");
+        // nilai 2 adalah kandidat paling plausibel. Verifikasi on-device
+        // masih diperlukan.
+        .init(id: .cameraZoom2x, category: .hardware, title: L10n.shared.tr("tweak.zoom2x.title"), detail: L10n.shared.tr("tweak.zoom2x.detail"), values: ["JLP/IinyzetEPztvoNUNKg": 2, "WC6wwFV23k19BlUQIAwDTg": 2], isExperimental: true, deviceGate: .belowIPhone15),
         .init(id: .pencil, category: .hardware, title: "Apple Pencil Settings", detail: "Shows Apple Pencil settings page.", values: ["yhHcB0iH0d1XzPO/CFd3ow": 1]),
         .init(id: .actionButton, category: .hardware, title: "Action Button Settings", detail: "Shows Action Button settings page.", values: ["cT44WE1EohiwRzhsZ8xEsw": 1]),
         .init(id: .collisionSOS, category: .hardware, title: "Collision SOS", detail: "Shows collision detection in SOS settings.", values: ["HCzWusHQwZDea6nNhaKndw": 1]),
