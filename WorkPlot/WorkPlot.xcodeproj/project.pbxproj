@@ -18,9 +18,14 @@
 		000000000000000130000000 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				AA0000000000000000000401 /* ZIPFoundation in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXBuildFile section */
+		AA0000000000000000000401 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = AA0000000000000000000400 /* ZIPFoundation */; };
+/* End PBXBuildFile section */
 
 /* Begin PBXGroup section */
 		000000000000000000000001 = {
@@ -56,6 +61,9 @@
 				000000000000000000000010 /* WorkPlot */,
 			);
 			name = WorkPlot;
+			packageProductDependencies = (
+				AA0000000000000000000400 /* ZIPFoundation */,
+			);
 			productName = WorkPlot;
 			productReference = 000000000000000000000120 /* WorkPlot.app */;
 			productType = "com.apple.product-type.application";
@@ -65,6 +73,25 @@
 /* Begin PBXFileReference section */
 		000000000000000000000120 /* WorkPlot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WorkPlot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		AA0000000000000000000300 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.19;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AA0000000000000000000400 /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA0000000000000000000300 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin PBXProject section */
 		000000000000000000000000 /* Project object */ = {
@@ -88,6 +115,9 @@
 			);
 			mainGroup = 000000000000000000000001;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AA0000000000000000000300 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 000000000000000000000020 /* Products */;
 			projectDirPath = "";
