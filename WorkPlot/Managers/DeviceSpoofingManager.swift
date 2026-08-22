@@ -29,7 +29,7 @@ enum DeviceSpoofingError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .missingCacheExtra:
-            "MobileGestalt tidak punya CacheExtra; spoofing tidak dapat diterapkan."
+            L10n.shared.tr("spoof.error.noCacheExtra")
         }
     }
 }
@@ -91,6 +91,14 @@ enum DeviceSpoofingManager {
     /// RegulatoryModelNumber is the "A" model number of the hardware.
     static let regulatoryModelKeys = ["97JDvERpVwO+GHtthIh7hA"]
 
+    /// Region-code keys written alongside every spoof target so regional
+    /// services (Apple Intelligence eligibility, Siri assets) agree with the
+    /// spoofed model. Values verified against GestaltEdit's AI-enabler set.
+    static let regionValues = [
+        "h63QSdBCiT/z0WU6rdQv6Q": "US",
+        "yK+xavymRGZ3xWc1tb8XDg": "US/A"
+    ]
+
     /// Marketing-name keys. Only overwritten when already present so we
     /// never invent keys on devices that do not cache them.
     static let deviceNameKeys = [
@@ -114,6 +122,7 @@ enum DeviceSpoofingManager {
         for key in hwModelKeys { countsChange(key, target.hwModel) }
         for key in cpuKeys { countsChange(key, target.cpuName) }
         for key in regulatoryModelKeys { countsChange(key, target.regulatoryModel) }
+        for (key, value) in regionValues { countsChange(key, value) }
         for key in deviceNameKeys where cacheExtra[key] != nil {
             countsChange(key, target.marketingName)
         }
@@ -147,6 +156,9 @@ enum DeviceSpoofingManager {
         guard var cacheExtra = plist["CacheExtra"] as? [String: Any] else {
             throw DeviceSpoofingError.missingCacheExtra
         }
+        guard var artwork = cacheExtra[GestaltArtwork.artworkKey] as? [String: Any] else {
+            throw GestaltArtworkError.artworkDictionaryMissing
+        }
 
         for key in productTypeKeys {
             cacheExtra[key] = target.productType
@@ -161,17 +173,21 @@ enum DeviceSpoofingManager {
             cacheExtra[key] = target.regulatoryModel
         }
 
+        // Region codes ride along with every target so the spoofed identity
+        // stays internally consistent.
+        for (key, value) in regionValues {
+            cacheExtra[key] = value
+        }
+
         // Only overwrite names that already exist so we never invent keys.
         for key in deviceNameKeys where cacheExtra[key] != nil {
             cacheExtra[key] = target.marketingName
         }
 
         // ArtworkDevice dictionary entries ride along with the same pass.
-        if var artwork = cacheExtra[GestaltArtwork.artworkKey] as? [String: Any] {
-            artwork["CompatibleDeviceFallback"] = target.productType
-            artwork["ArtworkDeviceProductDescription"] = target.marketingName
-            cacheExtra[GestaltArtwork.artworkKey] = artwork
-        }
+        artwork["CompatibleDeviceFallback"] = target.productType
+        artwork["ArtworkDeviceProductDescription"] = target.marketingName
+        cacheExtra[GestaltArtwork.artworkKey] = artwork
 
         plist["CacheExtra"] = cacheExtra
     }

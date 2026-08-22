@@ -27,15 +27,15 @@ enum TendiesError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .notAZipFile:
-            "File bukan paket .tendies yang valid (signature ZIP tidak ditemukan)."
+            "The file is not a valid .tendies package (ZIP signature not found)."
         case .corruptArchive(let detail):
-            "Arsip rusak: \(detail)"
+            "Corrupt archive: \(detail)"
         case .unsupportedCompression(let method):
-            "Metode kompresi \(method) tidak didukung."
+            "Compression method \(method) is unsupported."
         case .missingDescriptorStructure:
-            "Paket tidak ber struktur descriptor PosterBoard (butuh versions/1/contents atau Descriptor.plist)."
+            "The package has no valid PosterBoard descriptor structure (requires versions/1/contents or Descriptor.plist)."
         case .extractionFailed(let detail):
-            "Gagal ekstrak: \(detail)"
+            "Extraction failed: \(detail)"
         }
     }
 }
@@ -148,13 +148,13 @@ enum TendiesPackage {
             // Read the local header to find where the payload starts.
             let localOffset = localHeaderOffset
             guard localOffset + 30 <= bytes.count, readU32(bytes, localOffset) == 0x04034b50 else {
-                throw TendiesError.corruptArchive("local header untuk \(path)")
+                throw TendiesError.corruptArchive("local header for \(path)")
             }
             let localNameLength = Int(readU16(bytes, localOffset + 26))
             let localExtraLength = Int(readU16(bytes, localOffset + 28))
             let dataStart = localOffset + 30 + localNameLength + localExtraLength
             guard dataStart + compressedSize <= bytes.count else {
-                throw TendiesError.corruptArchive("payload untuk \(path)")
+                throw TendiesError.corruptArchive("payload for \(path)")
             }
 
             entries.append(TendiesEntry(

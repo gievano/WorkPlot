@@ -42,6 +42,11 @@ enum DeviceCapability {
             guard let family = iphoneFamily else { return false }
             // iPhone16,* and newer are iPhone 15 series and above.
             return family <= 15
+        case .iphone11Or12Only:
+            // Machine families map one below the marketing series:
+            // iPhone12,* is iPhone 11, iPhone13,* is iPhone 12.
+            guard let family = iphoneFamily else { return false }
+            return family == 12 || family == 13
         case nil:
             return true
         }

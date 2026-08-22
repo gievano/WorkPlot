@@ -35,8 +35,10 @@ enum RestartAction: CaseIterable, Hashable {
     }
 }
 
-/// Confirmation dialog + follow-up instruction sheet shared by every
-/// heavy-tweak apply flow.
+/// Non-dismissible restart prompt shared by every heavy-tweak apply flow.
+/// Deliberately an `.alert` instead of a confirmationDialog: iOS alerts are
+/// modal and cannot be dismissed by tapping outside, so the user MUST pick
+/// one of the three escalation paths before moving on.
 struct HeavyRestartFlow: ViewModifier {
     @ObservedObject var manager = ExploitManager.shared
     @Binding var isPresented: Bool
@@ -44,13 +46,12 @@ struct HeavyRestartFlow: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .confirmationDialog(
-                L10n.shared.tr("restart.options.title"),
-                isPresented: $isPresented,
-                titleVisibility: .visible
+            .alert(
+                L10n.shared.tr("restart.required.title"),
+                isPresented: $isPresented
             ) {
                 ForEach(RestartAction.allCases, id: \.self) { action in
-                    Button(action.labelKey) { handle(action) }
+                    Button(L10n.shared.tr(action.labelKey)) { handle(action) }
                 }
             } message: {
                 Text(L10n.shared.tr("restart.options.message"))
