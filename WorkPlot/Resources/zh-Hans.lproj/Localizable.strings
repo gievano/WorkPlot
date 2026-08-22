@@ -187,3 +187,7 @@
 // 相机 2 倍变焦 (F4，实验性)
 "tweak.zoom2x.title" = "相机 2 倍变焦开关";
 "tweak.zoom2x.detail" = "实验性：将照片/视频变焦倍数提升到 2，让 1200 万像素机型（iPhone 15 以下）的相机可能显示 2 倍变焦开关。尚未经社区验证。";
+
+// 图形风格 (F5，实验性)
+"tweak.graphicsstyle.title" = "图形风格";
+"tweak.graphicsstyle.detail" = "实验性：在最高到 iPhone 13 的设备上强制使用更高的图形性能档位 (apple-graphics-performance-tier)。与最新图形风格的对应关系尚未经社区验证。";

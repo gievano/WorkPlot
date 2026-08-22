@@ -187,3 +187,7 @@
 // Zoom 2x camera (F4, thử nghiệm)
 "tweak.zoom2x.title" = "Công tắc zoom 2x camera";
 "tweak.zoom2x.detail" = "THỬ NGHIỆM: nâng hệ số zoom ảnh/video lên 2 để ứng dụng Camera mặc định có thể hiển thị công tắc 2x trên thiết bị 12MP (dưới iPhone 15). Chưa được cộng đồng xác minh.";
+
+// Kiểu đồ họa (F5, thử nghiệm)
+"tweak.graphicsstyle.title" = "Kiểu đồ họa";
+"tweak.graphicsstyle.detail" = "THỬ NGHIỆM: buộc dùng cấp hiệu năng đồ họa cao hơn (apple-graphics-performance-tier) trên thiết bị đến iPhone 13. Tương ứng với kiểu đồ họa mới nhất chưa được cộng đồng xác minh.";

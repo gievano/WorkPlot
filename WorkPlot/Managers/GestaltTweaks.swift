@@ -72,6 +72,12 @@ enum GestaltTweakCatalog {
         .init(id: .colorPaletteGraphics, category: .display, title: L10n.shared.tr("tweak.colorpalette.title"), detail: L10n.shared.tr("tweak.colorpalette.detail"), values: ["03hWmMtMs+4nzama4/PzHQ": 1], isExperimental: true, deviceGate: .iphone13OrLater),
         .init(id: .enableLiquidGlassLowPerformance, category: .display, title: "Liquid Glass Low-Performance ON", detail: "For iOS 26 and later.", values: ["SAGvsp6O6kAQ4fEfDJpC4Q": 1]),
         .init(id: .disableLiquidGlassLowPerformance, category: .display, title: "Liquid Glass Low-Performance OFF", detail: "Mutually exclusive with the option above.", values: ["SAGvsp6O6kAQ4fEfDJpC4Q": 0]),
+        // TODO(F5): Tidak ada key CacheExtra bernama GraphicsStyle yang
+        // terverifikasi. apple-graphics-performance-tier
+        // (oOV1jhJbdV3AddkcCg0AEA, diperkenalkan di iOS 17.0) adalah key resmi
+        // paling plausibel untuk mengatur tier/gaya grafis; verifikasi
+        // on-device masih diperlukan.
+        .init(id: .graphicsStyle, category: .display, title: L10n.shared.tr("tweak.graphicsstyle.title"), detail: L10n.shared.tr("tweak.graphicsstyle.detail"), values: ["oOV1jhJbdV3AddkcCg0AEA": 1], isExperimental: true, deviceGate: .iphone13OrBelow),
 
         .init(id: .bootChime, category: .hardware, title: "Boot & Shutdown Chime", detail: "Enables boot/shutdown chime capability.", values: ["QHxt+hGLaBPbQJbXiUJX3w": 1]),
         .init(id: .chargeLimit, category: .hardware, title: "Charge Limit Menu", detail: "Shows Settings menu; actual limiting depends on hardware.", values: ["37NVydb//GP/GrhuTN+exg": 1]),

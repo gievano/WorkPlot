@@ -187,3 +187,7 @@
 // Zoom 2x kamera (F4, eksperimental)
 "tweak.zoom2x.title" = "Toggle Zoom 2x Kamera";
 "tweak.zoom2x.detail" = "EKSPERIMENTAL: menaikkan faktor zoom foto/video menjadi 2 agar aplikasi Kamera stok bisa menampilkan toggle 2x di perangkat 12MP (di bawah iPhone 15). Belum terverifikasi komunitas.";
+
+// Graphics Style (F5, eksperimental)
+"tweak.graphicsstyle.title" = "Graphics Style";
+"tweak.graphicsstyle.detail" = "EKSPERIMENTAL: memaksa tier performa grafis lebih tinggi (apple-graphics-performance-tier) di perangkat sampai iPhone 13. Pemetaan pastinya ke graphics style terbaru belum terverifikasi komunitas.";
