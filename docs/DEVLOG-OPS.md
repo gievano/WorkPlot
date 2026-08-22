@@ -47,3 +47,13 @@
 ## 2026-08-21 — Rilis v1.0.0
 
 - Rilis stabil pertama v1.0.0 dibuat dari tag `v*` melalui job `release` di workflow yang sama (softprops/action-gh-release@v2, generate_release_notes aktif). Job ini menjadi pemegang badge "Latest" dan tidak boleh diganggu oleh job rolling.
+
+---
+
+## 2026-08-22 — Hapus output Graphify dari version control
+
+**The Change:** `.gitignore` kini mengabaikan seluruh `graphify-out/`, dan output Graphify yang sebelumnya tracked dikeluarkan dari index Git tanpa menghapus salinan lokal.
+
+**The Reasoning:** Knowledge graph adalah artefak lokal yang dapat dibuat ulang dan tidak perlu menambah ukuran maupun noise pada repository.
+
+**The Tech Debt:** Tidak ada; artefak dapat diregenerasi lokal saat dibutuhkan.
