@@ -79,7 +79,7 @@ struct BackupRestoreManagerView: View {
                 case .success(let urls):
                     if let url = urls.first { importBackup(from: url) }
                 case .failure(let error):
-                    manager.statusText = "Gagal impor: \(error.localizedDescription)"
+                    manager.statusText = String(format: l10n.tr("common.importFailedDetail"), error.localizedDescription)
                 }
             }
             .confirmationDialog(
@@ -109,15 +109,15 @@ struct BackupRestoreManagerView: View {
 
     private func createBackup() {
         guard let data = manager.readGestaltData() else {
-            manager.statusText = "Gagal: tidak dapat membaca MobileGestalt."
+            manager.statusText = L10n.shared.tr("common.readFail")
             return
         }
         do {
             _ = try GestaltBackupStore.create(from: data)
             manager.refreshBackups()
-            manager.statusText = "Backup berhasil dibuat."
+            manager.statusText = L10n.shared.tr("backup.createOk")
         } catch {
-            manager.statusText = "Gagal membuat backup: \(error.localizedDescription)"
+            manager.statusText = String(format: L10n.shared.tr("backup.createFail"), error.localizedDescription)
         }
     }
 
@@ -131,13 +131,13 @@ struct BackupRestoreManagerView: View {
             guard let dictionary = try PropertyListSerialization.propertyList(
                 from: data, options: [], format: &format) as? [String: Any],
                   dictionary["CacheExtra"] is [String: Any] else {
-                throw PlistValueError.invalid("File bukan MobileGestalt plist yang valid (CacheExtra tidak ditemukan).")
+                throw PlistValueError.invalid(L10n.shared.tr("backup.invalidFile"))
             }
             _ = try GestaltBackupStore.create(from: data)
             manager.refreshBackups()
-            manager.statusText = "Backup \(url.lastPathComponent) diimpor."
+            manager.statusText = String(format: L10n.shared.tr("backup.importedOk"), url.lastPathComponent)
         } catch {
-            manager.statusText = "Gagal impor: \(error.localizedDescription)"
+            manager.statusText = String(format: L10n.shared.tr("common.importFailedDetail"), error.localizedDescription)
         }
     }
 }

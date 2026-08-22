@@ -7,11 +7,11 @@ enum GestaltTweakCategory: String, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .region: "Region"
-        case .display: "Display & Appearance"
-        case .hardware: "Hardware Capabilities"
-        case .ipad: "iPad Capabilities"
-        case .internalFeatures: "Internal & Research"
+        case .region: L10n.shared.tr("tweak.category.region")
+        case .display: L10n.shared.tr("tweak.category.display")
+        case .hardware: L10n.shared.tr("tweak.category.hardware")
+        case .ipad: L10n.shared.tr("tweak.category.ipad")
+        case .internalFeatures: L10n.shared.tr("tweak.category.internal")
         }
     }
 }
@@ -21,7 +21,7 @@ enum GestaltTweakID: String, CaseIterable, Identifiable {
     case aiRegionUS
     case siriMode
     case disableParallax, enableLiquidGlassLowPerformance, disableLiquidGlassLowPerformance
-    case colorPaletteGraphics
+    case colorPaletteGraphics, colorPaletteLegacy
     case graphicsStyle
     case bootChime, chargeLimit, tapToWake, cameraButton, cameraZoom2x
     case pencil, actionButton, collisionSOS
@@ -38,6 +38,9 @@ enum GestaltDeviceGate {
     case iphone13OrBelow
     /// Devices below the iPhone 15 series (12MP-era cameras).
     case belowIPhone15
+    /// Exactly the marketing iPhone 11 and 12 series
+    /// (machineIdentifier iPhone12,* / iPhone13,*).
+    case iphone11Or12Only
 }
 
 struct GestaltTweakDefinition: Identifiable {
@@ -49,6 +52,10 @@ struct GestaltTweakDefinition: Identifiable {
     var isRisky = false
     var isExperimental = false
     var deviceGate: GestaltDeviceGate? = nil
+    /// When true, applying this tweak also flips the cached capability flag
+    /// in the top-level CacheData blob (CacheDataPatcher) alongside the
+    /// CacheExtra values above.
+    var requiresCacheDataFlag = false
 
     var isSupportedOnThisDevice: Bool {
         DeviceCapability.supports(deviceGate)
@@ -57,13 +64,13 @@ struct GestaltTweakDefinition: Identifiable {
 
 enum GestaltTweakCatalog {
     static let definitions: [GestaltTweakDefinition] = [
-        .init(id: .aiRegionUS, category: .region, title: "AI Region: US (LL/A)", detail: "Spoofs US region untuk Apple Intelligence; bisa spoof model device.", values: [:], isRisky: true),
+        .init(id: .aiRegionUS, category: .region, title: L10n.shared.tr("tweak.airegion.title"), detail: L10n.shared.tr("tweak.airegion.detail"), values: [:], isRisky: true),
         .init(id: .siriMode, category: .region, title: L10n.shared.tr("tweak.siriaimode.title"), detail: L10n.shared.tr("tweak.siriaimode.detail"), values: ["a3n5T9sFtyQ74NEp9ESxg": 2]),
 
-        .init(id: .supportsDynamicIsland, category: .display, title: "Dynamic Island", detail: "Enable Dynamic Island capability.", values: ["YlEtTtHlNesRBMal1CqRaA": 1]),
-        .init(id: .alwaysOnDisplay, category: .display, title: "Always-On Display", detail: "May increase burn-in risk on unsupported devices.", values: ["2OOJf1VhaM7NxfRok3HbWQ": 1, "j8/Omm6s1lsmTDFsXjsBfA": 1], isRisky: true),
-        .init(id: .alwaysOnDisplayVibrancy, category: .display, title: "AOD Vibrancy", detail: "Use when AOD rendering looks incorrect.", values: ["ykpu7qyhqFweVMKtxNylWA": 1]),
-        .init(id: .disableParallax, category: .display, title: "Disable Wallpaper Parallax", detail: "Stops wallpaper motion based on device movement.", values: ["UIParallaxCapability": 0]),
+        .init(id: .supportsDynamicIsland, category: .display, title: L10n.shared.tr("tweak.dynamicisland.title"), detail: L10n.shared.tr("tweak.dynamicisland.detail"), values: ["YlEtTtHlNesRBMal1CqRaA": 1]),
+        .init(id: .alwaysOnDisplay, category: .display, title: L10n.shared.tr("tweak.aod.title"), detail: L10n.shared.tr("tweak.aod.detail"), values: ["2OOJf1VhaM7NxfRok3HbWQ": 1, "j8/Omm6s1lsmTDFsXjsBfA": 1], isRisky: true),
+        .init(id: .alwaysOnDisplayVibrancy, category: .display, title: L10n.shared.tr("tweak.aodvibrancy.title"), detail: L10n.shared.tr("tweak.aodvibrancy.detail"), values: ["ykpu7qyhqFweVMKtxNylWA": 1]),
+        .init(id: .disableParallax, category: .display, title: L10n.shared.tr("tweak.parallax.title"), detail: L10n.shared.tr("tweak.parallax.detail"), values: ["UIParallaxCapability": 0]),
         // F3 riset ulang (The Apple Wiki + Nugget/GestaltEdit): TIDAK ada
         // key CacheExtra terverifikasi komunitas untuk Color Palette. Key
         // lama (03hWmMtMs+4nzama4/PzHQ = CameraLiveEffectsCapability,
@@ -72,39 +79,40 @@ enum GestaltTweakCatalog {
         // grafis resmi (oOV1jhJbdV3AddkcCg0AEA) yang dipakai komunitas
         // untuk fitur generasi iPhone 16 - eksperimental, efek visual
         // belum terjamin.
-        .init(id: .colorPaletteGraphics, category: .display, title: L10n.shared.tr("tweak.colorpalette.title"), detail: L10n.shared.tr("tweak.colorpalette.detail"), values: ["03hWmMtMs+4nzama4/PzHQ": 1, "oOV1jhJbdV3AddkcCg0AEA": 1], isExperimental: true, deviceGate: .iphone13OrLater),
-        .init(id: .enableLiquidGlassLowPerformance, category: .display, title: "Liquid Glass Low-Performance ON", detail: "For iOS 26 and later.", values: ["SAGvsp6O6kAQ4fEfDJpC4Q": 1]),
-        .init(id: .disableLiquidGlassLowPerformance, category: .display, title: "Liquid Glass Low-Performance OFF", detail: "Mutually exclusive with the option above.", values: ["SAGvsp6O6kAQ4fEfDJpC4Q": 0]),
-        // TODO(F5): Tidak ada key CacheExtra bernama GraphicsStyle yang
-        // terverifikasi. apple-graphics-performance-tier
-        // (oOV1jhJbdV3AddkcCg0AEA, diperkenalkan di iOS 17.0) adalah key resmi
-        // paling plausibel untuk mengatur tier/gaya grafis; verifikasi
-        // on-device masih diperlukan.
-        .init(id: .graphicsStyle, category: .display, title: L10n.shared.tr("tweak.graphicsstyle.title"), detail: L10n.shared.tr("tweak.graphicsstyle.detail"), values: ["oOV1jhJbdV3AddkcCg0AEA": 1], isExperimental: true, deviceGate: .iphone13OrBelow),
+        // Dual-cache: menulis SET kandidat CacheExtra (capability live
+        // effects + tier grafis resmi) DAN flip flag capability di CacheData
+        // lewat CacheDataPatcher dalam satu apply.
+        .init(id: .colorPaletteGraphics, category: .display, title: L10n.shared.tr("tweak.colorpalette.title"), detail: L10n.shared.tr("tweak.colorpalette.detail"), values: ["03hWmMtMs+4nzama4/PzHQ": 1, "oOV1jhJbdV3AddkcCg0AEA": 1], isExperimental: true, deviceGate: .iphone13OrLater, requiresCacheDataFlag: true),
+        .init(id: .enableLiquidGlassLowPerformance, category: .display, title: L10n.shared.tr("tweak.lglowon.title"), detail: L10n.shared.tr("tweak.lglowon.detail"), values: ["SAGvsp6O6kAQ4fEfDJpC4Q": 1]),
+        .init(id: .disableLiquidGlassLowPerformance, category: .display, title: L10n.shared.tr("tweak.lglowoff.title"), detail: L10n.shared.tr("tweak.lglowoff.detail"), values: ["SAGvsp6O6kAQ4fEfDJpC4Q": 0]),
+        // TODO(F5): offset CacheData untuk graphics style belum terverifikasi
+        // komunitas; sementara memakai flip flag capability bersama (lihat
+        // CacheDataPatcher). Gating dipertegas ke iPhone 11 & 12 SAJA.
+        .init(id: .graphicsStyle, category: .display, title: L10n.shared.tr("tweak.graphicsstyle.title"), detail: L10n.shared.tr("tweak.graphicsstyle.detail"), values: ["oOV1jhJbdV3AddkcCg0AEA": 1], isExperimental: true, deviceGate: .iphone11Or12Only, requiresCacheDataFlag: true),
+        // ponytail: CameraLiveEffectsCapability is the best current
+        // CacheExtra candidate; replace it when an on-device trace identifies
+        // a dedicated legacy-palette key.
+        .init(id: .colorPaletteLegacy, category: .display, title: L10n.shared.tr("tweak.palettelegacy.title"), detail: L10n.shared.tr("tweak.palettelegacy.detail"), values: ["03hWmMtMs+4nzama4/PzHQ": 1], isExperimental: true, deviceGate: .iphone13OrBelow, requiresCacheDataFlag: true),
 
-        .init(id: .bootChime, category: .hardware, title: "Boot & Shutdown Chime", detail: "Enables boot/shutdown chime capability.", values: ["QHxt+hGLaBPbQJbXiUJX3w": 1]),
-        .init(id: .chargeLimit, category: .hardware, title: "Charge Limit Menu", detail: "Shows Settings menu; actual limiting depends on hardware.", values: ["37NVydb//GP/GrhuTN+exg": 1]),
-        .init(id: .tapToWake, category: .hardware, title: "Tap to Wake", detail: "Primarily for iPhone SE where unavailable.", values: ["yZf3GTRMGTuwSV/lD7Cagw": 1]),
-        .init(id: .cameraButton, category: .hardware, title: "Camera Control Settings", detail: "Shows Camera Control settings and capabilities.", values: ["CwvKxM2cEogD3p+HYgaW0Q": 1, "oOV1jhJbdV3AddkcCg0AEA": 1]),
-        // TODO(F4): Belum ada key yang terverifikasi secara spesifik memaksa
-        // toggle zoom 2x di aplikasi Kamera stok perangkat < iPhone 15.
-        // AggregateDevicePhotoZoomFactor (JLP/IinyzetEPztvoNUNKg) dan
-        // RearFacingCameraMaxVideoZoomFactor (WC6wwFV23k19BlUQIAwDTg) adalah
-        // key resmi terdokumentasi ("maximum zoom level in photo/video mode");
-        // nilai 2 adalah kandidat paling plausibel. Verifikasi on-device
-        // masih diperlukan.
-        .init(id: .cameraZoom2x, category: .hardware, title: L10n.shared.tr("tweak.zoom2x.title"), detail: L10n.shared.tr("tweak.zoom2x.detail"), values: ["JLP/IinyzetEPztvoNUNKg": 2, "WC6wwFV23k19BlUQIAwDTg": 2], isExperimental: true, deviceGate: .belowIPhone15),
-        .init(id: .pencil, category: .hardware, title: "Apple Pencil Settings", detail: "Shows Apple Pencil settings page.", values: ["yhHcB0iH0d1XzPO/CFd3ow": 1]),
-        .init(id: .actionButton, category: .hardware, title: "Action Button Settings", detail: "Shows Action Button settings page.", values: ["cT44WE1EohiwRzhsZ8xEsw": 1]),
-        .init(id: .collisionSOS, category: .hardware, title: "Collision SOS", detail: "Shows collision detection in SOS settings.", values: ["HCzWusHQwZDea6nNhaKndw": 1]),
+        .init(id: .bootChime, category: .hardware, title: L10n.shared.tr("tweak.bootchime.title"), detail: L10n.shared.tr("tweak.bootchime.detail"), values: ["QHxt+hGLaBPbQJbXiUJX3w": 1]),
+        .init(id: .chargeLimit, category: .hardware, title: L10n.shared.tr("tweak.chargelimit.title"), detail: L10n.shared.tr("tweak.chargelimit.detail"), values: ["37NVydb//GP/GrhuTN+exg": 1]),
+        .init(id: .tapToWake, category: .hardware, title: L10n.shared.tr("tweak.taptowake.title"), detail: L10n.shared.tr("tweak.taptowake.detail"), values: ["yZf3GTRMGTuwSV/lD7Cagw": 1]),
+        .init(id: .cameraButton, category: .hardware, title: L10n.shared.tr("tweak.cameracontrol.title"), detail: L10n.shared.tr("tweak.cameracontrol.detail"), values: ["CwvKxM2cEogD3p+HYgaW0Q": 1, "oOV1jhJbdV3AddkcCg0AEA": 1]),
+        // Dual-cache: CacheExtra zoom factor + flip flag capability
+        // CacheData diterapkan BERSAMAAN dalam satu staged-apply; CacheExtra
+        // saja terbukti tidak cukup memunculkan toggle 2x.
+        .init(id: .cameraZoom2x, category: .hardware, title: L10n.shared.tr("tweak.zoom2x.title"), detail: L10n.shared.tr("tweak.zoom2x.detail"), values: ["JLP/IinyzetEPztvoNUNKg": 2, "WC6wwFV23k19BlUQIAwDTg": 2], isExperimental: true, deviceGate: .belowIPhone15, requiresCacheDataFlag: true),
+        .init(id: .pencil, category: .hardware, title: L10n.shared.tr("tweak.pencil.title"), detail: L10n.shared.tr("tweak.pencil.detail"), values: ["yhHcB0iH0d1XzPO/CFd3ow": 1]),
+        .init(id: .actionButton, category: .hardware, title: L10n.shared.tr("tweak.actionbutton.title"), detail: L10n.shared.tr("tweak.actionbutton.detail"), values: ["cT44WE1EohiwRzhsZ8xEsw": 1]),
+        .init(id: .collisionSOS, category: .hardware, title: L10n.shared.tr("tweak.collisionsos.title"), detail: L10n.shared.tr("tweak.collisionsos.detail"), values: ["HCzWusHQwZDea6nNhaKndw": 1]),
 
-        .init(id: .stageManager, category: .ipad, title: "Stage Manager Support", detail: "Marks device as supporting Stage Manager.", values: ["qeaj75wk3HF4DwQ8qbIi7g": 1]),
-        .init(id: .iPadApps, category: .ipad, title: "Allow iPad Apps", detail: "Enables iPad app compatibility types on iPhone.", values: ["9MZ5AdH43csAUajl/dU+IQ": [1, 2]]),
-        .init(id: .iPadOS, category: .ipad, title: "Enable iPadOS Mode", detail: "Mengubah 5 capabilities + CacheData; eksperimental dan berisiko tinggi.", values: ["mG0AnH/Vy1veoqoLRAIgTA": 1, "UCG5MkVahJxG1YULbbd5Bg": 1, "ZYqko/XM5zD3XBfN5RmaXA": 1, "nVh/gwNpy7Jv1NOk00CMrw": 1, "uKc7FPnEO++lVhHWHFlGbQ": 1], isRisky: true),
+        .init(id: .stageManager, category: .ipad, title: L10n.shared.tr("tweak.stagemanager.title"), detail: L10n.shared.tr("tweak.stagemanager.detail"), values: ["qeaj75wk3HF4DwQ8qbIi7g": 1]),
+        .init(id: .iPadApps, category: .ipad, title: L10n.shared.tr("tweak.ipadapps.title"), detail: L10n.shared.tr("tweak.ipadapps.detail"), values: ["9MZ5AdH43csAUajl/dU+IQ": [1, 2]]),
+        .init(id: .iPadOS, category: .ipad, title: L10n.shared.tr("tweak.ipados.title"), detail: L10n.shared.tr("tweak.ipados.detail"), values: ["mG0AnH/Vy1veoqoLRAIgTA": 1, "UCG5MkVahJxG1YULbbd5Bg": 1, "ZYqko/XM5zD3XBfN5RmaXA": 1, "nVh/gwNpy7Jv1NOk00CMrw": 1, "uKc7FPnEO++lVhHWHFlGbQ": 1], isRisky: true),
 
-        .init(id: .internalInstall, category: .internalFeatures, title: "Apple Internal Install", detail: "Enables internal capabilities like Metal HUD; some services may misbehave.", values: ["EqrsVvjcYDdxHBiQmGhAWw": 1], isRisky: true),
-        .init(id: .internalStorage, category: .internalFeatures, title: "Internal Storage View", detail: "Shows internal files in Storage settings; high risk on some iPads.", values: ["LBJfwOEzExRxzlAnSuI7eg": 1], isRisky: true),
-        .init(id: .securityResearchDevice, category: .internalFeatures, title: "Security Research Device Mode", detail: "Marks device as a Security Research Device.", values: ["XYlJKKkj2hztRP1NWWnhlw": 1], isRisky: true),
+        .init(id: .internalInstall, category: .internalFeatures, title: L10n.shared.tr("tweak.internalinstall.title"), detail: L10n.shared.tr("tweak.internalinstall.detail"), values: ["EqrsVvjcYDdxHBiQmGhAWw": 1], isRisky: true),
+        .init(id: .internalStorage, category: .internalFeatures, title: L10n.shared.tr("tweak.internalstorage.title"), detail: L10n.shared.tr("tweak.internalstorage.detail"), values: ["LBJfwOEzExRxzlAnSuI7eg": 1], isRisky: true),
+        .init(id: .securityResearchDevice, category: .internalFeatures, title: L10n.shared.tr("tweak.securityresearch.title"), detail: L10n.shared.tr("tweak.securityresearch.detail"), values: ["XYlJKKkj2hztRP1NWWnhlw": 1], isRisky: true),
     ]
 
     static func definition(for id: GestaltTweakID) -> GestaltTweakDefinition? {
@@ -117,10 +125,10 @@ enum GestaltCacheDataPatchError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .cacheDataMissing: "MobileGestalt tidak punya CacheData, jadi iPadOS mode tidak bisa diaktifkan."
-        case .cacheDataTooShort: "CacheData terlalu pendek untuk dipatch dengan aman."
-        case .patternNotFound: "Marker iPadOS dari Nugget tidak ditemukan di CacheData."
-        case .invalidOffset: "Validasi offset CacheData gagal. Tidak ada perubahan."
+        case .cacheDataMissing: L10n.shared.tr("ipadosp.error.missing")
+        case .cacheDataTooShort: L10n.shared.tr("ipadosp.error.tooshort")
+        case .patternNotFound: L10n.shared.tr("ipadosp.error.notfound")
+        case .invalidOffset: L10n.shared.tr("ipadosp.error.invalidoffset")
         }
     }
 }

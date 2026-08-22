@@ -109,7 +109,7 @@ struct PresetLabView: View {
                 case .success(let urls):
                     if let url = urls.first { importPreset(from: url) }
                 case .failure(let error):
-                    manager.statusText = "Gagal impor: \(error.localizedDescription)"
+                    manager.statusText = String(format: l10n.tr("common.importFailedDetail"), error.localizedDescription)
                 }
             }
             .sheet(item: $sharedExportURL) { item in

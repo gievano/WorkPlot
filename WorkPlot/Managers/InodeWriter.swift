@@ -22,12 +22,12 @@ enum InodeWriter {
 
         let fd = open(path, O_WRONLY | O_CLOEXEC | O_NOFOLLOW)
         guard fd >= 0 else {
-            throw InodeWriterError(message: errnoMessage("Gagal membuka file"))
+            throw InodeWriterError(message: errnoMessage("Failed to open file"))
         }
         defer { close(fd) }
 
         guard ftruncate(fd, 0) == 0, lseek(fd, 0, SEEK_SET) == 0 else {
-            throw InodeWriterError(message: errnoMessage("Gagal reset isi file"))
+            throw InodeWriterError(message: errnoMessage("Failed to reset file contents"))
         }
 
         var written = 0
@@ -40,7 +40,7 @@ enum InodeWriter {
             }
         }
         guard written == data.count, fsync(fd) == 0 else {
-            throw InodeWriterError(message: errnoMessage("Gagal menulis file"))
+            throw InodeWriterError(message: errnoMessage("Failed to write file"))
         }
     }
 }

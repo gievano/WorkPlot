@@ -7,27 +7,27 @@ struct AppIcon: Identifiable {
     let colors: [Color]
 
     static var all: [AppIcon] { [
-        AppIcon(id: "", titleKey: "icon.default", subtitle: "WorkPlot Classic",
+        AppIcon(id: "", titleKey: "icon.default", subtitleKey: "icon.subtitle.classic",
                 colors: [.blue, .indigo]),
-        AppIcon(id: "WPCollage", titleKey: "icon.collage", subtitle: "WP Devices",
+        AppIcon(id: "WPCollage", titleKey: "icon.collage", subtitleKey: "icon.subtitle.devices",
                 colors: [.orange, .pink]),
-        AppIcon(id: "WPDark", titleKey: "icon.dark", subtitle: "Dark Theme",
+        AppIcon(id: "WPDark", titleKey: "icon.dark", subtitleKey: "icon.subtitle.dark",
                 colors: [.gray, .black]),
-        AppIcon(id: "WPNeon", titleKey: "icon.neon", subtitle: "Neon Glow",
+        AppIcon(id: "WPNeon", titleKey: "icon.neon", subtitleKey: "icon.subtitle.neon",
                 colors: [.green, .purple]),
-        AppIcon(id: "WPMinimal", titleKey: "icon.minimal", subtitle: "Minimal Outline",
+        AppIcon(id: "WPMinimal", titleKey: "icon.minimal", subtitleKey: "icon.subtitle.minimal",
                 colors: [.white, .gray]),
-        AppIcon(id: "WPRetro", titleKey: "icon.retro", subtitle: "Vintage",
+        AppIcon(id: "WPRetro", titleKey: "icon.retro", subtitleKey: "icon.subtitle.retro",
                 colors: [.brown, .orange]),
-        AppIcon(id: "WPGradient", titleKey: "icon.gradient", subtitle: "Color Gradient",
+        AppIcon(id: "WPGradient", titleKey: "icon.gradient", subtitleKey: "icon.subtitle.gradient",
                 colors: [.red, .yellow])
         ]
     }
 
-    init(id: String, titleKey: String, subtitle: String, colors: [Color]) {
+    init(id: String, titleKey: String, subtitleKey: String, colors: [Color]) {
         self.id = id
         self.title = L10n.shared.tr(titleKey)
-        self.subtitle = subtitle
+        self.subtitle = L10n.shared.tr(subtitleKey)
         self.colors = colors
     }
 }

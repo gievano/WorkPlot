@@ -15,7 +15,7 @@ enum ModelSpoofKeyError: LocalizedError {
     case missingSpoofTarget
 
     var errorDescription: String? {
-        "Pilih dulu perangkat spoof di bagian Spoof sebelum mengaktifkan key ProductType."
+        "Select a spoofed device in the Spoof section before enabling the ProductType key."
     }
 }
 

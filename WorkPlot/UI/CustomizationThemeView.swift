@@ -30,7 +30,7 @@ struct PosterBoardLabView: View {
                 } else if !PosterBoardAccess.isAvailable {
                     VStack(spacing: 12) {
                         Image(systemName: "photo.badge.exclamationmark").font(.largeTitle).foregroundColor(.orange)
-                        Text("bad_query tidak tersedia; PosterBoard tidak dapat diakses di perangkat ini.")
+                        Text(l10n.tr("pb.badqueryUnavailable"))
                             .multilineTextAlignment(.center)
                             .foregroundColor(.secondary)
                     }
@@ -53,7 +53,7 @@ struct PosterBoardLabView: View {
                 case .success(let urls):
                     if let url = urls.first { installTendies(from: url) }
                 case .failure(let error):
-                    manager.statusText = "Gagal: \(error.localizedDescription)"
+                    manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
                     phase = ""
                 }
             }
@@ -75,8 +75,8 @@ struct PosterBoardLabView: View {
     private var wallpaperList: some View {
         List {
             Section(
-                header: Text("Wallpaper Lab"),
-                footer: Text("Impor paket .tendies (format PocketPoster), validasi struktur descriptor, lalu pasang ke PosterBoard. Respring diperlukan setelah pemasangan.")
+                header: Text(l10n.tr("pb.labHeader")),
+                footer: Text(l10n.tr("pb.labFooter"))
             ) {
                 Button {
                     isShowingImporter = true
@@ -90,7 +90,7 @@ struct PosterBoardLabView: View {
                 } else if !phase.isEmpty {
                     Text(phase)
                         .font(.caption)
-                        .foregroundColor(manager.statusText.hasPrefix("Gagal") ? .orange : .secondary)
+                        .foregroundColor(manager.statusText.hasPrefix(l10n.failPrefix) ? .orange : .secondary)
                 }
             }
 
@@ -204,15 +204,15 @@ struct PosterBoardLabView: View {
 
                 let descriptorFolders = try TendiesPackage.extract(data)
 
-                DispatchQueue.main.async { self.phase = "Mencari container PosterBoard..." }
+                DispatchQueue.main.async { self.phase = l10n.tr("pb.phase.finding") }
                 let appHash = try PosterBoardAccess.findPosterBoardHash()
 
-                DispatchQueue.main.async { self.phase = "Menulis wallpaper..." }
+                DispatchQueue.main.async { self.phase = l10n.tr("pb.phase.writing") }
                 try PosterBoardAccess.writeDescriptors(appHash: appHash, descriptorFolders: descriptorFolders)
 
                 DispatchQueue.main.async {
                     self.isInstalling = false
-                    self.phase = "Wallpaper terpasang. Respring dalam 1 detik..."
+                    self.phase = l10n.tr("pb.phase.installed")
                     self.reloadInstalled()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                         self.manager.respringRequested = true
@@ -221,8 +221,8 @@ struct PosterBoardLabView: View {
             } catch {
                 DispatchQueue.main.async {
                     self.isInstalling = false
-                    self.manager.statusText = "Gagal: \(error.localizedDescription)"
-                    self.phase = "Gagal: \(error.localizedDescription)"
+                    self.manager.statusText = String(format: self.l10n.tr("common.failPrefix"), error.localizedDescription)
+                    self.phase = String(format: self.l10n.tr("common.failPrefix"), error.localizedDescription)
                 }
             }
         }
@@ -233,12 +233,12 @@ struct PosterBoardLabView: View {
             do {
                 try PosterBoardAccess.removeWallpaper(named: name)
                 DispatchQueue.main.async {
-                    self.manager.statusText = "Wallpaper \(name) dihapus."
+                    self.manager.statusText = String(format: self.l10n.tr("pb.removedOk"), name)
                     self.reloadInstalled()
                 }
             } catch {
                 DispatchQueue.main.async {
-                    self.manager.statusText = "Gagal: \(error.localizedDescription)"
+                    self.manager.statusText = String(format: self.l10n.tr("common.failPrefix"), error.localizedDescription)
                 }
             }
         }
