@@ -24,6 +24,15 @@ jobs:
             -o "$CHECK_BIN"
           "$CHECK_BIN"
 
+      - name: Check transactional inode writer
+        run: |
+          CHECK_BIN="$RUNNER_TEMP/check-inode-writer"
+          xcrun swiftc \
+            WorkPlot/Managers/InodeWriter.swift \
+            Support/InodeWriterCheck.swift \
+            -o "$CHECK_BIN"
+          "$CHECK_BIN"
+
       - name: Build unsigned archive
         run: |
           xcodebuild archive \
