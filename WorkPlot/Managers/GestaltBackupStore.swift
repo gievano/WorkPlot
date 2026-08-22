@@ -22,6 +22,17 @@ enum GestaltBackupStore {
         return try metadata(for: url)
     }
 
+    /// Writes data under a fixed human-readable name (e.g. "Stock Snapshot"),
+    /// replacing any previous file with the same name.
+    static func createNamed(_ name: String, from data: Data) throws -> GestaltBackup {
+        let directory = try backupDirectory()
+        let url = directory
+            .appendingPathComponent(name)
+            .appendingPathExtension("plist")
+        try data.write(to: url, options: .atomic)
+        return try metadata(for: url)
+    }
+
     static func list() throws -> [GestaltBackup] {
         let directory = try backupDirectory()
         return try FileManager.default.contentsOfDirectory(

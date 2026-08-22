@@ -57,3 +57,19 @@
 **The Reasoning:** Knowledge graph adalah artefak lokal yang dapat dibuat ulang dan tidak perlu menambah ukuran maupun noise pada repository.
 
 **The Tech Debt:** Tidak ada; artefak dapat diregenerasi lokal saat dibutuhkan.
+
+## 2026-08-23 - RDARFix: backup persisten, apply idempoten, harness CI
+
+**The Change:**
+- `WorkPlot/Managers/RDARFix.swift`: (1) backup persisten sekali-tulis ke `<Documents>/RDAR Backups/<nama-sanitized>` (+ sidecar JSON: path asli, tanggal, ukuran, versi app) sebelum patch pertama; (2) `apply()` idempoten via `plistIsAlreadyFixed` - file sudah ter-patch = return `.alreadyFixed` tanpa I/O tulis; (3) API restore publik; (4) error lease bad_query ditulis jujur & actionable (CMG hanya buka MobileGestaltCache, sarankan reconnect). Helper murni (sanitize nama backup, deteksi idempotensi, round-trip backup) dipisah dari entry point iOS yang diguard `#if canImport(UIKit)` agar bisa dikompil di macOS.
+- `Support/RDARFixCheck.swift` (baru): harness logic untuk macOS - sanitasi nama, deteksi idempotensi pada plist beneran, round-trip backup/restore + guard anti-overwrite & anti-metadata-salah di temp dir. Exit non-zero saat gagal.
+- `.github/workflows/main.yml`: step "Check RDAR fix logic" di job `build` (swiftc RDARFix.swift + RDARFixCheck.swift), mengikuti pola step check lain.
+
+**The Reasoning:**
+- Guard `canImport(UIKit)` dipilih alih-alih split file supaya satu sumber kebenaran: entry point device (yang butuh BadQueryLeaseScope/UIScreen) tidak ikut terkompil di macOS runner, helper murni tetap teruji CI.
+- Backup ditulis SEBELUM InodeWriter jalan - kalau write gagal/rollback, kondisi stock sudah aman tersimpan.
+- Idempotensi dicek dari isi plist (bukan flag eksternal) supaya tahan terhadap app reinstall.
+
+**The Tech Debt:**
+- `hasPersistentBackup` membaca 2 file kecil tiap akses (bukan cache) - fine untuk frekuensi UI saat ini.
+- Sanitasi nama backup = substitusi "_" flat; cukup untuk path sistem yang diketahui, ganti percent-encoding jika path target bertambah banyak.

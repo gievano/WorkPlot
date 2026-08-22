@@ -9,7 +9,7 @@ import Foundation
 
 enum AppleIntelligenceController {
     static let eligibilityKey = "A62OafQ85EJAiiqKn4agtg"
-    static let siriModeKey = "a3n5T9sFtyQ74NEp9ESxg"
+    static let siriModeKey = "a3n5T9sFtlyQ74NEp9ESxg"
 
     static func isEnabled(in plist: [String: Any]) -> Bool {
         let cacheExtra = plist["CacheExtra"] as? [String: Any] ?? [:]

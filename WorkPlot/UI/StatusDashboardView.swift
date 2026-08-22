@@ -10,7 +10,13 @@ struct StatusDashboardView: View {
             Form {
                 Section(header: Text(l10n.tr("home.info"))) {
                     HStack { Text(l10n.tr("home.buildLabel")); Spacer(); Text(manager.osBuild.isEmpty ? "—" : manager.osBuild).foregroundColor(.blue) }
+                    HStack { Text(l10n.tr("status.methodLabel")); Spacer(); Text(manager.exploitMethod.isEmpty ? "—" : manager.exploitMethod).foregroundColor(manager.sandboxGranted ? .green : .orange) }
                     HStack { Text(l10n.tr("home.statusLabel")); Spacer(); Text(manager.sandboxGranted ? l10n.tr("home.active") : l10n.tr("home.locked")).foregroundColor(manager.sandboxGranted ? .green : .orange) }
+                    if manager.showsSigningHint {
+                        Text(l10n.tr("status.signingHint"))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 Section(header: Text(l10n.tr("home.actionsHeader"))) {
                     Button(l10n.tr("status.rdarfix")) {
