@@ -220,7 +220,7 @@ enum SQLiteDatabase {
             var rows: [[String]] = []
             while sqlite3_step(statement) == SQLITE_ROW {
                 var values: [String] = []
-                values.reserveCapacity(columnCount)
+                values.reserveCapacity(Int(columnCount))
                 for index in 0..<columnCount {
                     if sqlite3_column_type(statement, index) == SQLITE_NULL {
                         values.append("NULL")
