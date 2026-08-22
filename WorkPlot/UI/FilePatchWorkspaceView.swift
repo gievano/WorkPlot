@@ -9,8 +9,24 @@
 
 import SwiftUI
 import UIKit
+import UniformTypeIdentifiers
 
 // MARK: - Main browser
+
+private enum NewFileItemKind: String, Identifiable, Equatable {
+    case file, folder
+    var id: String { rawValue }
+}
+
+private struct PendingFileTransfer {
+    let entry: FileEntry
+    let movesSource: Bool
+}
+
+private struct ExportedFile: Identifiable {
+    let url: URL
+    var id: String { url.path }
+}
 
 struct FilePatchWorkspaceView: View {
     @ObservedObject private var manager = ExploitManager.shared
@@ -25,6 +41,13 @@ struct FilePatchWorkspaceView: View {
     @State private var pendingDelete: FileEntry?
     @State private var renameEntry: FileEntry?
     @State private var renameText = ""
+    @State private var newItemKind: NewFileItemKind?
+    @State private var newItemName = ""
+    @State private var pendingTransfer: PendingFileTransfer?
+    @State private var showingImporter = false
+    @State private var exportedFile: ExportedFile?
+    @State private var exportDirectory: URL?
+    @State private var searchText = ""
 
     @State private var errorText: String?
     @State private var successText: String?
@@ -48,6 +71,7 @@ struct FilePatchWorkspaceView: View {
             .toolbar {
                 if currentPath != nil {
                     ToolbarItem(placement: .navigationBarLeading) { upButton }
+                    ToolbarItem(placement: .navigationBarTrailing) { fileActionsMenu }
                 }
             }
         }
@@ -55,6 +79,15 @@ struct FilePatchWorkspaceView: View {
         .sheet(item: $selectedEntry) { entry in
             viewer(for: entry)
         }
+        .sheet(item: $exportedFile, onDismiss: removeExportedFile) { file in
+            ActivityShareSheet(items: [file.url])
+        }
+        .fileImporter(
+            isPresented: $showingImporter,
+            allowedContentTypes: [.item],
+            allowsMultipleSelection: false,
+            onCompletion: performImport
+        )
         .alert(
             Text(l10n.tr("fp.delete.title")),
             isPresented: Binding(
@@ -81,6 +114,17 @@ struct FilePatchWorkspaceView: View {
             Button(l10n.tr("common.cancel"), role: .cancel) { renameEntry = nil }
         } message: { entry in
             Text(String(format: l10n.tr("fp.rename.message"), entry.name))
+        }
+        .alert(
+            newItemKind == .folder ? l10n.tr("fp.create.folder.title") : l10n.tr("fp.create.file.title"),
+            isPresented: Binding(
+                get: { newItemKind != nil },
+                set: { if !$0 { newItemKind = nil } }
+            )
+        ) {
+            TextField(l10n.tr("fp.create.placeholder"), text: $newItemName)
+            Button(l10n.tr("fp.action.create"), action: performCreate)
+            Button(l10n.tr("common.cancel"), role: .cancel) { newItemKind = nil }
         }
         .alert(
             l10n.tr("common.error"),
@@ -148,7 +192,10 @@ struct FilePatchWorkspaceView: View {
     }
 
     private func directoryList(_ path: String) -> some View {
-        List {
+        let visibleEntries = searchText.isEmpty
+            ? entries
+            : entries.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+        return List {
             dangerSection
 
             Section {
@@ -162,7 +209,7 @@ struct FilePatchWorkspaceView: View {
                         Text(l10n.tr("fp.loading")).font(.system(size: 15))
                     }
                 }
-            } else if entries.isEmpty {
+            } else if visibleEntries.isEmpty {
                 Section {
                     Label(l10n.tr("fp.empty"), systemImage: "folder")
                         .font(.system(size: 15))
@@ -170,13 +217,14 @@ struct FilePatchWorkspaceView: View {
                 }
             } else {
                 Section {
-                    ForEach(entries) { entry in
+                    ForEach(visibleEntries) { entry in
                         row(for: entry)
                     }
                 }
             }
         }
         .refreshable { reload() }
+        .searchable(text: $searchText, prompt: l10n.tr("fp.search.prompt"))
     }
 
     private var dangerSection: some View {
@@ -243,6 +291,41 @@ struct FilePatchWorkspaceView: View {
         .disabled(isLoading)
     }
 
+    private var fileActionsMenu: some View {
+        Menu {
+            Button {
+                newItemName = ""
+                newItemKind = .file
+            } label: {
+                Label(l10n.tr("fp.action.newFile"), systemImage: "doc.badge.plus")
+            }
+            Button {
+                newItemName = ""
+                newItemKind = .folder
+            } label: {
+                Label(l10n.tr("fp.action.newFolder"), systemImage: "folder.badge.plus")
+            }
+            Button {
+                showingImporter = true
+            } label: {
+                Label(l10n.tr("fp.action.import"), systemImage: "square.and.arrow.down")
+            }
+            if let pendingTransfer {
+                Button {
+                    performPaste(pendingTransfer)
+                } label: {
+                    Label(
+                        String(format: l10n.tr("fp.action.paste"), pendingTransfer.entry.name),
+                        systemImage: "doc.on.clipboard"
+                    )
+                }
+            }
+        } label: {
+            Image(systemName: "ellipsis.circle")
+        }
+        .disabled(isLoading || !osSupported)
+    }
+
     private func row(for entry: FileEntry) -> some View {
         Button {
             if entry.isDirectory {
@@ -267,6 +350,21 @@ struct FilePatchWorkspaceView: View {
                 renameEntry = entry
             } label: {
                 Label(l10n.tr("fp.action.rename"), systemImage: "pencil")
+            }
+            Button {
+                pendingTransfer = PendingFileTransfer(entry: entry, movesSource: false)
+            } label: {
+                Label(l10n.tr("fp.action.copy"), systemImage: "doc.on.doc")
+            }
+            Button {
+                pendingTransfer = PendingFileTransfer(entry: entry, movesSource: true)
+            } label: {
+                Label(l10n.tr("fp.action.move"), systemImage: "folder")
+            }
+            Button {
+                performExport(entry)
+            } label: {
+                Label(l10n.tr("fp.action.share"), systemImage: "square.and.arrow.up")
             }
             Button(role: .destructive) {
                 pendingDelete = entry
@@ -325,6 +423,7 @@ struct FilePatchWorkspaceView: View {
             return
         }
         isLoading = true
+        searchText = ""
 
         DispatchQueue.global(qos: .userInitiated).async {
             do {
@@ -398,6 +497,96 @@ struct FilePatchWorkspaceView: View {
                 }
             }
         }
+    }
+
+    private func performCreate() {
+        guard let kind = newItemKind, let currentPath else { return }
+        let name = newItemName
+        newItemKind = nil
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                if kind == .folder {
+                    try FileBrowser.createDirectory(named: name, in: currentPath)
+                } else {
+                    try FileBrowser.createFile(named: name, in: currentPath)
+                }
+                DispatchQueue.main.async {
+                    self.successText = String(format: L10n.shared.tr("fp.create.success"), name)
+                    self.reload()
+                }
+            } catch {
+                DispatchQueue.main.async { self.errorText = error.localizedDescription }
+            }
+        }
+    }
+
+    private func performPaste(_ transfer: PendingFileTransfer) {
+        guard let currentPath else { return }
+        pendingTransfer = nil
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                if transfer.movesSource {
+                    try FileBrowser.moveItem(at: transfer.entry.path, to: currentPath)
+                } else {
+                    try FileBrowser.copyItem(at: transfer.entry.path, to: currentPath)
+                }
+                DispatchQueue.main.async {
+                    self.successText = String(
+                        format: L10n.shared.tr("fp.transfer.success"),
+                        transfer.entry.name
+                    )
+                    self.reload()
+                }
+            } catch {
+                DispatchQueue.main.async { self.errorText = error.localizedDescription }
+            }
+        }
+    }
+
+    private func performImport(_ result: Result<[URL], Error>) {
+        guard let currentPath else { return }
+        do {
+            guard let sourceURL = try result.get().first else { return }
+            DispatchQueue.global(qos: .userInitiated).async {
+                let scoped = sourceURL.startAccessingSecurityScopedResource()
+                defer { if scoped { sourceURL.stopAccessingSecurityScopedResource() } }
+                do {
+                    try FileBrowser.importItem(from: sourceURL, to: currentPath)
+                    DispatchQueue.main.async {
+                        self.successText = String(
+                            format: L10n.shared.tr("fp.import.success"),
+                            sourceURL.lastPathComponent
+                        )
+                        self.reload()
+                    }
+                } catch {
+                    DispatchQueue.main.async { self.errorText = error.localizedDescription }
+                }
+            }
+        } catch {
+            errorText = error.localizedDescription
+        }
+    }
+
+    private func performExport(_ entry: FileEntry) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                let url = try FileBrowser.exportItem(at: entry.path)
+                DispatchQueue.main.async {
+                    self.exportDirectory = url.deletingLastPathComponent()
+                    self.exportedFile = ExportedFile(url: url)
+                }
+            } catch {
+                DispatchQueue.main.async { self.errorText = error.localizedDescription }
+            }
+        }
+    }
+
+    private func removeExportedFile() {
+        guard let exportDirectory else { return }
+        try? FileManager.default.removeItem(at: exportDirectory)
+        self.exportDirectory = nil
+        exportedFile = nil
     }
 
     private func handleSaveSuccess(fileName: String) {

@@ -7,7 +7,8 @@ struct RDARFixError: LocalizedError {
 }
 
 struct RDARFix {
-    static let path = "/var/preferences/com.apple.iomobilegraphicsfamily.plist"
+    static let leasePath = "/var/preferences/com.apple.iomobilegraphicsfamily.plist"
+    static let filePath = "/private/var/preferences/com.apple.iomobilegraphicsfamily.plist"
 
     /// Canvas size is detected from the device's native screen bounds at
     /// runtime: a hardcoded resolution only matched one iPhone model and
@@ -20,9 +21,9 @@ struct RDARFix {
 
     static func apply(canvasWidth: Int,
                       canvasHeight: Int) throws {
-        try BadQueryLeaseScope.withLease(forPath: path) {
-            guard let data = FileManager.default.contents(atPath: path) else {
-                throw RDARFixError(message: "The plist at \(path) could not be read.")
+        try BadQueryLeaseScope.withLease(forPath: leasePath) {
+            guard let data = FileManager.default.contents(atPath: filePath) else {
+                throw RDARFixError(message: "The plist at \(filePath) could not be read.")
             }
 
             var format = PropertyListSerialization.PropertyListFormat.binary
@@ -39,12 +40,7 @@ struct RDARFix {
                 throw RDARFixError(message: "Failed to serialize the plist.")
             }
 
-            try InodeWriter.writeInPlace(outData, to: path)
-
-            guard let verification = FileManager.default.contents(atPath: path),
-                  verification == outData else {
-                throw RDARFixError(message: "Post-write verification failed.")
-            }
+            try InodeWriter.writeVerifiedInPlace(outData, to: filePath)
         }
     }
 }

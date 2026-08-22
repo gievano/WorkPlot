@@ -1,4 +1,4 @@
-# Local Graphify artifacts
+# Generated Graphify output stays local.
 graphify-out/
 .tmp-gestaltedit/
 *.xcuserdatad/
