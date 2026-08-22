@@ -183,6 +183,13 @@ struct SiriAITweaksView: View {
             } label: {
                 Label(l10n.tr("siriai.restart.respring"), systemImage: "arrow.counterclockwise")
             }
+
+            Text(l10n.tr("siri.rebootHint"))
+                .font(.caption)
+                .foregroundColor(.secondary)
+            Text(l10n.tr("siri.waitlistNote"))
+                .font(.caption)
+                .foregroundColor(.secondary)
         } footer: {
             Text(l10n.tr("restart.options.message"))
         }

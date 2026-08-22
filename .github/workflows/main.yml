@@ -33,6 +33,15 @@ jobs:
             -o "$CHECK_BIN"
           "$CHECK_BIN"
 
+      - name: Check RDAR fix logic
+        run: |
+          CHECK_BIN="$RUNNER_TEMP/check-rdar-fix"
+          xcrun swiftc \
+            WorkPlot/Managers/RDARFix.swift \
+            Support/RDARFixCheck.swift \
+            -o "$CHECK_BIN"
+          "$CHECK_BIN"
+
       - name: Check safe file operations
         run: |
           CHECK_BIN="$RUNNER_TEMP/check-file-operations"

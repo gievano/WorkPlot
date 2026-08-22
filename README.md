@@ -4,10 +4,10 @@
 
 <h1 align="center">WorkPlot</h1>
 
-<p align="center"><strong>Modify MobileGestalt on iOS 27 Developer Beta 1 to 4. No jailbreak.</strong></p>
+<p align="center"><strong>Modify MobileGestalt on verified iOS/iPadOS 27 betas via bad_query with a CMG fallback. No jailbreak.</strong></p>
 
 <p align="center">
-  <a href="#-features"><img alt="Platform" src="https://img.shields.io/badge/platform-iOS%2027%20beta%201%E2%80%934-black?logo=apple&logoColor=white"></a>
+  <a href="#-features"><img alt="Platform" src="https://img.shields.io/badge/platform-iOS%2027%20betas%201%E2%80%934-black?logo=apple&logoColor=white"></a>
   <a href="#-features"><img alt="Language" src="https://img.shields.io/badge/language-Swift-orange?logo=swift&logoColor=white"></a>
   <a href="#%EF%B8%8F-warning"><img alt="Status" src="https://img.shields.io/badge/status-experimental-red"></a>
   <a href="https://github.com/forcequitOS/bad_query"><img alt="bad_query" src="https://img.shields.io/badge/exploit-bad__query-purple"></a>
@@ -15,7 +15,7 @@
 
 ---
 
-WorkPlot is a SwiftUI app built on the `bad_query` sandbox escape from [forcequitOS](https://github.com/forcequitOS/bad_query). It writes to MobileGestalt and system plists on iOS 27.0 developer betas, so you can change your device identity, enable Apple Intelligence, and unlock hidden features through a regular app UI. The app backs up MobileGestalt before each write.
+WorkPlot is a SwiftUI app built on the `bad_query` sandbox escape from [forcequitOS](https://github.com/forcequitOS/bad_query). It writes to MobileGestalt and system plists on the verified iOS/iPadOS builds below, so you can change your device identity, enable Apple Intelligence, and unlock hidden features through a regular app UI. The app backs up MobileGestalt before each write.
 
 ## Languages
 
@@ -45,7 +45,7 @@ WorkPlot ships as a sideloaded IPA. It will not appear on the App Store.
    ```bash
    xcodebuild -project WorkPlot/WorkPlot.xcodeproj -scheme WorkPlot archive
    ```
-2. Sideload it with AltStore, Sideloadly, or TrollStore.
+2. Sign and install it while preserving `com.apple.mobile.MobileHouseArrest`; enterprise-signing tools such as eSign are supported.
 3. Trust your developer certificate under Settings → General → VPN & Device Management.
 
 ### Requirements
@@ -53,8 +53,8 @@ WorkPlot ships as a sideloaded IPA. It will not appear on the App Store.
 |               |                                                 |
 | ------------- | ----------------------------------------------- |
 | Devices       | iPhone and iPad                                 |
-| Supported     | iOS 27.0 Developer Beta 1–4, Public Beta 1–2    |
-| Not supported | iOS 26.x and older, Dev Beta 5+, Public Beta 3+ |
+| Supported     | Verified iOS/iPadOS 27 developer/public betas 1–4 (dual-method: bad_query + CMG) |
+| Not supported | Other beta builds; signing that rewrites the bundle identifier |
 
 ## Quick Start
 
@@ -83,6 +83,7 @@ WorkPlot ships as a sideloaded IPA. It will not appear on the App Store.
 | Symptom                              | Fix                                                                        |
 | ------------------------------------ | -------------------------------------------------------------------------- |
 | Tweaks fail to apply                 | Re-grant the sandbox escape on the Status tab                              |
+| Access reports an identity mismatch   | Re-sign without changing `com.apple.mobile.MobileHouseArrest`; avoid tools that rewrite it |
 | Strange behavior after Gestalt edits | Restore your latest snapshot in Backups                                    |
 | RDAR bug after edits                 | Run the built-in RDARFix repair tool                                       |
 | Respring loop                        | The failsafe overlay recovers the app; after a reboot, restore your backup |
@@ -90,7 +91,7 @@ WorkPlot ships as a sideloaded IPA. It will not appear on the App Store.
 ## Credits
 
 - WorkPlot: [gievano](https://github.com/gievano), [Adnan120Hz](https://github.com/adnan120hz)
-- Contributions and testing: [Adnan120Hz](https://github.com/adnan120hz)
+- Contributions and testing: [Adnan120Hz](https://github.com/adnan120hz), [gievano](https://github.com/gievano)
 - Sandbox escape: [forcequitOS/bad_query](https://github.com/forcequitOS/bad_query)
 - Inspiration and reference implementations: Placard and GestaltEdit
 

@@ -67,14 +67,76 @@ Require ($access -match 'static BOOL GestaltRestoreOriginal') "Gestalt write fai
 Require ($access -match '(?s)if \(!\[verification isEqualToData:data\]\).*?GestaltRestoreOriginal\(fd, targetPath, original\)') "Post-write verification failure must restore the original plist"
 Require ($access -notmatch '(?s)close\(fd\);\s*NSData \*verification') "The write descriptor must remain open until verification finishes"
 
+# iOS 27-only scope: the OS gate must route through the verified-beta check
+# and must not resurrect the dropped 17/18/26 ranges.
+Require ($access -match 'VersionIsVerifiedIOS27Beta\(') "The supported-OS gate must use the verified iOS 27 beta check"
+Require ($access -notmatch 'majorVersion == 17|majorVersion == 18|majorVersion == 26') "The OS gate must stay iOS/iPadOS 27-only"
+Require ($access -match '24A5355q' -and $access -match '24A5390f') "Verified iOS 27 developer/public beta builds must remain allowlisted"
+Require ($access -match 'activeMethod') "GestaltAccess must expose which method provided access"
+Require ($access -match 'CmgLease \*cmgLease = \[CmgLease leaseWithError:&cmgDetail\]') "connectWithError must fall back to the CMG method"
+Require ($access -match 'self\.activeMethod = @"bad_query"' -and $access -match 'self\.activeMethod = @"cmg"') "Both connect paths must report their method name"
+Require (([regex]::Matches($access, 'stage=identity|CMG')).Count -ge 2) "Failure details must name stages and the CMG fallback"
+
+$cmg = Read-ProjectFile "WorkPlot\Exploit\CmgBridge.m"
+Require ($cmg -match 'container_query_create' -and $cmg -match 'container_query_set_class') "CMG bridge must drive the ContainerManager query API"
+Require ($cmg -match 'container_query_set_transient') "CMG bridge must set transient like mond does"
+Require ($cmg -match 'container_query_operation_set_platform' -and $cmg -match 'container_query_operation_set_flags') "CMG bridge must configure platform and flags on the operation"
+Require ($cmg -match 'container_object_sandbox_extension_activate' -and $cmg -match 'container_object_get_path') "CMG bridge must activate the extension and read its path"
+Require ($cmg -match '0x0000008100000000ULL') "CMG flags must match mond/MobileHouseArrest-PoC (1<<32 | 1<<39)"
+Require ($cmg -match 'systemgroup\.com\.apple\.mobilegestaltcache') "CMG must target the MobileGestaltCache system group"
+Require ($cmg -notmatch 'com\.apple\.mobile\.MobileHouseArrest') "CMG has no bundle identifier requirement and must never reference one"
+
 $project = Read-ProjectFile "WorkPlot\WorkPlot.xcodeproj\project.pbxproj"
 Require (([regex]::Matches($project, 'PRODUCT_BUNDLE_IDENTIFIER = com\.apple\.mobile\.MobileHouseArrest;')).Count -eq 2) "Both build configurations must preserve the MobileHouseArrest bundle identifier"
 Require ($project -notmatch 'PRODUCT_BUNDLE_IDENTIFIER = com\.workplot\.app;') "The incompatible WorkPlot bundle identifier is still configured"
-$bridge = Read-ProjectFile "WorkPlot\Exploit\BadQueryBridge.m"
-Require ($bridge -match 'kBadQueryExpectedBundleIdentifier') "bad_query must validate the runtime sideload identity"
-Require ($bridge -match 'stage=identity') "bad_query identity failures must name their stage"
-Require ($bridge -match 'stage=query') "ContainerManager rejection must name the query stage"
-$exploitManager = Read-ProjectFile "WorkPlot\Managers\ExploitManager.swift"
-Require ($exploitManager -match 'BadQueryLeaseScope\.withLease') "System access check must surface Objective-C bad_query lease diagnostics"
+Require (([regex]::Matches($project, 'IPHONEOS_DEPLOYMENT_TARGET = 16\.0;')).Count -eq 2) "Both build configurations must support the 3105-compatible iOS 16 floor"
 
-Write-Host "Feature OK: dual-cache checks, verified rollback, sideload identity, and staged bad_query diagnostics."
+$bridge = Read-ProjectFile "WorkPlot\Exploit\BadQueryBridge.m"
+Require ($bridge -match 'kBadQueryExpectedBundleIdentifier') "bad_query must still record the expected sideload identity"
+Require ($bridge -match 'stage=identity') "Identity mismatches must carry a stage=identity diagnostic note"
+Require ($bridge -match 'BadQueryAnnotate') "Query failures must attach the identity diagnostic note instead of blocking early"
+Require ($bridge -match 'stage=query') "ContainerManager rejection must name the query stage"
+
+$bridgingHeader = Read-ProjectFile "WorkPlot\Exploit\WorkPlot-Bridging-Header.h"
+Require ($bridgingHeader -match '#import "CmgBridge\.h"') "The bridging header must expose CmgBridge to Swift"
+
+$exploitManager = Read-ProjectFile "WorkPlot\Managers\ExploitManager.swift"
+Require ($exploitManager -match 'try access\.connect\(\)') "System access check must let GestaltAccess pick the method (no fatal preflight)"
+Require ($exploitManager -match 'exploitMethod = access\.activeMethod') "The manager must publish which method provided access"
+Require ($exploitManager -match 'showsSigningHint') "A rewritten bundle identifier must surface the signing hint"
+Require ($exploitManager -match 'captureStockSnapshotIfNeeded') "First successful connect must capture the stock snapshot"
+
+# Sprint-1 key corrections (verified against PoomSmart/MGKeys)
+$tweaksText = Read-ProjectFile "WorkPlot\Managers\GestaltTweaks.swift"
+$siriController = Read-ProjectFile "WorkPlot\Managers\AppleIntelligenceController.swift"
+$siriApplier = Read-ProjectFile "WorkPlot\Managers\SiriModeApplier.swift"
+foreach ($fixed in @($tweaksText, $siriController, $siriApplier)) {
+    Require ($fixed -match 'a3n5T9sFtlyQ74NEp9ESxg') "SiriMode must use the correct MGKeys value a3n5T9sFtlyQ74NEp9ESxg"
+    Require ($fixed -notmatch 'a3n5T9sFtyQ74NEp9ESxg') "The old SiriMode typo must be gone"
+}
+Require ($tweaksText -match 'mmu76v66k1dAtghToInT8g') "disableParallax must write the real CacheExtra key"
+Require ($tweaksText -notmatch '"UIParallaxCapability"') "Plaintext capability names must not be written as Gestalt keys"
+
+# Session log + revert-to-stock surface
+$sessionLogger = Read-ProjectFile "WorkPlot\Managers\SessionLogger.swift"
+Require ($sessionLogger -match 'limit = 300') "SessionLogger keeps a bounded ring buffer of 300 lines"
+Require ($sessionLogger -match 'func clear\(\)') "Session log must be clearable"
+$backupStore = Read-ProjectFile "WorkPlot\Managers\GestaltBackupStore.swift"
+Require ($backupStore -match 'static func createNamed') "Named snapshots (Stock Snapshot) require createNamed"
+$sessionLogView = Read-ProjectFile "WorkPlot\UI\SessionLogView.swift"
+Require ($sessionLogView -match 'SessionLogger\.shared') "Session log viewer must read the shared logger"
+$moreMenu = Read-ProjectFile "WorkPlot\UI\MoreMenuView.swift"
+Require ($moreMenu -match 'SessionLogView\(\)') "More menu must link the session log viewer"
+$backupView = Read-ProjectFile "WorkPlot\UI\BackupRestoreManagerView.swift"
+Require ($backupView -match 'Stock Snapshot') "Backup manager must offer Revert to Stock Snapshot"
+Require ($backupView -match 'RDARFix\.restoreOriginalCanvas') "Backup manager must expose the persistent RDAR canvas restore"
+
+$statusDashboard = Read-ProjectFile "WorkPlot\UI\StatusDashboardView.swift"
+Require ($statusDashboard -match 'status\.methodLabel') "Dashboard must show which exploit method is active"
+
+$strings = Read-ProjectFile "WorkPlot\Resources\en.lproj\Localizable.strings"
+foreach ($key in @('status\.exploitActive', 'status\.methodLabel', 'status\.signingHint', 'sessionlog\.title', 'backup\.revertStock', 'rdar\.restoreCanvas', 'siri\.rebootHint', 'siri\.waitlistNote')) {
+    Require ($strings -match ('"' + $key + '"')) "Missing localization key $key"
+}
+
+Write-Host "Feature OK: iOS 27 dual-method access (bad_query + CMG fallback), verified rollback, non-fatal identity diagnostics, corrected MGKeys values, stock snapshot/session log, and staged diagnostics."
