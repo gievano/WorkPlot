@@ -38,14 +38,26 @@ enum FileBrowserServiceCheck {
         let exportedContents = try Data(contentsOf: exportedFile)
         precondition(exportedContents == contents)
 
+        let duplicate = try SafeFileOperations.copyItem(at: movedFile, to: exported)
+        precondition(duplicate.lastPathComponent == "note 2.txt")
+
+        let nested = folder.appendingPathComponent("nested")
+        try fileManager.createDirectory(at: nested, withIntermediateDirectories: false)
         do {
-            _ = try SafeFileOperations.createFile(named: "../escape", contents: Data(), in: source)
-            preconditionFailure("Unsafe names must be rejected")
+            _ = try SafeFileOperations.copyItem(at: folder, to: nested)
+            preconditionFailure("A folder must not be copied into itself")
+        } catch {}
+
+        let symbolicLink = source.appendingPathComponent("note-link")
+        try fileManager.createSymbolicLink(at: symbolicLink, withDestinationURL: file)
+        do {
+            _ = try SafeFileOperations.copyItem(at: symbolicLink, to: copied)
+            preconditionFailure("Symbolic links must not cross the file-operation boundary")
         } catch {}
 
         do {
-            _ = try SafeFileOperations.copyItem(at: movedFile, to: exported)
-            preconditionFailure("Existing destinations must not be overwritten")
+            _ = try SafeFileOperations.createFile(named: "../escape", contents: Data(), in: source)
+            preconditionFailure("Unsafe names must be rejected")
         } catch {}
 
         print("Safe file operations check passed")
