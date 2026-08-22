@@ -639,7 +639,7 @@ struct FilePlistViewerSheet: View {
                 let data = try PropertyListSerialization.data(
                     fromPropertyList: plist,
                     format: .xml,
-                    options: .prettyPrinted
+                    options: []
                 )
                 let xml = String(data: data, encoding: .utf8) ?? "<data>"
                 DispatchQueue.main.async { self.prettyXML = xml }
