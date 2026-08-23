@@ -53,6 +53,8 @@ enum Patch3105 {
         let salt: Data?
         let iterations: Int
         let wrappedKey: Data?
+        /// Plaintext content key carried by unprotected packages.
+        let contentKey: Data?
         let fingerprint: Data?
         let payload: Data
     }
@@ -85,6 +87,7 @@ enum Patch3105 {
             salt: obj["kdfSalt"] as? Data,
             iterations: obj["kdfIterations"] as? Int ?? 250_000,
             wrappedKey: obj["wrappedContentKey"] as? Data,
+            contentKey: obj["contentKey"] as? Data,
             fingerprint: obj["keyFingerprint"] as? Data,
             payload: payload
         )
@@ -104,7 +107,7 @@ enum Patch3105 {
             }
             payload = try decrypt(envelope: envelope, password: password)
         } else {
-            payload = envelope.payload
+            payload = try plainPayload(envelope)
         }
 
         let rules = try decodeRules(from: payload)
@@ -146,10 +149,25 @@ enum Patch3105 {
 
     // MARK: - Crypto
 
-    /// Best-effort decryption for the documented PBKDF2 envelope. CryptoKit
-    /// offers AES-GCM (no AES-KW), so the content key is unwrapped as a GCM
-    /// sealed box keyed by the password-derived secret; anything else fails
-    /// with one honest error instead of guessing further.
+    /// Unprotected packages either carry a plaintext contentKey (payload is
+    /// still AES-GCM sealed) or ship the payload completely unencrypted.
+    private static func plainPayload(_ envelope: Envelope) throws -> Data {
+        if let contentKey = envelope.contentKey, !contentKey.isEmpty {
+            do {
+                return try AES.GCM.open(
+                    AES.GCM.SealedBox(combined: envelope.payload),
+                    using: SymmetricKey(data: contentKey))
+            } catch {
+                throw Patch3105Error.wrongPasswordOrUnsupportedScheme
+            }
+        }
+        return envelope.payload
+    }
+
+    /// Best-effort decryption for the documented PBKDF2 envelope. The binary
+    /// of the reference app links CCKeyDerivationPBKDF + CryptoKit AES.GCM,
+    /// but the KDF hash variant is not documented - try SHA256 then SHA512
+    /// and fail with one honest error instead of guessing further.
     private static func decrypt(envelope: Envelope, password: String) throws -> Data {
         guard let salt = envelope.salt else {
             throw Patch3105Error.missingField("kdfSalt")
@@ -158,20 +176,27 @@ enum Patch3105 {
             throw Patch3105Error.missingField("wrappedContentKey")
         }
 
-        let derivedKey = SymmetricKey(data: pbkdf2SHA256(password: password, salt: salt, iterations: envelope.iterations))
-
-        guard let contentKey = try? AES.GCM.open(AES.GCM.SealedBox(combined: wrapped), using: derivedKey) else {
-            throw Patch3105Error.wrongPasswordOrUnsupportedScheme
+        for algorithm in [kCCPRFHmacAlgSHA256, kCCPRFHmacAlgSHA512] {
+            let derived = pbkdf2(password: password,
+                                 salt: salt,
+                                 iterations: envelope.iterations,
+                                 algorithm: algorithm)
+            guard let contentKey = try? AES.GCM.open(
+                AES.GCM.SealedBox(combined: wrapped),
+                using: SymmetricKey(data: derived)) else { continue }
+            if let payload = try? AES.GCM.open(
+                AES.GCM.SealedBox(combined: envelope.payload),
+                using: SymmetricKey(data: contentKey)) {
+                return payload
+            }
         }
-
-        do {
-            return try AES.GCM.open(AES.GCM.SealedBox(combined: envelope.payload), using: SymmetricKey(data: contentKey))
-        } catch {
-            throw Patch3105Error.wrongPasswordOrUnsupportedScheme
-        }
+        throw Patch3105Error.wrongPasswordOrUnsupportedScheme
     }
 
-    private static func pbkdf2SHA256(password: String, salt: Data, iterations: Int) -> Data {
+    private static func pbkdf2(password: String,
+                               salt: Data,
+                               iterations: Int,
+                               algorithm: CCPseudoRandomAlgorithm) -> Data {
         var derived = Data(repeating: 0, count: 32)
         let passwordBytes = Array(password.utf8)
         derived.withUnsafeMutableBytes { derivedBuffer in
@@ -180,7 +205,7 @@ enum Patch3105 {
                     CCPBKDFAlgorithm(kCCPBKDF2),
                     passwordBytes.map { CChar(bitPattern: $0) }, passwordBytes.count,
                     saltBuffer.bindMemory(to: UInt8.self).baseAddress, salt.count,
-                    CCPseudoRandomAlgorithm(kCCPRFHmacAlgSHA256),
+                    algorithm,
                     UInt32(iterations),
                     derivedBuffer.bindMemory(to: UInt8.self).baseAddress, 32
                 )
@@ -191,12 +216,18 @@ enum Patch3105 {
 
     // MARK: - Payload decoding
 
-    /// Accepts {"rules": [...]} plists (or a bare array). Each rule carries
-    /// bundleID, path, and replacement bytes under "data"/"content"/
-    /// "replacement". Anything else is reported verbatim for iteration.
+    /// The decrypted payload is the project's bundle tree. Two layouts are
+    /// accepted, mirroring what the reference app exports:
+    /// 1. A ZIP archive whose top-level folders are bundle IDs and whose
+    ///    remaining path components are container-relative targets (an
+    ///    optional manifest declares the same mapping explicitly).
+    /// 2. A plist {"rules": [{bundleID, path, data|content|replacement}]}.
     private static func decodeRules(from payload: Data) throws -> [(rule: PatchPackageRule, bytes: Data)] {
+        if payload.starts(with: [0x50, 0x4B]) {
+            return try decodeZipTree(payload)
+        }
         guard let obj = try? PropertyListSerialization.propertyList(from: payload, options: [], format: nil) else {
-            throw Patch3105Error.payloadUnsupported("payload is not a property list")
+            throw Patch3105Error.payloadUnsupported("payload is not a property list or ZIP archive")
         }
 
         let rawRules: [[String: Any]]
@@ -204,8 +235,6 @@ enum Patch3105 {
             rawRules = list
         } else if let list = obj as? [[String: Any]] {
             rawRules = list
-        } else if let dict = obj as? [String: Any], dict.keys.contains("replacements") {
-            throw Patch3105Error.payloadUnsupported("replacements dictionary layout")
         } else {
             throw Patch3105Error.payloadUnsupported("no recognizable rules array")
         }
@@ -225,6 +254,73 @@ enum Patch3105 {
             guard let bytes, !bytes.isEmpty else { continue }
             result.append((PatchPackageRule(bundleID: bundleID, path: path), bytes))
         }
+        SessionLogger.shared.log(".3105 payload decoded as plist rules (\(result.count))")
         return result
+    }
+
+    private static func decodeZipTree(_ payload: Data) throws -> [(rule: PatchPackageRule, bytes: Data)] {
+        let workspace = FileManager.default.temporaryDirectory
+            .appendingPathComponent("WorkPlot-Patch-\(UUID().uuidString)", isDirectory: true)
+        defer { try? FileManager.default.removeItem(at: workspace) }
+        try FileManager.default.createDirectory(at: workspace, withIntermediateDirectories: true)
+
+        let files = try TendiesPackage.writeArchive(payload, to: workspace)
+        guard !files.isEmpty else { throw Patch3105Error.noRules }
+        SessionLogger.shared.log(".3105 payload decoded as zip tree (\(files.count) files)")
+
+        // An explicit manifest maps files to targets when present.
+        let manifestNames = ["manifest.json", "manifest.plist", "rules.plist", "project.json", "project.plist"]
+        if let manifestURL = files.first(where: { manifestNames.contains($0.lastPathComponent.lowercased()) }) {
+            if let rules = decodeManifestRules(manifestURL, workspace: workspace), !rules.isEmpty {
+                SessionLogger.shared.log(".3105 manifest found: \(rules.count) rules")
+                return rules
+            }
+        }
+
+        // Otherwise infer: <bundleID>/<container-relative path>.
+        var result: [(PatchPackageRule, Data)] = []
+        for file in files where !manifestNames.contains(file.lastPathComponent.lowercased()) {
+            let relative = file.path.dropFirst(workspace.path.count + 1)
+            var components = relative.split(separator: "/")
+            guard components.count >= 2 else { continue }
+            let bundleID = String(components.removeFirst())
+            let targetPath = "/" + components.joined(separator: "/")
+            guard let bytes = try? Data(contentsOf: file), !bytes.isEmpty else { continue }
+            result.append((PatchPackageRule(bundleID: bundleID, path: targetPath), bytes))
+        }
+        return result
+    }
+
+    /// Manifest formats: {"rules": [{"bundleID", "path", optional "file"}]}
+    /// (JSON or plist). File references resolve relative to the manifest.
+    private static func decodeManifestRules(_ manifestURL: URL, workspace: URL) -> [(rule: PatchPackageRule, bytes: Data)]? {
+        guard let data = try? Data(contentsOf: manifestURL),
+              let obj = (try? JSONSerialization.jsonObject(with: data, options: []))
+                  ?? (try? PropertyListSerialization.propertyList(from: data, options: [], format: nil))
+                  as? [String: Any],
+              let list = obj["rules"] as? [[String: Any]] else { return nil }
+
+        let manifestDirectory = manifestURL.deletingLastPathComponent()
+        var result: [(PatchPackageRule, Data)] = []
+        for raw in list {
+            guard let bundleID = raw["bundleID"] as? String,
+                  let path = raw["path"] as? String else { continue }
+            let bytes: Data?
+            if let reference = raw["file"] as? String ?? raw["source"] as? String {
+                bytes = try? Data(contentsOf: manifestDirectory.appendingPathComponent(reference))
+            } else if let inline = raw["data"] as? Data {
+                bytes = inline
+            } else if let string = raw["content"] as? String {
+                bytes = Data(string.utf8)
+            } else {
+                // Fall back to the same tree location inside the archive.
+                bytes = try? Data(contentsOf: workspace
+                    .appendingPathComponent(bundleID)
+                    .appendingPathComponent(path.hasPrefix("/") ? String(path.dropFirst()) : path))
+            }
+            guard let bytes, !bytes.isEmpty else { continue }
+            result.append((PatchPackageRule(bundleID: bundleID, path: path), bytes))
+        }
+        return result.isEmpty ? nil : result
     }
 }
