@@ -577,3 +577,11 @@
 **The Reasoning:** Pola kegagalan yang sama (stage=query rejected) pada semua path non-container menunjukkan policy allowlist ContainerManager hanya membuka pohon container; daemon prefs yang dipindah ke Data/System adalah satu-satunya harapan RDAR tanpa jailbreak. PosterBoard gagal kemungkinan besar karena generasi store berubah di iOS 27.
 
 **The Tech Debt:** Toggle Internal Storage (LBJfwOEzExRxzlAnSuI7eg=InternalBuild) SUDAH ada sejak awal di katalog internalFeatures - perlu dokumentasi urutan pakai untuk user. Kalau probe Data/System pun gagal semua, RDAR resmi impossible via bad_query pada build tsb dan tombolnya harus jadi unavailable-state.
+
+## 2026-08-23 - PR #32: RDAR via MobileGestalt (Celah Baru)
+
+**The Change:** Tweak "RDAR Canvas Fix (Gestalt)" di kategori Display: menulis key MainScreenCanvasSizes (ybGkijAwLTwevankfVzsDQ, ada sejak iOS 10) ke CacheExtra memakai native bounds device. Format adaptif: value existing dipertahankan bentuknya (Data >= 8 byte -> overwrite 8 byte pertama; [Int]/[UInt32] -> ganti dua elemen pertama); tanpa value existing -> blob 8-byte LE width+height. Wiring di GestaltPresetManagerView.applySelected() ala AIRegionApplier.
+
+**The Reasoning:** Dimensi canvas dilayani lewat MobileGestalt, bukan hanya plist grafis yang diblok policy ContainerManager. Jalur gestaltcache/CMG terbukti jalan di device user, jadi ini satu-satunya vektor RDAR yang tidak melawan allowlist. Komentar iOS 10.0+ di MGKeys adalah availability floor (key kumulatif), bukan batas atas - preseden: key iPad Mode iOS 7.0+ tetap bekerja.
+
+**The Tech Debt:** Format internal MainScreenCanvasSizes belum terverifikasi trace device (asumsi 8-byte LE pair mengikuti tooling komunitas). Kalau IOMobileFramebuffer berhenti membaca key ini di iOS 27 beta, toggle tetap aman ditulis tapi efek kosong - tandanya fallback ke unavailable-state untuk kedua pendekatan.
