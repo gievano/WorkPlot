@@ -92,43 +92,59 @@ struct FileQuickLocation: Identifiable {
 }
 
 enum FileBrowser {
-    /// All known quick-jump locations. ContainerManager policy makes many of
+    /// All known quick-jump locations, labeled by their MHA container class
+    /// the way FilzaSlop presents them. ContainerManager policy makes many of
     /// them unreachable depending on the OS build, so the browser renders
-    /// only the ones that pass a live listing probe (Filza shows mounts the
-    /// same way). Reachability is cached per install after the first probe.
+    /// only the ones that pass a live listing probe; fresh probes are written
+    /// to an ACCESS MAP.txt in Documents like FilzaSlop does.
     static let allShortcuts: [FileQuickLocation] = [
         FileQuickLocation(labelKey: "fp.shortcut.gestaltcache", path: "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches"),
-        FileQuickLocation(labelKey: "fp.shortcut.systemgroups", path: "/var/containers/Shared/SystemGroup"),
-        FileQuickLocation(labelKey: "fp.shortcut.datasystem", path: "/var/containers/Data/System"),
-        FileQuickLocation(labelKey: "fp.shortcut.applications", path: "/var/mobile/Containers/Data/Application"),
-        FileQuickLocation(labelKey: "fp.shortcut.internaldaemon", path: "/var/mobile/Containers/Data/InternalDaemon"),
-        FileQuickLocation(labelKey: "fp.shortcut.pluginkit", path: "/var/mobile/Containers/Data/PluginKitPlugin"),
-        FileQuickLocation(labelKey: "fp.shortcut.sharedgroups", path: "/var/mobile/Containers/Shared/AppGroup"),
+        FileQuickLocation(labelKey: "fp.shortcut.mhaC13", path: "/var/containers/Shared/SystemGroup"),
+        FileQuickLocation(labelKey: "fp.shortcut.mhaC12", path: "/var/containers/Data/System"),
+        FileQuickLocation(labelKey: "fp.shortcut.mhaC2", path: "/var/mobile/Containers/Data/Application"),
+        FileQuickLocation(labelKey: "fp.shortcut.mhaC7", path: "/var/mobile/Containers/Shared/AppGroup"),
+        FileQuickLocation(labelKey: "fp.shortcut.mhaC10", path: "/var/mobile/Containers/Data/InternalDaemon"),
+        FileQuickLocation(labelKey: "fp.shortcut.mhaC14", path: "/var/mobile/Containers/Data/PluginKitPlugin"),
         FileQuickLocation(labelKey: "fp.shortcut.preferences", path: "/var/mobile/Library/Preferences"),
         FileQuickLocation(labelKey: "fp.shortcut.varprefs", path: "/var/preferences"),
         FileQuickLocation(labelKey: "fp.shortcut.jb", path: "/var/jb"),
         FileQuickLocation(labelKey: "fp.shortcut.jailbreak", path: "/var/jailbreak")
     ]
 
-    private static let reachabilityCacheKey = "FileBrowserReachableShortcutPaths"
+    /// Set by the last fresh probe so the UI can mention the access map.
+    private(set) static var lastProbeWroteAccessMap = false
+
+    private static var reachabilityCacheKey: String {
+        // ponytail: keyed per OS build; a new beta re-probes automatically.
+        let build = GestaltAccess.currentOSBuild()
+        return "FileBrowserReachableShortcutPaths:\(build.isEmpty ? "unknown" : build)"
+    }
 
     /// Shortcut entries whose directories passed a live listing probe.
-    /// Runs off the main thread from the caller; results persist so later
-    /// launches skip re-probing unless nothing was reachable last time.
+    /// Runs off the main thread from the caller; results persist per OS
+    /// build so later launches skip re-probing unless nothing was reachable.
     static func reachableShortcuts() -> [FileQuickLocation] {
         if let cached = UserDefaults.standard.stringArray(forKey: reachabilityCacheKey),
            !cached.isEmpty {
+            lastProbeWroteAccessMap = false
             let allowed = Set(cached)
             return allShortcuts.filter { allowed.contains($0.path) }
         }
 
         var reachable: [String] = []
-        for location in allShortcuts where canList(location.path) {
-            reachable.append(location.path)
+        var mapLines: [String] = ["WorkPlot Access Map - \(Date())", ""]
+        for location in allShortcuts {
+            if let count = try? rawList(normalize(location.path)) {
+                reachable.append(location.path)
+                mapLines.append("OK       \(location.path) (\(count.count) entries)")
+            } else {
+                mapLines.append("BLOCKED  \(location.path)")
+            }
         }
         if !reachable.isEmpty {
             UserDefaults.standard.set(reachable, forKey: reachabilityCacheKey)
         }
+        writeAccessMap(mapLines)
         // Nothing probed OK (or a transient failure): fall back to the
         // container trees the exploit is documented to cover rather than
         // showing an empty screen.
@@ -137,6 +153,19 @@ enum FileBrowser {
             "/var/containers/Data/System"
         ])
         return allShortcuts.filter { fallback.contains($0.path) || reachable.contains($0.path) }
+    }
+
+    /// Mirrors FilzaSlop's ACCESS MAP.txt: a plain-text record of what this
+    /// device allowed, dropped in Documents where Files app can open it.
+    private static func writeAccessMap(_ lines: [String]) {
+        let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("ACCESS MAP.txt")
+        do {
+            try lines.joined(separator: "\n").write(to: url, atomically: true, encoding: .utf8)
+            lastProbeWroteAccessMap = true
+        } catch {
+            lastProbeWroteAccessMap = false
+        }
     }
 
     /// Cheap reachability probe: a successful directory listing means the
