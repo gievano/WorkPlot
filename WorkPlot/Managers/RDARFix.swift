@@ -269,9 +269,11 @@ struct RDARFix {
         // Preferences copy of the graphics plist.
         // ponytail: linear probe capped at 64 containers to bound worst case.
         let systemContainers = (try? listDirectory("/var/containers/Data/System")) ?? []
-        for name in systemContainers.prefix(64) where !name.isEmpty {
-            let leasePath = "/var/containers/Data/System/\(name)/Library/Preferences/com.apple.iokit.IOMobileGraphicsFamily.plist"
-            let filePath = "/private\(leasePath)"
+        for containerRoot in systemContainers.prefix(64) where !containerRoot.isEmpty {
+            // bad_query_list returns ABSOLUTE child paths.
+            let leasePath = (containerRoot as NSString).appendingPathComponent(
+                "Library/Preferences/com.apple.iokit.IOMobileGraphicsFamily.plist")
+            let filePath = "/private" + leasePath
             do {
                 return try BadQueryLeaseScope.withLease(forPath: leasePath) {
                     guard FileManager.default.contents(atPath: filePath) != nil else {
@@ -286,9 +288,16 @@ struct RDARFix {
             }
         }
 
+        // Cap the digest so a 30-container sweep stays readable.
+        var digest = failures
+        if digest.count > 6 {
+            digest = Array(digest.prefix(6)) + ["...and \(failures.count - 6) more locations"]
+        }
         throw RDARFixError(message:
-            "No canvas plist location is reachable on this build. Tried:\n" +
-            failures.joined(separator: "\n"))
+            "No canvas plist location is reachable on this build - use the "
+            + "RDAR Canvas Fix (Gestalt) tweak instead, which writes the same "
+            + "dimensions through MobileGestalt. Probed:\n"
+            + digest.joined(separator: "\n"))
     }
 
     /// Directory listing through bad_query_list; returns [] when unreachable.
