@@ -92,7 +92,7 @@ struct LiquidGlassController {
         try ExploitManager.shared.saveGestaltOrThrow(plist)
         lines.append("MobileGestalt: IsSolariumLowPerformanceDevice = 1")
 
-        lines += GlobalPreferences.setSolariumSuppressed(true)
+        lines += try GlobalPreferences.setSolariumSuppressed(true)
         return lines
     }
 }
