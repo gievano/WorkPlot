@@ -249,3 +249,18 @@ Observations captured during task-oriented work.
 **Suggested improvement:** A checklist skill for executing delegated work orders: read all named context files first, honor ownership boundaries even for build config (check whether new files auto-register via PBXFileSystemSynchronizedRootGroup instead of editing pbxproj), reuse existing l10n keys rather than inventing them, run repo checkers from repo root before reporting, and append a role-matched DEVLOG entry without being asked twice.
 
 **Principle:** When a delegator pre-specifies ownership, keys, and gates, the executor's job is conformance plus proof (checker output + symbol re-read), not design exploration.
+
+### Observation 15: Provenance-gated consolidation of duplicated toggles
+
+**Status:** OPEN
+**Date:** 2026-08-23
+**Session context:** WorkPlot Siri AI tab cleanup - six overlapping Siri/AI toggles confused the owner; refactor demanded zero capability loss and English-only UI
+**Skill:** New skill candidate: toggle-taxonomy-audit
+**Type:** internal
+**Phase/Area:** Control consolidation in exploit/Gestalt-style apps
+
+**Issue:** Three appliers wrote overlapping CacheExtra key sets, so six UI controls shared four underlying write-paths; users could not tell which toggle to enable. Binary strings scans of four reference IPAs gave an objective provenance signal (community-present keys vs app-only keys) that no in-repo doc provided.
+
+**Suggested improvement:** Before consolidating toggles: build a key-level overlap matrix, rank each mechanism by external provenance evidence (reference binaries), let the user mental model name the architecture (old path vs upgraded path), fold subset toggles into their superset, and gate removals behind grep sweeps over both symbols and l10n keys.
+
+**Principle:** Consolidation needs an objective ranking signal from outside the codebase; inside evidence alone cannot say which duplicate is the "real" one.
