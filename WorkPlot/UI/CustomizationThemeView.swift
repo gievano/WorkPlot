@@ -45,7 +45,9 @@ struct PosterBoardLabView: View {
             }
             .fileImporter(
                 isPresented: $isShowingImporter,
-                allowedContentTypes: [.tendies],
+                // .zip stays selectable because file providers often label a
+                // tendies package by its content type instead of extension.
+                allowedContentTypes: [.tendies, .zip],
                 allowsMultipleSelection: false
             ) { result in
                 switch result {
@@ -237,12 +239,15 @@ struct PosterBoardLabView: View {
                 try TendiesPackage.validate(data)
 
                 let descriptorFolders = try TendiesPackage.extract(data)
+                TendiesPackage.randomizeIdentifiers(in: descriptorFolders)
 
                 DispatchQueue.main.async { self.phase = l10n.tr("pb.phase.finding") }
                 let appHash = try PosterBoardAccess.findPosterBoardHash()
 
                 DispatchQueue.main.async { self.phase = l10n.tr("pb.phase.writing") }
                 try PosterBoardAccess.writeDescriptors(appHash: appHash, descriptorFolders: descriptorFolders)
+
+                Self.openPosterBoardApp()
 
                 DispatchQueue.main.async {
                     self.isInstalling = false
@@ -260,6 +265,14 @@ struct PosterBoardLabView: View {
                 }
             }
         }
+    }
+
+    /// Opens PosterBoard after a successful install so the new wallpaper is
+    /// immediately visible (same UX as Pocket Poster).
+    private static func openPosterBoardApp() {
+        guard let cls = NSClassFromString("LSApplicationWorkspace") as? NSObject.Type,
+              let workspace = cls.perform(NSSelectorFromString("defaultWorkspace"))?.takeUnretainedValue() else { return }
+        _ = workspace.perform(NSSelectorFromString("openApplicationWithBundleID:"), with: "com.apple.PosterBoard")
     }
 
     private func remove(_ name: String) {

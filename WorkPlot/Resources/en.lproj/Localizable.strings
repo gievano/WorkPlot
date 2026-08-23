@@ -460,13 +460,6 @@
 "tweak.rdargestalt.detail" = "Writes your native screen dimensions into MainScreenCanvasSizes so the graphics stack stops downscaling. Experimental alternative to the plist-based RDAR fix - no extra filesystem access needed.";
 
 // Dynamic file browser locations
-"fp.scanning" = "Checking accessible locations...";
-"fp.shortcut.datasystem" = "System Data Containers";
-"fp.shortcut.systemgroups" = "System Groups";
-"fp.shortcut.applications" = "App Data Containers";
-"fp.shortcut.internaldaemon" = "Daemon Containers";
-"fp.shortcut.pluginkit" = "Plugin Containers";
-"fp.shortcut.sharedgroups" = "Shared App Groups";
 
 // MHA class-labeled locations (FilzaSlop naming) + access map
 "fp.shortcut.mhaC13" = "[MHA-C13] System Groups";
@@ -475,7 +468,6 @@
 "fp.shortcut.mhaC7" = "[MHA-C7] App Groups";
 "fp.shortcut.mhaC10" = "[MHA-C10] Daemon Containers";
 "fp.shortcut.mhaC14" = "[MHA-C14] Plugin Containers";
-"fp.accessmap.note" = "Access map saved to Documents/ACCESS MAP.txt";
 
 // Custom canvas + honest RDAR verification
 "rdar.custom.header" = "Custom Canvas";
