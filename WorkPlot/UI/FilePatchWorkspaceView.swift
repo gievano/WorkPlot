@@ -38,6 +38,8 @@ struct FilePatchWorkspaceView: View {
     @State private var isLoading = false
     /// Shortcuts that passed the live reachability probe on this device.
     @State private var shortcuts: [FileQuickLocation]?
+    /// Shown after a fresh probe writes Documents/ACCESS MAP.txt.
+    @State private var showAccessMapNote = false
 
     @State private var selectedEntry: FileEntry?
     @State private var hexViewerEntry: FileEntry?
@@ -208,6 +210,11 @@ struct FilePatchWorkspaceView: View {
                 NavigationLink { AppContainersView() } label: {
                     Label(l10n.tr("ac.title"), systemImage: "shippingbox")
                         .font(.system(size: 15))
+                }
+                if showAccessMapNote {
+                    Label(l10n.tr("fp.accessmap.note"), systemImage: "map")
+                        .font(.system(size: 13))
+                        .foregroundStyle(.secondary)
                 }
             }
         }
@@ -441,8 +448,10 @@ struct FilePatchWorkspaceView: View {
         guard shortcuts == nil else { return }
         DispatchQueue.global(qos: .userInitiated).async {
             let probed = FileBrowser.reachableShortcuts()
+            let wroteMap = FileBrowser.lastProbeWroteAccessMap
             DispatchQueue.main.async {
                 shortcuts = probed
+                showAccessMapNote = wroteMap
             }
         }
     }

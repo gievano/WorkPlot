@@ -467,3 +467,12 @@
 "fp.shortcut.internaldaemon" = "Daemon Containers";
 "fp.shortcut.pluginkit" = "Plugin Containers";
 "fp.shortcut.sharedgroups" = "Shared App Groups";
+
+// MHA class-labeled locations (FilzaSlop naming) + access map
+"fp.shortcut.mhaC13" = "[MHA-C13] System Groups";
+"fp.shortcut.mhaC12" = "[MHA-C12] System Data";
+"fp.shortcut.mhaC2" = "[MHA-C2] App Data";
+"fp.shortcut.mhaC7" = "[MHA-C7] App Groups";
+"fp.shortcut.mhaC10" = "[MHA-C10] Daemon Containers";
+"fp.shortcut.mhaC14" = "[MHA-C14] Plugin Containers";
+"fp.accessmap.note" = "Access map saved to Documents/ACCESS MAP.txt";
