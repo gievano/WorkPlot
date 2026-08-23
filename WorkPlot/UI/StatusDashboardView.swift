@@ -70,6 +70,17 @@ struct StatusDashboardView: View {
                         }
                     }
                     .disabled(!manager.sandboxGranted)
+                    // Classic route for builds that ignore canvas values
+                    // served from MobileGestalt.
+                    Button(l10n.tr("rdar.custom.applyPlist")) {
+                        guard let width = Int(customWidth), let height = Int(customHeight),
+                              width > 0, height > 0 else {
+                            manager.statusText = l10n.tr("rdar.custom.invalid")
+                            return
+                        }
+                        applyCanvasViaGraphicsPlist(width: width, height: height)
+                    }
+                    .disabled(!manager.sandboxGranted)
                 }
                 Section(header: Text(l10n.tr("home.log"))) {
                     Text(manager.statusText)
@@ -112,6 +123,26 @@ struct StatusDashboardView: View {
         } else {
             manager.statusText = "\(label): \(l10n.tr("rdar.verify.fail"))"
             SessionLogger.shared.log("rdar canvas \(width)x\(height): write not visible on disk after save")
+        }
+    }
+    /// Classic route: patches canvas_width/canvas_height directly inside the
+    /// IOMobileGraphicsFamily plist through the bad_query lease, with a
+    /// persistent stock backup. Works on builds that ignore
+    /// MainScreenCanvasSizes served from MobileGestalt.
+    private func applyCanvasViaGraphicsPlist(width: Int, height: Int) {
+        do {
+            switch try RDARFix.apply(canvasWidth: width, canvasHeight: height) {
+            case .applied:
+                manager.statusText = "\(l10n.tr("rdar.custom.plistApplied")) (\(width)x\(height)). \(l10n.tr("restart.rec.title"))"
+                SessionLogger.shared.log("rdar canvas \(width)x\(height) applied via graphics plist")
+                showRestartAlert = true
+            case .alreadyFixed:
+                manager.statusText = "\(l10n.tr("rdar.custom.plistAlready")) (\(width)x\(height))"
+                SessionLogger.shared.log("rdar graphics plist already carries \(width)x\(height)")
+            }
+        } catch {
+            manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
+            SessionLogger.shared.log("rdar graphics plist failed: \(error.localizedDescription)")
         }
     }
 }
