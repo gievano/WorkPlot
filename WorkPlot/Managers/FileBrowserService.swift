@@ -92,15 +92,58 @@ struct FileQuickLocation: Identifiable {
 }
 
 enum FileBrowser {
-    /// Quick-jump locations rendered at the browser root. Paths are shown
-    /// as-is; entries whose target cannot be listed surface the error.
-    static let shortcuts: [FileQuickLocation] = [
-        FileQuickLocation(labelKey: "fp.shortcut.preferences", path: "/var/mobile/Library/Preferences"),
+    /// All known quick-jump locations. ContainerManager policy makes many of
+    /// them unreachable depending on the OS build, so the browser renders
+    /// only the ones that pass a live listing probe (Filza shows mounts the
+    /// same way). Reachability is cached per install after the first probe.
+    static let allShortcuts: [FileQuickLocation] = [
         FileQuickLocation(labelKey: "fp.shortcut.gestaltcache", path: "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches"),
+        FileQuickLocation(labelKey: "fp.shortcut.systemgroups", path: "/var/containers/Shared/SystemGroup"),
+        FileQuickLocation(labelKey: "fp.shortcut.datasystem", path: "/var/containers/Data/System"),
+        FileQuickLocation(labelKey: "fp.shortcut.applications", path: "/var/mobile/Containers/Data/Application"),
+        FileQuickLocation(labelKey: "fp.shortcut.internaldaemon", path: "/var/mobile/Containers/Data/InternalDaemon"),
+        FileQuickLocation(labelKey: "fp.shortcut.pluginkit", path: "/var/mobile/Containers/Data/PluginKitPlugin"),
+        FileQuickLocation(labelKey: "fp.shortcut.sharedgroups", path: "/var/mobile/Containers/Shared/AppGroup"),
+        FileQuickLocation(labelKey: "fp.shortcut.preferences", path: "/var/mobile/Library/Preferences"),
         FileQuickLocation(labelKey: "fp.shortcut.varprefs", path: "/var/preferences"),
         FileQuickLocation(labelKey: "fp.shortcut.jb", path: "/var/jb"),
         FileQuickLocation(labelKey: "fp.shortcut.jailbreak", path: "/var/jailbreak")
     ]
+
+    private static let reachabilityCacheKey = "FileBrowserReachableShortcutPaths"
+
+    /// Shortcut entries whose directories passed a live listing probe.
+    /// Runs off the main thread from the caller; results persist so later
+    /// launches skip re-probing unless nothing was reachable last time.
+    static func reachableShortcuts() -> [FileQuickLocation] {
+        if let cached = UserDefaults.standard.stringArray(forKey: reachabilityCacheKey),
+           !cached.isEmpty {
+            let allowed = Set(cached)
+            return allShortcuts.filter { allowed.contains($0.path) }
+        }
+
+        var reachable: [String] = []
+        for location in allShortcuts where canList(location.path) {
+            reachable.append(location.path)
+        }
+        if !reachable.isEmpty {
+            UserDefaults.standard.set(reachable, forKey: reachabilityCacheKey)
+        }
+        // Nothing probed OK (or a transient failure): fall back to the
+        // container trees the exploit is documented to cover rather than
+        // showing an empty screen.
+        let fallback = Set([
+            "/var/containers/Shared/SystemGroup",
+            "/var/containers/Data/System"
+        ])
+        return allShortcuts.filter { fallback.contains($0.path) || reachable.contains($0.path) }
+    }
+
+    /// Cheap reachability probe: a successful directory listing means the
+    /// tree is inside ContainerManager's policy for this build.
+    static func canList(_ path: String) -> Bool {
+        (try? rawList(normalize(path))) != nil
+    }
 
     // MARK: - Listing
 
