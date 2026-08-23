@@ -176,7 +176,8 @@ enum Patch3105 {
             throw Patch3105Error.missingField("wrappedContentKey")
         }
 
-        for algorithm in [kCCPRFHmacAlgSHA256, kCCPRFHmacAlgSHA512] {
+        let algorithms: [CCPseudoRandomAlgorithm] = [kCCPRFHmacAlgSHA256, kCCPRFHmacAlgSHA512]
+        for algorithm in algorithms {
             let derived = pbkdf2(password: password,
                                  salt: salt,
                                  iterations: envelope.iterations,
@@ -294,11 +295,16 @@ enum Patch3105 {
     /// Manifest formats: {"rules": [{"bundleID", "path", optional "file"}]}
     /// (JSON or plist). File references resolve relative to the manifest.
     private static func decodeManifestRules(_ manifestURL: URL, workspace: URL) -> [(rule: PatchPackageRule, bytes: Data)]? {
-        guard let data = try? Data(contentsOf: manifestURL),
-              let obj = (try? JSONSerialization.jsonObject(with: data, options: []))
-                  ?? (try? PropertyListSerialization.propertyList(from: data, options: [], format: nil))
-                  as? [String: Any],
-              let list = obj["rules"] as? [[String: Any]] else { return nil }
+        guard let data = try? Data(contentsOf: manifestURL) else { return nil }
+        let obj: [String: Any]?
+        if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+            obj = json
+        } else if let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] {
+            obj = plist
+        } else {
+            return nil
+        }
+        guard let list = obj?["rules"] as? [[String: Any]] else { return nil }
 
         let manifestDirectory = manifestURL.deletingLastPathComponent()
         var result: [(PatchPackageRule, Data)] = []
