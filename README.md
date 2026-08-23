@@ -33,7 +33,7 @@ Switch them in-app under the gear icon. The whole UI follows your choice.
 | **Siri AI Suite**        | Enable the new Siri AI and Apple Intelligence through the CacheData patch (Toto method), with optional spoofing to iPhone 15/16/17 Pro and Pro Max |
 | **Liquid Glass**         | Turn on Apple's Liquid Glass UI effect                                                                                                             |
 | **Backup & Restore**     | Automatic backup before each write, JSON snapshots you can export or import, plus the RDARFix repair tool                                          |
-| **File Patch Workspace** | Browse and edit system files through the sandbox escape using FilzaSlop-style location labels ([MHA-C13] System Groups, [MHA-C12] System Data, and so on), record reachable paths to an ACCESS MAP.txt in Documents, import `.3105` patch files, inspect app containers, clean per-app caches, view files as hex or SQLite tables |
+| **File Patch Workspace** | Browse and edit system files through the HouseArrest sandbox escape (container-class labels [MHA-C13] System Groups, [MHA-C12] System Data, and so on, popularized by FilzaSlop), record reachable paths to an ACCESS MAP.txt in Documents, import `.3105` patch files, inspect app containers, clean per-app caches, view files as hex or SQLite tables |
 | **Patch Packages**       | Bundle replacement rules (bundle ID + path) into a folder package with password protection and verified rollback                                   |
 | **Customization**        | Six languages, light/dark/system appearance, alternate app icons, in-app update checker                                                            |
 
@@ -101,9 +101,19 @@ After either one applies, WorkPlot reads the plist back from disk and compares t
 ## Credits
 
 - WorkPlot: [gievano](https://github.com/gievano), [Adnan120Hz](https://github.com/adnan120hz)
-- Contributions and testing: [Adnan120Hz](https://github.com/adnan120hz), [gievano](https://github.com/gievano)
-- Sandbox escape: [forcequitOS/bad_query](https://github.com/forcequitOS/bad_query)
-- Respring method: [neospring](https://github.com/rooootdev/neospring) by rooootdev, WebKit variant by @neonmodder123, Swift port by @skadz108
-- Inspiration and reference implementations: Placard, GestaltEdit, FilzaSlop, 3105
 
-This project incorporates GPLv3-licensed `bad_query` source code.
+**Exploit & techniques**
+
+- `bad_query` sandbox escape: [forcequitOS/bad_query](https://github.com/forcequitOS/bad_query) (GPLv3, incorporated)
+- HouseArrest sandbox escape: demonstrated by [0xjohnnydev/FilzaSlop](https://github.com/0xjohnnydev/FilzaSlop); class-13 route groundwork in the MobileHouseArrest-PoC notes (mond / 0xjohnnydev)
+- Respring method: [rooootdev/neospring](https://github.com/rooootdev/neospring); WebKit variant by @neonmodder123, Swift port by @skadz108
+- MobileGestalt tweak semantics: [leminlimez/Nugget](https://github.com/leminlimez/Nugget) and [GestaltEdit](https://github.com/leminlimez/GestaltEdit)
+
+**Reference apps**
+
+- [YangJiiii/3105](https://github.com/YangJiiii/3105) (GPLv3 — safe file operations adapted)
+- [frs0n/placard](https://github.com/frs0n/placard)
+
+**Individuals:** Mond, Ketamine, Toto.
+
+Full attribution and licenses: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). WorkPlot incorporates GPLv3-licensed `bad_query` source code.

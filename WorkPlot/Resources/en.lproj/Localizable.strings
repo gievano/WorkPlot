@@ -50,7 +50,7 @@
 "restart.rec.title" = "Restart Recommended";
 "restart.rec.message" = "A full device restart gives the best results. You can also respring to refresh quickly.";
 "credits.header" = "Credits";
-"credits.disclaimer" = "This app uses sandbox escape & bad_query (github.com/forcequitOS/bad_query).";
+"credits.disclaimer" = "WorkPlot is GPL-3.0 software. Full attribution and licenses: THIRD_PARTY_NOTICES.md in the repository.";
 "bg.pick" = "Custom Background...";
 "bg.reset" = "Reset Background";
 
@@ -75,7 +75,7 @@
 "credits.projects" = "Projects";
 "credits.thanks" = "Special Thanks";
 "credits.exploit.detail" = "Exploit - bad_query by forcequitOS";
-"credits.sandbox.detail" = "iOS 27 Sandbox Escape (MCM bug class)";
+"credits.sandbox.detail" = "HouseArrest sandbox escape (MCM bug class), demonstrated end-to-end by FilzaSlop";
 "pb.apply" = "Apply";
 "bg.opacity" = "Background Opacity";
 "bg.opacity.hint" = "Transparency of your custom background";
@@ -325,9 +325,9 @@
 "tweak.dynamicisland.title" = "Dynamic Island";
 "tweak.dynamicisland.detail" = "Enables the Dynamic Island capability.";
 "tweak.removepill.title" = "Remove Island Pill";
-"tweak.removepill.detail" = "Turns the fake Dynamic Island off on notch devices and clears any picked subtype. Use this if a black pill is stuck at the top of the screen.";
+"tweak.removepill.detail" = "Turns the fake Dynamic Island off on notch devices and clears any picked subtype. Use this if a black pill is stuck at the top of the screen. Not yet verified on every iOS build.";
 "tweak.dynamicislandoff.title" = "Disable Dynamic Island";
-"tweak.dynamicislandoff.detail" = "Turns the Dynamic Island capability off on devices that ship with it (iPhone 14 Pro or newer). Respring required.";
+"tweak.dynamicislandoff.detail" = "Turns the Dynamic Island capability off on devices that ship with it (iPhone 14 Pro or newer). Respring required. The disable direction is not yet independently verified.";
 "tweak.aod.title" = "Always-On Display";
 "tweak.aod.detail" = "May increase burn-in risk on unsupported devices.";
 "tweak.aodvibrancy.title" = "AOD Vibrancy";
@@ -462,3 +462,7 @@
 "pp3105.password.placeholder" = "Password";
 "pp3105.password.message" = "%@ is password protected. Enter its password to apply.";
 "pp.scanFailed" = "Failed to enumerate containers at";
+"credits.mhapoc.detail" = "Class-13 ContainerManager route groundwork";
+"credits.nugget.detail" = "MobileGestalt tweak semantics and community methods";
+"credits.3105.detail" = "Safe file operations reference (GPLv3)";
+"credits.respring.detail" = "Respring method - WebKit variant ported from the community";
