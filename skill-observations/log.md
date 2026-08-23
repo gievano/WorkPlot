@@ -264,3 +264,18 @@ Observations captured during task-oriented work.
 **Suggested improvement:** Before consolidating toggles: build a key-level overlap matrix, rank each mechanism by external provenance evidence (reference binaries), let the user mental model name the architecture (old path vs upgraded path), fold subset toggles into their superset, and gate removals behind grep sweeps over both symbols and l10n keys.
 
 **Principle:** Consolidation needs an objective ranking signal from outside the codebase; inside evidence alone cannot say which duplicate is the "real" one.
+
+### Observation 16: Baseline-first delegation and self-edit discipline in parallel removals
+
+**Status:** OPEN
+**Date:** 2026-08-23
+**Session context:** PosterBoard feature removal executed via explorer->builder subagent pipeline while main thread shipped an unrelated fix; CI caught a scope bug in the main thread's own edit
+**Skill:** New skill candidate: none - extends work-order-execution pattern (Observation 14)
+**Type:** internal
+**Phase/Area:** Multi-agent execution and self-verification
+
+**Issue:** Two failure classes surfaced. (1) Delegated removal risked breaking an unrelated feature because the doomed file's ZIP engine was reused by Patch3105 - only a reference-level map (not file-level) catches this. (2) The orchestrator's own edits twice dropped anchor lines when rewriting blocks with an edit tool whose oldString omitted trailing context; local static checkers passed but CI failed at compile.
+
+**Suggested improvement:** For removals: require a symbol-dependency report per doomed file before deletion, and run repo checkers once BEFORE any edit to snapshot pre-existing red gates, so regressions are separable from legacy noise. For orchestrator self-edits: after every block-replacement edit that touches braces/declarations, immediately re-read the edited region and verify brace balance plus neighbor lines before committing.
+
+**Principle:** Delegation needs dependency-grade maps, not file lists; and the cheapest compile gate is the orchestrator re-reading its own diff before push.

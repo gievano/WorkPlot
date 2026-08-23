@@ -72,6 +72,7 @@ struct FilePatchWorkspaceView: View {
                 }
             }
             .workPlotScrollBackground()
+            .scrollDismissesKeyboard(.immediately)
             .navigationTitle(l10n.tr("tab.files"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

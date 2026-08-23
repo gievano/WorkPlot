@@ -22,17 +22,9 @@ struct StatusDashboardView: View {
                 }
                 Section(header: Text(l10n.tr("home.actionsHeader"))) {
                     Button(l10n.tr("status.rdarfix")) {
-                        do {
-                            // One-tap path: canvas dimensions via MobileGestalt
-                            // (MainScreenCanvasSizes) - the plist locations the
-                            // old probe targeted are unreachable on iOS 27.
-                            let bounds = UIScreen.main.nativeBounds
-                            try applyCanvas(width: Int(bounds.width),
-                                            height: Int(bounds.height),
-                                            label: l10n.tr("status.rdarfix"))
-                        } catch {
-                            manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
-                        }
+                        let bounds = UIScreen.main.nativeBounds
+                        applyCanvasEveryRoute(width: Int(bounds.width),
+                                              height: Int(bounds.height))
                     }
                     .disabled(!manager.sandboxGranted)
                     Button(l10n.tr("status.lg.disable")) {
@@ -62,23 +54,7 @@ struct StatusDashboardView: View {
                             manager.statusText = l10n.tr("rdar.custom.invalid")
                             return
                         }
-                        do {
-                            try applyCanvas(width: width, height: height,
-                                            label: l10n.tr("rdar.custom.apply"))
-                        } catch {
-                            manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
-                        }
-                    }
-                    .disabled(!manager.sandboxGranted)
-                    // Classic route for builds that ignore canvas values
-                    // served from MobileGestalt.
-                    Button(l10n.tr("rdar.custom.applyPlist")) {
-                        guard let width = Int(customWidth), let height = Int(customHeight),
-                              width > 0, height > 0 else {
-                            manager.statusText = l10n.tr("rdar.custom.invalid")
-                            return
-                        }
-                        applyCanvasViaGraphicsPlist(width: width, height: height)
+                        applyCanvasEveryRoute(width: width, height: height)
                     }
                     .disabled(!manager.sandboxGranted)
                 }
@@ -90,6 +66,7 @@ struct StatusDashboardView: View {
             }
             .navigationTitle("WorkPlot")
             .workPlotScrollBackground()
+            .scrollDismissesKeyboard(.immediately)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     MainDashboardSettingsMenu()
@@ -102,48 +79,40 @@ struct StatusDashboardView: View {
         }
     }
 
-    /// Applies canvas sizes through the gestalt route, then reads the plist
-    /// back from disk and compares bytes. A write the system silently drops
-    /// now reports "not visible on disk" instead of a false OK.
-    private func applyCanvas(width: Int, height: Int, label: String) throws {
-        guard var plist = manager.readGestalt() else {
-            throw RDARFixError(message: L10n.shared.tr("common.readFail"))
-        }
-        RDARFix.applyCanvasSizesGestalt(to: &plist, canvasWidth: width, canvasHeight: height)
-        try manager.saveGestaltOrThrow(plist)
+    /// One tap writes BOTH known canvas routes - MobileGestalt's
+    /// MainScreenCanvasSizes and the classic IOMobileGraphicsFamily plist -
+    /// then reports each result honestly. Which route this build honors is
+    /// only visible after a full restart.
+    private func applyCanvasEveryRoute(width: Int, height: Int) {
+        var lines: [String] = []
 
-        let verified = manager.readGestalt().map {
-            RDARFix.verifyCanvasSizesGestalt(in: $0, canvasWidth: width, canvasHeight: height)
-        } ?? false
-
-        if verified {
-            manager.statusText = "\(label) OK (\(width)x\(height)). \(l10n.tr("restart.rec.title"))"
-            SessionLogger.shared.log("rdar canvas \(width)x\(height) applied and verified on disk")
-            showRestartAlert = true
-        } else {
-            manager.statusText = "\(label): \(l10n.tr("rdar.verify.fail"))"
-            SessionLogger.shared.log("rdar canvas \(width)x\(height): write not visible on disk after save")
+        do {
+            guard var plist = manager.readGestalt() else {
+                throw RDARFixError(message: L10n.shared.tr("common.readFail"))
+            }
+            RDARFix.applyCanvasSizesGestalt(to: &plist, canvasWidth: width, canvasHeight: height)
+            try manager.saveGestaltOrThrow(plist)
+            let verified = manager.readGestalt().map {
+                RDARFix.verifyCanvasSizesGestalt(in: $0, canvasWidth: width, canvasHeight: height)
+            } ?? false
+            lines.append(verified ? "Gestalt: written and verified on disk"
+                                  : "Gestalt: \(L10n.shared.tr("rdar.verify.fail"))")
+        } catch {
+            lines.append("Gestalt: failed (\(error.localizedDescription))")
         }
-    }
-    /// Classic route: patches canvas_width/canvas_height directly inside the
-    /// IOMobileGraphicsFamily plist through the bad_query lease, with a
-    /// persistent stock backup. Works on builds that ignore
-    /// MainScreenCanvasSizes served from MobileGestalt.
-    private func applyCanvasViaGraphicsPlist(width: Int, height: Int) {
+
         do {
             switch try RDARFix.apply(canvasWidth: width, canvasHeight: height) {
-            case .applied:
-                manager.statusText = "\(l10n.tr("rdar.custom.plistApplied")) (\(width)x\(height)). \(l10n.tr("restart.rec.title"))"
-                SessionLogger.shared.log("rdar canvas \(width)x\(height) applied via graphics plist")
-                showRestartAlert = true
-            case .alreadyFixed:
-                manager.statusText = "\(l10n.tr("rdar.custom.plistAlready")) (\(width)x\(height))"
-                SessionLogger.shared.log("rdar graphics plist already carries \(width)x\(height)")
+            case .applied: lines.append("Graphics plist: patched")
+            case .alreadyFixed: lines.append("Graphics plist: already set")
             }
         } catch {
-            manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
-            SessionLogger.shared.log("rdar graphics plist failed: \(error.localizedDescription)")
+            lines.append("Graphics plist: not reachable on this build")
         }
+
+        manager.statusText = "\(l10n.tr("rdar.custom.apply")) (\(width)x\(height))\n" + lines.joined(separator: "\n")
+        SessionLogger.shared.log("canvas \(width)x\(height): \(lines.joined(separator: " | "))")
+        showRestartAlert = true
     }
 }
 
