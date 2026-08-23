@@ -483,6 +483,9 @@
 "rdar.custom.height" = "Height (px)";
 "rdar.custom.apply" = "Apply Custom Canvas";
 "rdar.custom.invalid" = "Enter positive numbers for width and height.";
+"rdar.custom.applyPlist" = "Apply via Graphics Plist (Classic)";
+"rdar.custom.plistApplied" = "Graphics plist patched";
+"rdar.custom.plistAlready" = "Graphics plist already carries this canvas";
 "rdar.verify.fail" = "write not visible on disk - blocked by system";
 
 // Respring recovery
