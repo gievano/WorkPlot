@@ -180,6 +180,61 @@ struct RDARFix {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "unknown"
     }
 
+    // MARK: - Gestalt-level canvas fix
+
+    /// MGKeys: "ybGkijAwLTwevankfVzsDQ" = MainScreenCanvasSizes (iOS 10+).
+    /// Canvas dimensions are ALSO served through MobileGestalt, which we can
+    /// write via the proven gestaltcache/CMG path - no graphics-plist
+    /// filesystem access required. Preserves an existing value's shape when
+    /// present; otherwise writes a little-endian UInt32 width+height blob.
+    /// ponytail: 8-byte LE pair matches what community tooling writes;
+    /// adjust if a device trace shows a richer struct.
+    static let mainScreenCanvasSizesKey = "ybGkijAwLTwevankfVzsDQ"
+
+    static func applyCanvasSizesGestalt(to plist: inout [String: Any],
+                                        canvasWidth: Int,
+                                        canvasHeight: Int) {
+        guard canvasWidth > 0, canvasHeight > 0,
+              canvasWidth <= Int(UInt32.max), canvasHeight <= Int(UInt32.max) else { return }
+        var cacheExtra = plist["CacheExtra"] as? [String: Any] ?? [:]
+
+        let pair: [UInt8] = [
+            UInt8(truncatingIfNeeded: canvasWidth), UInt8(truncatingIfNeeded: canvasWidth >> 8),
+            UInt8(truncatingIfNeeded: canvasWidth >> 16), UInt8(truncatingIfNeeded: canvasWidth >> 24),
+            UInt8(truncatingIfNeeded: canvasHeight), UInt8(truncatingIfNeeded: canvasHeight >> 8),
+            UInt8(truncatingIfNeeded: canvasHeight >> 16), UInt8(truncatingIfNeeded: canvasHeight >> 24),
+        ]
+
+        switch cacheExtra[mainScreenCanvasSizesKey] {
+        case let existing as Data where existing.count >= 8:
+            var patched = existing
+            patched.replaceSubrange(0..<8, with: Data(pair))
+            cacheExtra[mainScreenCanvasSizesKey] = patched
+        case let existing as [Int] where existing.count >= 2:
+            var patched = existing
+            patched[0] = canvasWidth
+            patched[1] = canvasHeight
+            cacheExtra[mainScreenCanvasSizesKey] = patched
+        case let existing as [UInt32] where existing.count >= 2:
+            var patched = existing
+            patched[0] = UInt32(canvasWidth)
+            patched[1] = UInt32(canvasHeight)
+            cacheExtra[mainScreenCanvasSizesKey] = patched
+        default:
+            cacheExtra[mainScreenCanvasSizesKey] = Data(pair)
+        }
+        plist["CacheExtra"] = cacheExtra
+    }
+
+    static func applyCanvasSizesGestalt(to plist: inout [String: Any]) {
+        #if canImport(UIKit)
+        let bounds = UIScreen.main.nativeBounds
+        applyCanvasSizesGestalt(to: &plist,
+                                canvasWidth: Int(bounds.width),
+                                canvasHeight: Int(bounds.height))
+        #endif
+    }
+
     // MARK: - Device entry points
     // Everything below touches the bad_query sandbox lease and is therefore
     // only built on iOS; the macOS CI harness compiles the pure helpers above.

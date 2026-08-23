@@ -454,3 +454,7 @@
 "pp.help.body" = "A package is a FOLDER containing manifest.json (name, optional passwordHash, rules[{bundleID,path}]) plus replacements/<bundleID><path> files. Apply copies each replacement over the app container file; Roll Back restores the stock copy.";
 "pp.createTemplate" = "Create Sample Package";
 "pp.templateOk" = "Sample package created. Edit it via the Files app, then re-import it.";
+
+// RDAR canvas fix via MobileGestalt
+"tweak.rdargestalt.title" = "RDAR Canvas Fix (Gestalt)";
+"tweak.rdargestalt.detail" = "Writes your native screen dimensions into MainScreenCanvasSizes so the graphics stack stops downscaling. Experimental alternative to the plist-based RDAR fix - no extra filesystem access needed.";

@@ -27,6 +27,7 @@ enum GestaltTweakID: String, CaseIterable, Identifiable {
     case pencil, actionButton, collisionSOS
     case stageManager, iPadOS, iPadApps
     case internalInstall, internalStorage, securityResearchDevice
+    case rdarCanvasGestalt
 
     var id: String { rawValue }
 }
@@ -113,6 +114,12 @@ enum GestaltTweakCatalog {
         .init(id: .internalInstall, category: .internalFeatures, title: L10n.shared.tr("tweak.internalinstall.title"), detail: L10n.shared.tr("tweak.internalinstall.detail"), values: ["EqrsVvjcYDdxHBiQmGhAWw": 1], isRisky: true),
         .init(id: .internalStorage, category: .internalFeatures, title: L10n.shared.tr("tweak.internalstorage.title"), detail: L10n.shared.tr("tweak.internalstorage.detail"), values: ["LBJfwOEzExRxzlAnSuI7eg": 1], isRisky: true),
         .init(id: .securityResearchDevice, category: .internalFeatures, title: L10n.shared.tr("tweak.securityresearch.title"), detail: L10n.shared.tr("tweak.securityresearch.detail"), values: ["XYlJKKkj2hztRP1NWWnhlw": 1], isRisky: true),
+
+        // Canvas dimensions are ALSO read from MobileGestalt (MGKeys:
+        // MainScreenCanvasSizes), not only from the graphics plist that
+        // bad_query cannot reach. Values are injected per-device at apply
+        // time by RDARFix.applyCanvasSizesGestalt (native screen bounds).
+        .init(id: .rdarCanvasGestalt, category: .display, title: L10n.shared.tr("tweak.rdargestalt.title"), detail: L10n.shared.tr("tweak.rdargestalt.detail"), values: [:], isExperimental: true),
     ]
 
     static func definition(for id: GestaltTweakID) -> GestaltTweakDefinition? {
