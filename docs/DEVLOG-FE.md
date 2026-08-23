@@ -609,3 +609,11 @@
 **The Reasoning:** Laporan device: RDAR apply sukses di log tapi efek nihil. Karena tidak ada error, satu-satunya cara membedakan "tulisannya ditolak diam-diam" vs "OS mengabaikan key" adalah verifikasi baca-balik. Custom canvas sekaligus jadi alat tes: nilai aneh (999x999) yang tetap nihil setelah reboot = mekanisme memang diabaikan build ini.
 
 **The Tech Debt:** BackupRestoreManagerView masih pakai .data untuk import backup gestalt (dikecualikan user). Kalau mekanisme gestalt terbukti mati di build ini, tombol rdar harus jadi unavailable-state jujur.
+
+## 2026-08-23 (malam) - PR #37: Regresi stage=token + Pocket Poster tricks
+
+**The Change:** (1) Menghapus seluruh mekanisme probe reachability di FileBrowser (reachableShortcuts/canList/writeAccessMap/cache) - registry kembali statis penuh dengan label MHA. (2) Picker PosterBoard menerima [.tendies, .zip]. (3) TendiesPackage.randomizeIdentifiers(in:) mengacak identifier wallpaper sebelum install; PosterBoard dibuka otomatis via LSApplicationWorkspace setelah sukses. (4) README disinkronkan (fitur baru, troubleshooting, kredit neospring/FilzaSlop/3105).
+
+**The Reasoning:** Laporan device build 3759eea: browsing file gagal "bad_query stage=token did not receive a sandbox token" dan App Containers hang scanning. Pola waktunya cocok dengan probe 11 path saat tab Files dibuka - containermanagerd tampaknya menolak penerbitan token untuk proses setelah ledakan query itu (probe bare rawList lolos karena tidak butuh token). Pelajaran: jangan hammer CMG; listing statis + error per-tap lebih aman. Trik randomizeWallpaperId dan openPosterBoard diport dari leminlimez/Pocket-Poster (GPL-3.0).
+
+**The Tech Debt:** File .3105 ternyata format terenkripsi (header 3105PATCH\0 + plist berisi PBKDF2 250k iterasi, wrappedContentKey, encryptedPayload) - applier butuh password dari pemilik package sebelum bisa dibangun. Patch Packages (.wplot folder) dipertahankan sebagai satu-satunya mekanisme patch yang berfungsi sampai .3105 native siap.

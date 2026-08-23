@@ -256,16 +256,6 @@ enum FileBrowser {
         }
     }
 
-    static func importItem(from sourceURL: URL, to directoryPath: String) throws {
-        try ensureSupportedOSForWrite()
-        try BadQueryLeaseScope.withLease(forPath: directoryPath) {
-            _ = try SafeFileOperations.copyItem(
-                at: sourceURL,
-                to: URL(fileURLWithPath: directoryPath)
-            )
-        }
-    }
-
     static func exportItem(at sourcePath: String) throws -> URL {
         let exportDirectory = URL(fileURLWithPath: NSTemporaryDirectory())
             .appendingPathComponent("workplot-export-\(UUID().uuidString)")
