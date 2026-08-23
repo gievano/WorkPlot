@@ -213,8 +213,8 @@ struct RDARFix {
         "iPhone17,4": (1290, 2796), "iPhone17,5": (1170, 2532),
     ]
 
-    static func knownGoodNativeCanvas() -> (width: Int, height: Int)? {
-        knownGoodNativeCanvases[DeviceCapability.machineIdentifier]
+    static func knownGoodNativeCanvas(machine: String) -> (width: Int, height: Int)? {
+        knownGoodNativeCanvases[machine]
     }
 
     private static func canvasSizeData(width: Double, height: Double) -> Data {

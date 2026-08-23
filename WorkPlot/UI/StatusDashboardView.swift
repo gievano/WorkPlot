@@ -121,7 +121,7 @@ struct StatusDashboardView: View {
     /// nativeBounds reports the broken canvas, and Display Zoom reports the
     /// zoomed buffer - either written back keeps the screen broken.
     private func runFixRDAR() {
-        if let fixed = RDARFix.knownGoodNativeCanvas() {
+        if let fixed = RDARFix.knownGoodNativeCanvas(machine: DeviceCapability.machineIdentifier) {
             applyCanvasEveryRoute(width: fixed.width, height: fixed.height, note: nil)
         } else {
             let bounds = UIScreen.main.nativeBounds

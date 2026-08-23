@@ -167,7 +167,7 @@ struct GestaltPresetManagerView: View {
             }
             if selectedTweaks.contains(.rdarCanvasGestalt) {
                 // Canvas size comes from this device's native bounds.
-                RDARFix.applyCanvasSizesGestalt(to: &plist)
+                RDARFix.applyCanvasSizesGestalt(to: &plist, machine: DeviceCapability.machineIdentifier)
             }
             if let subtype = dynamicIslandSubtype {
                 try GestaltArtwork.setDynamicIslandSubtype(subtype, in: &plist)
