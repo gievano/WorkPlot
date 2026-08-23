@@ -36,6 +36,8 @@ struct FilePatchWorkspaceView: View {
     @State private var currentPath: String?
     @State private var entries: [FileEntry] = []
     @State private var isLoading = false
+    /// Shortcuts that passed the live reachability probe on this device.
+    @State private var shortcuts: [FileQuickLocation]?
 
     @State private var selectedEntry: FileEntry?
     @State private var hexViewerEntry: FileEntry?
@@ -176,20 +178,32 @@ struct FilePatchWorkspaceView: View {
             }
 
             Section(header: Text(l10n.tr("fp.shortcut.header"))) {
-                ForEach(FileBrowser.shortcuts) { shortcut in
-                    Button {
-                        navigate(to: shortcut.path)
-                    } label: {
-                        HStack {
-                            Label(l10n.tr(shortcut.labelKey), systemImage: "folder.badge.gearshape")
-                                .font(.system(size: 15))
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.tertiary)
-                        }
+                if let shortcuts {
+                    if shortcuts.isEmpty {
+                        Label(l10n.tr("ac.empty"), systemImage: "folder.badge.questionmark")
+                            .font(.system(size: 15))
+                            .foregroundStyle(.secondary)
                     }
-                    .foregroundColor(.primary)
+                    ForEach(shortcuts) { shortcut in
+                        Button {
+                            navigate(to: shortcut.path)
+                        } label: {
+                            HStack {
+                                Label(l10n.tr(shortcut.labelKey), systemImage: "folder.badge.gearshape")
+                                    .font(.system(size: 15))
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.tertiary)
+                            }
+                        }
+                        .foregroundColor(.primary)
+                    }
+                } else {
+                    HStack(spacing: 12) {
+                        ProgressView()
+                        Text(l10n.tr("fp.scanning")).font(.system(size: 15))
+                    }
                 }
                 NavigationLink { AppContainersView() } label: {
                     Label(l10n.tr("ac.title"), systemImage: "shippingbox")
@@ -423,6 +437,14 @@ struct FilePatchWorkspaceView: View {
         osSupported = false
         osBuild = "simulator"
         #endif
+
+        guard shortcuts == nil else { return }
+        DispatchQueue.global(qos: .userInitiated).async {
+            let probed = FileBrowser.reachableShortcuts()
+            DispatchQueue.main.async {
+                shortcuts = probed
+            }
+        }
     }
 
     private func crumbs(for path: String) -> [(label: String, path: String)] {
