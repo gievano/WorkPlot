@@ -21,7 +21,6 @@ enum GestaltTweakID: String, CaseIterable, Identifiable {
     case aiRegionUS
     // siriMode removed: duplicate of the Siri AI tab's SiriModeApplier path,
     // which is the only variant that can actually revert (remove the key).
-    case disableDynamicIsland, removeIslandPill
     case hideDynamicIslandOn, hideDynamicIslandOff
     case disableParallax, enableLiquidGlassLowPerformance, disableLiquidGlassLowPerformance
     case colorPaletteGraphics, colorPaletteLegacy
@@ -77,21 +76,16 @@ enum GestaltTweakCatalog {
         .init(id: .aiRegionUS, category: .region, title: L10n.shared.tr("tweak.airegion.title"), detail: L10n.shared.tr("tweak.airegion.detail"), values: [:], isRisky: true),
 
         .init(id: .supportsDynamicIsland, category: .display, title: L10n.shared.tr("tweak.dynamicisland.title"), detail: L10n.shared.tr("tweak.dynamicisland.detail"), values: ["YlEtTtHlNesRBMal1CqRaA": 1]),
-        // Same capability key as the enable toggle, written with 0 so
-        // SpringBoard treats the device as island-less (cutout falls back
-        // to a plain pill). Gated to hardware that actually has one;
-        // hiding it elsewhere would be a no-op.
-        .init(id: .disableDynamicIsland, category: .display, title: L10n.shared.tr("tweak.dynamicislandoff.title"), detail: L10n.shared.tr("tweak.dynamicislandoff.detail"), values: ["YlEtTtHlNesRBMal1CqRaA": 0], isExperimental: true, deviceGate: .iphone14ProOrLater),
-        // Notch-era counterpart of disableDynamicIsland: kills the FAKE
-        // island pill that supportsDynamicIsland/subtype draws on devices
-        // without a hardware cutout. The apply path additionally strips
-        // ArtworkDeviceSubType via GestaltArtwork.removeDynamicIslandSubtype.
-        .init(id: .removeIslandPill, category: .display, title: L10n.shared.tr("tweak.removepill.title"), detail: L10n.shared.tr("tweak.removepill.detail"), values: ["YlEtTtHlNesRBMal1CqRaA": 0], isExperimental: true, deviceGate: .belowIPhone14Pro),
+        // The Gestalt capability key is ENABLE-only: writing 0 never turns
+        // the island off on native devices (hardware default wins), so the
+        // old disable/remove-pill tweaks were removed as no-ops. The
+        // working off-switches are hideDynamicIslandOn/Off below, which
+        // drive the SpringBoard suppression flag instead.
         // Nugget >= 7.2 "Hide Dynamic Island Completely": the SpringBoard
-        // flag is the one switch that works on NATIVE island devices too,
-        // where the MobileGestalt capability key is enable-only. values is
-        // empty on purpose - the write targets com.apple.springboard.plist
-        // and is handled specially in GestaltPresetManagerView.applySelected().
+        // flag is the one switch that works on NATIVE island devices too.
+        // values is empty on purpose - the write targets
+        // com.apple.springboard.plist and is handled specially in
+        // GestaltPresetManagerView.applySelected().
         .init(id: .hideDynamicIslandOn, category: .display, title: L10n.shared.tr("tweak.hideisland.title"), detail: L10n.shared.tr("tweak.hideisland.detail"), values: [:], isExperimental: true),
         .init(id: .hideDynamicIslandOff, category: .display, title: L10n.shared.tr("tweak.showisland.title"), detail: L10n.shared.tr("tweak.showisland.detail"), values: [:]),
         .init(id: .alwaysOnDisplay, category: .display, title: L10n.shared.tr("tweak.aod.title"), detail: L10n.shared.tr("tweak.aod.detail"), values: ["2OOJf1VhaM7NxfRok3HbWQ": 1, "j8/Omm6s1lsmTDFsXjsBfA": 1], isRisky: true),
