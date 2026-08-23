@@ -176,7 +176,10 @@ enum Patch3105 {
             throw Patch3105Error.missingField("wrappedContentKey")
         }
 
-        let algorithms: [CCPseudoRandomAlgorithm] = [kCCPRFHmacAlgSHA256, kCCPRFHmacAlgSHA512]
+        let algorithms: [CCPseudoRandomAlgorithm] = [
+            CCPseudoRandomAlgorithm(kCCPRFHmacAlgSHA256),
+            CCPseudoRandomAlgorithm(kCCPRFHmacAlgSHA512)
+        ]
         for algorithm in algorithms {
             let derived = pbkdf2(password: password,
                                  salt: salt,
