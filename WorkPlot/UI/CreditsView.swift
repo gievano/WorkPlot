@@ -5,12 +5,14 @@ struct CreditsLink: Identifiable {
     let name: String
     let detail: String
     let url: URL?
+    let tiktokURL: URL?
     let githubUser: String?
 
-    init(name: String, detail: String, urlString: String? = nil, githubUser: String? = nil) {
+    init(name: String, detail: String, urlString: String? = nil, githubUser: String? = nil, tiktok: String? = nil) {
         self.name = name
         self.detail = detail
         self.url = urlString.flatMap(URL.init(string:))
+        self.tiktokURL = tiktok.flatMap(URL.init(string:))
         self.githubUser = githubUser
     }
 }
@@ -28,12 +30,10 @@ struct CreditsView: View {
     private var projects: [CreditsLink] { [
         CreditsLink(name: "bad_query", detail: l10n.tr("credits.exploit.detail"),
                     urlString: "https://github.com/forcequitOS/bad_query", githubUser: "forcequitOS"),
-        // One person, one project - previously listed twice under different
-        // names ("0xjohnnydev" and "FilzaSlop"), which read as two sources.
+        // Single entry per person/project: the author, FilzaSlop, and the
+        // PoC groundwork previously appeared as separate rows.
         CreditsLink(name: "FilzaSlop (HouseArrest sandbox escape)", detail: l10n.tr("credits.sandbox.detail"),
                     urlString: "https://github.com/0xjohnnydev/FilzaSlop", githubUser: "0xjohnnydev"),
-        CreditsLink(name: "MobileHouseArrest-PoC", detail: l10n.tr("credits.mhapoc.detail"),
-                    urlString: "https://github.com/0xjohnnydev/MobileHouseArrest-PoC", githubUser: "0xjohnnydev"),
         CreditsLink(name: "Nugget & GestaltEdit", detail: l10n.tr("credits.nugget.detail"),
                     urlString: "https://github.com/leminlimez/Nugget", githubUser: "leminlimez"),
         CreditsLink(name: "3105", detail: l10n.tr("credits.3105.detail"),
@@ -44,7 +44,16 @@ struct CreditsView: View {
                     urlString: "https://github.com/frs0n/placard", githubUser: "frs0n")
     ] }
 
+    private var testers: [CreditsLink] { [
+        CreditsLink(name: "nguyenls3005-cell", detail: l10n.tr("credits.tester.detail"),
+                    urlString: "https://github.com/nguyenls3005-cell", githubUser: "nguyenls3005-cell",
+                    tiktok: "https://www.tiktok.com/@lsnguyyniu"),
+    ] }
+
     private let thanks = ["Mond", "Ketamine", "Toto"]
+
+    @State private var tiktokLink: CreditsLink?
+    @State private var showTikTokDialog = false
 
     var body: some View {
         List {
@@ -54,6 +63,10 @@ struct CreditsView: View {
 
             Section(header: Text(l10n.tr("credits.projects"))) {
                 ForEach(projects) { linkRow($0) }
+            }
+
+            Section(header: Text(l10n.tr("credits.tester"))) {
+                ForEach(testers) { testerRow($0) }
             }
 
             Section(header: Text(l10n.tr("credits.thanks"))) {
@@ -68,6 +81,29 @@ struct CreditsView: View {
             }
         }
         .navigationTitle(l10n.tr("credits.header"))
+        .confirmationDialog("Open TikTok?", isPresented: $showTikTokDialog, titleVisibility: .visible) {
+            Button("Open TikTok Profile") {
+                if let url = tiktokLink?.tiktokURL { UIApplication.shared.open(url) }
+            }
+            Button("GitHub Profile") {
+                if let url = tiktokLink?.url { UIApplication.shared.open(url) }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text(tiktokLink.map { "Choose a profile to open for \($0.name)." } ?? "")
+        }
+    }
+
+    /// Tester rows carry a TikTok link, so tapping pops a profile picker
+    /// instead of jumping straight to GitHub.
+    private func testerRow(_ link: CreditsLink) -> some View {
+        Button {
+            tiktokLink = link
+            showTikTokDialog = true
+        } label: {
+            rowContent(link)
+        }
+        .buttonStyle(.plain)
     }
 
     private func linkRow(_ link: CreditsLink) -> some View {
