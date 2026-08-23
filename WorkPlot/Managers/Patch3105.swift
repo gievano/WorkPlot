@@ -9,6 +9,7 @@
 //  a plist carrying patch rules; other payload shapes fail explicitly.
 //
 
+import CommonCrypto
 import CryptoKit
 import Foundation
 
