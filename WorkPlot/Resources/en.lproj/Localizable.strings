@@ -75,7 +75,7 @@
 "credits.projects" = "Projects";
 "credits.thanks" = "Special Thanks";
 "credits.exploit.detail" = "Exploit - bad_query by forcequitOS";
-"credits.sandbox.detail" = "HouseArrest sandbox escape (MCM bug class), demonstrated end-to-end by FilzaSlop";
+"credits.sandbox.detail" = "HouseArrest sandbox escape (MCM bug class), demonstrated end-to-end by FilzaSlop - class-13 groundwork: MobileHouseArrest-PoC";
 "pb.apply" = "Apply";
 "bg.opacity" = "Background Opacity";
 "bg.opacity.hint" = "Transparency of your custom background";
@@ -462,7 +462,13 @@
 "pp3105.password.placeholder" = "Password";
 "pp3105.password.message" = "%@ is password protected. Enter its password to apply.";
 "pp.scanFailed" = "Failed to enumerate containers at";
-"credits.mhapoc.detail" = "Class-13 ContainerManager route groundwork";
+"credits.respring.detail" = "Respring method - WebKit variant ported from the community";
 "credits.nugget.detail" = "MobileGestalt tweak semantics and community methods";
 "credits.3105.detail" = "Safe file operations reference (GPLv3)";
-"credits.respring.detail" = "Respring method - WebKit variant ported from the community";
+"credits.tester" = "Beta Testers";
+"credits.tester.detail" = "WorkPlot beta tester";
+"tweak.hideisland.title" = "Hide Dynamic Island Completely";
+"tweak.hideisland.detail" = "Writes the official SpringBoard suppression flag - the method that works even on native island devices where the Gestalt capability alone cannot turn the island off. Removes all island UI including Live Activities. Full reboot required.";
+"tweak.showisland.title" = "Restore Dynamic Island";
+"tweak.showisland.detail" = "Removes the SpringBoard suppression flag so the island renders normally again.";
+"sb.error.notReachable" = "com.apple.springboard.plist was not reachable through the sandbox.";

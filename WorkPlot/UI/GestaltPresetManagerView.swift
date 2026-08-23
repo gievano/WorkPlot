@@ -131,9 +131,17 @@ struct GestaltPresetManagerView: View {
                     if id == .supportsDynamicIsland {
                         selectedTweaks.remove(.disableDynamicIsland)
                         selectedTweaks.remove(.removeIslandPill)
+                        selectedTweaks.remove(.hideDynamicIslandOn)
                     }
                     if id == .disableDynamicIsland || id == .removeIslandPill {
                         selectedTweaks.remove(.supportsDynamicIsland)
+                    }
+                    if id == .hideDynamicIslandOn {
+                        selectedTweaks.remove(.hideDynamicIslandOff)
+                        selectedTweaks.remove(.supportsDynamicIsland)
+                    }
+                    if id == .hideDynamicIslandOff {
+                        selectedTweaks.remove(.hideDynamicIslandOn)
                     }
                     selectedTweaks.insert(id)
                 } else {
@@ -161,6 +169,7 @@ struct GestaltPresetManagerView: View {
         // Declared at function scope: the save section below appends the
         // skip notice to the success status.
         var cacheFlagSkippedError: Error?
+        var springBoardLines: [String] = []
         do {
             if selectedTweaks.contains(.aiRegionUS) {
                 try AIRegionApplier.apply(to: &plist)
@@ -174,6 +183,12 @@ struct GestaltPresetManagerView: View {
             }
             if selectedTweaks.contains(.removeIslandPill) {
                 GestaltArtwork.removeDynamicIslandSubtype(in: &plist)
+            }
+            if selectedTweaks.contains(.hideDynamicIslandOn) {
+                springBoardLines += try SpringBoardPlist.setSuppressed(true)
+            }
+            if selectedTweaks.contains(.hideDynamicIslandOff) {
+                springBoardLines += try SpringBoardPlist.setSuppressed(false)
             }
             if changesModelName {
                 let name = modelName.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -220,6 +235,9 @@ struct GestaltPresetManagerView: View {
                     format: L10n.shared.tr("gestalt.cacheFlag.skipped"),
                     cacheFlagSkippedError.localizedDescription
                 )
+            }
+            if !springBoardLines.isEmpty {
+                manager.statusText += "\n" + springBoardLines.joined(separator: "\n")
             }
             showRestartAlert = true
         } catch {
