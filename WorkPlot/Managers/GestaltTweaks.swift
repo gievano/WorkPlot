@@ -21,6 +21,7 @@ enum GestaltTweakID: String, CaseIterable, Identifiable {
     case aiRegionUS
     // siriMode removed: duplicate of the Siri AI tab's SiriModeApplier path,
     // which is the only variant that can actually revert (remove the key).
+    case disableDynamicIsland
     case disableParallax, enableLiquidGlassLowPerformance, disableLiquidGlassLowPerformance
     case colorPaletteGraphics, colorPaletteLegacy
     case graphicsStyle
@@ -43,6 +44,9 @@ enum GestaltDeviceGate {
     /// Exactly the marketing iPhone 11 and 12 series
     /// (machineIdentifier iPhone12,* / iPhone13,*).
     case iphone11Or12Only
+    /// Devices with a native Dynamic Island: iPhone 14 Pro series
+    /// (machine family >= 15) and everything newer.
+    case iphone14ProOrLater
 }
 
 struct GestaltTweakDefinition: Identifiable {
@@ -69,6 +73,11 @@ enum GestaltTweakCatalog {
         .init(id: .aiRegionUS, category: .region, title: L10n.shared.tr("tweak.airegion.title"), detail: L10n.shared.tr("tweak.airegion.detail"), values: [:], isRisky: true),
 
         .init(id: .supportsDynamicIsland, category: .display, title: L10n.shared.tr("tweak.dynamicisland.title"), detail: L10n.shared.tr("tweak.dynamicisland.detail"), values: ["YlEtTtHlNesRBMal1CqRaA": 1]),
+        // Same capability key as the enable toggle, written with 0 so
+        // SpringBoard treats the device as island-less (cutout falls back
+        // to a plain pill). Gated to hardware that actually has one;
+        // hiding it elsewhere would be a no-op.
+        .init(id: .disableDynamicIsland, category: .display, title: L10n.shared.tr("tweak.dynamicislandoff.title"), detail: L10n.shared.tr("tweak.dynamicislandoff.detail"), values: ["YlEtTtHlNesRBMal1CqRaA": 0], isExperimental: true, deviceGate: .iphone14ProOrLater),
         .init(id: .alwaysOnDisplay, category: .display, title: L10n.shared.tr("tweak.aod.title"), detail: L10n.shared.tr("tweak.aod.detail"), values: ["2OOJf1VhaM7NxfRok3HbWQ": 1, "j8/Omm6s1lsmTDFsXjsBfA": 1], isRisky: true),
         .init(id: .alwaysOnDisplayVibrancy, category: .display, title: L10n.shared.tr("tweak.aodvibrancy.title"), detail: L10n.shared.tr("tweak.aodvibrancy.detail"), values: ["ykpu7qyhqFweVMKtxNylWA": 1]),
         .init(id: .disableParallax, category: .display, title: L10n.shared.tr("tweak.parallax.title"), detail: L10n.shared.tr("tweak.parallax.detail"), values: ["mmu76v66k1dAtghToInT8g": 0]),
