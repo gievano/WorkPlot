@@ -485,3 +485,6 @@
 "rdar.custom.apply" = "Apply Custom Canvas";
 "rdar.custom.invalid" = "Enter positive numbers for width and height.";
 "rdar.verify.fail" = "write not visible on disk - blocked by system";
+
+// Respring recovery
+"respring.failed" = "Respring failed - the crash method did not take effect on this build. Restart manually instead.";

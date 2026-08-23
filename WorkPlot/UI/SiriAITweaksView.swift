@@ -179,7 +179,7 @@ struct SiriAITweaksView: View {
             .disabled(stagedCount == 0 || isApplying)
 
             Button {
-                manager.respringRequested = true
+                manager.requestRespring()
             } label: {
                 Label(l10n.tr("siriai.restart.respring"), systemImage: "arrow.counterclockwise")
             }

@@ -157,7 +157,7 @@ struct PosterBoardLabView: View {
                                 .truncationMode(.middle)
                             Spacer()
                             Button {
-                                manager.respringRequested = true
+                                manager.requestRespring()
                             } label: {
                                 Label(l10n.tr("pb.apply"), systemImage: "checkmark.circle")
                                     .labelStyle(.iconOnly)
@@ -176,7 +176,7 @@ struct PosterBoardLabView: View {
 
                 if !installedWallpapers.isEmpty {
                     Button {
-                        manager.respringRequested = true
+                        manager.requestRespring()
                     } label: {
                         Label(l10n.tr("siriai.restart.respring"), systemImage: "arrow.counterclockwise")
                     }
@@ -249,7 +249,7 @@ struct PosterBoardLabView: View {
                     self.phase = l10n.tr("pb.phase.installed")
                     self.reloadInstalled()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        self.manager.respringRequested = true
+                        self.manager.requestRespring()
                     }
                 }
             } catch {
