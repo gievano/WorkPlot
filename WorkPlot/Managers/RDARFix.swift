@@ -252,21 +252,6 @@ struct RDARFix {
         plist["CacheExtra"] = cacheExtra
     }
 
-    static func applyCanvasSizesGestalt(to plist: inout [String: Any]) {
-        if let fixed = knownGoodNativeCanvas() {
-            applyCanvasSizesGestalt(to: &plist,
-                                    canvasWidth: fixed.width,
-                                    canvasHeight: fixed.height)
-            return
-        }
-        #if canImport(UIKit)
-        let bounds = UIScreen.main.nativeBounds
-        applyCanvasSizesGestalt(to: &plist,
-                                canvasWidth: Int(bounds.width),
-                                canvasHeight: Int(bounds.height))
-        #endif
-    }
-
     /// Read-back check: does the plist now carry the requested canvas as its
     /// first entry? Distinguishes a write the system silently dropped from
     /// one that is genuinely on disk (the OS may still choose to ignore it).
