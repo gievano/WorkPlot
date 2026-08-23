@@ -257,7 +257,6 @@ struct PosterBoardLabView: View {
                         self.manager.respringRequested = true
                     }
                 }
-                }
             } catch {
                 DispatchQueue.main.async {
                     self.isInstalling = false
