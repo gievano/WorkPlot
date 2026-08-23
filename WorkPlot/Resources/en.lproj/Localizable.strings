@@ -14,9 +14,26 @@
 "appearance.light" = "Light";
 "appearance.dark" = "Dark";
 
-"siriai.title" = "Siri AI Tweaks";
-"siriai.toggle" = "Enable New Siri AI (CacheData)";
-"siriai.toggle.detail" = "Patches the CacheData blob automatically (Toto method).";
+"siriai.title" = "Siri AI";
+"siriai.status.header" = "Current Status";
+"siriai.status.siri" = "Siri AI (iOS 27)";
+"siriai.status.ai" = "Apple Intelligence";
+"siriai.status.spoof" = "Device Spoof";
+"siriai.status.on" = "On";
+"siriai.status.off" = "Off";
+"siriai.status.unknown" = "Unknown";
+"siriai.status.spoof.none" = "Original device";
+
+"siriai.section.siri.header" = "Siri AI (iOS 27)";
+"siriai.section.siri.footer" = "New method, upgraded from the legacy Apple Intelligence route. Patches the CacheData capability blob (Toto method) and sets the Siri mode flag a3n5T9sFtlyQ74NEp9ESxg = 2. Siri inside the Camera needs this together with Apple Intelligence.";
+
+"siriai.section.ai.header" = "Apple Intelligence (Legacy)";
+"siriai.section.ai.footer" = "Old method. Writes ONLY the eligibility key A62OafQ85EJAiiqKn4agtg = 1. Turning it on automatically selects a device spoof, because eligibility checks reject older hardware.";
+"siriai.ai.autospoof" = "A device spoof was auto-selected for Apple Intelligence. Change or cancel it in the Device Spoof section below.";
+
+"siriai.section.spoof.header" = "Device Spoof (Advanced)";
+
+"siriai.toggle" = "Enable Siri AI";
 "siriai.spoof" = "Spoof Device to:";
 "siriai.spoof.none" = "No Spoofing";
 "siriai.warning" = "Spoofing may break Face ID. Use at your own risk.";
@@ -24,7 +41,6 @@
 "siriai.apply" = "Apply Changes";
 
 "siriai.restart.title" = "Restart Required";
-"siriai.restart.message" = "The new Siri AI becomes active after the device restarts.";
 "siriai.restart.respring" = "Respring";
 "siriai.restart.later" = "Later";
 
@@ -112,7 +128,7 @@
 "danger.header" = "Danger Zone";
 "danger.spoof.title" = "Device Spoofing Risk";
 "danger.spoof.continue" = "Continue Anyway";
-"danger.spoof.message" = "Spoofing can break Face ID, FaceTime, and OTA updates. Keep a backup before continuing.";
+"danger.spoof.message" = "This will apply a DEVICE MODEL SPOOF together with your changes. Spoofing can break Face ID, FaceTime and OTA updates, and may destabilize Apple services. A backup is created automatically before writing. Continue anyway?";
 "danger.filepatch.message" = "Patching system files incorrectly can cause a boot loop. Always keep a fresh backup.";
 "filepatch.needaccess" = "Grant system access on the Home tab first.";
 
@@ -168,15 +184,10 @@
 "gestalt.deviceUnsupported" = "Not supported on this device.";
 
 // Siri Mode (F1)
-"tweak.siriaimode.title" = "Siri AI Mode (iOS 27)";
-"tweak.siriaimode.detail" = "Writes SiriMode key a3n5T9sFtlyQ74NEp9ESxg = 2 to enable the iOS 27+ Siri AI mode.";
-"siriai.sirimode.header" = "Siri Mode (iOS 27)";
-"siriai.sirimode.toggle" = "Enable Siri AI Mode";
-"siriai.sirimode.detail" = "Sets CacheExtra key a3n5T9sFtlyQ74NEp9ESxg to 2. Disabling removes the key again. Takes effect after respring or restart.";
+
 
 // Siri in Camera (F2, experimental)
-"siriai.siricam.header" = "Siri in Camera";
-"siriai.siricam.note" = "EXPERIMENTAL: iOS 27 exposes Siri inside the Camera app through the Siri AI mode above plus Apple Intelligence. No separate verified MobileGestalt key exists yet; enabling both toggles is the only verified path. A future update will add a dedicated key once it is confirmed by the community.";
+
 
 // Color Palette (F3, experimental)
 "tweak.colorpalette.title" = "Color Palette (iPhone 16 style)";
@@ -256,10 +267,7 @@
 "siriai.spoof.revert" = "Revert restores every key at once from a pre-spoof backup (Backups tab).";
 
 // Siri AI extra toggles
-"siriai.modelkey.toggle" = "Sync Primary ProductType Key";
-"siriai.modelkey.detail" = "Writes key h9jDsbgj7xIVeIQ8S3/X3Q with the selected spoof target. Disabling removes the key.";
-"siriai.eligibility.toggle" = "Force Apple Intelligence Eligibility";
-"siriai.eligibility.detail" = "Writes key A62OafQ85EJAiiqKn4agtg = 1 only, without touching other keys.";
+
 
 // Restart escalation
 "restart.options.title" = "How do you want to apply the changes?";
@@ -386,7 +394,6 @@
 
 // Siri AI restart expectations
 "siri.rebootHint" = "Restart your iPhone after the respring to finish Siri AI setup.";
-"siri.waitlistNote" = "After the restart, Siri may show Join Waitlist until Apple enables your device; model download can take a while.";
 
 // Wallpaper install journal (F3)
 "wpj.title" = "Install Journal";
