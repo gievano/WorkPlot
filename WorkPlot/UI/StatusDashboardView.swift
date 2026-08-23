@@ -21,8 +21,16 @@ struct StatusDashboardView: View {
                 Section(header: Text(l10n.tr("home.actionsHeader"))) {
                     Button(l10n.tr("status.rdarfix")) {
                         do {
-                            try RDARFix.apply()
+                            // One-tap path: canvas dimensions via MobileGestalt
+                            // (MainScreenCanvasSizes) - the plist locations the
+                            // old probe targeted are unreachable on iOS 27.
+                            guard var plist = manager.readGestalt() else {
+                                throw RDARFixError(message: L10n.shared.tr("common.readFail"))
+                            }
+                            RDARFix.applyCanvasSizesGestalt(to: &plist)
+                            try manager.saveGestaltOrThrow(plist)
                             manager.statusText = "\(l10n.tr("status.rdarfix")) OK. \(l10n.tr("restart.rec.title"))"
+                            SessionLogger.log("rdar canvas gestalt applied from dashboard")
                             showRestartAlert = true
                         } catch {
                             manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
