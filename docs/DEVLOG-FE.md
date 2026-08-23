@@ -601,3 +601,11 @@
 **The Reasoning:** Laporan device: 4 dari 5 shortcut lama (Preferences/varprefs/jb/jailbreak) ditolak policy sehingga setiap tap menghasilkan error stage=query. Filza menampilkan hanya mount yang accessible - pola sama diterapkan di sini supaya tidak ada tombol yang pasti gagal.
 
 **The Tech Debt:** Reachability di-cache tanpa TTL; kalau Apple membuka pohon baru di beta berikutnya, user perlu reinstall/clear data untuk re-probe (atau kita tambah tombol re-scan nanti).
+
+## 2026-08-23 (malam) - PR #36: MHA Labels, ACCESS MAP, Filter Picker, Custom Canvas
+
+**The Change:** (1) Shortcut file browser berlabel container class MHA ([MHA-C13] dst) mengikuti model FilzaSlop; probe pertama menulis Documents/ACCESS MAP.txt (OK/BLOCKED + jumlah entri), cache reachability berkunci build OS. (2) UTI com.workplot.tendies & com.workplot.patch3105 didaftarkan di Info.plist (UTImportedTypeDeclarations) + FileTypes.swift bersama - PosterBoard kini hanya menerima .tendies, menu Patch hanya .3105; picker mengabukan format lain. (3) Custom Canvas di dashboard: input WxH bebas via rute gestalt. (4) applyCanvas di StatusDashboardView kini membaca balik plist dari disk dan membandingkan byte pertama CGSize; status "verified on disk" vs "not visible on disk - blocked by system".
+
+**The Reasoning:** Laporan device: RDAR apply sukses di log tapi efek nihil. Karena tidak ada error, satu-satunya cara membedakan "tulisannya ditolak diam-diam" vs "OS mengabaikan key" adalah verifikasi baca-balik. Custom canvas sekaligus jadi alat tes: nilai aneh (999x999) yang tetap nihil setelah reboot = mekanisme memang diabaikan build ini.
+
+**The Tech Debt:** BackupRestoreManagerView masih pakai .data untuk import backup gestalt (dikecualikan user). Kalau mekanisme gestalt terbukti mati di build ini, tombol rdar harus jadi unavailable-state jujur.
