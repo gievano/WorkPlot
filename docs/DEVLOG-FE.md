@@ -561,3 +561,11 @@
 **The Reasoning:** ZIPFoundation dipilih daripada menulis parser ZIP sendiri (battle-tested, MIT, satu produk dependency). SQLite viewer bekerja pada salinan tmp supaya lease sandbox tidak perlu hidup selama sesi baca. Container scanner memakai pola MCM metadata yang sama dengan PatchPackageStore agar konsisten.
 
 **The Tech Debt:** Descriptor ID internal wallpaper katalog belum dirandomisasi ulang (folder-level UUID saja) - potensi tabrakan ID kalau install wallpaper yang sama dua kali; ikuti pola randomize Nugget kalau jadi masalah. SplashBoard/Snapshots dihitung tapi belum dihapus oleh cleaner.
+
+## 2026-08-23 (pagi) - Sprint 2/3 Selesai: PR #30 Merged
+
+**The Change:** PR #30 squash-merged (4985e97): katalog online Nugget-Wallpapers, App Containers + Cache Cleaner, hex/sqlite viewer, update checker. Dua iterasi compile-fix (label argument SQLiteError x3, Int32->Int reserveCapacity). README tabel fitur disinkronkan.
+
+**The Reasoning:** Wiring routing viewer & menu dikerjakan terpusat oleh satu tangan setelah 3 agent selesai supaya tidak ada konflik file; ZIPFoundation jadi dependency SPM pertama karena menulis parser ZIP sendiri bukan trade yang masuk akal.
+
+**The Tech Debt:** Onboarding wizard ditunda (nilai rendah vs risiko). Descriptor ID katalog belum dirandomisasi ulang penuh (folder-level saja). Semua fitur batch ini belum teruji device - prioritas tes user: RDAR resolver, patch package, katalog install, cache cleaner.

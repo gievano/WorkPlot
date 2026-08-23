@@ -32,10 +32,11 @@ Switch them in-app under the gear icon. The whole UI follows your choice.
 | **Field Editor**         | Edit MobileGestalt keys by hand and inspect CacheData as hex                                                                                       |
 | **Siri AI Suite**        | Enable the new Siri AI and Apple Intelligence through the CacheData patch (Toto method), with optional spoofing to iPhone 15/16/17 Pro and Pro Max |
 | **Liquid Glass**         | Turn on Apple's Liquid Glass UI effect                                                                                                             |
-| **PosterBoard Lab**      | Import `.tendies` wallpapers into PosterBoard                                                                                                      |
+| **PosterBoard Lab**      | Import `.tendies` wallpapers into PosterBoard, browse the online Nugget-Wallpapers catalog, and track/remove everything you installed                |
 | **Backup & Restore**     | Automatic backup before each write, JSON snapshots you can export or import, plus the RDARFix repair tool                                          |
-| **File Patch Workspace** | Browse and patch system files through the sandbox escape                                                                                           |
-| **Customization**        | Six languages, light/dark/system appearance, alternate app icons                                                                                   |
+| **File Patch Workspace** | Browse and patch system files through the sandbox escape, inspect app containers, clean per-app caches, view files as hex or SQLite tables          |
+| **Patch Packages**       | Bundle replacement rules (bundle ID + path) into a folder package with password protection and verified rollback                                   |
+| **Customization**        | Six languages, light/dark/system appearance, alternate app icons, in-app update checker                                                            |
 
 ## Installation
 
