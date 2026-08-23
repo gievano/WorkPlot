@@ -480,3 +480,12 @@
 
 // Respring recovery
 "respring.failed" = "Respring failed - the crash method did not take effect on this build. Restart manually instead.";
+
+// Native .3105 patch flow
+"pp3105.apply" = "Apply Patch";
+"pp3105.applying" = "Applying patch...";
+"pp3105.ok" = "Patch applied (%@ rules). Restart the target app or respring.";
+"pp3105.password.title" = "Patch Password";
+"pp3105.password.placeholder" = "Password";
+"pp3105.password.message" = "%@ is password protected. Enter its password to apply.";
+"pp.scanFailed" = "Failed to enumerate containers at";

@@ -23,9 +23,6 @@ struct MoreMenuView: View {
                 NavigationLink { FilePatchWorkspaceView() } label: {
                     Label(l10n.tr("tab.files"), systemImage: "folder.fill")
                 }
-                NavigationLink { PatchPackageManagerView() } label: {
-                    Label(l10n.tr("pp.title"), systemImage: "shippingbox.fill")
-                }
 
                 Section {
                     NavigationLink { AppContainersView() } label: {

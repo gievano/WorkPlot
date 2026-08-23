@@ -55,6 +55,11 @@ struct FilePatchWorkspaceView: View {
     @State private var osSupported = true
     @State private var osBuild = ""
 
+    /// .3105 apply flow: pending protected package + in-app password prompt.
+    @State private var patchPendingURL: URL?
+    @State private var patchPassword = ""
+    @State private var isApplyingPatch = false
+
     var body: some View {
         NavigationView {
             Group {
@@ -92,6 +97,25 @@ struct FilePatchWorkspaceView: View {
             allowsMultipleSelection: false,
             onCompletion: performImport
         )
+        .alert(
+            Text(l10n.tr("pp3105.password.title")),
+            isPresented: Binding(
+                get: { patchPendingURL != nil },
+                set: { if !$0 { patchPendingURL = nil } }
+            ),
+            presenting: patchPendingURL
+        ) { url in
+            SecureField(l10n.tr("pp3105.password.placeholder"), text: $patchPassword)
+            Button(l10n.tr("pp3105.apply")) {
+                let password = patchPassword
+                patchPassword = ""
+                patchPendingURL = nil
+                runPatch(url: url, password: password)
+            }
+            Button(l10n.tr("common.cancel"), role: .cancel) { patchPendingURL = nil }
+        } message: { url in
+            Text(String(format: l10n.tr("pp3105.password.message"), url.lastPathComponent))
+        }
         .alert(
             Text(l10n.tr("fp.delete.title")),
             isPresented: Binding(
@@ -194,6 +218,12 @@ struct FilePatchWorkspaceView: View {
                 NavigationLink { AppContainersView() } label: {
                     Label(l10n.tr("ac.title"), systemImage: "shippingbox")
                         .font(.system(size: 15))
+                }
+                if isApplyingPatch {
+                    HStack(spacing: 12) {
+                        ProgressView()
+                        Text(l10n.tr("pp3105.applying")).font(.system(size: 15))
+                    }
                 }
             }
         }
@@ -567,27 +597,48 @@ struct FilePatchWorkspaceView: View {
     }
 
     private func performImport(_ result: Result<[URL], Error>) {
-        guard let currentPath else { return }
         do {
             guard let sourceURL = try result.get().first else { return }
-            DispatchQueue.global(qos: .userInitiated).async {
-                let scoped = sourceURL.startAccessingSecurityScopedResource()
-                defer { if scoped { sourceURL.stopAccessingSecurityScopedResource() } }
-                do {
-                    try FileBrowser.importItem(from: sourceURL, to: currentPath)
-                    DispatchQueue.main.async {
-                        self.successText = String(
-                            format: L10n.shared.tr("fp.import.success"),
-                            sourceURL.lastPathComponent
-                        )
-                        self.reload()
-                    }
-                } catch {
-                    DispatchQueue.main.async { self.errorText = error.localizedDescription }
-                }
+            // The Files tab only accepts .3105 files, so every import is a
+            // patch apply. Protected packages round-trip through the password
+            // prompt before Patch3105 runs.
+            let scoped = sourceURL.startAccessingSecurityScopedResource()
+            defer { if scoped { sourceURL.stopAccessingSecurityScopedResource() } }
+            guard let data = try? Data(contentsOf: sourceURL),
+                  !Patch3105.requiresPassword(data) else {
+                patchPendingURL = sourceURL
+                return
             }
+            runPatch(url: sourceURL, password: nil)
         } catch {
             errorText = error.localizedDescription
+        }
+    }
+
+    private func runPatch(url: URL, password: String?) {
+        isApplyingPatch = true
+        DispatchQueue.global(qos: .userInitiated).async {
+            let scoped = url.startAccessingSecurityScopedResource()
+            defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+            do {
+                let data = try Data(contentsOf: url)
+                let count = try Patch3105.apply(packageData: data, password: password)
+                DispatchQueue.main.async {
+                    self.isApplyingPatch = false
+                    self.successText = String(format: L10n.shared.tr("pp3105.ok"), "\(count)")
+                    SessionLogger.shared.log("patch applied from \(url.lastPathComponent)")
+                }
+            } catch Patch3105Error.wrongPasswordOrUnsupportedScheme where password == nil {
+                DispatchQueue.main.async {
+                    self.isApplyingPatch = false
+                    self.patchPendingURL = url
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.isApplyingPatch = false
+                    self.errorText = error.localizedDescription
+                }
+            }
         }
     }
 
