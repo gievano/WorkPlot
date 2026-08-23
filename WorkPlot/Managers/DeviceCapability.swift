@@ -52,6 +52,10 @@ enum DeviceCapability {
             // (iPhone15,*) onward; notch devices (family <= 14) excluded.
             guard let family = iphoneFamily else { return false }
             return family >= 15
+        case .belowIPhone14Pro:
+            // Fake-island cleanup targets notch-era hardware only.
+            guard let family = iphoneFamily else { return false }
+            return family <= 14
         case nil:
             return true
         }

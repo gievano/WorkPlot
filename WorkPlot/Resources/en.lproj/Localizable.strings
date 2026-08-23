@@ -300,6 +300,7 @@
 "gestalt.changeModelName" = "Change Model Name";
 "gestalt.error.emptyName" = "The model name cannot be empty.";
 "gestalt.islandHeader" = "Dynamic Island";
+"gestalt.island.warn" = "This device has no native Dynamic Island. Picking a subtype can break screen rendering until reverted - leave it on Default unless you know why.";
 "gestalt.modelNamePlaceholder" = "e.g. iPhone 16 Pro";
 "gestalt.status.applied" = "Tweaks applied.";
 "ipadosp.error.invalidoffset" = "CacheData offset validation failed. No changes were made.";
@@ -323,6 +324,8 @@
 "tweak.airegion.detail" = "Spoofs the US region for Apple Intelligence and compatible device profiles.";
 "tweak.dynamicisland.title" = "Dynamic Island";
 "tweak.dynamicisland.detail" = "Enables the Dynamic Island capability.";
+"tweak.removepill.title" = "Remove Island Pill";
+"tweak.removepill.detail" = "Turns the fake Dynamic Island off on notch devices and clears any picked subtype. Use this if a black pill is stuck at the top of the screen.";
 "tweak.dynamicislandoff.title" = "Disable Dynamic Island";
 "tweak.dynamicislandoff.detail" = "Turns the Dynamic Island capability off on devices that ship with it (iPhone 14 Pro or newer). Respring required.";
 "tweak.aod.title" = "Always-On Display";
