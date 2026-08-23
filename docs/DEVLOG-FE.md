@@ -673,3 +673,11 @@
 **The Reasoning:** User melaporkan import plist tak bisa diseleksi, keyboard menutupi setelah input width/height, dan kebingungan dua tombol canvas. Satu tombol dual-route memberi peluang sukses maksimal tanpa memaksa user pilih mekanisme; hasil per jalur tetap dilaporkan apa adanya karena build tertentu mengabaikan salah satunya.
 
 **The Tech Debt:** Efektivitas jalur graphics plist per build masih butuh konfirmasi device; Display Zoom Larger mengubah render buffer (750x1624) dan belum ditangani khusus.
+
+## 2026-08-23 (malam) - Restart Flow Dua Tombol Jujur + Klarifikasi Bug Apply Color Palette
+
+**The Change:** Alert pasca-apply heavy tweak kini 2 tombol: Respring (aksi nyata via WebKit crash + recovery timer 10 detik) dan Restart Steps (sheet panduan gabungan userspace 3 langkah + full restart 4 langkah). Sebelumnya 3 tombol - dua di antaranya (Restart Userspace/Full) hanya membuka panduan sehingga terkesan "restart tidak jalan"; label baru menegaskan itu panduan karena sandbox memang tidak bisa spawn launchctl. RestartAction enum, sheet item-binding, dan 2 key strings lama dihapus; key baru restart.action.guide. check-feature.ps1 assertion diperbarui: wajib ada respring + guide, dilarang mengandung launchctl.
+
+**The Reasoning:** Keluhan user "tombol kedua restart gak jalan" adalah ekspektasi vs label: app secara teknis tidak bisa reboot device dari sandbox (bad_query read/write only). Solusi jujur = namakan aksinya apa adanya, bukan pura-pura eksekusi.
+
+**The Tech Debt:** Color Palette (varian graphics) tetap terkunci deviceGate iphone13OrLater di iPhone 11 - by design; Legacy Palette & Graphics Style sekarang apply sukses dengan notice bila marker CacheData tak dikenali (fix PR #42). User wajib pakai IPA build terbaru untuk merasakan perbaikan tersebut.
