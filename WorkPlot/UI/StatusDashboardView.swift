@@ -22,9 +22,7 @@ struct StatusDashboardView: View {
                 }
                 Section(header: Text(l10n.tr("home.actionsHeader"))) {
                     Button(l10n.tr("status.rdarfix")) {
-                        let bounds = UIScreen.main.nativeBounds
-                        applyCanvasEveryRoute(width: Int(bounds.width),
-                                              height: Int(bounds.height))
+                        runFixRDAR()
                     }
                     .disabled(!manager.sandboxGranted)
                     Button(l10n.tr("status.lg.disable")) {
@@ -54,14 +52,16 @@ struct StatusDashboardView: View {
                             manager.statusText = l10n.tr("rdar.custom.invalid")
                             return
                         }
-                        applyCanvasEveryRoute(width: width, height: height)
+                        applyCanvasEveryRoute(width: width, height: height, note: nil)
                     }
                     .disabled(!manager.sandboxGranted)
                 }
                 Section(header: Text(l10n.tr("home.log"))) {
                     Text(manager.statusText)
                         .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(manager.statusText.hasPrefix(l10n.failPrefix) ? .orange : .green)
+                        .foregroundColor(manager.statusText.hasPrefix(l10n.failPrefix)
+                                         || manager.statusText.contains("failed (")
+                                         || manager.statusText.contains("not visible on disk") ? .orange : .green)
                 }
             }
             .navigationTitle("WorkPlot")
@@ -83,7 +83,7 @@ struct StatusDashboardView: View {
     /// MainScreenCanvasSizes and the classic IOMobileGraphicsFamily plist -
     /// then reports each result honestly. Which route this build honors is
     /// only visible after a full restart.
-    private func applyCanvasEveryRoute(width: Int, height: Int) {
+    private func applyCanvasEveryRoute(width: Int, height: Int, note: String?) {
         var lines: [String] = []
 
         do {
@@ -107,12 +107,27 @@ struct StatusDashboardView: View {
             case .alreadyFixed: lines.append("Graphics plist: already set")
             }
         } catch {
-            lines.append("Graphics plist: not reachable on this build")
+            lines.append("Graphics plist: failed (\(error.localizedDescription))")
         }
 
         manager.statusText = "\(l10n.tr("rdar.custom.apply")) (\(width)x\(height))\n" + lines.joined(separator: "\n")
+        manager.statusText += "\nFull restart required - respring does NOT apply canvas."
+        if let note { manager.statusText += "\n\(note)" }
         SessionLogger.shared.log("canvas \(width)x\(height): \(lines.joined(separator: " | "))")
         showRestartAlert = true
+    }
+
+    /// Never trust UIScreen for the one-tap fix: during an active RDAR state
+    /// nativeBounds reports the broken canvas, and Display Zoom reports the
+    /// zoomed buffer - either written back keeps the screen broken.
+    private func runFixRDAR() {
+        if let fixed = RDARFix.knownGoodNativeCanvas() {
+            applyCanvasEveryRoute(width: fixed.width, height: fixed.height, note: nil)
+        } else {
+            let bounds = UIScreen.main.nativeBounds
+            applyCanvasEveryRoute(width: Int(bounds.width), height: Int(bounds.height),
+                                  note: "Unknown device (\(DeviceCapability.machineIdentifier)) - using reported screen bounds.")
+        }
     }
 }
 

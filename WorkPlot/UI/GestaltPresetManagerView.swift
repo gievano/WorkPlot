@@ -37,6 +37,11 @@ struct GestaltPresetManagerView: View {
                                     Text("\(option.title) (\(option.subtype))").tag(Int?.some(option.subtype))
                                 }
                             }
+                            if !DeviceCapability.supports(.iphone14ProOrLater) {
+                                Text(L10n.shared.tr("gestalt.island.warn"))
+                                    .font(.caption2)
+                                    .foregroundColor(.orange)
+                            }
                         }
 
                         Section(header: Text(L10n.shared.tr("gestalt.modelHeader"))) {
@@ -123,8 +128,13 @@ struct GestaltPresetManagerView: View {
                 if enabled {
                     if id == .enableLiquidGlassLowPerformance { selectedTweaks.remove(.disableLiquidGlassLowPerformance) }
                     if id == .disableLiquidGlassLowPerformance { selectedTweaks.remove(.enableLiquidGlassLowPerformance) }
-                    if id == .supportsDynamicIsland { selectedTweaks.remove(.disableDynamicIsland) }
-                    if id == .disableDynamicIsland { selectedTweaks.remove(.supportsDynamicIsland) }
+                    if id == .supportsDynamicIsland {
+                        selectedTweaks.remove(.disableDynamicIsland)
+                        selectedTweaks.remove(.removeIslandPill)
+                    }
+                    if id == .disableDynamicIsland || id == .removeIslandPill {
+                        selectedTweaks.remove(.supportsDynamicIsland)
+                    }
                     selectedTweaks.insert(id)
                 } else {
                     selectedTweaks.remove(id)
@@ -161,6 +171,9 @@ struct GestaltPresetManagerView: View {
             }
             if let subtype = dynamicIslandSubtype {
                 try GestaltArtwork.setDynamicIslandSubtype(subtype, in: &plist)
+            }
+            if selectedTweaks.contains(.removeIslandPill) {
+                GestaltArtwork.removeDynamicIslandSubtype(in: &plist)
             }
             if changesModelName {
                 let name = modelName.trimmingCharacters(in: .whitespacesAndNewlines)
