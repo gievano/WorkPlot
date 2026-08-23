@@ -226,8 +226,6 @@ struct RDARFix {
         }
         plist["CacheExtra"] = cacheExtra
     }
-        plist["CacheExtra"] = cacheExtra
-    }
 
     static func applyCanvasSizesGestalt(to plist: inout [String: Any]) {
         #if canImport(UIKit)
