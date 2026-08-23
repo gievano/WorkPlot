@@ -625,3 +625,11 @@
 **The Reasoning:** User melarang menanyakan password secara manual dan ingin fitur patch khusus format .3105. Skema enkripsi resmi tidak tersedia publik sehingga crypto dikodekan best-effort dengan failure tunggal yang jujur ("wrong password / unsupported scheme") supaya tes device menghasilkan sinyal iterasi berikutnya.
 
 **The Tech Debt:** (1) Jika GCM ternyata bukan skema wrap-nya (mis. AES-KW RFC3394), butuh implementasi KW manual atau spec asli. (2) Rollback UI untuk originals .3105 belum ada - data sudah tersimpan rapi per packageID. (3) Payload berbentuk ZIP ditolak eksplisit untuk saat ini.
+
+## 2026-08-23 (malam) - PR #39: Bedah Binary 3105 Asli
+
+**The Change:** User menyediakan IPA asli app 3105 (3105-unsigned.ipa); binary-nya dibedah via strings dump. Konfirmasi: crypto patch memakai CCKeyDerivationPBKDF + CryptoKit AES.GCM (sesuai implementasi #38), sistem patch berbasis project workspace dengan rules {bundleID, relative path, replacement file}, dan payload .3105 diekspor sebagai bundle tree. Patch3105 kini mendukung tiga layout payload: ZIP tree (folder top-level = bundle ID, manifest opsional), plist rules array, dan contentKey polos untuk package tanpa password; KDF mencoba SHA256 lalu SHA512. Sisi wallpaper: writeDescriptors memverifikasi jumlah descriptor dari disk + mencatat store generation & path ke SessionLogger; pesan purna-instal mengikuti panduan resmi 3105 untuk iOS 27.
+
+**The Reasoning:** Laporan user: wallpaper tidak muncul di Collections dan .3105 masih gagal. String milik 3105 sendiri mengungkap dua hal kunci: store generation PosterBoard tidak boleh diasumsikan (sudah kita tangani liveGeneration), dan iOS 27 mensyaratkan Collections wallpaper dipasang lebih dulu plus refresh lewat app switcher - sesuatu yang tidak bisa diselesaikan kode saja, sehingga dikomunikasikan lewat UI guide.
+
+**The Tech Debt:** (1) check-feature/check-l10n lokal tidak mengkompilasi Swift, jadi syntax error lolos sampai CI - CI adalah gerbang kompilasi sesungguhnya, tiga kali push perbaikan tipe/syntax diperlukan. (2) Skema wrap kunci masih best-effort; error device akan menentukan iterasi. (3) Rollback UI .3105 belum ada.
