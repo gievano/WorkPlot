@@ -585,3 +585,11 @@
 **The Reasoning:** Dimensi canvas dilayani lewat MobileGestalt, bukan hanya plist grafis yang diblok policy ContainerManager. Jalur gestaltcache/CMG terbukti jalan di device user, jadi ini satu-satunya vektor RDAR yang tidak melawan allowlist. Komentar iOS 10.0+ di MGKeys adalah availability floor (key kumulatif), bukan batas atas - preseden: key iPad Mode iOS 7.0+ tetap bekerja.
 
 **The Tech Debt:** Format internal MainScreenCanvasSizes belum terverifikasi trace device (asumsi 8-byte LE pair mengikuti tooling komunitas). Kalau IOMobileFramebuffer berhenti membaca key ini di iOS 27 beta, toggle tetap aman ditulis tapi efek kosong - tandanya fallback ke unavailable-state untuk kedua pendekatan.
+
+## 2026-08-23 (siang) - PR #33: Path Absolut + Dashboard RDAR Satu-Tap
+
+**The Change:** (1) bad_query_list ternyata mengembalikan path ABSOLUT anak direktori; loop probe Data/System membangun path dobel sehingga seluruh sweep salah alamat (terbongkar dari laporan error user). Kini path dipakai langsung. (2) Tombol Fix rdar di dashboard kini menulis MainScreenCanvasSizes via saveGestaltOrThrow - satu tap tanpa probing, karena plist grafis terbukti tidak ada dan tidak reachable di build ini; pesan fallback probe mengarahkan user ke tweak Gestalt. (3) Digest error dibatasi 6 entri.
+
+**The Reasoning:** Laporan device membuktikan file com.apple.iokit.IOMobileGraphicsFamily.plist tidak ada di lokasi manapun yang reachable - itu file override opsional yang hanya ada bila dibuat. Satu-satunya vektor hidup adalah MobileGestalt; dashboard harus memakainya langsung daripada menjalankan sweep yang pasti gagal.
+
+**The Tech Debt:** Efek nyata MainScreenCanvasSizes di iOS 27 beta belum terkonfirmasi device (menunggu tes user). AppContainerScanner/cache cleaner kemungkinan besar juga kena bug path absolut yang sama - AUDIT DAN FIX DI BATCH BERIKUTNYA.
