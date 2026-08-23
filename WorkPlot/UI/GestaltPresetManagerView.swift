@@ -71,6 +71,7 @@ struct GestaltPresetManagerView: View {
 
                     }
                     .workPlotScrollBackground()
+                    .scrollDismissesKeyboard(.immediately)
                 }
             }
             .navigationTitle(L10n.shared.tr("tab.gestalt"))

@@ -95,7 +95,9 @@ struct BackupRestoreManagerView: View {
             }
             .fileImporter(
                 isPresented: $isShowingImporter,
-                allowedContentTypes: [.data],
+                // A bare [.data] filter grays out .plist files in the document picker;
+                // list the property-list UTIs explicitly and keep .data as catch-all.
+                allowedContentTypes: [UTType.propertyList, .xmlPropertyList, .binaryPropertyList, .data],
                 allowsMultipleSelection: false
             ) { result in
                 switch result {
