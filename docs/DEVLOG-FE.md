@@ -665,3 +665,11 @@
 **The Reasoning:** Abort total melanggar least-surprise - nilai CacheExtra yang valid ikut dibuang hanya karena satu langkah eksperimental gagal. Degradasi + pelaporan menjaga integritas data (backup otomatis tetap jalan) tanpa mematikan sinyal diagnostik.
 
 **The Tech Debt:** Marker CacheData yang tak dikenali pada build tertentu berarti fitur dual-cache kemungkinan tidak aktif walau apply sukses - butuh riset offset per-build bila ingin benar-benar hidup.
+
+## 2026-08-23 (malam) - Fix Import Backup, Keyboard Dismiss, Canvas Satu Tombol, Audit Alur Siri vs Referensi
+
+**The Change:** (1) fileImporter backup pakai [.data] yang membuat file .plist ter-gray-out di document picker - kini [propertyList, xmlPropertyList, binaryPropertyList, data]; validasi isi (dict + CacheExtra) tidak berubah. (2) .scrollDismissesKeyboard(.immediately) dipasang di semua layar ber-input teks: Status Dashboard, Gestalt tweaks, Field Editor, File Patch Workspace - keyboard bisa ditutup geser setelah mengetik (kasus width/height). (3) Custom Canvas kini SATU tombol: applyCanvasEveryRoute menulis dua jalur sekaligus (Gestalt MainScreenCanvasSizes dengan verify-on-disk + IOMobileGraphicsFamily.plist klasik), status multi-baris jujur per jalur, satu baris Session Log; 2 tombol lama dan 3 key strings yatim dihapus; tombol one-tap Fix RDAR dialihkan ke fungsi superset ini. (4) Audit alur Siri terhadap metode manual komunitas (FilzaSlop+GestaltEdit): marker CacheData OFF/ON WorkPlot byte-identical (68 char) dengan instruksi manual; step ProductType h9jDsb=AI-device tercakup spoof picker (target iPhone 17 Pro = iPhone18,1); step eligibility A62Oaf...=1 = toggle Apple Intelligence; trik Charge Limit milik UI GestaltEdit tidak relevan.
+
+**The Reasoning:** User melaporkan import plist tak bisa diseleksi, keyboard menutupi setelah input width/height, dan kebingungan dua tombol canvas. Satu tombol dual-route memberi peluang sukses maksimal tanpa memaksa user pilih mekanisme; hasil per jalur tetap dilaporkan apa adanya karena build tertentu mengabaikan salah satunya.
+
+**The Tech Debt:** Efektivitas jalur graphics plist per build masih butuh konfirmasi device; Display Zoom Larger mengubah render buffer (750x1624) dan belum ditangani khusus.
