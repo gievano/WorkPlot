@@ -226,8 +226,36 @@ enum PatchPackageStore {
     private static let containerScanRoots = [
         "/var/mobile/Containers/Data/Application",
         "/var/mobile/Containers/Data/InternalDaemon",
-        "/var/mobile/Containers/Data/PluginKitPlugin"
+        "/var/mobile/Containers/Data/PluginKitPlugin",
+        // iOS 27 containerizes some system daemons here.
+        "/var/containers/Data/System"
     ]
+
+    /// Creates a visible example package so users can discover the expected
+    /// folder layout through the Files app and edit it in place.
+    static func createSamplePackage() throws -> URL {
+        let root = try packagesDirectory().appendingPathComponent("_sample", isDirectory: true)
+        let manifestJSON = """
+        {
+          "name": "_sample",
+          "passwordHash": null,
+          "rules": [
+            {"bundleID": "com.example.app", "path": "/Library/Preferences/com.example.plist"}
+          ]
+        }
+        """
+        guard let manifestData = manifestJSON.data(using: .utf8) else {
+            throw PatchPackageError.manifestInvalid("sample encoding failed")
+        }
+        let replacementDir = root.appendingPathComponent(
+            "replacements/com.example.app/Library/Preferences", isDirectory: true)
+        try FileManager.default.createDirectory(at: replacementDir,
+                                                withIntermediateDirectories: true)
+        try manifestData.write(to: root.appendingPathComponent("manifest.json"), options: .atomic)
+        try Data("Put the replacement file content here.\n".utf8)
+            .write(to: replacementDir.appendingPathComponent("com.example.plist"), options: .atomic)
+        return root
+    }
 
     private static func resolveTargetPath(
         _ rule: PatchPackageRule,

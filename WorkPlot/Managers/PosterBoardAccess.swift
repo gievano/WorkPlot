@@ -55,7 +55,9 @@ enum PosterBoardAccess {
         for root in [
             "/var/mobile/Containers/Data/Application",
             "/var/mobile/Containers/Data/InternalDaemon",
-            "/var/mobile/Containers/Data/PluginKitPlugin"
+            "/var/mobile/Containers/Data/PluginKitPlugin",
+            // iOS 27 containerizes some system daemons here.
+            "/var/containers/Data/System"
         ] {
             for path in try list(root) where bundleID(at: path) == posterBoardBundleID {
                 let hash = URL(fileURLWithPath: path).lastPathComponent
@@ -71,9 +73,11 @@ enum PosterBoardAccess {
     /// can be undone from the theme view.
     @discardableResult
     static func writeDescriptors(appHash: String, descriptorFolders: [URL]) throws -> [String] {
-        let destination = applicationContainerPath(hash: appHash)
-            + "/Library/Application Support/PRBPosterExtensionDataStore/61/Extensions/"
-            + extensionID + "/descriptors"
+        let storeRoot = applicationContainerPath(hash: appHash)
+            + "/Library/Application Support/PRBPosterExtensionDataStore"
+        let destination = storeRoot
+            + "/" + liveGeneration(in: storeRoot)
+            + "/Extensions/" + extensionID + "/descriptors"
 
         guard let handle = consume(path: destination, create: true) else {
             throw PosterBoardError.writeFailed("sandbox extension was not acquired.")
@@ -101,10 +105,22 @@ enum PosterBoardAccess {
 
     // MARK: - Installed wallpaper management
 
+    /// Picks the newest numeric generation folder that already exists on the
+    /// device (3105-style live layout discovery) instead of assuming 61;
+    /// falls back to 61 when the store is empty or unreadable.
+    private static func liveGeneration(in storeRoot: String) -> String {
+        let names = ((try? list(storeRoot)) ?? [])
+            .filter { !$0.isEmpty && $0.allSatisfy(\.isNumber) }
+        guard let newest = names.compactMap(Int.init).max() else { return "61" }
+        return String(newest)
+    }
+
     private static func descriptorsPath(appHash: String) -> String {
         applicationContainerPath(hash: appHash)
-            + "/Library/Application Support/PRBPosterExtensionDataStore/61/Extensions/"
-            + extensionID + "/descriptors"
+            + "/Library/Application Support/PRBPosterExtensionDataStore/"
+            + liveGeneration(in: applicationContainerPath(hash: appHash)
+                + "/Library/Application Support/PRBPosterExtensionDataStore")
+            + "/Extensions/" + extensionID + "/descriptors"
     }
 
     /// Lists installed wallpaper descriptor folders (UUID directory names).
