@@ -163,7 +163,7 @@ struct WallpaperCatalogView: View {
                 await MainActor.run {
                     manager.statusText = String(format: l10n.tr("cat.appliedOk"), entry.name)
                     installingID = nil
-                    manager.respringRequested = true
+                    manager.requestRespring()
                 }
             } catch {
                 SessionLogger.shared.log("catalog install failed: \(entry.name): \(error.localizedDescription)")

@@ -59,7 +59,7 @@ struct LiquidGlassView: View {
                             .disabled(isApplying)
 
                             Button(role: .destructive) {
-                                manager.respringRequested = true
+                                manager.requestRespring()
                             } label: {
                                 Label(L10n.shared.tr("status.respring.refresh"), systemImage: "arrow.counterclockwise")
                             }
@@ -73,7 +73,7 @@ struct LiquidGlassView: View {
                 L10n.shared.tr("restart.rec.title"),
                 isPresented: $showRestartAlert
             ) {
-                Button(L10n.shared.tr("siriai.restart.respring")) { manager.respringRequested = true }
+                Button(L10n.shared.tr("siriai.restart.respring")) { manager.requestRespring() }
                 Button(L10n.shared.tr("siriai.restart.later"), role: .cancel) {}
             } message: {
                 Text(L10n.shared.tr("restart.rec.message"))

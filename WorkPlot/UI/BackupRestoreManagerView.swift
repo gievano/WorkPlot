@@ -71,7 +71,7 @@ struct BackupRestoreManagerView: View {
                             do {
                                 try RDARFix.restoreOriginalCanvas()
                                 manager.statusText = "\(l10n.tr("rdar.restoreCanvas")) OK. \(l10n.tr("restart.rec.title"))"
-                                manager.respringRequested = true
+                                manager.requestRespring()
                                 SessionLogger.shared.log("rdar original canvas restored")
                             } catch {
                                 manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
@@ -117,7 +117,7 @@ struct BackupRestoreManagerView: View {
                     if let backup = backupPendingRestore {
                         if manager.restore(backup) {
                             manager.statusText = l10n.tr("backup.restoreOk")
-                            manager.respringRequested = true
+                            manager.requestRespring()
                         }
                     }
                     backupPendingRestore = nil

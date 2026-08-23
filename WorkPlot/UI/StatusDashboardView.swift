@@ -46,7 +46,7 @@ struct StatusDashboardView: View {
                     }
                     .disabled(!manager.sandboxGranted)
                     // Respring tetap di menu utama: fungsinya menyegarkan UI saja.
-                    Button(l10n.tr("status.respring.refresh")) { manager.respringRequested = true }
+                    Button(l10n.tr("status.respring.refresh")) { manager.requestRespring() }
                 }
                 Section(header: Text(l10n.tr("rdar.custom.header")),
                         footer: Text(l10n.tr("rdar.custom.footer"))) {
@@ -84,15 +84,10 @@ struct StatusDashboardView: View {
                     MainDashboardSettingsMenu()
                 }
             }
-            .alert(
-                l10n.tr("restart.rec.title"),
-                isPresented: $showRestartAlert
-            ) {
-                Button(l10n.tr("siriai.restart.respring")) { manager.respringRequested = true }
-                Button(l10n.tr("siriai.restart.later"), role: .cancel) {}
-            } message: {
-                Text(l10n.tr("restart.rec.message"))
-            }
+            // Canvas tweaks are read at boot time, so a respring is not
+            // enough - offer the full escalation flow (respring/userspace/
+            // full restart with honest manual guidance).
+            .heavyRestartFlow(isPresented: $showRestartAlert)
         }
     }
 

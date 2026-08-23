@@ -88,6 +88,46 @@ enum TendiesPackage {
 
     // MARK: - Structure checks
 
+    /// Randomizes wallpaper identifiers across each descriptor tree so
+    /// repeated installs do not collide in PosterBoard's extension store
+    /// (same trick Pocket Poster uses before every install).
+    static func randomizeIdentifiers(in roots: [URL]) {
+        for root in roots {
+            let identifier = Int.random(in: 9_999...99_999)
+            guard let enumerator = FileManager.default.enumerator(
+                at: root,
+                includingPropertiesForKeys: [.isRegularFileKey],
+                options: [.skipsHiddenFiles, .skipsPackageDescendants]
+            ) else { continue }
+
+            for case let fileURL as URL in enumerator {
+                guard let values = try? fileURL.resourceValues(forKeys: [.isRegularFileKey]),
+                      values.isRegularFile == true else { continue }
+                switch fileURL.lastPathComponent {
+                case "com.apple.posterkit.provider.descriptor.identifier":
+                    try? String(identifier).data(using: .utf8)?.write(to: fileURL)
+                case "com.apple.posterkit.provider.contents.userInfo":
+                    setPlistValue(file: fileURL,
+                                  key: "wallpaperRepresentingIdentifier",
+                                  value: identifier)
+                case "Wallpaper.plist":
+                    setPlistValue(file: fileURL, key: "identifier", value: identifier)
+                default:
+                    break
+                }
+            }
+        }
+    }
+
+    private static func setPlistValue(file: URL, key: String, value: Any) {
+        guard let data = FileManager.default.contents(atPath: file.path),
+              var plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] else { return }
+        plist[key] = value
+        if let updated = try? PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0) {
+            try? updated.write(to: file)
+        }
+    }
+
     private static func hasDescriptorStructure(_ entries: [TendiesEntry]) -> Bool {
         entries.contains { entry in
             let p = entry.path.lowercased()
