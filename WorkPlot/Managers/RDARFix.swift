@@ -217,6 +217,25 @@ struct RDARFix {
         knownGoodNativeCanvases[machine]
     }
 
+    /// Gestalt-tab tweak entry: known-good table first, nativeBounds only
+    /// for unknown machines. machine is injected so this file stays free of
+    /// app-only dependencies (CI compiles it standalone).
+    static func applyCanvasSizesGestalt(to plist: inout [String: Any],
+                                        machine: String) {
+        if let fixed = knownGoodNativeCanvas(machine: machine) {
+            applyCanvasSizesGestalt(to: &plist,
+                                    canvasWidth: fixed.width,
+                                    canvasHeight: fixed.height)
+        } else {
+            #if canImport(UIKit)
+            let bounds = UIScreen.main.nativeBounds
+            applyCanvasSizesGestalt(to: &plist,
+                                    canvasWidth: Int(bounds.width),
+                                    canvasHeight: Int(bounds.height))
+            #endif
+        }
+    }
+
     private static func canvasSizeData(width: Double, height: Double) -> Data {
         var w = width.bitPattern.littleEndian
         var h = height.bitPattern.littleEndian
