@@ -192,6 +192,50 @@ struct RDARFix {
     /// otherwise writes a single native-size entry.
     static let mainScreenCanvasSizesKey = "ybGkijAwLTwevankfVzsDQ"
 
+    // Known-good native panel sizes by machine identifier (public spec
+    // values). UIScreen cannot be trusted here: in an active RDAR state
+    // nativeBounds reports the BROKEN canvas, and Display Zoom reports the
+    // zoomed buffer - writing either back keeps the screen broken.
+    static let knownGoodNativeCanvases: [String: (width: Int, height: Int)] = [
+        "iPhone11,2": (1125, 2436), "iPhone11,4": (1242, 2688), "iPhone11,6": (1242, 2688),
+        "iPhone11,8": (828, 1792),
+        "iPhone12,1": (828, 1792), "iPhone12,3": (1125, 2436), "iPhone12,5": (1242, 2688),
+        "iPhone12,8": (750, 1334),
+        "iPhone13,1": (1080, 2340), "iPhone13,2": (1170, 2532), "iPhone13,3": (1170, 2532),
+        "iPhone13,4": (1284, 2778),
+        "iPhone14,2": (1170, 2532), "iPhone14,3": (1284, 2778), "iPhone14,4": (1080, 2340),
+        "iPhone14,5": (1170, 2532), "iPhone14,6": (750, 1334), "iPhone14,7": (1170, 2532),
+        "iPhone14,8": (1284, 2778),
+        "iPhone15,2": (1179, 2556), "iPhone15,3": (1290, 2796), "iPhone15,4": (1179, 2556),
+        "iPhone15,5": (1290, 2796),
+        "iPhone16,1": (1179, 2556), "iPhone16,2": (1290, 2796),
+        "iPhone17,1": (1206, 2622), "iPhone17,2": (1320, 2868), "iPhone17,3": (1179, 2556),
+        "iPhone17,4": (1290, 2796), "iPhone17,5": (1170, 2532),
+    ]
+
+    static func knownGoodNativeCanvas(machine: String) -> (width: Int, height: Int)? {
+        knownGoodNativeCanvases[machine]
+    }
+
+    /// Gestalt-tab tweak entry: known-good table first, nativeBounds only
+    /// for unknown machines. machine is injected so this file stays free of
+    /// app-only dependencies (CI compiles it standalone).
+    static func applyCanvasSizesGestalt(to plist: inout [String: Any],
+                                        machine: String) {
+        if let fixed = knownGoodNativeCanvas(machine: machine) {
+            applyCanvasSizesGestalt(to: &plist,
+                                    canvasWidth: fixed.width,
+                                    canvasHeight: fixed.height)
+        } else {
+            #if canImport(UIKit)
+            let bounds = UIScreen.main.nativeBounds
+            applyCanvasSizesGestalt(to: &plist,
+                                    canvasWidth: Int(bounds.width),
+                                    canvasHeight: Int(bounds.height))
+            #endif
+        }
+    }
+
     private static func canvasSizeData(width: Double, height: Double) -> Data {
         var w = width.bitPattern.littleEndian
         var h = height.bitPattern.littleEndian
@@ -225,15 +269,6 @@ struct RDARFix {
             cacheExtra[mainScreenCanvasSizesKey] = canvasSizeData(width: width, height: height)
         }
         plist["CacheExtra"] = cacheExtra
-    }
-
-    static func applyCanvasSizesGestalt(to plist: inout [String: Any]) {
-        #if canImport(UIKit)
-        let bounds = UIScreen.main.nativeBounds
-        applyCanvasSizesGestalt(to: &plist,
-                                canvasWidth: Int(bounds.width),
-                                canvasHeight: Int(bounds.height))
-        #endif
     }
 
     /// Read-back check: does the plist now carry the requested canvas as its

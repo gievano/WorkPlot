@@ -21,7 +21,7 @@ enum GestaltTweakID: String, CaseIterable, Identifiable {
     case aiRegionUS
     // siriMode removed: duplicate of the Siri AI tab's SiriModeApplier path,
     // which is the only variant that can actually revert (remove the key).
-    case disableDynamicIsland
+    case disableDynamicIsland, removeIslandPill
     case disableParallax, enableLiquidGlassLowPerformance, disableLiquidGlassLowPerformance
     case colorPaletteGraphics, colorPaletteLegacy
     case graphicsStyle
@@ -47,6 +47,9 @@ enum GestaltDeviceGate {
     /// Devices with a native Dynamic Island: iPhone 14 Pro series
     /// (machine family >= 15) and everything newer.
     case iphone14ProOrLater
+    /// Devices WITHOUT a native Dynamic Island (notch era,
+    /// machine family <= 14) - audience for the fake-pill cleanup.
+    case belowIPhone14Pro
 }
 
 struct GestaltTweakDefinition: Identifiable {
@@ -78,6 +81,11 @@ enum GestaltTweakCatalog {
         // to a plain pill). Gated to hardware that actually has one;
         // hiding it elsewhere would be a no-op.
         .init(id: .disableDynamicIsland, category: .display, title: L10n.shared.tr("tweak.dynamicislandoff.title"), detail: L10n.shared.tr("tweak.dynamicislandoff.detail"), values: ["YlEtTtHlNesRBMal1CqRaA": 0], isExperimental: true, deviceGate: .iphone14ProOrLater),
+        // Notch-era counterpart of disableDynamicIsland: kills the FAKE
+        // island pill that supportsDynamicIsland/subtype draws on devices
+        // without a hardware cutout. The apply path additionally strips
+        // ArtworkDeviceSubType via GestaltArtwork.removeDynamicIslandSubtype.
+        .init(id: .removeIslandPill, category: .display, title: L10n.shared.tr("tweak.removepill.title"), detail: L10n.shared.tr("tweak.removepill.detail"), values: ["YlEtTtHlNesRBMal1CqRaA": 0], isExperimental: true, deviceGate: .belowIPhone14Pro),
         .init(id: .alwaysOnDisplay, category: .display, title: L10n.shared.tr("tweak.aod.title"), detail: L10n.shared.tr("tweak.aod.detail"), values: ["2OOJf1VhaM7NxfRok3HbWQ": 1, "j8/Omm6s1lsmTDFsXjsBfA": 1], isRisky: true),
         .init(id: .alwaysOnDisplayVibrancy, category: .display, title: L10n.shared.tr("tweak.aodvibrancy.title"), detail: L10n.shared.tr("tweak.aodvibrancy.detail"), values: ["ykpu7qyhqFweVMKtxNylWA": 1]),
         .init(id: .disableParallax, category: .display, title: L10n.shared.tr("tweak.parallax.title"), detail: L10n.shared.tr("tweak.parallax.detail"), values: ["mmu76v66k1dAtghToInT8g": 0]),
