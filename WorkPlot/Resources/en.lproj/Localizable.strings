@@ -458,3 +458,12 @@
 // RDAR canvas fix via MobileGestalt
 "tweak.rdargestalt.title" = "RDAR Canvas Fix (Gestalt)";
 "tweak.rdargestalt.detail" = "Writes your native screen dimensions into MainScreenCanvasSizes so the graphics stack stops downscaling. Experimental alternative to the plist-based RDAR fix - no extra filesystem access needed.";
+
+// Dynamic file browser locations
+"fp.scanning" = "Checking accessible locations...";
+"fp.shortcut.datasystem" = "System Data Containers";
+"fp.shortcut.systemgroups" = "System Groups";
+"fp.shortcut.applications" = "App Data Containers";
+"fp.shortcut.internaldaemon" = "Daemon Containers";
+"fp.shortcut.pluginkit" = "Plugin Containers";
+"fp.shortcut.sharedgroups" = "Shared App Groups";
