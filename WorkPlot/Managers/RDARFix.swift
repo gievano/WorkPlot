@@ -236,6 +236,25 @@ struct RDARFix {
         #endif
     }
 
+    /// Read-back check: does the plist now carry the requested canvas as its
+    /// first entry? Distinguishes a write the system silently dropped from
+    /// one that is genuinely on disk (the OS may still choose to ignore it).
+    static func verifyCanvasSizesGestalt(in plist: [String: Any],
+                                         canvasWidth: Int,
+                                         canvasHeight: Int) -> Bool {
+        guard let cacheExtra = plist["CacheExtra"] as? [String: Any],
+              let value = cacheExtra[mainScreenCanvasSizesKey] else { return false }
+        let expected = canvasSizeData(width: Double(canvasWidth), height: Double(canvasHeight))
+        switch value {
+        case let data as Data where data.count >= 16:
+            return data.prefix(16) == expected
+        case let doubles as [Double] where doubles.count >= 2:
+            return doubles[0] == Double(canvasWidth) && doubles[1] == Double(canvasHeight)
+        default:
+            return false
+        }
+    }
+
     // MARK: - Device entry points
     // Everything below touches the bad_query sandbox lease and is therefore
     // only built on iOS; the macOS CI harness compiles the pure helpers above.

@@ -1,10 +1,6 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-extension UTType {
-    static let tendies = UTType(filenameExtension: "tendies") ?? .data
-}
-
 struct PosterBoardLabView: View {
     @ObservedObject private var manager = ExploitManager.shared
     @ObservedObject private var l10n = L10n.shared

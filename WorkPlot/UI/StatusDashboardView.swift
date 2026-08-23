@@ -4,6 +4,8 @@ struct StatusDashboardView: View {
     @ObservedObject private var manager = ExploitManager.shared
     @ObservedObject private var l10n = L10n.shared
     @State private var showRestartAlert = false
+    @State private var customWidth = ""
+    @State private var customHeight = ""
 
     var body: some View {
         NavigationView {
@@ -24,14 +26,10 @@ struct StatusDashboardView: View {
                             // One-tap path: canvas dimensions via MobileGestalt
                             // (MainScreenCanvasSizes) - the plist locations the
                             // old probe targeted are unreachable on iOS 27.
-                            guard var plist = manager.readGestalt() else {
-                                throw RDARFixError(message: L10n.shared.tr("common.readFail"))
-                            }
-                            RDARFix.applyCanvasSizesGestalt(to: &plist)
-                            try manager.saveGestaltOrThrow(plist)
-                            manager.statusText = "\(l10n.tr("status.rdarfix")) OK. \(l10n.tr("restart.rec.title"))"
-                            SessionLogger.shared.log("rdar canvas gestalt applied from dashboard")
-                            showRestartAlert = true
+                            let bounds = UIScreen.main.nativeBounds
+                            try applyCanvas(width: Int(bounds.width),
+                                            height: Int(bounds.height),
+                                            label: l10n.tr("status.rdarfix"))
                         } catch {
                             manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
                         }
@@ -49,6 +47,29 @@ struct StatusDashboardView: View {
                     .disabled(!manager.sandboxGranted)
                     // Respring tetap di menu utama: fungsinya menyegarkan UI saja.
                     Button(l10n.tr("status.respring.refresh")) { manager.respringRequested = true }
+                }
+                Section(header: Text(l10n.tr("rdar.custom.header")),
+                        footer: Text(l10n.tr("rdar.custom.footer"))) {
+                    HStack {
+                        TextField(l10n.tr("rdar.custom.width"), text: $customWidth)
+                            .keyboardType(.numberPad)
+                        TextField(l10n.tr("rdar.custom.height"), text: $customHeight)
+                            .keyboardType(.numberPad)
+                    }
+                    Button(l10n.tr("rdar.custom.apply")) {
+                        guard let width = Int(customWidth), let height = Int(customHeight),
+                              width > 0, height > 0 else {
+                            manager.statusText = l10n.tr("rdar.custom.invalid")
+                            return
+                        }
+                        do {
+                            try applyCanvas(width: width, height: height,
+                                            label: l10n.tr("rdar.custom.apply"))
+                        } catch {
+                            manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
+                        }
+                    }
+                    .disabled(!manager.sandboxGranted)
                 }
                 Section(header: Text(l10n.tr("home.log"))) {
                     Text(manager.statusText)
@@ -72,6 +93,30 @@ struct StatusDashboardView: View {
             } message: {
                 Text(l10n.tr("restart.rec.message"))
             }
+        }
+    }
+
+    /// Applies canvas sizes through the gestalt route, then reads the plist
+    /// back from disk and compares bytes. A write the system silently drops
+    /// now reports "not visible on disk" instead of a false OK.
+    private func applyCanvas(width: Int, height: Int, label: String) throws {
+        guard var plist = manager.readGestalt() else {
+            throw RDARFixError(message: L10n.shared.tr("common.readFail"))
+        }
+        RDARFix.applyCanvasSizesGestalt(to: &plist, canvasWidth: width, canvasHeight: height)
+        try manager.saveGestaltOrThrow(plist)
+
+        let verified = manager.readGestalt().map {
+            RDARFix.verifyCanvasSizesGestalt(in: $0, canvasWidth: width, canvasHeight: height)
+        } ?? false
+
+        if verified {
+            manager.statusText = "\(label) OK (\(width)x\(height)). \(l10n.tr("restart.rec.title"))"
+            SessionLogger.shared.log("rdar canvas \(width)x\(height) applied and verified on disk")
+            showRestartAlert = true
+        } else {
+            manager.statusText = "\(label): \(l10n.tr("rdar.verify.fail"))"
+            SessionLogger.shared.log("rdar canvas \(width)x\(height): write not visible on disk after save")
         }
     }
 }

@@ -92,7 +92,7 @@ struct FilePatchWorkspaceView: View {
         }
         .fileImporter(
             isPresented: $showingImporter,
-            allowedContentTypes: [.item],
+            allowedContentTypes: [.patch3105],
             allowsMultipleSelection: false,
             onCompletion: performImport
         )

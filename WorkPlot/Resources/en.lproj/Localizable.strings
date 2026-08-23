@@ -476,3 +476,12 @@
 "fp.shortcut.mhaC10" = "[MHA-C10] Daemon Containers";
 "fp.shortcut.mhaC14" = "[MHA-C14] Plugin Containers";
 "fp.accessmap.note" = "Access map saved to Documents/ACCESS MAP.txt";
+
+// Custom canvas + honest RDAR verification
+"rdar.custom.header" = "Custom Canvas";
+"rdar.custom.footer" = "Set any screen resolution before applying. Takes effect after a full restart.";
+"rdar.custom.width" = "Width (px)";
+"rdar.custom.height" = "Height (px)";
+"rdar.custom.apply" = "Apply Custom Canvas";
+"rdar.custom.invalid" = "Enter positive numbers for width and height.";
+"rdar.verify.fail" = "write not visible on disk - blocked by system";
