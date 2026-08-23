@@ -251,10 +251,10 @@ struct PosterBoardLabView: View {
 
                 DispatchQueue.main.async {
                     self.isInstalling = false
-                    self.phase = l10n.tr("pb.phase.installed")
+                    self.phase = l10n.tr("pb.guide")
                     self.reloadInstalled()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        self.manager.requestRespring()
+                        self.manager.respringRequested = true
                     }
                 }
             } catch {

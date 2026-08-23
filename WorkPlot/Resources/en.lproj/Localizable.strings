@@ -489,3 +489,6 @@
 "pp3105.password.placeholder" = "Password";
 "pp3105.password.message" = "%@ is password protected. Enter its password to apply.";
 "pp.scanFailed" = "Failed to enumerate containers at";
+
+// iOS 27 wallpaper guidance (3105-verified behavior)
+"pb.guide" = "Installed. Open the Lock Screen wallpaper picker - use a Collections wallpaper first on iOS 27. If it does not appear, swipe PosterBoard away in the app switcher, then check again.";
