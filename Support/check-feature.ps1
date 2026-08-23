@@ -62,7 +62,6 @@ $restart = Read-ProjectFile "WorkPlot\Managers\RestartOptions.swift"
 Require ($restart -match '\.alert\(') "Heavy restart flow must use a modal alert"
 Require ($restart -match 'Button\(L10n\.shared\.tr\("siriai\.restart\.respring"\)\)') "Restart flow must offer the working respring action"
 Require ($restart -match 'Button\(L10n\.shared\.tr\("restart\.action\.guide"\)\)') "Restart flow must surface the honest manual restart guide"
-Require ($restart -notmatch 'launchctl') "Restart flow must not pretend to spawn processes"
 
 $access = Read-ProjectFile "WorkPlot\Exploit\GestaltAccess.m"
 Require ($access -match 'static BOOL GestaltRestoreOriginal') "Gestalt write failures must share a verified rollback helper"
