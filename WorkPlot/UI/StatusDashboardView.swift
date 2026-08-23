@@ -27,8 +27,8 @@ struct StatusDashboardView: View {
                     .disabled(!manager.sandboxGranted)
                     Button(l10n.tr("status.lg.disable")) {
                         do {
-                            try LiquidGlassController.disableGlobal()
-                            manager.statusText = L10n.shared.tr("lg.disabled")
+                            let lines = try LiquidGlassController.disableGlobal()
+                            manager.statusText = L10n.shared.tr("lg.disabled") + "\n" + lines.joined(separator: "\n")
                             showRestartAlert = true
                         } catch {
                             manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)

@@ -3,11 +3,9 @@ import SwiftUI
 struct LiquidGlassView: View {
     @ObservedObject private var manager = ExploitManager.shared
     @State private var mode: LiquidGlassMode = .systemDefault
-    @State private var sliderDisabled = false
     @State private var isApplying = false
     @State private var showRestartAlert = false
     @State private var didLoadState = false
-    @State private var loadError: String?
 
     var body: some View {
         NavigationView {
@@ -21,14 +19,6 @@ struct LiquidGlassView: View {
                     }
                 } else {
                     List {
-                        if let loadError {
-                            Section {
-                                Text(loadError)
-                                    .font(.caption)
-                                    .foregroundColor(.orange)
-                            }
-                        }
-
                         Section(header: Text(L10n.shared.tr("lg.renderMode"))) {
                             Picker(L10n.shared.tr("lg.renderMode"), selection: $mode) {
                                 ForEach(LiquidGlassMode.allCases) { m in
@@ -40,10 +30,6 @@ struct LiquidGlassView: View {
                             Text(L10n.shared.tr(mode.descriptionKey))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                        }
-
-                        Section(header: Text(L10n.shared.tr("lg.section.global")), footer: Text(L10n.shared.tr("lg.globalFooter"))) {
-                            Toggle(L10n.shared.tr("lg.toggle.disable"), isOn: $sliderDisabled)
                         }
 
                         Section {
@@ -85,24 +71,16 @@ struct LiquidGlassView: View {
     private func loadCurrentState() {
         guard !didLoadState else { return }
         didLoadState = true
-        guard let state = LiquidGlassController.currentState() else {
-            loadError = L10n.shared.tr("lg.state.loadFail")
-            return
-        }
-        mode = LiquidGlassMode.allCases.first {
-            $0 != .systemDefault && $0.cacheExtraValue == state.cacheExtraValue
-        } ?? .systemDefault
-        sliderDisabled = state.sliderDisabled
+        mode = LiquidGlassController.currentMode()
     }
 
     private func applyChanges() {
         isApplying = true
         let mode = mode
-        let sliderDisabled = sliderDisabled
 
         DispatchQueue.global(qos: .userInitiated).async {
             do {
-                try LiquidGlassController.apply(mode: mode, sliderDisabled: sliderDisabled)
+                try LiquidGlassController.apply(mode: mode)
                 DispatchQueue.main.async {
                     self.isApplying = false
                     self.manager.statusText = "\(L10n.shared.tr("lg.applied")) \(L10n.shared.tr("restart.rec.title"))"

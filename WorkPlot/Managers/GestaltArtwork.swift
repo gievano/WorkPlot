@@ -26,19 +26,6 @@ enum GestaltArtwork {
         plist["CacheExtra"] = cacheExtra
     }
 
-    /// Reverts what setDynamicIslandSubtype wrote on notch devices: drops
-    /// ArtworkDeviceSubType and forces the capability off so SpringBoard
-    /// stops drawing the fake island pill.
-    static func removeDynamicIslandSubtype(in plist: inout [String: Any]) {
-        var cacheExtra = plist["CacheExtra"] as? [String: Any] ?? [:]
-        if var artwork = cacheExtra[artworkKey] as? [String: Any] {
-            artwork.removeValue(forKey: "ArtworkDeviceSubType")
-            cacheExtra[artworkKey] = artwork
-        }
-        cacheExtra[dynamicIslandCapabilityKey] = 0
-        plist["CacheExtra"] = cacheExtra
-    }
-
     static func setModelName(_ name: String, in plist: inout [String: Any]) throws {
         guard var artwork = (plist["CacheExtra"] as? [String: Any])?[artworkKey] as? [String: Any] else {
             throw GestaltArtworkError.artworkDictionaryMissing
