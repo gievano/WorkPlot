@@ -32,7 +32,6 @@ Switch them in-app under the gear icon. The whole UI follows your choice.
 | **Field Editor**         | Edit MobileGestalt keys by hand and inspect CacheData as hex                                                                                       |
 | **Siri AI Suite**        | Enable the new Siri AI and Apple Intelligence through the CacheData patch (Toto method), with optional spoofing to iPhone 15/16/17 Pro and Pro Max |
 | **Liquid Glass**         | Turn on Apple's Liquid Glass UI effect                                                                                                             |
-| **PosterBoard Lab**      | Import `.tendies` wallpapers into PosterBoard, browse the online Nugget-Wallpapers catalog, and track/remove everything you installed. The picker grays out anything that is not a `.tendies` package |
 | **Backup & Restore**     | Automatic backup before each write, JSON snapshots you can export or import, plus the RDARFix repair tool                                          |
 | **File Patch Workspace** | Browse and edit system files through the sandbox escape using FilzaSlop-style location labels ([MHA-C13] System Groups, [MHA-C12] System Data, and so on), record reachable paths to an ACCESS MAP.txt in Documents, import `.3105` patch files, inspect app containers, clean per-app caches, view files as hex or SQLite tables |
 | **Patch Packages**       | Bundle replacement rules (bundle ID + path) into a folder package with password protection and verified rollback                                   |
@@ -96,7 +95,7 @@ After either one applies, WorkPlot reads the plist back from disk and compares t
 | Access reports an identity mismatch   | Re-sign without changing `com.apple.mobile.MobileHouseArrest`; avoid tools that rewrite it |
 | Strange behavior after Gestalt edits | Restore your latest snapshot in Backups                                    |
 | RDAR bug after edits                 | Run RDARFix or Custom Canvas on the Status tab. `verified on disk` means the write landed; if iOS still ignores the value, the fix cannot help on that build |
-| File picker grays out my file        | PosterBoard only accepts `.tendies` packages and the Files tab only accepts `.3105` patch files; other formats are disabled on purpose |
+| File picker grays out my file        | The Files tab only accepts `.3105` patch files; other formats are disabled on purpose |
 | Respring does nothing                | The WebKit respring trick may be patched on your beta. The overlay recovers after ten seconds and reports the failure; restart the device manually |
 
 ## Credits

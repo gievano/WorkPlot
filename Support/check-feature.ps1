@@ -108,12 +108,15 @@ Require ($exploitManager -match 'captureStockSnapshotIfNeeded') "First successfu
 
 # Sprint-1 key corrections (verified against PoomSmart/MGKeys)
 $tweaksText = Read-ProjectFile "WorkPlot\Managers\GestaltTweaks.swift"
-$siriController = Read-ProjectFile "WorkPlot\Managers\AppleIntelligenceController.swift"
 $siriApplier = Read-ProjectFile "WorkPlot\Managers\SiriModeApplier.swift"
-foreach ($fixed in @($tweaksText, $siriController, $siriApplier)) {
-    Require ($fixed -match 'a3n5T9sFtlyQ74NEp9ESxg') "SiriMode must use the correct MGKeys value a3n5T9sFtlyQ74NEp9ESxg"
-    Require ($fixed -notmatch 'a3n5T9sFtyQ74NEp9ESxg') "The old SiriMode typo must be gone"
-}
+Require ($siriApplier -match 'a3n5T9sFtlyQ74NEp9ESxg') "SiriMode must use the correct MGKeys value a3n5T9sFtlyQ74NEp9ESxg"
+Require ($siriApplier -notmatch 'a3n5T9sFtyQ74NEp9ESxg') "The old SiriMode typo must be gone"
+# Post-split architecture (PR #40): the Siri mode flag belongs ONLY to the
+# Siri AI path; Apple Intelligence stages the eligibility key alone.
+$aiController = Read-ProjectFile "WorkPlot\Managers\AppleIntelligenceController.swift"
+Require ($aiController -match '"A62OafQ85EJAiiqKn4agtg"') "Apple Intelligence must stage the eligibility key A62OafQ85EJAiiqKn4agtg"
+Require ($aiController -notmatch 'a3n5T9sFtlyQ74NEp9ESxg') "Apple Intelligence must not write the Siri mode flag anymore"
+Require ($tweaksText -notmatch 'a3n5T9sFtlyQ74NEp9ESxg') "The Gestalt catalog must not duplicate the Siri mode flag toggle"
 Require ($tweaksText -match 'mmu76v66k1dAtghToInT8g') "disableParallax must write the real CacheExtra key"
 Require ($tweaksText -notmatch '"UIParallaxCapability"') "Plaintext capability names must not be written as Gestalt keys"
 
@@ -135,7 +138,7 @@ $statusDashboard = Read-ProjectFile "WorkPlot\UI\StatusDashboardView.swift"
 Require ($statusDashboard -match 'status\.methodLabel') "Dashboard must show which exploit method is active"
 
 $strings = Read-ProjectFile "WorkPlot\Resources\en.lproj\Localizable.strings"
-foreach ($key in @('status\.exploitActive', 'status\.methodLabel', 'status\.signingHint', 'sessionlog\.title', 'backup\.revertStock', 'rdar\.restoreCanvas', 'siri\.rebootHint', 'siri\.waitlistNote')) {
+foreach ($key in @('status\.exploitActive', 'status\.methodLabel', 'status\.signingHint', 'sessionlog\.title', 'backup\.revertStock', 'rdar\.restoreCanvas', 'siri\.rebootHint')) {
     Require ($strings -match ('"' + $key + '"')) "Missing localization key $key"
 }
 
