@@ -26,17 +26,25 @@ struct CreditsView: View {
     ]
 
     private var projects: [CreditsLink] { [
-        CreditsLink(name: "bad_query by forcequitOS", detail: l10n.tr("credits.exploit.detail"),
+        CreditsLink(name: "bad_query", detail: l10n.tr("credits.exploit.detail"),
                     urlString: "https://github.com/forcequitOS/bad_query", githubUser: "forcequitOS"),
-        CreditsLink(name: "0xjohnnydev", detail: l10n.tr("credits.sandbox.detail"),
-                    urlString: "https://github.com/0xjohnnydev", githubUser: "0xjohnnydev"),
-        CreditsLink(name: "FilzaSlop", detail: "0xjohnnydev",
+        // One person, one project - previously listed twice under different
+        // names ("0xjohnnydev" and "FilzaSlop"), which read as two sources.
+        CreditsLink(name: "FilzaSlop (HouseArrest sandbox escape)", detail: l10n.tr("credits.sandbox.detail"),
                     urlString: "https://github.com/0xjohnnydev/FilzaSlop", githubUser: "0xjohnnydev"),
+        CreditsLink(name: "MobileHouseArrest-PoC", detail: l10n.tr("credits.mhapoc.detail"),
+                    urlString: "https://github.com/0xjohnnydev/MobileHouseArrest-PoC", githubUser: "0xjohnnydev"),
+        CreditsLink(name: "Nugget & GestaltEdit", detail: l10n.tr("credits.nugget.detail"),
+                    urlString: "https://github.com/leminlimez/Nugget", githubUser: "leminlimez"),
+        CreditsLink(name: "3105", detail: l10n.tr("credits.3105.detail"),
+                    urlString: "https://github.com/YangJiiii/3105", githubUser: "YangJiiii"),
+        CreditsLink(name: "neospring (respring)", detail: l10n.tr("credits.respring.detail"),
+                    urlString: "https://github.com/rooootdev/neospring", githubUser: "rooootdev"),
         CreditsLink(name: "Placard", detail: "frs0n",
                     urlString: "https://github.com/frs0n/placard", githubUser: "frs0n")
     ] }
 
-    private let thanks = ["Mond", "GestaltEdit", "Ketamine", "3105", "Placard", "FilzaSlop"]
+    private let thanks = ["Mond", "Ketamine", "Toto"]
 
     var body: some View {
         List {
