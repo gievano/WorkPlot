@@ -617,3 +617,11 @@
 **The Reasoning:** Laporan device build 3759eea: browsing file gagal "bad_query stage=token did not receive a sandbox token" dan App Containers hang scanning. Pola waktunya cocok dengan probe 11 path saat tab Files dibuka - containermanagerd tampaknya menolak penerbitan token untuk proses setelah ledakan query itu (probe bare rawList lolos karena tidak butuh token). Pelajaran: jangan hammer CMG; listing statis + error per-tap lebih aman. Trik randomizeWallpaperId dan openPosterBoard diport dari leminlimez/Pocket-Poster (GPL-3.0).
 
 **The Tech Debt:** File .3105 ternyata format terenkripsi (header 3105PATCH\0 + plist berisi PBKDF2 250k iterasi, wrappedContentKey, encryptedPayload) - applier butuh password dari pemilik package sebelum bisa dibangun. Patch Packages (.wplot folder) dipertahankan sebagai satu-satunya mekanisme patch yang berfungsi sampai .3105 native siap.
+
+## 2026-08-23 (malam) - PR #38: Patch Native .3105
+
+**The Change:** Patch3105.swift baru: parse magic "3105PATCH\0" + plist envelope (schemaVersion, kdfSalt, kdfIterations=250000, wrappedContentKey, keyFingerprint, encryptedPayload). Package terproteksi memunculkan SecureField password di dalam app; dekripsi best-effort PBKDF2-HMAC-SHA256 + AES-GCM via CryptoKit/CommonCrypto; rules dibaca dari payload plist {"rules":[{bundleID,path,data|content}]}; apply lewat PatchPackageStore.resolveTargetPath + lease + InodeWriter dengan backup originals di Documents/Patch Packages/<packageID>/originals/. PatchPackageManagerView dan seluruh alur folder .wplot dihapus; menu Patch Packages keluar dari More. Tab Files kini hanya menerima .3105 dan tiap import langsung jadi patch flow.
+
+**The Reasoning:** User melarang menanyakan password secara manual dan ingin fitur patch khusus format .3105. Skema enkripsi resmi tidak tersedia publik sehingga crypto dikodekan best-effort dengan failure tunggal yang jujur ("wrong password / unsupported scheme") supaya tes device menghasilkan sinyal iterasi berikutnya.
+
+**The Tech Debt:** (1) Jika GCM ternyata bukan skema wrap-nya (mis. AES-KW RFC3394), butuh implementasi KW manual atau spec asli. (2) Rollback UI untuk originals .3105 belum ada - data sudah tersimpan rapi per packageID. (3) Payload berbentuk ZIP ditolak eksplisit untuk saat ini.

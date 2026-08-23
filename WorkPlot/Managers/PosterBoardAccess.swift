@@ -97,6 +97,13 @@ enum PosterBoardAccess {
             createdNames.append(target.lastPathComponent)
         }
 
+        // Verify from disk and log the full picture so device reports can be
+        // matched against the actual store state (3105-style receipt).
+        let installedCount = ((try? list(destination)) ?? []).count
+        let generation = destination.components(separatedBy: "/").first(where: { $0.allSatisfy(\.isNumber) }) ?? "?"
+        SessionLogger.shared.log(
+            "wallpaper: installed descriptors=\(createdNames.count) store generation=\(generation) total=\(installedCount) path=\(destination)")
+
         // Journal only after every copy succeeded so partial installs are
         // never recorded as fully added.
         WallpaperJournal.shared.record(createdNames)

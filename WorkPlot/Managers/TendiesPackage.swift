@@ -88,6 +88,24 @@ enum TendiesPackage {
 
     // MARK: - Structure checks
 
+    /// Writes every regular archive entry into `directory` and returns the
+    /// extracted file URLs. Unlike extract(), no tendies structure check:
+    /// shared with the .3105 patch payload decoder for plain ZIP trees.
+    static func writeArchive(_ data: Data, to directory: URL) throws -> [URL] {
+        let entries = try parseCentralDirectory(data)
+        var files: [URL] = []
+        for entry in entries where !entry.isDirectory {
+            let relativePath = sanitize(entry.path)
+            guard !relativePath.isEmpty else { continue }
+            let target = directory.appendingPathComponent(relativePath)
+            try FileManager.default.createDirectory(
+                at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try inflate(entry).write(to: target, options: .atomic)
+            files.append(target)
+        }
+        return files
+    }
+
     /// Randomizes wallpaper identifiers across each descriptor tree so
     /// repeated installs do not collide in PosterBoard's extension store
     /// (same trick Pocket Poster uses before every install).
