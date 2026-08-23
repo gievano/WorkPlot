@@ -569,3 +569,11 @@
 **The Reasoning:** Wiring routing viewer & menu dikerjakan terpusat oleh satu tangan setelah 3 agent selesai supaya tidak ada konflik file; ZIPFoundation jadi dependency SPM pertama karena menulis parser ZIP sendiri bukan trade yang masuk akal.
 
 **The Tech Debt:** Onboarding wizard ditunda (nilai rendah vs risiko). Descriptor ID katalog belum dirandomisasi ulang penuh (folder-level saja). Semua fitur batch ini belum teruji device - prioritas tes user: RDAR resolver, patch package, katalog install, cache cleaner.
+
+## 2026-08-23 (pagi II) - PR #31: Laporan Device User Round 1
+
+**The Change:** (1) RDAR: 3 kandidat statis ditolak di device user; tambah probe dinamis /var/containers/Data/System/*/Library/Preferences/com.apple.iokit.IOMobileGraphicsFamily.plist (daemon containers iOS 27). (2) PosterBoard: generasi PRBPosterExtensionDataStore tidak lagi hardcode 61 - dideteksi live dari device; scan hash +root Data/System. (3) Patch package: Create Sample Package + footer format + scan +Data/System.
+
+**The Reasoning:** Pola kegagalan yang sama (stage=query rejected) pada semua path non-container menunjukkan policy allowlist ContainerManager hanya membuka pohon container; daemon prefs yang dipindah ke Data/System adalah satu-satunya harapan RDAR tanpa jailbreak. PosterBoard gagal kemungkinan besar karena generasi store berubah di iOS 27.
+
+**The Tech Debt:** Toggle Internal Storage (LBJfwOEzExRxzlAnSuI7eg=InternalBuild) SUDAH ada sejak awal di katalog internalFeatures - perlu dokumentasi urutan pakai untuk user. Kalau probe Data/System pun gagal semua, RDAR resmi impossible via bad_query pada build tsb dan tombolnya harus jadi unavailable-state.
