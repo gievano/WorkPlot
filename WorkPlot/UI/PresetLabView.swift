@@ -95,7 +95,7 @@ struct PresetLabView: View {
                 l10n.tr("restart.rec.title"),
                 isPresented: $showRestartAlert
             ) {
-                Button(l10n.tr("siriai.restart.respring")) { manager.respringRequested = true }
+                Button(l10n.tr("siriai.restart.respring")) { manager.requestRespring() }
                 Button(l10n.tr("siriai.restart.later"), role: .cancel) {}
             } message: {
                 Text(l10n.tr("restart.rec.message"))

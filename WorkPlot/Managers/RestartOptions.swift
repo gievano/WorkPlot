@@ -63,7 +63,7 @@ struct HeavyRestartFlow: ViewModifier {
 
     private func handle(_ action: RestartAction) {
         if action == .respring {
-            manager.respringRequested = true
+            manager.requestRespring()
         } else {
             // Executing a userspace/full reboot needs process spawning that
             // the sandbox escape does not provide; guide the user instead.

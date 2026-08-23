@@ -92,12 +92,12 @@ struct FileQuickLocation: Identifiable {
 }
 
 enum FileBrowser {
-    /// All known quick-jump locations, labeled by their MHA container class
-    /// the way FilzaSlop presents them. ContainerManager policy makes many of
-    /// them unreachable depending on the OS build, so the browser renders
-    /// only the ones that pass a live listing probe; fresh probes are written
-    /// to an ACCESS MAP.txt in Documents like FilzaSlop does.
-    static let allShortcuts: [FileQuickLocation] = [
+    /// Quick-jump locations labeled by MHA container class, FilzaSlop style.
+    /// Everything renders; a tap ContainerManager refuses surfaces its error.
+    /// Deliberately no startup reachability probing: firing a burst of
+    /// container queries when the Files tab opens wedged token issuance in
+    /// containermanagerd, and every later lease failed with stage=token.
+    static let shortcuts: [FileQuickLocation] = [
         FileQuickLocation(labelKey: "fp.shortcut.gestaltcache", path: "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches"),
         FileQuickLocation(labelKey: "fp.shortcut.mhaC13", path: "/var/containers/Shared/SystemGroup"),
         FileQuickLocation(labelKey: "fp.shortcut.mhaC12", path: "/var/containers/Data/System"),
@@ -110,69 +110,6 @@ enum FileBrowser {
         FileQuickLocation(labelKey: "fp.shortcut.jb", path: "/var/jb"),
         FileQuickLocation(labelKey: "fp.shortcut.jailbreak", path: "/var/jailbreak")
     ]
-
-    /// Set by the last fresh probe so the UI can mention the access map.
-    private(set) static var lastProbeWroteAccessMap = false
-
-    private static var reachabilityCacheKey: String {
-        // ponytail: keyed per OS build; a new beta re-probes automatically.
-        let build = GestaltAccess.currentOSBuild()
-        return "FileBrowserReachableShortcutPaths:\(build.isEmpty ? "unknown" : build)"
-    }
-
-    /// Shortcut entries whose directories passed a live listing probe.
-    /// Runs off the main thread from the caller; results persist per OS
-    /// build so later launches skip re-probing unless nothing was reachable.
-    static func reachableShortcuts() -> [FileQuickLocation] {
-        if let cached = UserDefaults.standard.stringArray(forKey: reachabilityCacheKey),
-           !cached.isEmpty {
-            lastProbeWroteAccessMap = false
-            let allowed = Set(cached)
-            return allShortcuts.filter { allowed.contains($0.path) }
-        }
-
-        var reachable: [String] = []
-        var mapLines: [String] = ["WorkPlot Access Map - \(Date())", ""]
-        for location in allShortcuts {
-            if let count = try? rawList(normalize(location.path)) {
-                reachable.append(location.path)
-                mapLines.append("OK       \(location.path) (\(count.count) entries)")
-            } else {
-                mapLines.append("BLOCKED  \(location.path)")
-            }
-        }
-        if !reachable.isEmpty {
-            UserDefaults.standard.set(reachable, forKey: reachabilityCacheKey)
-        }
-        writeAccessMap(mapLines)
-        // Nothing probed OK (or a transient failure): fall back to the
-        // container trees the exploit is documented to cover rather than
-        // showing an empty screen.
-        let fallback = Set([
-            "/var/containers/Shared/SystemGroup",
-            "/var/containers/Data/System"
-        ])
-        return allShortcuts.filter { fallback.contains($0.path) || reachable.contains($0.path) }
-    }
-
-    /// Mirrors FilzaSlop's ACCESS MAP.txt: a plain-text record of what this
-    /// device allowed, dropped in Documents where Files app can open it.
-    private static func writeAccessMap(_ lines: [String]) {
-        let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("ACCESS MAP.txt")
-        do {
-            try lines.joined(separator: "\n").write(to: url, atomically: true, encoding: .utf8)
-            lastProbeWroteAccessMap = true
-        } catch {
-            lastProbeWroteAccessMap = false
-        }
-    }
-
-    /// Cheap reachability probe: a successful directory listing means the
-    /// tree is inside ContainerManager's policy for this build.
-    static func canList(_ path: String) -> Bool {
-        (try? rawList(normalize(path))) != nil
-    }
 
     // MARK: - Listing
 

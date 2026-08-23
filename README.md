@@ -27,14 +27,14 @@ Switch them in-app under the gear icon. The whole UI follows your choice.
 
 | Feature                  | What it does                                                                                                                                       |
 | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Status Dashboard**     | Grant the `bad_query` sandbox escape, watch exploit status, trigger a respring                                                                     |
+| **Status Dashboard**     | Grant the `bad_query` sandbox escape, watch exploit status, run the one-tap RDAR canvas fix, set any screen resolution with Custom Canvas, trigger a respring |
 | **Gestalt Presets**      | Dynamic Island on unsupported devices, custom Model Name, one-tap presets                                                                          |
 | **Field Editor**         | Edit MobileGestalt keys by hand and inspect CacheData as hex                                                                                       |
 | **Siri AI Suite**        | Enable the new Siri AI and Apple Intelligence through the CacheData patch (Toto method), with optional spoofing to iPhone 15/16/17 Pro and Pro Max |
 | **Liquid Glass**         | Turn on Apple's Liquid Glass UI effect                                                                                                             |
-| **PosterBoard Lab**      | Import `.tendies` wallpapers into PosterBoard, browse the online Nugget-Wallpapers catalog, and track/remove everything you installed                |
+| **PosterBoard Lab**      | Import `.tendies` wallpapers into PosterBoard, browse the online Nugget-Wallpapers catalog, and track/remove everything you installed. The picker grays out anything that is not a `.tendies` package |
 | **Backup & Restore**     | Automatic backup before each write, JSON snapshots you can export or import, plus the RDARFix repair tool                                          |
-| **File Patch Workspace** | Browse and patch system files through the sandbox escape, inspect app containers, clean per-app caches, view files as hex or SQLite tables          |
+| **File Patch Workspace** | Browse and edit system files through the sandbox escape using FilzaSlop-style location labels ([MHA-C13] System Groups, [MHA-C12] System Data, and so on), record reachable paths to an ACCESS MAP.txt in Documents, import `.3105` patch files, inspect app containers, clean per-app caches, view files as hex or SQLite tables |
 | **Patch Packages**       | Bundle replacement rules (bundle ID + path) into a folder package with password protection and verified rollback                                   |
 | **Customization**        | Six languages, light/dark/system appearance, alternate app icons, in-app update checker                                                            |
 
@@ -71,6 +71,15 @@ WorkPlot ships as a sideloaded IPA. It will not appear on the App Store.
 3. Tap **Apply Changes**, then confirm the respring in the "Restart Required" popup.
 4. Spoofing can break Face ID until you revert it, so keep a snapshot handy.
 
+### RDAR canvas fix and custom resolutions
+
+The Status tab has two controls for the RDAR wallpaper bug:
+
+1. **Fix rdar** writes your panel's native size into MobileGestalt (`MainScreenCanvasSizes`).
+2. **Custom Canvas** lets you type any width and height instead, for example 828 x 1792 on an iPhone 11.
+
+After either one applies, WorkPlot reads the plist back from disk and compares the bytes. The status line then says `verified on disk` or `write not visible on disk - blocked by system`, so a silently dropped write no longer looks like success. Canvas values are read at boot time, and WorkPlot cannot reboot a sandboxed device, so heavy tweaks show a restart prompt with manual steps for userspace and full restarts.
+
 ## Warning
 
 - This app modifies system state through a sandbox escape. Use it at your own risk.
@@ -86,14 +95,16 @@ WorkPlot ships as a sideloaded IPA. It will not appear on the App Store.
 | Tweaks fail to apply                 | Re-grant the sandbox escape on the Status tab                              |
 | Access reports an identity mismatch   | Re-sign without changing `com.apple.mobile.MobileHouseArrest`; avoid tools that rewrite it |
 | Strange behavior after Gestalt edits | Restore your latest snapshot in Backups                                    |
-| RDAR bug after edits                 | Run the built-in RDARFix repair tool                                       |
-| Respring loop                        | The failsafe overlay recovers the app; after a reboot, restore your backup |
+| RDAR bug after edits                 | Run RDARFix or Custom Canvas on the Status tab. `verified on disk` means the write landed; if iOS still ignores the value, the fix cannot help on that build |
+| File picker grays out my file        | PosterBoard only accepts `.tendies` packages and the Files tab only accepts `.3105` patch files; other formats are disabled on purpose |
+| Respring does nothing                | The WebKit respring trick may be patched on your beta. The overlay recovers after ten seconds and reports the failure; restart the device manually |
 
 ## Credits
 
 - WorkPlot: [gievano](https://github.com/gievano), [Adnan120Hz](https://github.com/adnan120hz)
 - Contributions and testing: [Adnan120Hz](https://github.com/adnan120hz), [gievano](https://github.com/gievano)
 - Sandbox escape: [forcequitOS/bad_query](https://github.com/forcequitOS/bad_query)
-- Inspiration and reference implementations: Placard and GestaltEdit
+- Respring method: [neospring](https://github.com/rooootdev/neospring) by rooootdev, WebKit variant by @neonmodder123, Swift port by @skadz108
+- Inspiration and reference implementations: Placard, GestaltEdit, FilzaSlop, 3105
 
 This project incorporates GPLv3-licensed `bad_query` source code.
