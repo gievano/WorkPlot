@@ -323,6 +323,8 @@
 "tweak.airegion.detail" = "Spoofs the US region for Apple Intelligence and compatible device profiles.";
 "tweak.dynamicisland.title" = "Dynamic Island";
 "tweak.dynamicisland.detail" = "Enables the Dynamic Island capability.";
+"tweak.dynamicislandoff.title" = "Disable Dynamic Island";
+"tweak.dynamicislandoff.detail" = "Turns the Dynamic Island capability off on devices that ship with it (iPhone 14 Pro or newer). Respring required.";
 "tweak.aod.title" = "Always-On Display";
 "tweak.aod.detail" = "May increase burn-in risk on unsupported devices.";
 "tweak.aodvibrancy.title" = "AOD Vibrancy";

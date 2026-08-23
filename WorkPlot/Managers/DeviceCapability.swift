@@ -47,6 +47,11 @@ enum DeviceCapability {
             // iPhone12,* is iPhone 11, iPhone13,* is iPhone 12.
             guard let family = iphoneFamily else { return false }
             return family == 12 || family == 13
+        case .iphone14ProOrLater:
+            // Dynamic Island ships from the iPhone 14 Pro series
+            // (iPhone15,*) onward; notch devices (family <= 14) excluded.
+            guard let family = iphoneFamily else { return false }
+            return family >= 15
         case nil:
             return true
         }
