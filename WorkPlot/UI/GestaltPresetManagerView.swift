@@ -123,6 +123,8 @@ struct GestaltPresetManagerView: View {
                 if enabled {
                     if id == .enableLiquidGlassLowPerformance { selectedTweaks.remove(.disableLiquidGlassLowPerformance) }
                     if id == .disableLiquidGlassLowPerformance { selectedTweaks.remove(.enableLiquidGlassLowPerformance) }
+                    if id == .supportsDynamicIsland { selectedTweaks.remove(.disableDynamicIsland) }
+                    if id == .disableDynamicIsland { selectedTweaks.remove(.supportsDynamicIsland) }
                     selectedTweaks.insert(id)
                 } else {
                     selectedTweaks.remove(id)

@@ -681,3 +681,11 @@
 **The Reasoning:** Keluhan user "tombol kedua restart gak jalan" adalah ekspektasi vs label: app secara teknis tidak bisa reboot device dari sandbox (bad_query read/write only). Solusi jujur = namakan aksinya apa adanya, bukan pura-pura eksekusi.
 
 **The Tech Debt:** Color Palette (varian graphics) tetap terkunci deviceGate iphone13OrLater di iPhone 11 - by design; Legacy Palette & Graphics Style sekarang apply sukses dengan notice bila marker CacheData tak dikenali (fix PR #42). User wajib pakai IPA build terbaru untuk merasakan perbaikan tersebut.
+
+## 2026-08-23 (malam) - Fitur Baru: Disable Dynamic Island (iPhone 14 Pro ke Atas)
+
+**The Change:** Tweak baru "Disable Dynamic Island" di tab Gestalt (kategori Display): menulis kunci capability yang sama dengan toggle enable (YlEtTtHlNesRBMal1CqRaA) bernilai 0 sehingga SpringBoard memperlakukan device sebagai tanpa island - cutout depan fallback jadi pill polos. Entri katalog baru gated .iphone14ProOrLater (case gate baru: hw.machine family >= 15, yaitu iPhone15,* = 14 Pro s/d seri terbaru; device notch family <= 14 otomatis disembunyikan + caption unsupported). Ditandai EXPERIMENTAL dan wajib respring. Binding toggle kini saling-mengeksklusikan pasangan enable/disable Dynamic Island (pola yang sudah ada untuk Liquid Glass on/off) agar dua nilai bertentangan tidak pernah ter-staged bersamaan - Set iteration membuat hasilnya nondeterministic bila dibiarkan.
+
+**The Reasoning:** Ikut pola pasangan ON/OFF yang sudah terbukti di kodebase (lglowon/lglowoff: kunci sama, entri katalog terpisah) - nol file baru, nol jalur apply baru, semua lewat read-modify-write Gestalt yang sudah ada. Gate berbasis hw.machine asli (bukan CacheExtra terspoof) sesuai desain DeviceCapability.
+
+**The Tech Debt:** Efek visual disable perlu konfirmasi device (14 Pro+) - bila build iOS tertentu mengabaikan nilai 0, opsi lanjutan adalah riset flip flag CacheData arah turun (CacheDataPatcher saat ini hanya flip naik ke 3); rollback tetap aman via Revert to stock.
