@@ -593,3 +593,11 @@
 **The Reasoning:** Laporan device membuktikan file com.apple.iokit.IOMobileGraphicsFamily.plist tidak ada di lokasi manapun yang reachable - itu file override opsional yang hanya ada bila dibuat. Satu-satunya vektor hidup adalah MobileGestalt; dashboard harus memakainya langsung daripada menjalankan sweep yang pasti gagal.
 
 **The Tech Debt:** Efek nyata MainScreenCanvasSizes di iOS 27 beta belum terkonfirmasi device (menunggu tes user). AppContainerScanner/cache cleaner kemungkinan besar juga kena bug path absolut yang sama - AUDIT DAN FIX DI BATCH BERIKUTNYA.
+
+## 2026-08-23 (sore) - PR #35: File Browser Dinamis ala Filza
+
+**The Change:** Shortcut statis diganti sistem reachability dinamis: 11 kandidat lokasi (SystemGroup, Data/System, Application, InternalDaemon, PluginKit, AppGroup + legacy Preferences/jb) diprobe sekali via bad_query_list; hanya yang lolos tampil di UI, hasilnya di-cache per instalasi (UserDefaults). Kalau probe gagal semua, fallback ke dua pohon container terdokumentasi agar layar tidak kosong. Probing jalan di background queue dengan ProgressView "fp.scanning".
+
+**The Reasoning:** Laporan device: 4 dari 5 shortcut lama (Preferences/varprefs/jb/jailbreak) ditolak policy sehingga setiap tap menghasilkan error stage=query. Filza menampilkan hanya mount yang accessible - pola sama diterapkan di sini supaya tidak ada tombol yang pasti gagal.
+
+**The Tech Debt:** Reachability di-cache tanpa TTL; kalau Apple membuka pohon baru di beta berikutnya, user perlu reinstall/clear data untuk re-probe (atau kita tambah tombol re-scan nanti).
