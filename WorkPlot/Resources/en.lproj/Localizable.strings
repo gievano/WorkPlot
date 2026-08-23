@@ -259,8 +259,7 @@
 // Restart escalation
 "restart.options.title" = "How do you want to apply the changes?";
 "restart.options.message" = "Respring is enough for light tweaks. Model spoofing, Siri AI mode, and Color Palette need a deeper restart.";
-"restart.action.userspace" = "Restart Userspace (Recommended)";
-"restart.action.full" = "Full Restart";
+"restart.action.guide" = "Restart Steps";
 "restart.limit.title" = "App Limitation";
 "restart.limit.message" = "The app can only write files through bad_query - it cannot run launchctl or any other process from the sandbox, so userspace/full restart must be done manually with the steps below.";
 "restart.guide.userspace.title" = "Userspace Restart Guide";

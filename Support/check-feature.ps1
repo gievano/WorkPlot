@@ -60,7 +60,8 @@ Require (([regex]::Matches($siriView, 'manager\.saveGestaltOrThrow\(plist\)')).C
 Require ($siriView -notmatch 'manager\.saveGestalt\(plist\)') "Siri AI apply must not swallow save errors"
 $restart = Read-ProjectFile "WorkPlot\Managers\RestartOptions.swift"
 Require ($restart -match '\.alert\(') "Heavy restart flow must use a modal alert"
-Require ($restart -match 'Button\(L10n\.shared\.tr\(action\.labelKey\)\)') "Restart actions must be localized"
+Require ($restart -match 'Button\(L10n\.shared\.tr\("siriai\.restart\.respring"\)\)') "Restart flow must offer the working respring action"
+Require ($restart -match 'Button\(L10n\.shared\.tr\("restart\.action\.guide"\)\)') "Restart flow must surface the honest manual restart guide"
 
 $access = Read-ProjectFile "WorkPlot\Exploit\GestaltAccess.m"
 Require ($access -match 'static BOOL GestaltRestoreOriginal') "Gestalt write failures must share a verified rollback helper"
