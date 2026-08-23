@@ -183,13 +183,23 @@ struct RDARFix {
     // MARK: - Gestalt-level canvas fix
 
     /// MGKeys: "ybGkijAwLTwevankfVzsDQ" = MainScreenCanvasSizes (iOS 10+).
-    /// Canvas dimensions are ALSO served through MobileGestalt, which we can
-    /// write via the proven gestaltcache/CMG path - no graphics-plist
-    /// filesystem access required. Preserves an existing value's shape when
-    /// present; otherwise writes a little-endian UInt32 width+height blob.
-    /// ponytail: 8-byte LE pair matches what community tooling writes;
-    /// adjust if a device trace shows a richer struct.
+    /// Documented wire format (gestalt_query docs): CFDataRef holding an
+    /// ARRAY OF CGSizes - each entry is 16 bytes, two little-endian Doubles
+    /// (width, height); entryCount = length / sizeof(CGSize).
+    /// Canvas dimensions are served through MobileGestalt, which we can write
+    /// via the proven gestaltcache/CMG path - no graphics-plist filesystem
+    /// access required. Preserves an existing value's shape when present;
+    /// otherwise writes a single native-size entry.
     static let mainScreenCanvasSizesKey = "ybGkijAwLTwevankfVzsDQ"
+
+    private static func canvasSizeData(width: Double, height: Double) -> Data {
+        var w = width.bitPattern.littleEndian
+        var h = height.bitPattern.littleEndian
+        var data = Data(capacity: 16)
+        withUnsafeBytes(of: &w) { data.append(contentsOf: $0) }
+        withUnsafeBytes(of: &h) { data.append(contentsOf: $0) }
+        return data
+    }
 
     static func applyCanvasSizesGestalt(to plist: inout [String: Any],
                                         canvasWidth: Int,
@@ -197,31 +207,22 @@ struct RDARFix {
         guard canvasWidth > 0, canvasHeight > 0,
               canvasWidth <= Int(UInt32.max), canvasHeight <= Int(UInt32.max) else { return }
         var cacheExtra = plist["CacheExtra"] as? [String: Any] ?? [:]
-
-        let pair: [UInt8] = [
-            UInt8(truncatingIfNeeded: canvasWidth), UInt8(truncatingIfNeeded: canvasWidth >> 8),
-            UInt8(truncatingIfNeeded: canvasWidth >> 16), UInt8(truncatingIfNeeded: canvasWidth >> 24),
-            UInt8(truncatingIfNeeded: canvasHeight), UInt8(truncatingIfNeeded: canvasHeight >> 8),
-            UInt8(truncatingIfNeeded: canvasHeight >> 16), UInt8(truncatingIfNeeded: canvasHeight >> 24),
-        ]
+        let width = Double(canvasWidth)
+        let height = Double(canvasHeight)
 
         switch cacheExtra[mainScreenCanvasSizesKey] {
-        case let existing as Data where existing.count >= 8:
+        case let existing as Data where existing.count >= 16 && existing.count % 16 == 0:
+            // Keep the entry count; retarget the first canvas to native.
             var patched = existing
-            patched.replaceSubrange(0..<8, with: Data(pair))
+            patched.replaceSubrange(0..<16, with: canvasSizeData(width: width, height: height))
             cacheExtra[mainScreenCanvasSizesKey] = patched
-        case let existing as [Int] where existing.count >= 2:
+        case let existing as [Double] where existing.count >= 2 && existing.count % 2 == 0:
             var patched = existing
-            patched[0] = canvasWidth
-            patched[1] = canvasHeight
-            cacheExtra[mainScreenCanvasSizesKey] = patched
-        case let existing as [UInt32] where existing.count >= 2:
-            var patched = existing
-            patched[0] = UInt32(canvasWidth)
-            patched[1] = UInt32(canvasHeight)
+            patched[0] = width
+            patched[1] = height
             cacheExtra[mainScreenCanvasSizesKey] = patched
         default:
-            cacheExtra[mainScreenCanvasSizesKey] = Data(pair)
+            cacheExtra[mainScreenCanvasSizesKey] = canvasSizeData(width: width, height: height)
         }
         plist["CacheExtra"] = cacheExtra
     }
