@@ -36,34 +36,24 @@ enum LiquidGlassMode: String, CaseIterable, Identifiable {
     }
 }
 
-struct LiquidGlassState {
-    var cacheExtraValue: Int?
-    var sliderDisabled: Bool
-}
-
 struct LiquidGlassError: LocalizedError {
     let message: String
     var errorDescription: String? { message }
 }
 
 struct LiquidGlassController {
+    /// IsSolariumLowPerformanceDevice (PoomSmart/MGKeys deobfuscation):
+    /// tells the system this device gets the non-refractive fallback look.
     static let cacheExtraKey = "SAGvsp6O6kAQ4fEfDJpC4Q"
 
-    static func currentState() -> LiquidGlassState? {
-        guard let plist = ExploitManager.shared.readGestalt() else { return nil }
-        return state(from: plist)
+    static func currentMode() -> LiquidGlassMode {
+        guard let plist = ExploitManager.shared.readGestalt(),
+              let cacheExtra = plist["CacheExtra"] as? [String: Any],
+              let value = cacheExtra[cacheExtraKey] as? Int else { return .systemDefault }
+        return LiquidGlassMode.allCases.first { $0.cacheExtraValue == value } ?? .systemDefault
     }
 
-    static func state(from plist: [String: Any]) -> LiquidGlassState {
-        let cacheExtra = plist["CacheExtra"] as? [String: Any] ?? [:]
-        let featureFlags = plist["FeatureFlags"] as? [String: Any] ?? [:]
-        return LiquidGlassState(
-            cacheExtraValue: cacheExtra[cacheExtraKey] as? Int,
-            sliderDisabled: (featureFlags["LiquidGlassSlider"] as? Int) == 0
-        )
-    }
-
-    static func apply(mode: LiquidGlassMode, sliderDisabled: Bool) throws {
+    static func apply(mode: LiquidGlassMode) throws {
         guard var plist = ExploitManager.shared.readGestalt() else {
             throw LiquidGlassError(message: L10n.shared.tr("lg.error.read"))
         }
@@ -76,14 +66,85 @@ struct LiquidGlassController {
         }
         plist["CacheExtra"] = cacheExtra
 
-        var featureFlags = plist["FeatureFlags"] as? [String: Any] ?? [:]
-        featureFlags["LiquidGlassSlider"] = sliderDisabled ? 0 : 1
-        plist["FeatureFlags"] = featureFlags
+        // Cleanup: older builds wrote an invented top-level flag that no
+        // iOS component reads - remove it instead of compounding the lie.
+        if var featureFlags = plist["FeatureFlags"] as? [String: Any],
+           featureFlags.removeValue(forKey: "LiquidGlassSlider") != nil {
+            plist["FeatureFlags"] = featureFlags
+        }
 
         try ExploitManager.shared.saveGestaltOrThrow(plist)
     }
 
-    static func disableGlobal() throws {
-        try apply(mode: .systemDefault, sliderDisabled: true)
+    /// Real Solarium suppression following Nugget >= 7.2 / EnsWilde: bool
+    /// keys in global preferences, NOT MobileGestalt (the Gestalt side only
+    /// forces the low-performance renderer). Honored on iOS 26.x builds;
+    /// later builds may ignore them - status lines stay honest per path.
+    static func disableGlobal() throws -> [String] {
+        var lines: [String] = []
+
+        guard var plist = ExploitManager.shared.readGestalt() else {
+            throw LiquidGlassError(message: L10n.shared.tr("lg.error.read"))
+        }
+        var cacheExtra = plist["CacheExtra"] as? [String: Any] ?? [:]
+        cacheExtra[cacheExtraKey] = 1
+        plist["CacheExtra"] = cacheExtra
+        try ExploitManager.shared.saveGestaltOrThrow(plist)
+        lines.append("MobileGestalt: IsSolariumLowPerformanceDevice = 1")
+
+        lines += try GlobalPreferences.setSolariumSuppressed(true)
+        return lines
+    }
+}
+
+/// Probe-and-patch every reachable copy of the global preference domain,
+/// same pattern as SpringBoardPlist. InodeWriter snapshots original bytes
+/// and rolls back failed/partial writes.
+private enum GlobalPreferences {
+    static let paths = [
+        "/var/Managed Preferences/mobile/.GlobalPreferences.plist",
+        "/var/mobile/Library/Preferences/.GlobalPreferences.plist",
+        "/private/var/mobile/Library/Preferences/.GlobalPreferences.plist",
+    ]
+
+    static let solariumKeys: [String: Bool] = [
+        "com.apple.SwiftUI.DisableSolarium": true,
+        "SolariumForceFallback": true,
+    ]
+
+    static func setSolariumSuppressed(_ suppressed: Bool) throws -> [String] {
+        var lines: [String] = []
+        var reachedAny = false
+        for path in paths {
+            guard let data = FileManager.default.contents(atPath: path) else { continue }
+            var format = PropertyListSerialization.PropertyListFormat.binary
+            guard var plist = (try? PropertyListSerialization.propertyList(from: data, options: [], format: &format)) as? [String: Any] else {
+                continue
+            }
+            reachedAny = true
+            var changed = false
+            for (key, value) in solariumKeys {
+                if suppressed {
+                    if (plist[key] as? Bool) != value {
+                        plist[key] = value
+                        changed = true
+                    }
+                } else if plist[key] != nil {
+                    plist.removeValue(forKey: key)
+                    changed = true
+                }
+            }
+            if changed {
+                let out = try PropertyListSerialization.data(fromPropertyList: plist, format: format, options: 0)
+                try InodeWriter.writeVerifiedInPlace(out, to: path)
+                lines.append("\(path): \(suppressed ? "solarium suppressed" : "solarium keys restored")")
+            } else {
+                lines.append("\(path): already \(suppressed ? "suppressed" : "clean")")
+            }
+        }
+        guard reachedAny else {
+            throw LiquidGlassError(message: L10n.shared.tr("lg.error.globalNotReachable"))
+        }
+        return lines
     }
 }

@@ -128,17 +128,12 @@ struct GestaltPresetManagerView: View {
                 if enabled {
                     if id == .enableLiquidGlassLowPerformance { selectedTweaks.remove(.disableLiquidGlassLowPerformance) }
                     if id == .disableLiquidGlassLowPerformance { selectedTweaks.remove(.enableLiquidGlassLowPerformance) }
-                    if id == .supportsDynamicIsland {
-                        selectedTweaks.remove(.disableDynamicIsland)
-                        selectedTweaks.remove(.removeIslandPill)
-                        selectedTweaks.remove(.hideDynamicIslandOn)
-                    }
-                    if id == .disableDynamicIsland || id == .removeIslandPill {
-                        selectedTweaks.remove(.supportsDynamicIsland)
-                    }
+                    // Island enable vs full suppression are opposites;
+                    // the hide/show pair excludes itself.
+                    if id == .supportsDynamicIsland { selectedTweaks.remove(.hideDynamicIslandOn) }
                     if id == .hideDynamicIslandOn {
-                        selectedTweaks.remove(.hideDynamicIslandOff)
                         selectedTweaks.remove(.supportsDynamicIsland)
+                        selectedTweaks.remove(.hideDynamicIslandOff)
                     }
                     if id == .hideDynamicIslandOff {
                         selectedTweaks.remove(.hideDynamicIslandOn)
@@ -180,9 +175,6 @@ struct GestaltPresetManagerView: View {
             }
             if let subtype = dynamicIslandSubtype {
                 try GestaltArtwork.setDynamicIslandSubtype(subtype, in: &plist)
-            }
-            if selectedTweaks.contains(.removeIslandPill) {
-                GestaltArtwork.removeDynamicIslandSubtype(in: &plist)
             }
             if selectedTweaks.contains(.hideDynamicIslandOn) {
                 springBoardLines += try SpringBoardPlist.setSuppressed(true)

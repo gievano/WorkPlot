@@ -115,7 +115,7 @@
 "backup.importMenu" = "Import Backup...";
 "backup.restoreMsg" = "Your current state is backed up first, so a restore can be undone.";
 "lg.renderMode" = "Render Mode";
-"lg.globalFooter" = "Disables the Liquid Glass slider globally across the system.";
+"lg.globalFooter" = "Writes the community Solarium keys into global preferences (Nugget >= 7.2 method).";
 // Danger zone warnings
 "danger.header" = "Danger Zone";
 "danger.spoof.title" = "Device Spoofing Risk";
@@ -153,17 +153,14 @@
 "lg.error.save" = "Failed to save MobileGestalt.";
 "error.backup" = "Failed to create backup.";
 "lg.applied" = "Liquid Glass applied.";
-"lg.disabled" = "Liquid Glass disabled.";
+"lg.disabled" = "Solarium suppression keys written. The visual effect depends on your iOS build - full reboot required.";
 "lg.disableFailed" = "Failed to disable Liquid Glass.";
-"lg.state.loadFail" = "Unable to read the current Liquid Glass state.";
 "lg.mode.default" = "System Default";
 "lg.mode.off" = "Low Performance Off";
 "lg.mode.on" = "Low Performance On";
 "lg.desc.default" = "Removes the override and follows the device's default value.";
 "lg.desc.off" = "Liquid Glass renders fully (needs a strong GPU, uses more battery).";
 "lg.desc.on" = "The glass effect is simplified to save performance.";
-"lg.section.global" = "Global";
-"lg.toggle.disable" = "Disable Liquid Glass";
 
 
 // Device gating
@@ -324,10 +321,6 @@
 "tweak.airegion.detail" = "Spoofs the US region for Apple Intelligence and compatible device profiles.";
 "tweak.dynamicisland.title" = "Dynamic Island";
 "tweak.dynamicisland.detail" = "Enables the Dynamic Island capability.";
-"tweak.removepill.title" = "Remove Island Pill";
-"tweak.removepill.detail" = "Turns the fake Dynamic Island off on notch devices and clears any picked subtype. Use this if a black pill is stuck at the top of the screen. Not yet verified on every iOS build.";
-"tweak.dynamicislandoff.title" = "Disable Dynamic Island";
-"tweak.dynamicislandoff.detail" = "Turns the Dynamic Island capability off on devices that ship with it (iPhone 14 Pro or newer). Respring required. The disable direction is not yet independently verified.";
 "tweak.aod.title" = "Always-On Display";
 "tweak.aod.detail" = "May increase burn-in risk on unsupported devices.";
 "tweak.aodvibrancy.title" = "AOD Vibrancy";
@@ -472,3 +465,4 @@
 "tweak.showisland.title" = "Restore Dynamic Island";
 "tweak.showisland.detail" = "Removes the SpringBoard suppression flag so the island renders normally again.";
 "sb.error.notReachable" = "com.apple.springboard.plist was not reachable through the sandbox.";
+"lg.error.globalNotReachable" = "No copy of .GlobalPreferences.plist was reachable through the sandbox.";
