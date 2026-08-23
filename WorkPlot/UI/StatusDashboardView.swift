@@ -30,7 +30,7 @@ struct StatusDashboardView: View {
                             RDARFix.applyCanvasSizesGestalt(to: &plist)
                             try manager.saveGestaltOrThrow(plist)
                             manager.statusText = "\(l10n.tr("status.rdarfix")) OK. \(l10n.tr("restart.rec.title"))"
-                            SessionLogger.log("rdar canvas gestalt applied from dashboard")
+                            SessionLogger.shared.log("rdar canvas gestalt applied from dashboard")
                             showRestartAlert = true
                         } catch {
                             manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
