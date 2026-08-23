@@ -195,7 +195,7 @@ struct RDARFix {
                                         canvasWidth: Int,
                                         canvasHeight: Int) {
         guard canvasWidth > 0, canvasHeight > 0,
-              canvasWidth <= UInt32.max.intValue, canvasHeight <= UInt32.max.intValue else { return }
+              canvasWidth <= Int(UInt32.max), canvasHeight <= Int(UInt32.max) else { return }
         var cacheExtra = plist["CacheExtra"] as? [String: Any] ?? [:]
 
         let pair: [UInt8] = [
