@@ -43,14 +43,28 @@ struct PatchPackageManagerView: View {
         NavigationView {
             Group {
                 if packages.isEmpty {
-                    Label(l10n.tr("pp.empty"), systemImage: "shippingbox")
-                        .font(.system(size: 15))
-                        .foregroundColor(.secondary)
+                    List {
+                        Section {
+                            Label(l10n.tr("pp.empty"), systemImage: "shippingbox")
+                                .font(.system(size: 15))
+                                .foregroundColor(.secondary)
+                        }
+                        formatHelpSection
+                        Section {
+                            Button {
+                                createSample()
+                            } label: {
+                                Label(l10n.tr("pp.createTemplate"), systemImage: "wand.and.stars")
+                                    .font(.system(size: 15))
+                            }
+                        }
+                    }
                 } else {
                     List {
                         ForEach(packages, id: \.self) { name in
                             packageSection(name)
                         }
+                        formatHelpSection
                     }
                 }
             }
@@ -167,6 +181,24 @@ struct PatchPackageManagerView: View {
     private func sectionHeader(_ name: String) -> String {
         let rules = PatchPackageStore.loadInfo(name: name)?.rules.count ?? 0
         return "\(name) — \(String(format: l10n.tr("pp.rulesHeader"), rules))"
+    }
+
+    private var formatHelpSection: some View {
+        Section(header: Text(l10n.tr("pp.help.header"))) {
+            Text(l10n.tr("pp.help.body"))
+                .font(.system(size: 12, design: .monospaced))
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private func createSample() {
+        do {
+            _ = try PatchPackageStore.createSamplePackage()
+            refresh()
+            showError(title: l10n.tr("pp.templateOk"), message: nil)
+        } catch {
+            showError(title: l10n.tr("common.error"), message: error.localizedDescription)
+        }
     }
 
     private func refresh() {

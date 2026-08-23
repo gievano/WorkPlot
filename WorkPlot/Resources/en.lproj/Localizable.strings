@@ -448,3 +448,9 @@
 "upd.newVersion" = "Version %@ is available";
 "upd.openRelease" = "Open Release Page";
 "upd.fail" = "Update check failed: %@";
+
+// Patch package format help + sample
+"pp.help.header" = "Package Format";
+"pp.help.body" = "A package is a FOLDER containing manifest.json (name, optional passwordHash, rules[{bundleID,path}]) plus replacements/<bundleID><path> files. Apply copies each replacement over the app container file; Roll Back restores the stock copy.";
+"pp.createTemplate" = "Create Sample Package";
+"pp.templateOk" = "Sample package created. Edit it via the Files app, then re-import it.";

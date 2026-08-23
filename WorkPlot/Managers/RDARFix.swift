@@ -208,9 +208,45 @@ struct RDARFix {
                 failures.append("\(candidate.file): not present on this build")
             }
         }
+
+        // iOS 27 containerizes system daemons under /var/containers/Data/System
+        // (newly reachable per forcequitOS/bad_query). Probe each container's
+        // Preferences copy of the graphics plist.
+        // ponytail: linear probe capped at 64 containers to bound worst case.
+        let systemContainers = (try? listDirectory("/var/containers/Data/System")) ?? []
+        for name in systemContainers.prefix(64) where !name.isEmpty {
+            let leasePath = "/var/containers/Data/System/\(name)/Library/Preferences/com.apple.iokit.IOMobileGraphicsFamily.plist"
+            let filePath = "/private\(leasePath)"
+            do {
+                return try BadQueryLeaseScope.withLease(forPath: leasePath) {
+                    guard FileManager.default.contents(atPath: filePath) != nil else {
+                        throw CandidateUnavailable()
+                    }
+                    return try body(filePath)
+                }
+            } catch let error as BadQueryLeaseError {
+                failures.append("\(filePath): \(error.localizedDescription)")
+            } catch is CandidateUnavailable {
+                failures.append("\(filePath): not present on this build")
+            }
+        }
+
         throw RDARFixError(message:
             "No canvas plist location is reachable on this build. Tried:\n" +
             failures.joined(separator: "\n"))
+    }
+
+    /// Directory listing through bad_query_list; returns [] when unreachable.
+    private static func listDirectory(_ path: String) throws -> [String] {
+        var cPath = path.utf8CString
+        let raw = cPath.withUnsafeMutableBufferPointer { buffer in
+            bad_query_list(buffer.baseAddress, 2_000_000)
+        }
+        guard let raw else { return [] }
+        defer { free(raw) }
+        return String(cString: raw)
+            .split(whereSeparator: \.isNewline)
+            .map(String.init)
     }
 
     /// Canvas size is detected from the device's native screen bounds at
