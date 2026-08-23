@@ -145,6 +145,9 @@ struct GestaltPresetManagerView: View {
             }
         }
 
+        // Declared at function scope: the save section below appends the
+        // skip notice to the success status.
+        var cacheFlagSkippedError: Error?
         do {
             if selectedTweaks.contains(.aiRegionUS) {
                 try AIRegionApplier.apply(to: &plist)
@@ -172,7 +175,6 @@ struct GestaltPresetManagerView: View {
             // mutations above. A blob whose layout does not match must not
             // abort the whole apply: the CacheExtra keys written above stay
             // valid, so degrade with an honest notice instead of failing.
-            var cacheFlagSkippedError: Error?
             if selectedTweaks.contains(where: {
                 GestaltTweakCatalog.definition(for: $0)?.requiresCacheDataFlag == true
             }) {
