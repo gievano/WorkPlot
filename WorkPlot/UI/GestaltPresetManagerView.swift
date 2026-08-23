@@ -169,11 +169,19 @@ struct GestaltPresetManagerView: View {
             // Dual-cache tweaks share one idempotent capability-flag flip
             // inside CacheData; applying it here keeps every selected toggle
             // in the SAME read-modify-write transaction as the CacheExtra
-            // mutations above.
+            // mutations above. A blob whose layout does not match must not
+            // abort the whole apply: the CacheExtra keys written above stay
+            // valid, so degrade with an honest notice instead of failing.
+            var cacheFlagSkippedError: Error?
             if selectedTweaks.contains(where: {
                 GestaltTweakCatalog.definition(for: $0)?.requiresCacheDataFlag == true
             }) {
-                try CacheDataPatcher.applyCapabilityFlag(to: &plist)
+                do {
+                    try CacheDataPatcher.applyCapabilityFlag(to: &plist)
+                } catch {
+                    cacheFlagSkippedError = error
+                    SessionLogger.shared.log("cache capability flag skipped: \(error.localizedDescription)")
+                }
             }
         } catch {
             manager.statusText = String(format: L10n.shared.tr("common.failPrefix"), error.localizedDescription)
@@ -189,6 +197,12 @@ struct GestaltPresetManagerView: View {
             changesModelName = false
             modelName = ""
             manager.statusText = "\(L10n.shared.tr("gestalt.status.applied")) \(L10n.shared.tr("restart.rec.title"))"
+            if let cacheFlagSkippedError {
+                manager.statusText += "\n" + String(
+                    format: L10n.shared.tr("gestalt.cacheFlag.skipped"),
+                    cacheFlagSkippedError.localizedDescription
+                )
+            }
             showRestartAlert = true
         } catch {
             manager.statusText = String(

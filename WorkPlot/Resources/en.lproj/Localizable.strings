@@ -5,7 +5,6 @@
 "tab.fields" = "Fields";
 "tab.siriai" = "Siri AI";
 "tab.liquidglass" = "Liquid Glass";
-"tab.posterboard" = "PosterBoard";
 "tab.backups" = "Backups";
 
 "settings.title" = "Settings";
@@ -44,7 +43,6 @@
 "siriai.restart.respring" = "Respring";
 "siriai.restart.later" = "Later";
 
-"posterboard.import" = "Import .tendies Wallpaper";
 "fields.openEditor" = "View Field Editor";
 "status.rdarfix" = "Fix RDAR";
 "status.lg.disable" = "Disable Liquid Glass";
@@ -64,7 +62,7 @@
 "icon.collage" = "WP Collage";
 "common.done" = "Done";
 
-// Icon grid, credits detail, posterboard list, background slider
+// Icon grid, credits detail, background slider
 "icon.dark" = "Dark";
 "icon.neon" = "Neon";
 "icon.minimal" = "Minimal";
@@ -78,12 +76,7 @@
 "credits.thanks" = "Special Thanks";
 "credits.exploit.detail" = "Exploit - bad_query by forcequitOS";
 "credits.sandbox.detail" = "iOS 27 Sandbox Escape (MCM bug class)";
-"pb.installed" = "Installed Wallpapers";
-"pb.empty" = "No wallpapers installed yet.";
 "pb.apply" = "Apply";
-"pb.remove" = "Remove";
-"pb.remove.confirm" = "Remove this wallpaper?";
-"pb.wrongext" = "Only .tendies files are supported.";
 "bg.opacity" = "Background Opacity";
 "bg.opacity.hint" = "Transparency of your custom background";
 
@@ -123,7 +116,6 @@
 "backup.restoreMsg" = "Your current state is backed up first, so a restore can be undone.";
 "lg.renderMode" = "Render Mode";
 "lg.globalFooter" = "Disables the Liquid Glass slider globally across the system.";
-"pb.labFooter" = "Import .tendies packages (PocketPoster format), validate the descriptor structure, then install to PosterBoard. Respring after installing.";
 // Danger zone warnings
 "danger.header" = "Danger Zone";
 "danger.spoof.title" = "Device Spoofing Risk";
@@ -135,7 +127,6 @@
 // Compatibility check
 "compat.title" = "Unsupported iOS Version";
 "compat.message" = "Detected build %@ is outside the supported range (iOS 27.0 Developer Beta 1-4). Features may fail or behave unexpectedly.";
-"pb.loading" = "Loading installed wallpapers...";
 "common.default" = "Default";
 "backup.restoreConfirm" = "Restore %@?";
 "backup.restoreOk" = "Restored. Respringing automatically...";
@@ -173,10 +164,6 @@
 "lg.desc.on" = "The glass effect is simplified to save performance.";
 "lg.section.global" = "Global";
 "lg.toggle.disable" = "Disable Liquid Glass";
-// Bundled tendies wallpapers
-"pb.builtin.header" = "Ready-to-Use Wallpapers";
-"pb.builtin.install" = "Install";
-"pb.builtin.none" = "No bundled wallpapers.";
 
 
 // Device gating
@@ -320,12 +307,6 @@
 "ipadosp.error.missing" = "MobileGestalt has no CacheData, so iPadOS mode cannot be enabled.";
 "ipadosp.error.notfound" = "The Nugget iPadOS marker was not found in CacheData.";
 "ipadosp.error.tooshort" = "CacheData is too short to patch safely.";
-"pb.badqueryUnavailable" = "bad_query is unavailable; PosterBoard cannot be accessed on this device.";
-"pb.labHeader" = "Wallpaper Lab";
-"pb.phase.finding" = "Finding the PosterBoard container...";
-"pb.phase.installed" = "Wallpaper installed. Respringing in 1 second...";
-"pb.phase.writing" = "Writing wallpaper...";
-"pb.removedOk" = "Removed wallpaper %@.";
 "restart.required.title" = "Restart Your iPhone";
 "spoof.error.noCacheExtra" = "MobileGestalt has no CacheExtra; spoofing cannot be applied.";
 "status.badQueryActive" = "Success: bad_query is active and MobileGestalt is accessible.";
@@ -395,14 +376,6 @@
 // Siri AI restart expectations
 "siri.rebootHint" = "Restart your iPhone after the respring to finish Siri AI setup.";
 
-// Wallpaper install journal (F3)
-"wpj.title" = "Install Journal";
-"wpj.reset" = "Remove All Wallpapers Added by WorkPlot";
-"wpj.resetConfirm" = "Remove %d wallpaper descriptor(s) added by WorkPlot from this installation?";
-"wpj.empty" = "No wallpapers added by WorkPlot yet.";
-"wpj.removedOk" = "Removed %d wallpaper(s).";
-"wpj.countLabel" = "%d added by WorkPlot";
-
 // Patch packages (F4)
 "pp.title" = "Patch Packages";
 "pp.import" = "Import Package Folder";
@@ -418,18 +391,6 @@
 "pp.empty" = "No patch packages imported yet.";
 "pp.rulesHeader" = "%d rule(s)";
 "pp.ruleFormat" = "%@ : %@";
-
-// Wallpaper online catalog (F3b)
-"cat.title" = "Wallpaper Catalog";
-"cat.custom" = "Community";
-"cat.apple" = "Apple";
-"cat.apply" = "Install";
-"cat.installing" = "Installing %@...";
-"cat.appliedOk" = "%@ installed.";
-"cat.downloadFail" = "Download failed: %@";
-"cat.catalogFail" = "Could not load the catalog: %@";
-"cat.byAuthor" = "by %@";
-"cat.openCatalog" = "Browse Online Catalog";
 
 // App containers + cache cleaner (F5a/F5c)
 "ac.title" = "App Containers";
@@ -487,6 +448,7 @@
 "rdar.custom.plistApplied" = "Graphics plist patched";
 "rdar.custom.plistAlready" = "Graphics plist already carries this canvas";
 "rdar.verify.fail" = "write not visible on disk - blocked by system";
+"gestalt.cacheFlag.skipped" = "Note: CacheData capability flag was not patched (%@). Keys were written, but the feature may not activate.";
 
 // Respring recovery
 "respring.failed" = "Respring failed - the crash method did not take effect on this build. Restart manually instead.";
@@ -499,6 +461,3 @@
 "pp3105.password.placeholder" = "Password";
 "pp3105.password.message" = "%@ is password protected. Enter its password to apply.";
 "pp.scanFailed" = "Failed to enumerate containers at";
-
-// iOS 27 wallpaper guidance (3105-verified behavior)
-"pb.guide" = "Installed. Open the Lock Screen wallpaper picker - use a Collections wallpaper first on iOS 27. If it does not appear, swipe PosterBoard away in the app switcher, then check again.";

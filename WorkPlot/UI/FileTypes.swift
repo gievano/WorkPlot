@@ -11,10 +11,6 @@
 import UniformTypeIdentifiers
 
 extension UTType {
-    static let tendies = UTType("com.workplot.tendies")
-        ?? UTType(filenameExtension: "tendies")
-        ?? .data
-
     static let patch3105 = UTType("com.workplot.patch3105")
         ?? UTType(filenameExtension: "3105")
         ?? .data

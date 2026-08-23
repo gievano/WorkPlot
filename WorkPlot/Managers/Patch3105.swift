@@ -268,7 +268,7 @@ enum Patch3105 {
         defer { try? FileManager.default.removeItem(at: workspace) }
         try FileManager.default.createDirectory(at: workspace, withIntermediateDirectories: true)
 
-        let files = try TendiesPackage.writeArchive(payload, to: workspace)
+        let files = try ZipArchive.writeArchive(payload, to: workspace)
         guard !files.isEmpty else { throw Patch3105Error.noRules }
         SessionLogger.shared.log(".3105 payload decoded as zip tree (\(files.count) files)")
 

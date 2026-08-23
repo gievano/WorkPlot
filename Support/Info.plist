@@ -37,23 +37,6 @@
 	<array>
 		<dict>
 			<key>UTTypeIdentifier</key>
-			<string>com.workplot.tendies</string>
-			<key>UTTypeDescription</key>
-			<string>Tendies Wallpaper Package</string>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.data</string>
-			</array>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>tendies</string>
-				</array>
-			</dict>
-		</dict>
-		<dict>
-			<key>UTTypeIdentifier</key>
 			<string>com.workplot.patch3105</string>
 			<key>UTTypeDescription</key>
 			<string>WorkPlot Patch File</string>

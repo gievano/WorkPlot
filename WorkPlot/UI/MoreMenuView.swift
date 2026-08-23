@@ -11,9 +11,6 @@ struct MoreMenuView: View {
                 NavigationLink { LiquidGlassView() } label: {
                     Label(l10n.tr("tab.liquidglass"), systemImage: "drop.fill")
                 }
-                NavigationLink { PosterBoardLabView() } label: {
-                    Label(l10n.tr("tab.posterboard"), systemImage: "photo.stack.fill")
-                }
                 NavigationLink { BackupRestoreManagerView() } label: {
                     Label(l10n.tr("tab.backups"), systemImage: "arrow.counterclockwise.circle.fill")
                 }
