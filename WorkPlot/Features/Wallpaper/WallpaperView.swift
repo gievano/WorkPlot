@@ -31,8 +31,7 @@ struct WallpaperView: View {
     @State private var carplayName = "Custom"
 
     private var tendieType: UTType {
-        UTType("com.leminlimez.tendies")
-            ?? UTType(filenameExtension: "tendies", conformingTo: .data)!
+        .tendies
     }
 
     var body: some View {
