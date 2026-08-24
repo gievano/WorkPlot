@@ -69,27 +69,30 @@ enum DashboardTab: String, CaseIterable {
 struct MainDashboardView: View {
     @ObservedObject private var l10n = L10n.shared
     @AppStorage("appearanceMode") private var appearanceMode = AppearanceMode.system.rawValue
-    @State private var selected: DashboardTab = .home
     @State private var showCompatWarning = false
     @State private var detectedBuild = ""
 
+    private let columns = [
+        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16)
+    ]
+
     var body: some View {
-        VStack(spacing: 0) {
-            selected.content
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-            Divider()
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 6) {
+        NavigationStack {
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 16) {
                     ForEach(DashboardTab.allCases, id: \.self) { tab in
-                        tabPill(tab)
+                        NavigationLink {
+                            tab.content
+                        } label: {
+                            dashboardTile(tab)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
+                .padding(16)
             }
-            .background(Color(uiColor: .secondarySystemGroupedBackground))
+            .navigationTitle("WorkPlot")
         }
         .preferredColorScheme(AppearanceMode(rawValue: appearanceMode)?.colorScheme)
         .onAppear(perform: checkCompatibility)
@@ -100,29 +103,19 @@ struct MainDashboardView: View {
         }
     }
 
-    private func tabPill(_ tab: DashboardTab) -> some View {
-        Button {
-            selected = tab
-        } label: {
-            VStack(spacing: 3) {
-                Image(systemName: tab.icon)
-                    .font(.system(size: 18))
-                Text(tab.title)
-                    .font(.system(size: 10, weight: .medium))
-                    .lineLimit(1)
-            }
-            .foregroundStyle(selected == tab ? Theme.accent : .secondary)
-            .frame(minWidth: 54)
-            .padding(.vertical, 6)
-            .padding(.horizontal, 8)
-            .background(
-                selected == tab
-                    ? Theme.accent.opacity(0.15)
-                    : Color.clear
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+    private func dashboardTile(_ tab: DashboardTab) -> some View {
+        VStack(spacing: 10) {
+            Image(systemName: tab.icon)
+                .font(.system(size: 30))
+                .foregroundStyle(Theme.accent)
+            Text(tab.title)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(.primary)
+                .lineLimit(1)
         }
-        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, minHeight: 110)
+        .background(Color(uiColor: .secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
     }
 
     private func checkCompatibility() {
