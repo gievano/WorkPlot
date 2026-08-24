@@ -14,6 +14,7 @@ struct SessionLogView: View {
         }
         .navigationTitle(l10n.tr("sessionlog.title"))
         .navigationBarTitleDisplayMode(.inline)
+        .wpGlassContainer()
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button {

@@ -40,6 +40,7 @@ struct WallpaperView: View {
             settingsSection
         }
         .navigationTitle("Wallpaper")
+        .wpGlassContainer()
         .onAppear(perform: loadCowabunga)
         .fileImporter(isPresented: $showImporter, allowedContentTypes: [.data]) { result in
             if case let .success(url) = result {

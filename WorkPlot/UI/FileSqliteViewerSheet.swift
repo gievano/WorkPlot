@@ -43,7 +43,7 @@ struct FileSqliteViewerSheet: View {
             }
             .navigationTitle(entry.name)
             .navigationBarTitleDisplayMode(.inline)
-            .workPlotScrollBackground()
+            .wpGlassContainer()
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(L10n.shared.tr("common.done")) { dismiss() }
@@ -132,7 +132,7 @@ private struct SqliteTableRowsView: View {
         }
         .navigationTitle(table)
         .navigationBarTitleDisplayMode(.inline)
-        .workPlotScrollBackground()
+        .wpGlassContainer()
         .alert(
             String(format: L10n.shared.tr("sqlite.queryFail"), ""),
             isPresented: Binding(

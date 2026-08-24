@@ -88,7 +88,7 @@ struct RestartGuideSheet: View {
                 .padding()
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .workPlotScrollBackground()
+            .wpGlassContainer()
             .navigationTitle(L10n.shared.tr("restart.action.guide"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
