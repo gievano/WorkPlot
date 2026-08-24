@@ -56,7 +56,7 @@ struct StatusDashboardView: View {
                 }
             }
             .navigationTitle("WorkPlot")
-            .workPlotScrollBackground()
+            .wpGlassContainer()
             .scrollDismissesKeyboard(.immediately)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

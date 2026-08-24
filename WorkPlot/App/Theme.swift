@@ -71,6 +71,15 @@ extension View {
             self.buttonStyle(.bordered)
         }
     }
+
+    /// Floating glass card wrapper for List/Form/Group screens: hides the
+    /// default scroll background, insets, and applies liquidGlass.
+    func wpGlassContainer() -> some View {
+        self
+            .scrollContentBackground(.hidden)
+            .padding(Theme.pagePadding)
+            .liquidGlass(cornerRadius: Theme.cardRadius)
+    }
 }
 
 /// Glass container that mirrors Ketamine's GlassGroup but uses the WorkPlot

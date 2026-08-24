@@ -28,9 +28,9 @@ struct GestaltFieldEditorView: View {
                 }
             }
             .navigationTitle(l10n.tr("tab.fields"))
-            .workPlotScrollBackground()
             .scrollDismissesKeyboard(.immediately)
             .searchable(text: $searchText, prompt: l10n.tr("fields.searchPrompt"))
+            .wpGlassContainer()
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {

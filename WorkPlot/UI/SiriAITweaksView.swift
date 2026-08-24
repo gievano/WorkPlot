@@ -52,7 +52,7 @@ struct SiriAITweaksView: View {
                 }
             }
             .navigationTitle(l10n.tr("siriai.title"))
-            .workPlotScrollBackground()
+            .wpGlassContainer()
             .task { eligibilityReachable = EligibilityManager.isReachable() }
             .heavyRestartFlow(isPresented: $showRestartAlert)
             .alert(

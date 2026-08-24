@@ -47,7 +47,7 @@ struct BackupRestoreManagerView: View {
                 }
             }
             .navigationTitle(l10n.tr("tab.backups"))
-            .workPlotScrollBackground()
+            .wpGlassContainer()
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {

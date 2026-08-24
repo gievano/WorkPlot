@@ -48,6 +48,7 @@ struct MoreMenuView: View {
                 }
             }
             .navigationTitle(l10n.tr("tab.more"))
+            .wpGlassContainer()
         }
         .sheet(isPresented: $showIconSwitcher) {
             AppIconSwitcherSheet()
