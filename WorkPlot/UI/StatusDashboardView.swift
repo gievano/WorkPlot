@@ -4,6 +4,7 @@ struct StatusDashboardView: View {
     @ObservedObject private var manager = ExploitManager.shared
     @ObservedObject private var l10n = L10n.shared
     @State private var showRestartAlert = false
+    @State private var isWorking = false
     @State private var customWidth = ""
     @State private var customHeight = ""
 
@@ -26,12 +27,19 @@ struct StatusDashboardView: View {
                     }
                     .disabled(!manager.sandboxGranted)
                     Button(l10n.tr("status.lg.disable")) {
-                        do {
-                            let lines = try LiquidGlassController.disableGlobal()
-                            manager.statusText = L10n.shared.tr("lg.disabled") + "\n" + lines.joined(separator: "\n")
-                            showRestartAlert = true
-                        } catch {
-                            manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
+                        manager.statusText = L10n.shared.tr("common.working")
+                        DispatchQueue.global(qos: .userInitiated).async {
+                            do {
+                                let lines = try LiquidGlassController.disableGlobal()
+                                DispatchQueue.main.async {
+                                    manager.statusText = L10n.shared.tr("lg.disabled") + "\n" + lines.joined(separator: "\n")
+                                    showRestartAlert = true
+                                }
+                            } catch {
+                                DispatchQueue.main.async {
+                                    manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
+                                }
+                            }
                         }
                     }
                     .disabled(!manager.sandboxGranted)
@@ -54,7 +62,7 @@ struct StatusDashboardView: View {
                         }
                         applyCanvasEveryRoute(width: width, height: height, note: nil)
                     }
-                    .disabled(!manager.sandboxGranted)
+                    .disabled(!manager.sandboxGranted || isWorking)
                 }
                 Section(header: Text(l10n.tr("home.log"))) {
                     Text(manager.statusText)
@@ -84,50 +92,73 @@ struct StatusDashboardView: View {
     /// then reports each result honestly. Which route this build honors is
     /// only visible after a full restart.
     private func applyCanvasEveryRoute(width: Int, height: Int, note: String?) {
-        var lines: [String] = []
+        guard !isWorking else { return }
+        isWorking = true
+        manager.statusText = L10n.shared.tr("common.working")
 
-        do {
-            guard var plist = manager.readGestalt() else {
-                throw RDARFixError(message: L10n.shared.tr("common.readFail"))
+        // All Gestalt + bad_query filesystem work is synchronous and can probe
+        // dozens of containers, so it must run off the main thread or the UI
+        // freezes (the same pattern LiquidGlassView.applyChanges uses).
+        DispatchQueue.global(qos: .userInitiated).async {
+            var lines: [String] = []
+
+            do {
+                guard var plist = self.manager.readGestalt() else {
+                    throw RDARFixError(message: L10n.shared.tr("common.readFail"))
+                }
+                RDARFix.applyCanvasSizesGestalt(to: &plist, canvasWidth: width, canvasHeight: height)
+                try self.manager.saveGestaltOrThrow(plist)
+                let verified = self.manager.readGestalt().map {
+                    RDARFix.verifyCanvasSizesGestalt(in: $0, canvasWidth: width, canvasHeight: height)
+                } ?? false
+                lines.append(verified ? "Gestalt: written and verified on disk"
+                                      : "Gestalt: \(L10n.shared.tr("rdar.verify.fail"))")
+            } catch {
+                lines.append("Gestalt: failed (\(error.localizedDescription))")
             }
-            RDARFix.applyCanvasSizesGestalt(to: &plist, canvasWidth: width, canvasHeight: height)
-            try manager.saveGestaltOrThrow(plist)
-            let verified = manager.readGestalt().map {
-                RDARFix.verifyCanvasSizesGestalt(in: $0, canvasWidth: width, canvasHeight: height)
-            } ?? false
-            lines.append(verified ? "Gestalt: written and verified on disk"
-                                  : "Gestalt: \(L10n.shared.tr("rdar.verify.fail"))")
-        } catch {
-            lines.append("Gestalt: failed (\(error.localizedDescription))")
-        }
 
-        do {
-            switch try RDARFix.apply(canvasWidth: width, canvasHeight: height) {
-            case .applied: lines.append("Graphics plist: patched")
-            case .alreadyFixed: lines.append("Graphics plist: already set")
+            do {
+                switch try RDARFix.apply(canvasWidth: width, canvasHeight: height) {
+                case .applied: lines.append("Graphics plist: patched")
+                case .alreadyFixed: lines.append("Graphics plist: already set")
+                }
+            } catch {
+                lines.append("Graphics plist: failed (\(error.localizedDescription))")
             }
-        } catch {
-            lines.append("Graphics plist: failed (\(error.localizedDescription))")
-        }
 
-        manager.statusText = "\(l10n.tr("rdar.custom.apply")) (\(width)x\(height))\n" + lines.joined(separator: "\n")
-        manager.statusText += "\nFull restart required - respring does NOT apply canvas."
-        if let note { manager.statusText += "\n\(note)" }
-        SessionLogger.shared.log("canvas \(width)x\(height): \(lines.joined(separator: " | "))")
-        showRestartAlert = true
+            let result = "\(self.l10n.tr("rdar.custom.apply")) (\(width)x\(height))\n"
+                + lines.joined(separator: "\n")
+                + "\nFull restart required - respring does NOT apply canvas."
+                + (note.map { "\n\($0)" } ?? "")
+            SessionLogger.shared.log("canvas \(width)x\(height): \(lines.joined(separator: " | "))")
+
+            DispatchQueue.main.async {
+                self.manager.statusText = result
+                self.showRestartAlert = true
+                self.isWorking = false
+            }
+        }
     }
 
     /// Never trust UIScreen for the one-tap fix: during an active RDAR state
     /// nativeBounds reports the broken canvas, and Display Zoom reports the
     /// zoomed buffer - either written back keeps the screen broken.
     private func runFixRDAR() {
-        if let fixed = RDARFix.knownGoodNativeCanvas(machine: DeviceCapability.machineIdentifier) {
-            applyCanvasEveryRoute(width: fixed.width, height: fixed.height, note: nil)
+        let machine = DeviceCapability.machineIdentifier
+        let width: Int
+        let height: Int
+        let note: String?
+        if let fixed = RDARFix.knownGoodNativeCanvas(machine: machine) {
+            width = fixed.width
+            height = fixed.height
+            note = nil
         } else {
             let bounds = UIScreen.main.nativeBounds
-            applyCanvasEveryRoute(width: Int(bounds.width), height: Int(bounds.height),
-                                  note: "Unknown device (\(DeviceCapability.machineIdentifier)) - using reported screen bounds.")
+            width = Int(bounds.width)
+            height = Int(bounds.height)
+            note = "Unknown device (\(machine)) - using reported screen bounds."
         }
+        applyCanvasEveryRoute(width: width, height: height, note: note)
     }
 }
 

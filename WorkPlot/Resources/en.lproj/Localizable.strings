@@ -276,6 +276,7 @@
 "cachedata.error.missing" = "MobileGestalt has no CacheData value.";
 "cachedata.error.decode" = "The patched CacheData value could not be decoded.";
 "common.failPrefix" = "Failed: %@";
+"common.working" = "Working…";
 "common.importFailedDetail" = "Import failed: %@";
 "common.readFail" = "Failed to read MobileGestalt.";
 "common.saveFail" = "Failed to save MobileGestalt.";
