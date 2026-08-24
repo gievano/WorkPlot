@@ -52,7 +52,7 @@ struct AppContainersView: View {
                 }
             }
             .navigationTitle(l10n.tr("ac.title"))
-            .workPlotScrollBackground()
+            .wpGlassContainer()
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {

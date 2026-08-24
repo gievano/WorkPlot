@@ -59,6 +59,7 @@ struct AppIconSwitcherSheet: View {
                 }
             }
             .navigationTitle(l10n.tr("icon.menu"))
+            .wpGlassContainer()
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(l10n.tr("common.done")) { dismiss() }

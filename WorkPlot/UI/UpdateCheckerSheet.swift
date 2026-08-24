@@ -59,7 +59,7 @@ struct UpdateCheckerSheet: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .workPlotScrollBackground()
+            .wpGlassContainer()
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(l10n.tr("common.done")) { dismiss() }

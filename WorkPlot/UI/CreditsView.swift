@@ -81,6 +81,7 @@ struct CreditsView: View {
             }
         }
         .navigationTitle(l10n.tr("credits.header"))
+        .wpGlassContainer()
         .confirmationDialog("Open TikTok?", isPresented: $showTikTokDialog, titleVisibility: .visible) {
             Button("Open TikTok Profile") {
                 if let url = tiktokLink?.tiktokURL { UIApplication.shared.open(url) }

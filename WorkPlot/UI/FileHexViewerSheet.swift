@@ -64,7 +64,7 @@ struct FileHexViewerSheet: View {
             }
             .navigationTitle(L10n.shared.tr("hex.title"))
             .navigationBarTitleDisplayMode(.inline)
-            .workPlotScrollBackground()
+            .wpGlassContainer()
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {

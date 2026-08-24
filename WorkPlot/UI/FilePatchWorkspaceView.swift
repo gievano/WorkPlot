@@ -71,7 +71,7 @@ struct FilePatchWorkspaceView: View {
                     shortcutList
                 }
             }
-            .workPlotScrollBackground()
+            .wpGlassContainer()
             .scrollDismissesKeyboard(.immediately)
             .navigationTitle(l10n.tr("tab.files"))
             .navigationBarTitleDisplayMode(.inline)
@@ -775,7 +775,7 @@ struct FileTextEditSheet: View {
             }
             .navigationTitle(entry.name)
             .navigationBarTitleDisplayMode(.inline)
-            .workPlotScrollBackground()
+            .wpGlassContainer()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(l10n.tr("common.cancel")) { dismiss() }
@@ -889,7 +889,7 @@ struct FilePlistViewerSheet: View {
             }
             .navigationTitle(entry.name)
             .navigationBarTitleDisplayMode(.inline)
-            .workPlotScrollBackground()
+            .wpGlassContainer()
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(l10n.tr("common.done")) { dismiss() }
@@ -947,7 +947,7 @@ struct FileImagePreviewSheet: View {
             }
             .navigationTitle(entry.name)
             .navigationBarTitleDisplayMode(.inline)
-            .workPlotScrollBackground()
+            .wpGlassContainer()
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(l10n.tr("common.done")) { dismiss() }

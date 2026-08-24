@@ -67,7 +67,7 @@ struct CacheCleanerView: View {
         }
         .navigationTitle(app.bundleID)
         .navigationBarTitleDisplayMode(.inline)
-        .workPlotScrollBackground()
+            .wpGlassContainer()
         .confirmationDialog(
             l10n.tr("cc.clean"),
             isPresented: $confirmClean,

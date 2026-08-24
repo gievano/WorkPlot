@@ -64,7 +64,7 @@ struct PresetLabView: View {
                 }
             }
             .navigationTitle(l10n.tr("preset.title"))
-            .workPlotScrollBackground()
+            .wpGlassContainer()
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {

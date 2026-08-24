@@ -211,7 +211,7 @@ struct EligibilityView: View {
         }
         .navigationTitle(l10n.tr("eligibility.title"))
         .navigationBarTitleDisplayMode(.inline)
-        .workPlotScrollBackground()
+        .wpGlassContainer()
         .task { reachable = EligibilityManager.isReachable() }
         .alert(l10n.tr("eligibility.error.title"), isPresented: $showErrorAlert) {
             Button(l10n.tr("common.ok"), role: .cancel) {}
