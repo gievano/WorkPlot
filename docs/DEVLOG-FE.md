@@ -801,3 +801,19 @@ Fitur yang mekanismenya terbukti tidak berfungsi pada device target harus dihapu
 
 - Jika bad_query/CMG tidak bisa membaca salah satu copy `.GlobalPreferences.plist`, `setSolariumSuppressed` tetap throw `lg.error.globalNotReachable` — pesan error jujur, tapi penulisan MobileGestalt (langkah pertama) tetap berhasil tanpa tercatat di statusText karena fungsi throwing all-or-nothing. Bisa dipecah jadi partial-report kalau keluhan muncul.
 - Verifikasi build lewat CI round-trip; uji tembus-tulis di device iOS 27 beta tetap wajib.
+
+## 2026-08-24 - Fix EPERM Disable Dynamic Island (Bedah WorkPlotDDI.ipa)
+
+### The Change
+
+- Bedah `WorkPlotDDI.ipa` (build lama repo ~22 Agustus, pra-#48): DDI-nya hanya menulis Gestalt capability `YlEtTtHlNesRBMal1CqRaA=0` — subset dari implementasi sekarang. Tidak ada mekanisme baru untuk di-port.
+- Akar masalah "DDI build baru gagal": `SpringBoardPlist.setSuppressed` menulis `com.apple.springboard.plist` via `InodeWriter` **tanpa `BadQueryLeaseScope`** → `open(O_WRONLY)` dapat EPERM → throw di tengah apply → Gestalt pun tidak tersimpan. Bug identik dengan Liquid Glass #51.
+- Fix: bungkus write dengan `BadQueryLeaseScope.withLease(forPath: path)` (`SpringBoardPlist.swift`). Audit semua 6 call site InodeWriter: kini SEMUA membawa lease (RDARFix ×2, Patch3105, FileBrowserService.saveText, GlobalPreferences, SpringBoardPlist).
+
+### The Reasoning
+
+- Build lama terlihat "bisa" karena tidak pernah menyentuh springboard.plist; build baru gagal total karena write tanpa lease membatalkan seluruh apply sebelum saveGestalt. Setelah lease fix, hideDynamicIslandOn = capability=0 + flag Nugget (superset, dua rute sekaligus).
+
+### The Tech Debt
+
+- Uji device: hide/show island di iPhone native-island iOS 27 beta + verifikasi restore menghapus capability key & flag.
