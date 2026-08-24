@@ -6,6 +6,10 @@ struct WorkPlotApp: App {
     @ObservedObject private var l10n = L10n.shared
     @State private var presetImportMessage: String?
 
+    init() {
+        UIDocumentPickerViewController.workplotSwizzleOnce
+    }
+
     var body: some Scene {
         WindowGroup {
             MainDashboardView()
