@@ -10,11 +10,12 @@ struct MainDashboardView: View {
         ZStack {
             AppBackground()
             TabView {
-                StatusDashboardView().tabItem { Label(l10n.tr("tab.home"), systemImage: "house.fill") }
-                GestaltPresetManagerView().tabItem { Label(l10n.tr("tab.gestalt"), systemImage: "cpu") }
-                GestaltFieldEditorView().tabItem { Label(l10n.tr("tab.fields"), systemImage: "list.bullet.rectangle") }
-                SiriAITweaksView().tabItem { Label(l10n.tr("tab.siriai"), systemImage: "waveform") }
-                MoreMenuView().tabItem { Label(l10n.tr("tab.more"), systemImage: "ellipsis.circle.fill") }
+                StatusDashboardView().tabItem { Label("Home", systemImage: "house.fill") }
+                WallpaperView().tabItem { Label("PosterBoard", systemImage: "square.stack.3d.up") }
+                SiriAITweaksView().tabItem { Label("Siri AI", systemImage: "brain.head.profile") }
+                GestaltPresetManagerView().tabItem { Label("Gestalt", systemImage: "cpu") }
+                GestaltFieldEditorView().tabItem { Label("Fields", systemImage: "list.bullet.rectangle") }
+                MoreMenuView().tabItem { Label("Settings", systemImage: "gearshape") }
             }
         }
         .preferredColorScheme(AppearanceMode(rawValue: appearanceMode)?.colorScheme)
