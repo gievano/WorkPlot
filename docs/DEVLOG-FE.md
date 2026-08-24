@@ -783,3 +783,21 @@ Fitur yang mekanismenya terbukti tidak berfungsi pada device target harus dihapu
 - Build tetap diverifikasi lewat CI round-trip (Windows tidak bisa kompilasi Swift).
 - `isWorking` belum dipakai sebagai guard pada tombol Fix RDAR & Disable Liquid Glass (hanya Custom Canvas) — risiko concurrency rendah karena masing-masing write punya lease sendiri, tapi bisa ditambah kalau user laporkan tap ganda.
 - Key `common.working` baru hanya di `en.lproj`; bundle resource English-only sudah konsisten dengan keputusan finalisasi bahasa.
+
+## 2026-08-24 - Pindahkan Disable Liquid Glass dari Home ke Menu More
+
+### The Change
+
+- Tombol "Disable Liquid Glass" dihapus dari Home → Actions (`StatusDashboardView.swift`) — section Actions tersisa Fix RDAR + Respring.
+- Aksi yang sama ditambahkan ke More → Liquid Glass (`LiquidGlassView.swift`): tombol `status.lg.disable` dengan ProgressView saat berjalan, guard ganda (`isDisabling`/`isApplying` saling menonaktifkan), jalan di background queue, dan setelah sukses picker mode di-reload via `LiquidGlassController.currentMode()` (karena `disableGlobal` menulis CacheExtra SAGvsp=1) plus alert restart.
+- `LiquidGlassController.disableGlobal()` + `GlobalPreferences` TETAP ada (tidak lagi dead code) — kini satu-satunya pemanggil adalah LiquidGlassView. Jalur tulis `.GlobalPreferences.plist` sudah membawa `BadQueryLeaseScope` sejak PR #51.
+
+### The Reasoning
+
+- User melapor dua tombol dengan fungsi sama di dua tempat (Home sering error, More tidak); konsolidasi ke satu lokasi menghilangkan duplikasi dan menyatukan jalur error handling. Error EPERM historis berasal dari write tanpa lease yang sudah diperbaiki #51, jadi fitur di lokasi barunya harus tembus.
+- Reload picker pasca-disable menjaga UI jujur: nilai CacheExtra yang baru tertulis langsung tercermin sebagai mode aktif.
+
+### The Tech Debt
+
+- Jika bad_query/CMG tidak bisa membaca salah satu copy `.GlobalPreferences.plist`, `setSolariumSuppressed` tetap throw `lg.error.globalNotReachable` — pesan error jujur, tapi penulisan MobileGestalt (langkah pertama) tetap berhasil tanpa tercatat di statusText karena fungsi throwing all-or-nothing. Bisa dipecah jadi partial-report kalau keluhan muncul.
+- Verifikasi build lewat CI round-trip; uji tembus-tulis di device iOS 27 beta tetap wajib.
