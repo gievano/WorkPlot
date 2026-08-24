@@ -301,9 +301,7 @@ struct RDARFix {
     #if canImport(UIKit)
     /// Marker thrown while probing a candidate: lease or read failed, so the
     /// resolver should try the next location instead of surfacing an error.
-    private struct CandidateUnavailable: Error {}
-
-    /// Probes every candidate until one yields a readable plist through its
+    private struct CandidateUnavailable: Error {}    /// Probes every candidate until one yields a readable plist through its
     /// bad_query lease, then runs `body` inside that lease.
     private static func withResolvedTarget<T>(_ body: (String) throws -> T) throws -> T {
         var failures: [String] = []
@@ -370,16 +368,6 @@ struct RDARFix {
         return String(cString: raw)
             .split(whereSeparator: \.isNewline)
             .map(String.init)
-    }
-
-    /// Canvas size is detected from the device's native screen bounds at
-    /// runtime: a hardcoded resolution only matched one iPhone model and
-    /// caused the fix to misbehave on every other device.
-    @discardableResult
-    static func apply() throws -> RDARFixApplyResult {
-        let bounds = UIScreen.main.nativeBounds
-        return try apply(canvasWidth: Int(bounds.width),
-                         canvasHeight: Int(bounds.height))
     }
 
     @discardableResult

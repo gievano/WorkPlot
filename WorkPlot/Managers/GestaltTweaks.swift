@@ -19,9 +19,12 @@ enum GestaltTweakCategory: String, CaseIterable, Identifiable {
 enum GestaltTweakID: String, CaseIterable, Identifiable {
     case supportsDynamicIsland, alwaysOnDisplay, alwaysOnDisplayVibrancy
     case aiRegionUS
-    case disableDynamicIsland
     // siriMode removed: duplicate of the Siri AI tab's SiriModeApplier path,
     // which is the only variant that can actually revert (remove the key).
+    // disableDynamicIsland removed too: the capability key alone proved
+    // enable-only on native island devices, so a Gestalt-only off toggle was
+    // a silent no-op - the Hide/Restore pair below carries BOTH the proven
+    // SpringBoard suppression flag and the capability=0 staging.
     case hideDynamicIslandOn, hideDynamicIslandOff
     case disableParallax, enableLiquidGlassLowPerformance, disableLiquidGlassLowPerformance
     case bootChime, chargeLimit, tapToWake, cameraButton
@@ -71,16 +74,13 @@ enum GestaltTweakCatalog {
         .init(id: .aiRegionUS, category: .region, title: L10n.shared.tr("tweak.airegion.title"), detail: L10n.shared.tr("tweak.airegion.detail"), values: [:], isRisky: true),
 
         .init(id: .supportsDynamicIsland, category: .display, title: L10n.shared.tr("tweak.dynamicisland.title"), detail: L10n.shared.tr("tweak.dynamicisland.detail"), values: ["YlEtTtHlNesRBMal1CqRaA": 1]),
-        // Two off-switches, strongest first:
-        // - hideDynamicIslandOn drives Nugget >=7.2's SpringBoard suppression
-        //   flag AND stages capability=0 below as belt-and-suspenders.
-        // - disableDynamicIsland is the legacy Gestalt-only route; field
-        //   reports say some builds honor it, so it stays experimental.
+        // Single proven off-switch pair: hideDynamicIslandOn drives
+        // Nugget >=7.2's SpringBoard suppression flag AND stages
+        // capability=0 below as belt-and-suspenders; Restore removes both.
         // The SpringBoard write itself is handled specially in
         // GestaltPresetManagerView.applySelected().
         .init(id: .hideDynamicIslandOn, category: .display, title: L10n.shared.tr("tweak.hideisland.title"), detail: L10n.shared.tr("tweak.hideisland.detail"), values: ["YlEtTtHlNesRBMal1CqRaA": 0], isExperimental: true),
         .init(id: .hideDynamicIslandOff, category: .display, title: L10n.shared.tr("tweak.showisland.title"), detail: L10n.shared.tr("tweak.showisland.detail"), values: [:]),
-        .init(id: .disableDynamicIsland, category: .display, title: L10n.shared.tr("tweak.dynamicislandoff.title"), detail: L10n.shared.tr("tweak.dynamicislandoff.detail"), values: ["YlEtTtHlNesRBMal1CqRaA": 0], isExperimental: true, deviceGate: .iphone14ProOrLater),
         .init(id: .alwaysOnDisplay, category: .display, title: L10n.shared.tr("tweak.aod.title"), detail: L10n.shared.tr("tweak.aod.detail"), values: ["2OOJf1VhaM7NxfRok3HbWQ": 1, "j8/Omm6s1lsmTDFsXjsBfA": 1], isRisky: true),
         .init(id: .alwaysOnDisplayVibrancy, category: .display, title: L10n.shared.tr("tweak.aodvibrancy.title"), detail: L10n.shared.tr("tweak.aodvibrancy.detail"), values: ["ykpu7qyhqFweVMKtxNylWA": 1]),
         .init(id: .disableParallax, category: .display, title: L10n.shared.tr("tweak.parallax.title"), detail: L10n.shared.tr("tweak.parallax.detail"), values: ["mmu76v66k1dAtghToInT8g": 0]),

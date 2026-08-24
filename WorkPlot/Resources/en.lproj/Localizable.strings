@@ -451,11 +451,9 @@
 "credits.3105.detail" = "Safe file operations reference (GPLv3)";
 "credits.tester" = "Beta Testers";
 "credits.tester.detail" = "WorkPlot beta tester";
-"tweak.hideisland.title" = "Hide Dynamic Island Completely";
-"tweak.hideisland.detail" = "Writes the official SpringBoard suppression flag - the method that works even on native island devices where the Gestalt capability alone cannot turn the island off. Removes all island UI including Live Activities. Full reboot required.";
+"tweak.hideisland.title" = "Disable Dynamic Island Completely";
+"tweak.hideisland.detail" = "Writes the official SpringBoard suppression flag plus the Gestalt capability off value - the method that works even on native island devices. Removes all island UI including Live Activities. Full reboot required.";
 "tweak.showisland.title" = "Restore Dynamic Island";
 "tweak.showisland.detail" = "Removes the SpringBoard suppression flag so the island renders normally again.";
 "sb.error.notReachable" = "com.apple.springboard.plist was not reachable through the sandbox.";
 "lg.error.globalNotReachable" = "No copy of .GlobalPreferences.plist was reachable through the sandbox.";
-"tweak.dynamicislandoff.title" = "Disable Dynamic Island";
-"tweak.dynamicislandoff.detail" = "Legacy route: writes the Gestalt island capability to 0. Field reports say some builds honor it even on native island devices - if nothing changes, use Hide Dynamic Island Completely instead.";

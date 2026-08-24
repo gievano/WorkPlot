@@ -744,3 +744,22 @@ Melanjutkan working tree sesi terputus dan menuntaskannya:
 - Build tetap diverifikasi lewat CI round-trip (Windows tidak bisa kompilasi Swift).
 - Efektivitas rute legacy capability=0 untuk Disable/Hide Island per build iOS belum terbukti device; jalur utama tetap flag SpringBoard.
 - Panel dim iPhone 18 generasi berikutnya (fall 2026) belum tentu sama - tabel tinggal ditambah saat device rilis.
+
+## 2026-08-24 - Anti-Gimmick Pass II: RDAR Per-Device Ketat + Island Legacy Toggle Dilipat
+
+### The Change
+
+Tindak lanjut instruksi user "fix rdar harus sesuai tipe hp masing-masing dan tidak gimmick":
+
+1. **Hapus `RDARFix.apply()` tanpa argumen** - satu-satunya jalur yang masih percaya `UIScreen.main.nativeBounds`, dan sudah tidak punya pemanggil sejak dashboard memakai tabel known-good. Dua pemakaian UIScreen yang tersisa aman dan jujur: fallback HANYA untuk hw.machine tak dikenal, selalu disertai catatan eksplisit di status.
+2. **Toggle "Disable Dynamic Island" legacy-only dihapus lagi** (case enum, entri katalog, mutual exclusion, 2 key strings): menulis capability=0 saja terbukti enable-only di device island bawaan = silent no-op pada persis audience yang ditarget gate-nya (14 Pro+) - melanggar standar anti-gimmick repo. Off-switch tunggal kini pasangan Hide/Restore yang menggabungkan flag SpringBoard resmi Nugget + staging capability=0; judulnya diubah jadi "Disable Dynamic Island Completely" supaya 1:1 dengan istilah user.
+3. Checker `check-feature.ps1` dibalik: `.disableDynamicIsland` kini DILARANG ada di katalog (regression guard), asersi staging capability=0 pindah ke hideDynamicIslandOn.
+
+### The Reasoning
+
+Fitur yang mekanismenya terbukti tidak berfungsi pada device target harus dihapus, bukan dipertahankan dengan label experimental (preseden ba72150). Kebutuhan user ("disable dynamic island") tetap terpenuhi penuh oleh toggle Hide yang lebih kuat karena sekarang membawa kedua mekanisme sekaligus.
+
+### The Tech Debt
+
+- Judul strings hideisland berubah - jika ada materi eksternal yang menyebut nama lama perlu sinkron manual.
+- Fallback UIScreen untuk mesin tak dikenal tetap menjadi titik lemah teoretis; diterima karena satu-satunya alternatif adalah menolak melayani device baru.

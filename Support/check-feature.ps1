@@ -25,7 +25,7 @@ Require ($spoofing -match 'guard var artwork = cacheExtra\[GestaltArtwork\.artwo
 Require ($spoofing -notmatch 'if var artwork = cacheExtra\[GestaltArtwork\.artworkKey\]') "Spoof apply must not silently skip ArtworkDevice"
 
 $tweaks = Read-ProjectFile "WorkPlot\Managers\GestaltTweaks.swift"
-Require ($tweaks -match '(?s)id:\s*\.disableDynamicIsland.*?values:\s*\["YlEtTtHlNesRBMal1CqRaA":\s*0\]') "Disable Dynamic Island must stage capability=0"
+Require ($tweaks -notmatch '\.disableDynamicIsland') "The legacy-only island off toggle must stay removed - it is a silent no-op on native island devices"
 Require ($tweaks -match '(?s)id:\s*\.hideDynamicIslandOn.*?values:\s*\["YlEtTtHlNesRBMal1CqRaA":\s*0\]') "Hide Dynamic Island must stage capability=0 alongside the SpringBoard flag"
 
 $patcher = Read-ProjectFile "WorkPlot\Managers\CacheDataPatcher.swift"
