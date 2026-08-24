@@ -249,15 +249,19 @@ struct WallpaperView: View {
         guard !poster.selectedTendies.isEmpty else { return }
 
         let startHash = pbHash
-        UIApplication.shared.change(title: "Applying Wallpapers...", body: "Locating PosterBoard...")
+        // Show the respring overlay at once so the wait happens on the black
+        // screen instead of a "Applying Wallpapers" dialog. The actual crash
+        // is armed only after the apply work finishes (see armRespringCrash).
+        ExploitManager.shared.beginRespring()
 
         var watchdog: DispatchWorkItem?
         watchdog = DispatchWorkItem {
-            UIApplication.shared.dismissAlert()
+            ExploitManager.shared.respringRequested = false
+            ExploitManager.shared.respringCrashArmed = false
             UIApplication.shared.alert(title: "Apply timed out", body: "The operation took too long. Make sure the bad_query exploit is active, then try again.")
         }
         if let watchdog {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 90, execute: watchdog)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 120, execute: watchdog)
         }
 
         Task.detached(priority: .userInitiated) { [weak poster] in
@@ -268,7 +272,8 @@ struct WallpaperView: View {
             guard !hash.isEmpty else {
                 watchdog?.cancel()
                 await MainActor.run {
-                    UIApplication.shared.dismissAlert()
+                    ExploitManager.shared.respringRequested = false
+                    ExploitManager.shared.respringCrashArmed = false
                     UIApplication.shared.alert(title: "PosterBoard not found", body: "Could not locate the PosterBoard container. Make sure the exploit is active.")
                 }
                 return
@@ -277,14 +282,14 @@ struct WallpaperView: View {
                 try poster?.applyTendies(appHash: hash)
                 watchdog?.cancel()
                 await MainActor.run {
-                    UIApplication.shared.dismissAlert()
                     Haptic.shared.notify(.success)
-                    ExploitManager.shared.requestRespring()
+                    ExploitManager.shared.armRespringCrash()
                 }
             } catch {
                 watchdog?.cancel()
                 await MainActor.run {
-                    UIApplication.shared.dismissAlert()
+                    ExploitManager.shared.respringRequested = false
+                    ExploitManager.shared.respringCrashArmed = false
                     UIApplication.shared.alert(title: "Apply failed", body: error.localizedDescription)
                 }
             }

@@ -66,6 +66,13 @@ struct NeoSpringView: View {
         }
         .ignoresSafeArea()
         .task {
+            // Overlay already shows the black screen. The crash WebView is only
+            // mounted once the apply work is done (respringCrashArmed), then a
+            // short delay so the screen is settled before the GPU crash fires.
+            while !ExploitManager.shared.respringCrashArmed {
+                try? await Task.sleep(for: .milliseconds(50))
+                if Task.isCancelled { return }
+            }
             try? await Task.sleep(for: .milliseconds(250))
             showsWebView = true
         }
