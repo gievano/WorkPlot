@@ -70,6 +70,37 @@ struct GestaltTweakDefinition: Identifiable {
     var isSupportedOnThisDevice: Bool {
         DeviceCapability.supports(deviceGate)
     }
+
+    var icon: String {
+        switch id {
+        case .aiRegionUS: return "globe"
+        case .supportsDynamicIsland: return "rectangle.topthird.inset.filled"
+        case .hideDynamicIslandOn: return "eye.slash"
+        case .hideDynamicIslandOff: return "eye"
+        case .alwaysOnDisplay: return "sun.max"
+        case .alwaysOnDisplayVibrancy: return "sun.max.circle"
+        case .disableParallax: return "move.3d"
+        case .enableLiquidGlassLowPerformance: return "square.3.layers.xy"
+        case .disableLiquidGlassLowPerformance: return "square.slash"
+        case .pwm: return "waveform"
+        case .bootChime: return "speaker.wave.2"
+        case .chargeLimit: return "battery.75.bolt"
+        case .tapToWake: return "hand.tap"
+        case .cameraButton: return "camera"
+        case .pencil: return "pencil"
+        case .actionButton: return "switch.2"
+        case .collisionSOS: return "exclamationmark.shield"
+        case .stageManager: return "macwindow"
+        case .iPadApps: return "apps.iphone"
+        case .iosMode: return "iphone"
+        case .iPadOS: return "ipad"
+        case .internalInstall: return "wrench"
+        case .internalStorage: return "internaldrive"
+        case .securityResearchDevice: return "lock.shield"
+        case .internalFeatures: return "gearshape.2"
+        case .rdarCanvasGestalt: return "resize"
+        }
+    }
 }
 
 enum GestaltTweakCatalog {

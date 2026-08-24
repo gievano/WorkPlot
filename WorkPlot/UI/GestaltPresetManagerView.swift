@@ -181,78 +181,62 @@ struct GestaltPresetManagerView: View {
     private func categorySection(_ category: GestaltTweakCategory) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             WPSectionHeader(title: category.label)
-            VStack(spacing: 12) {
+            LazyVGrid(
+                columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
+                spacing: 12
+            ) {
                 ForEach(tweaks(in: category)) { tweak in
-                    tweakCard(tweak)
+                    tweakBox(tweak)
                 }
             }
         }
     }
 
-    private func tweakCard(_ tweak: GestaltTweakDefinition) -> some View {
-        HStack(spacing: 14) {
-            VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: 6) {
-                    Text(tweak.title).font(.body.weight(.semibold))
-                    if tweak.isRisky {
-                        Text(L10n.shared.tr("common.risky")).font(.caption2).bold()
-                            .foregroundColor(.red)
-                            .padding(.horizontal, 5).padding(.vertical, 1)
-                            .background(Color.red.opacity(0.15))
-                            .cornerRadius(4)
-                    }
-                    if tweak.isExperimental {
-                        Text(L10n.shared.tr("common.experimental")).font(.caption2).bold()
-                            .foregroundColor(.orange)
-                            .padding(.horizontal, 5).padding(.vertical, 1).padding(.horizontal, 5)
-                            .background(Color.orange.opacity(0.15))
-                            .cornerRadius(4)
-                    }
-                }
-                Text(tweak.detail).font(.caption).foregroundStyle(.secondary)
+    private func tweakBox(_ tweak: GestaltTweakDefinition) -> some View {
+        let isOn = selectedTweaks.contains(tweak.id)
+        return Button {
+            toggle(tweak.id)
+        } label: {
+            VStack(spacing: 8) {
+                Image(systemName: tweak.icon)
+                    .font(.system(size: 26))
+                    .foregroundStyle(Theme.accent)
+                Text(tweak.title)
+                    .font(.system(size: 13, weight: .semibold))
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                Image(systemName: isOn ? "checkmark.circle.fill" : "circle")
+                    .foregroundStyle(isOn ? Theme.accent : .secondary)
             }
-            Spacer()
-            if tweak.isSupportedOnThisDevice {
-                Toggle("", isOn: binding(for: tweak.id)).labelsHidden()
-            } else {
-                Toggle("", isOn: .constant(false)).labelsHidden().disabled(true)
-                Text(L10n.shared.tr("gestalt.deviceUnsupported"))
-                    .font(.caption2).foregroundStyle(.secondary)
-            }
+            .frame(maxWidth: .infinity, minHeight: 104)
+            .liquidGlass(cornerRadius: 16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(isOn ? Theme.accent : .clear, lineWidth: 2)
+            )
         }
-        .padding(16)
-        .liquidGlass(cornerRadius: 16)
+        .buttonStyle(.plain)
+        .disabled(!tweak.isSupportedOnThisDevice)
     }
 
     private func tweaks(in category: GestaltTweakCategory) -> [GestaltTweakDefinition] {
         GestaltTweakCatalog.definitions.filter { $0.category == category }
     }
 
-    private func binding(for id: GestaltTweakID) -> Binding<Bool> {
-        Binding(
-            get: { selectedTweaks.contains(id) },
-            set: { enabled in
-                if enabled {
-                    if id == .enableLiquidGlassLowPerformance { selectedTweaks.remove(.disableLiquidGlassLowPerformance) }
-                    if id == .disableLiquidGlassLowPerformance { selectedTweaks.remove(.enableLiquidGlassLowPerformance) }
-                    // Island enable vs the off-switches are opposites;
-                    // the hide/show pair excludes itself.
-                    if id == .supportsDynamicIsland {
-                        selectedTweaks.remove(.hideDynamicIslandOn)
-                    }
-                    if id == .hideDynamicIslandOn {
-                        selectedTweaks.remove(.supportsDynamicIsland)
-                        selectedTweaks.remove(.hideDynamicIslandOff)
-                    }
-                    if id == .hideDynamicIslandOff {
-                        selectedTweaks.remove(.hideDynamicIslandOn)
-                    }
-                    selectedTweaks.insert(id)
-                } else {
-                    selectedTweaks.remove(id)
-                }
+    private func toggle(_ id: GestaltTweakID) {
+        if selectedTweaks.contains(id) {
+            selectedTweaks.remove(id)
+        } else {
+            if id == .enableLiquidGlassLowPerformance { selectedTweaks.remove(.disableLiquidGlassLowPerformance) }
+            if id == .disableLiquidGlassLowPerformance { selectedTweaks.remove(.enableLiquidGlassLowPerformance) }
+            if id == .supportsDynamicIsland { selectedTweaks.remove(.hideDynamicIslandOn) }
+            if id == .hideDynamicIslandOn {
+                selectedTweaks.remove(.supportsDynamicIsland)
+                selectedTweaks.remove(.hideDynamicIslandOff)
             }
-        )
+            if id == .hideDynamicIslandOff { selectedTweaks.remove(.hideDynamicIslandOn) }
+            selectedTweaks.insert(id)
+        }
     }
 
     private func applySelected() {
