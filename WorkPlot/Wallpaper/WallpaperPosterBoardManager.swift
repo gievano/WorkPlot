@@ -128,7 +128,7 @@ final class WallpaperPosterBoardManager: ObservableObject {
     // MARK: Apply
 
     /// Applies all selected tendies + generated videos to PosterBoard.
-    /// `appHash` is the PosterBoard container hash (from Nugget).
+    /// `appHash` is the auto-detected (or provided) PosterBoard container hash.
     func applyTendies(appHash: String) throws {
         var extList: [String: [URL]] = [:]
 
@@ -185,5 +185,34 @@ final class WallpaperPosterBoardManager: ObservableObject {
                 try FileManager.default.removeItem(at: file)
             }
         }
+    }
+
+    // MARK: Hash discovery (no Nugget required)
+
+    /// Locates the PosterBoard container UUID by scanning all app containers
+    /// through the bad_query escape (same source AppContainerScanner uses).
+    static func discoverPosterBoardHash() -> String? {
+        discoverHash(bundleID: "com.apple.PosterBoard")
+            ?? discoverHashByStore()
+    }
+
+    static func discoverCarPlayHash() -> String? {
+        discoverHash(bundleID: "com.apple.CarPlayApp")
+    }
+
+    private static func discoverHash(bundleID: String) -> String? {
+        guard let containers = try? AppContainerScanner.scanAllContainers() else { return nil }
+        return containers
+            .first { $0.bundleID == bundleID }
+            .map { ($0.rootPath as NSString).lastPathComponent }
+    }
+
+    /// Fallback: a container whose PosterBoard data store directory exists.
+    private static func discoverHashByStore() -> String? {
+        guard let containers = try? AppContainerScanner.scanAllContainers() else { return nil }
+        let store = "Library/Application Support/PRBPosterExtensionDataStore"
+        return containers
+            .first { FileManager.default.fileExists(atPath: ($0.rootPath as NSString).appendingPathComponent(store)) }
+            .map { ($0.rootPath as NSString).lastPathComponent }
     }
 }
