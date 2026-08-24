@@ -25,16 +25,8 @@ Require ($spoofing -match 'guard var artwork = cacheExtra\[GestaltArtwork\.artwo
 Require ($spoofing -notmatch 'if var artwork = cacheExtra\[GestaltArtwork\.artworkKey\]') "Spoof apply must not silently skip ArtworkDevice"
 
 $tweaks = Read-ProjectFile "WorkPlot\Managers\GestaltTweaks.swift"
-$requiredDefinitions = @(
-    '(?s)id:\s*\.colorPaletteGraphics.*?deviceGate:\s*\.iphone13OrLater,\s*requiresCacheDataFlag:\s*true',
-    '(?s)id:\s*\.graphicsStyle.*?deviceGate:\s*\.iphone11Or12Only,\s*requiresCacheDataFlag:\s*true',
-    '(?s)id:\s*\.colorPaletteLegacy.*?deviceGate:\s*\.iphone13OrBelow,\s*requiresCacheDataFlag:\s*true',
-    '(?s)id:\s*\.cameraZoom2x.*?deviceGate:\s*\.belowIPhone15,\s*requiresCacheDataFlag:\s*true'
-)
-foreach ($pattern in $requiredDefinitions) {
-    Require ($tweaks -match $pattern) "A dual-cache tweak is missing its required gate or CacheData flag"
-}
-Require ($tweaks -match '(?s)id:\s*\.colorPaletteLegacy.*?values:\s*\["03hWmMtMs\+4nzama4/PzHQ":\s*1\].*?requiresCacheDataFlag:\s*true') "Legacy Color Palette must stage its CacheExtra candidate with CacheData"
+Require ($tweaks -notmatch '\.disableDynamicIsland') "The legacy-only island off toggle must stay removed - it is a silent no-op on native island devices"
+Require ($tweaks -match '(?s)id:\s*\.hideDynamicIslandOn.*?values:\s*\["YlEtTtHlNesRBMal1CqRaA":\s*0\]') "Hide Dynamic Island must stage capability=0 alongside the SpringBoard flag"
 
 $patcher = Read-ProjectFile "WorkPlot\Managers\CacheDataPatcher.swift"
 Require ($patcher -match 'plist\["CacheData"\]\s+as\?\s+Data') "CacheData patcher must scope its input to the CacheData value"
@@ -54,7 +46,7 @@ Require ($patcher -match 'totalHits\s*=\s*offHits\.count\s*\+\s*onHits\.count' -
 $presetView = Read-ProjectFile "WorkPlot\UI\GestaltPresetManagerView.swift"
 Require (([regex]::Matches($presetView, 'manager\.saveGestaltOrThrow\(plist\)')).Count -eq 1) "Preset apply must use one throwing save"
 Require ($presetView -notmatch 'manager\.saveGestalt\(plist\)') "Preset apply must not swallow save errors"
-Require ($presetView -match 'CacheDataPatcher\.applyCapabilityFlag') "Preset apply must stage CacheData with CacheExtra"
+Require ($presetView -notmatch 'CacheDataPatcher\.applyCapabilityFlag') "The dual-cache tweaks were removed - preset apply must not stage CacheData flags"
 $siriView = Read-ProjectFile "WorkPlot\UI\SiriAITweaksView.swift"
 Require (([regex]::Matches($siriView, 'manager\.saveGestaltOrThrow\(plist\)')).Count -eq 1) "Siri AI apply must use one throwing save"
 Require ($siriView -notmatch 'manager\.saveGestalt\(plist\)') "Siri AI apply must not swallow save errors"

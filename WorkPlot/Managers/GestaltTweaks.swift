@@ -21,11 +21,13 @@ enum GestaltTweakID: String, CaseIterable, Identifiable {
     case aiRegionUS
     // siriMode removed: duplicate of the Siri AI tab's SiriModeApplier path,
     // which is the only variant that can actually revert (remove the key).
+    // disableDynamicIsland removed too: the capability key alone proved
+    // enable-only on native island devices, so a Gestalt-only off toggle was
+    // a silent no-op - the Hide/Restore pair below carries BOTH the proven
+    // SpringBoard suppression flag and the capability=0 staging.
     case hideDynamicIslandOn, hideDynamicIslandOff
     case disableParallax, enableLiquidGlassLowPerformance, disableLiquidGlassLowPerformance
-    case colorPaletteGraphics, colorPaletteLegacy
-    case graphicsStyle
-    case bootChime, chargeLimit, tapToWake, cameraButton, cameraZoom2x
+    case bootChime, chargeLimit, tapToWake, cameraButton
     case pencil, actionButton, collisionSOS
     case stageManager, iPadOS, iPadApps
     case internalInstall, internalStorage, securityResearchDevice
@@ -61,10 +63,6 @@ struct GestaltTweakDefinition: Identifiable {
     var isRisky = false
     var isExperimental = false
     var deviceGate: GestaltDeviceGate? = nil
-    /// When true, applying this tweak also flips the cached capability flag
-    /// in the top-level CacheData blob (CacheDataPatcher) alongside the
-    /// CacheExtra values above.
-    var requiresCacheDataFlag = false
 
     var isSupportedOnThisDevice: Bool {
         DeviceCapability.supports(deviceGate)
@@ -76,52 +74,23 @@ enum GestaltTweakCatalog {
         .init(id: .aiRegionUS, category: .region, title: L10n.shared.tr("tweak.airegion.title"), detail: L10n.shared.tr("tweak.airegion.detail"), values: [:], isRisky: true),
 
         .init(id: .supportsDynamicIsland, category: .display, title: L10n.shared.tr("tweak.dynamicisland.title"), detail: L10n.shared.tr("tweak.dynamicisland.detail"), values: ["YlEtTtHlNesRBMal1CqRaA": 1]),
-        // The Gestalt capability key is ENABLE-only: writing 0 never turns
-        // the island off on native devices (hardware default wins), so the
-        // old disable/remove-pill tweaks were removed as no-ops. The
-        // working off-switches are hideDynamicIslandOn/Off below, which
-        // drive the SpringBoard suppression flag instead.
-        // Nugget >= 7.2 "Hide Dynamic Island Completely": the SpringBoard
-        // flag is the one switch that works on NATIVE island devices too.
-        // values is empty on purpose - the write targets
-        // com.apple.springboard.plist and is handled specially in
+        // Single proven off-switch pair: hideDynamicIslandOn drives
+        // Nugget >=7.2's SpringBoard suppression flag AND stages
+        // capability=0 below as belt-and-suspenders; Restore removes both.
+        // The SpringBoard write itself is handled specially in
         // GestaltPresetManagerView.applySelected().
-        .init(id: .hideDynamicIslandOn, category: .display, title: L10n.shared.tr("tweak.hideisland.title"), detail: L10n.shared.tr("tweak.hideisland.detail"), values: [:], isExperimental: true),
+        .init(id: .hideDynamicIslandOn, category: .display, title: L10n.shared.tr("tweak.hideisland.title"), detail: L10n.shared.tr("tweak.hideisland.detail"), values: ["YlEtTtHlNesRBMal1CqRaA": 0], isExperimental: true),
         .init(id: .hideDynamicIslandOff, category: .display, title: L10n.shared.tr("tweak.showisland.title"), detail: L10n.shared.tr("tweak.showisland.detail"), values: [:]),
         .init(id: .alwaysOnDisplay, category: .display, title: L10n.shared.tr("tweak.aod.title"), detail: L10n.shared.tr("tweak.aod.detail"), values: ["2OOJf1VhaM7NxfRok3HbWQ": 1, "j8/Omm6s1lsmTDFsXjsBfA": 1], isRisky: true),
         .init(id: .alwaysOnDisplayVibrancy, category: .display, title: L10n.shared.tr("tweak.aodvibrancy.title"), detail: L10n.shared.tr("tweak.aodvibrancy.detail"), values: ["ykpu7qyhqFweVMKtxNylWA": 1]),
         .init(id: .disableParallax, category: .display, title: L10n.shared.tr("tweak.parallax.title"), detail: L10n.shared.tr("tweak.parallax.detail"), values: ["mmu76v66k1dAtghToInT8g": 0]),
-        // F3 riset ulang (The Apple Wiki + Nugget/GestaltEdit): TIDAK ada
-        // key CacheExtra terverifikasi komunitas untuk Color Palette. Key
-        // lama (03hWmMtMs+4nzama4/PzHQ = CameraLiveEffectsCapability,
-        // "live effects termasuk B&W") semantiknya kamera, bukan palet.
-        // Toggle menulis SET kandidat: capability live effects + tier
-        // grafis resmi (oOV1jhJbdV3AddkcCg0AEA) yang dipakai komunitas
-        // untuk fitur generasi iPhone 16 - eksperimental, efek visual
-        // belum terjamin.
-        // Dual-cache: menulis SET kandidat CacheExtra (capability live
-        // effects + tier grafis resmi) DAN flip flag capability di CacheData
-        // lewat CacheDataPatcher dalam satu apply.
-        .init(id: .colorPaletteGraphics, category: .display, title: L10n.shared.tr("tweak.colorpalette.title"), detail: L10n.shared.tr("tweak.colorpalette.detail"), values: ["03hWmMtMs+4nzama4/PzHQ": 1, "oOV1jhJbdV3AddkcCg0AEA": 1], isExperimental: true, deviceGate: .iphone13OrLater, requiresCacheDataFlag: true),
         .init(id: .enableLiquidGlassLowPerformance, category: .display, title: L10n.shared.tr("tweak.lglowon.title"), detail: L10n.shared.tr("tweak.lglowon.detail"), values: ["SAGvsp6O6kAQ4fEfDJpC4Q": 1]),
         .init(id: .disableLiquidGlassLowPerformance, category: .display, title: L10n.shared.tr("tweak.lglowoff.title"), detail: L10n.shared.tr("tweak.lglowoff.detail"), values: ["SAGvsp6O6kAQ4fEfDJpC4Q": 0]),
-        // TODO(F5): offset CacheData untuk graphics style belum terverifikasi
-        // komunitas; sementara memakai flip flag capability bersama (lihat
-        // CacheDataPatcher). Gating dipertegas ke iPhone 11 & 12 SAJA.
-        .init(id: .graphicsStyle, category: .display, title: L10n.shared.tr("tweak.graphicsstyle.title"), detail: L10n.shared.tr("tweak.graphicsstyle.detail"), values: ["oOV1jhJbdV3AddkcCg0AEA": 1], isExperimental: true, deviceGate: .iphone11Or12Only, requiresCacheDataFlag: true),
-        // ponytail: CameraLiveEffectsCapability is the best current
-        // CacheExtra candidate; replace it when an on-device trace identifies
-        // a dedicated legacy-palette key.
-        .init(id: .colorPaletteLegacy, category: .display, title: L10n.shared.tr("tweak.palettelegacy.title"), detail: L10n.shared.tr("tweak.palettelegacy.detail"), values: ["03hWmMtMs+4nzama4/PzHQ": 1], isExperimental: true, deviceGate: .iphone13OrBelow, requiresCacheDataFlag: true),
 
         .init(id: .bootChime, category: .hardware, title: L10n.shared.tr("tweak.bootchime.title"), detail: L10n.shared.tr("tweak.bootchime.detail"), values: ["QHxt+hGLaBPbQJbXiUJX3w": 1]),
         .init(id: .chargeLimit, category: .hardware, title: L10n.shared.tr("tweak.chargelimit.title"), detail: L10n.shared.tr("tweak.chargelimit.detail"), values: ["37NVydb//GP/GrhuTN+exg": 1]),
         .init(id: .tapToWake, category: .hardware, title: L10n.shared.tr("tweak.taptowake.title"), detail: L10n.shared.tr("tweak.taptowake.detail"), values: ["yZf3GTRMGTuwSV/lD7Cagw": 1]),
         .init(id: .cameraButton, category: .hardware, title: L10n.shared.tr("tweak.cameracontrol.title"), detail: L10n.shared.tr("tweak.cameracontrol.detail"), values: ["CwvKxM2cEogD3p+HYgaW0Q": 1, "oOV1jhJbdV3AddkcCg0AEA": 1]),
-        // Dual-cache: CacheExtra zoom factor + flip flag capability
-        // CacheData diterapkan BERSAMAAN dalam satu staged-apply; CacheExtra
-        // saja terbukti tidak cukup memunculkan toggle 2x.
-        .init(id: .cameraZoom2x, category: .hardware, title: L10n.shared.tr("tweak.zoom2x.title"), detail: L10n.shared.tr("tweak.zoom2x.detail"), values: ["JLP/IinyzetEPztvoNUNKg": 2, "WC6wwFV23k19BlUQIAwDTg": 2], isExperimental: true, deviceGate: .belowIPhone15, requiresCacheDataFlag: true),
         .init(id: .pencil, category: .hardware, title: L10n.shared.tr("tweak.pencil.title"), detail: L10n.shared.tr("tweak.pencil.detail"), values: ["yhHcB0iH0d1XzPO/CFd3ow": 1]),
         .init(id: .actionButton, category: .hardware, title: L10n.shared.tr("tweak.actionbutton.title"), detail: L10n.shared.tr("tweak.actionbutton.detail"), values: ["cT44WE1EohiwRzhsZ8xEsw": 1]),
         .init(id: .collisionSOS, category: .hardware, title: L10n.shared.tr("tweak.collisionsos.title"), detail: L10n.shared.tr("tweak.collisionsos.detail"), values: ["HCzWusHQwZDea6nNhaKndw": 1]),

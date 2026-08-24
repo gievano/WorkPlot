@@ -128,9 +128,11 @@ struct GestaltPresetManagerView: View {
                 if enabled {
                     if id == .enableLiquidGlassLowPerformance { selectedTweaks.remove(.disableLiquidGlassLowPerformance) }
                     if id == .disableLiquidGlassLowPerformance { selectedTweaks.remove(.enableLiquidGlassLowPerformance) }
-                    // Island enable vs full suppression are opposites;
+                    // Island enable vs the off-switches are opposites;
                     // the hide/show pair excludes itself.
-                    if id == .supportsDynamicIsland { selectedTweaks.remove(.hideDynamicIslandOn) }
+                    if id == .supportsDynamicIsland {
+                        selectedTweaks.remove(.hideDynamicIslandOn)
+                    }
                     if id == .hideDynamicIslandOn {
                         selectedTweaks.remove(.supportsDynamicIsland)
                         selectedTweaks.remove(.hideDynamicIslandOff)
@@ -162,8 +164,7 @@ struct GestaltPresetManagerView: View {
         }
 
         // Declared at function scope: the save section below appends the
-        // skip notice to the success status.
-        var cacheFlagSkippedError: Error?
+        // SpringBoard route results to the success status.
         var springBoardLines: [String] = []
         do {
             if selectedTweaks.contains(.aiRegionUS) {
@@ -180,6 +181,12 @@ struct GestaltPresetManagerView: View {
                 springBoardLines += try SpringBoardPlist.setSuppressed(true)
             }
             if selectedTweaks.contains(.hideDynamicIslandOff) {
+                // Stock state = capability key ABSENT; hideDynamicIslandOn
+                // stages it at 0, so restore must clear it too or the island
+                // stays suppressed on builds that honor the legacy route.
+                var cacheExtra = plist["CacheExtra"] as? [String: Any] ?? [:]
+                cacheExtra.removeValue(forKey: "YlEtTtHlNesRBMal1CqRaA")
+                plist["CacheExtra"] = cacheExtra
                 springBoardLines += try SpringBoardPlist.setSuppressed(false)
             }
             if changesModelName {
@@ -191,22 +198,6 @@ struct GestaltPresetManagerView: View {
             }
             if selectedTweaks.contains(.iPadOS) {
                 try GestaltCacheDataPatch.applyiPadOSMode(to: &plist)
-            }
-            // Dual-cache tweaks share one idempotent capability-flag flip
-            // inside CacheData; applying it here keeps every selected toggle
-            // in the SAME read-modify-write transaction as the CacheExtra
-            // mutations above. A blob whose layout does not match must not
-            // abort the whole apply: the CacheExtra keys written above stay
-            // valid, so degrade with an honest notice instead of failing.
-            if selectedTweaks.contains(where: {
-                GestaltTweakCatalog.definition(for: $0)?.requiresCacheDataFlag == true
-            }) {
-                do {
-                    try CacheDataPatcher.applyCapabilityFlag(to: &plist)
-                } catch {
-                    cacheFlagSkippedError = error
-                    SessionLogger.shared.log("cache capability flag skipped: \(error.localizedDescription)")
-                }
             }
         } catch {
             manager.statusText = String(format: L10n.shared.tr("common.failPrefix"), error.localizedDescription)
@@ -222,12 +213,6 @@ struct GestaltPresetManagerView: View {
             changesModelName = false
             modelName = ""
             manager.statusText = "\(L10n.shared.tr("gestalt.status.applied")) \(L10n.shared.tr("restart.rec.title"))"
-            if let cacheFlagSkippedError {
-                manager.statusText += "\n" + String(
-                    format: L10n.shared.tr("gestalt.cacheFlag.skipped"),
-                    cacheFlagSkippedError.localizedDescription
-                )
-            }
             if !springBoardLines.isEmpty {
                 manager.statusText += "\n" + springBoardLines.joined(separator: "\n")
             }
