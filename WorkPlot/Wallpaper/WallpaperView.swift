@@ -80,7 +80,7 @@ struct WallpaperView: View {
                 }
             }
             Button("Apply to PosterBoard") { applySelected() }
-                .disabled(poster.selectedTendies.isEmpty || pbHash.isEmpty)
+                .disabled(poster.selectedTendies.isEmpty)
         }
     }
 
@@ -137,7 +137,6 @@ struct WallpaperView: View {
 
     private var carplaySection: some View {
         Section("CarPlay Wallpaper") {
-            TextField("CarPlay app hash", text: $carplayHash)
             PhotosPicker("Light image", selection: Binding<PhotosPickerItem?>(
                 get: { nil },
                 set: { item in Task { carplayLight = try? await item?.loadTransferable(type: Data.self) } }
@@ -148,13 +147,22 @@ struct WallpaperView: View {
             ), matching: .images)
             TextField("Name", text: $carplayName)
             Button("Apply CarPlay") { applyCarPlay() }
-                .disabled(carplayHash.isEmpty || carplayLight == nil || carplayDark == nil)
+                .disabled(carplayLight == nil || carplayDark == nil)
         }
     }
 
     private var settingsSection: some View {
         Section("Settings") {
-            TextField("PosterBoard app hash (from Nugget)", text: $pbHash)
+            Button("Detect PosterBoard") { detectHash() }
+            if !pbHash.isEmpty {
+                Text("PosterBoard: \(pbHash)").font(.caption).foregroundColor(.secondary)
+            }
+            if CarPlayManager.supportsCarPlay() {
+                Button("Detect CarPlay") { detectCarPlayHash() }
+                if !carplayHash.isEmpty {
+                    Text("CarPlay: \(carplayHash)").font(.caption).foregroundColor(.secondary)
+                }
+            }
             Button("Reset Collections") { resetCollections() }
             Button("Clear Cache") {
                 try? WallpaperPosterBoardManager.clearCache()
@@ -193,15 +201,23 @@ struct WallpaperView: View {
     }
 
     private func applySelected() {
-        guard !pbHash.isEmpty else {
-            UIApplication.shared.alert(title: "App Hash required", body: "Set the PosterBoard app hash from Nugget in Settings."); return
-        }
         exploit.checkSystemPathAccess()
         guard exploit.sandboxGranted else {
             UIApplication.shared.alert(title: "Exploit not active", body: "Run the bad_query exploit from the Home tab first."); return
         }
+        var hash = pbHash
+        if hash.isEmpty {
+            UIApplication.shared.change(title: "Detecting...", body: "Locating PosterBoard...")
+            hash = WallpaperPosterBoardManager.discoverPosterBoardHash() ?? ""
+            UIApplication.shared.dismissAlert()
+            pbHash = hash
+        }
+        guard !hash.isEmpty else {
+            UIApplication.shared.alert(title: "PosterBoard not found", body: "Could not locate the PosterBoard container. Make sure the exploit is active.")
+            return
+        }
         do {
-            try poster.applyTendies(appHash: pbHash)
+            try poster.applyTendies(appHash: hash)
             UIApplication.shared.dismissAlert()
             Haptic.shared.notify(.success)
             UIApplication.shared.alert(title: "Applied", body: "Open Wallpaper settings and pick your new poster.")
@@ -213,12 +229,18 @@ struct WallpaperView: View {
 
     private func applyCarPlay() {
         guard let light = carplayLight, let dark = carplayDark else { return }
-        guard !carplayHash.isEmpty else {
-            UIApplication.shared.alert(title: "App Hash required", body: "Set the CarPlay app hash from Nugget in Settings."); return
-        }
         exploit.checkSystemPathAccess()
         guard exploit.sandboxGranted else {
             UIApplication.shared.alert(title: "Exploit not active", body: "Run the bad_query exploit from the Home tab first."); return
+        }
+        var hash = carplayHash
+        if hash.isEmpty {
+            hash = WallpaperPosterBoardManager.discoverCarPlayHash() ?? ""
+            carplayHash = hash
+        }
+        guard !hash.isEmpty else {
+            UIApplication.shared.alert(title: "CarPlay not found", body: "Could not locate the CarPlay container. Make sure the exploit is active.")
+            return
         }
         let wp = CarPlayWallpaper(
             name: carplayName, lightImage: UIImage(data: light) ?? UIImage(),
@@ -226,7 +248,7 @@ struct WallpaperView: View {
             selectedImageDataLight: light, selectedImageDataDark: dark
         )
         do {
-            try CarPlayManager.applyCarPlay(appHash: carplayHash, wallpapers: [wp])
+            try CarPlayManager.applyCarPlay(appHash: hash, wallpapers: [wp])
             Haptic.shared.notify(.success)
             UIApplication.shared.alert(title: "CarPlay Applied", body: "Check your car's CarPlay wallpaper settings.")
         } catch {
@@ -240,10 +262,51 @@ struct WallpaperView: View {
         guard exploit.sandboxGranted else {
             UIApplication.shared.alert(title: "Exploit not active", body: "Run the bad_query exploit from the Home tab first."); return
         }
-        let _ = try? WallpaperSymlink.createDescriptorsSymlink(appHash: pbHash, ext: "com.apple.WallpaperKit.CollectionsPoster")
+        var hash = pbHash
+        if hash.isEmpty {
+            hash = WallpaperPosterBoardManager.discoverPosterBoardHash() ?? ""
+            pbHash = hash
+        }
+        guard !hash.isEmpty else {
+            UIApplication.shared.alert(title: "PosterBoard not found", body: "Could not locate the PosterBoard container.")
+            return
+        }
+        let _ = try? WallpaperSymlink.createDescriptorsSymlink(appHash: hash, ext: "com.apple.WallpaperKit.CollectionsPoster")
         defer { WallpaperSymlink.cleanup() }
         try? FileManager.default.trashItem(at: WallpaperSymlink.getLCDocumentsDirectory().appendingPathComponent(".Trash"), resultingItemURL: nil)
         ExploitManager.shared.requestRespring()
+    }
+
+    private func detectHash() {
+        exploit.checkSystemPathAccess()
+        guard exploit.sandboxGranted else {
+            UIApplication.shared.alert(title: "Exploit not active", body: "Run the bad_query exploit from the Home tab first."); return
+        }
+        UIApplication.shared.change(title: "Detecting...", body: "Scanning app containers...")
+        defer { UIApplication.shared.dismissAlert() }
+        if let hash = WallpaperPosterBoardManager.discoverPosterBoardHash() {
+            pbHash = hash
+            Haptic.shared.notify(.success)
+        } else {
+            Haptic.shared.notify(.error)
+            UIApplication.shared.alert(title: "Not found", body: "Could not locate the PosterBoard container.")
+        }
+    }
+
+    private func detectCarPlayHash() {
+        exploit.checkSystemPathAccess()
+        guard exploit.sandboxGranted else {
+            UIApplication.shared.alert(title: "Exploit not active", body: "Run the bad_query exploit from the Home tab first."); return
+        }
+        UIApplication.shared.change(title: "Detecting...", body: "Scanning app containers...")
+        defer { UIApplication.shared.dismissAlert() }
+        if let hash = WallpaperPosterBoardManager.discoverCarPlayHash() {
+            carplayHash = hash
+            Haptic.shared.notify(.success)
+        } else {
+            Haptic.shared.notify(.error)
+            UIApplication.shared.alert(title: "Not found", body: "Could not locate the CarPlay container.")
+        }
     }
 
     private func loadCowabunga() { reloadCowabunga() }
