@@ -131,7 +131,7 @@ struct StatusDashboardView: View {
         let width: Int
         let height: Int
         let note: String?
-        if let fixed = RDARFix.knownGoodNativeCanvas(machine: machine) {
+        if let fixed = RDARFix.fixCanvas(machine: machine) {
             width = fixed.width
             height = fixed.height
             note = nil

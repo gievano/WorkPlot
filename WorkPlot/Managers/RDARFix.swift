@@ -37,6 +37,11 @@ struct RDARFix {
     /// ponytail: linear probe of 3 known paths; add Data/System container
     /// discovery only if a build ships none of these.
     static let candidatePaths: [(lease: String, file: String)] = [
+        // Managed Preferences domain first - FixRDAR4XR11 proves the graphics
+        // plist placed here is what actually heals XR/11 (Cowabunga Lite
+        // restores into exactly this directory).
+        ("/var/Managed Preferences/mobile/com.apple.iokit.IOMobileGraphicsFamily.plist",
+         "/private/var/Managed Preferences/mobile/com.apple.iokit.IOMobileGraphicsFamily.plist"),
         ("/var/mobile/Library/Preferences/com.apple.iokit.IOMobileGraphicsFamily.plist",
          "/private/var/mobile/Library/Preferences/com.apple.iokit.IOMobileGraphicsFamily.plist"),
         ("/var/preferences/com.apple.iokit.IOMobileGraphicsFamily.plist",
@@ -221,12 +226,26 @@ struct RDARFix {
         knownGoodNativeCanvases[machine]
     }
 
-    /// Gestalt-tab tweak entry: known-good table first, nativeBounds only
-    /// for unknown machines. machine is injected so this file stays free of
-    /// app-only dependencies (CI compiles it standalone).
+    /// Community-proven RDAR-SAFE canvases where they differ from the native
+    /// panel. FixRDAR4XR11: at native 828x1792 an XR/11 with the island
+    /// enabler keeps buggy UI - 786x1704 is the optimized healing size, so
+    /// the one-tap fix must prefer it over the native table.
+    static let rdarSafeCanvases: [String: (width: Int, height: Int)] = [
+        "iPhone11,8": (786, 1704), // iPhone XR / iPhone 11
+    ]
+
+    /// Canvas the one-tap fix should write for this machine: RDAR-safe value
+    /// first, then the native table, else nil (caller falls back to bounds).
+    static func fixCanvas(machine: String) -> (width: Int, height: Int)? {
+        rdarSafeCanvases[machine] ?? knownGoodNativeCanvas(machine: machine)
+    }
+
+    /// Gestalt-tab tweak entry: RDAR-safe table first, then known-good
+    /// native, nativeBounds only for unknown machines. machine is injected so
+    /// this file stays free of app-only dependencies (CI compiles it standalone).
     static func applyCanvasSizesGestalt(to plist: inout [String: Any],
                                         machine: String) {
-        if let fixed = knownGoodNativeCanvas(machine: machine) {
+        if let fixed = fixCanvas(machine: machine) {
             applyCanvasSizesGestalt(to: &plist,
                                     canvasWidth: fixed.width,
                                     canvasHeight: fixed.height)

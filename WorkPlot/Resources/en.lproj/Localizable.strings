@@ -242,6 +242,7 @@
 // Spoof summary
 "siriai.spoof.keysCount" = "Keys that will change: %d";
 "siriai.spoof.detected" = "Detected real device: %@";
+"siriai.spoof.verify" = "Spoof %1$@: %2$d/%3$d identity keys verified on disk.";
 "siriai.spoof.revert" = "Revert restores every key at once from a pre-spoof backup (Backups tab).";
 
 // Siri AI extra toggles
