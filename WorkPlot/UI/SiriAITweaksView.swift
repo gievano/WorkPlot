@@ -239,45 +239,73 @@ struct SiriAITweaksView: View {
     // MARK: - Staged apply
 
     /// Applies every staged change in one read-modify-write pass:
-    /// backup → mutate → save (verified write) → respring.
+    /// backup → mutate → save (verified write) → verify → restart prompt.
+    /// All Gestalt I/O runs off the main thread (same rule as the dashboard).
     private func applyChanges() {
-        guard var plist = loadedPlist else {
-            manager.statusText = l10n.tr("common.readFail")
-            return
-        }
-
-        do {
-            // New Siri AI path: CacheData capability patch + Siri mode flag.
-            if let enabled = siriAIStaged {
-                try SiriAIModifier.setEnabled(enabled, in: &plist)
-                SiriModeApplier.setEnabled(enabled, in: &plist)
-            }
-            // Legacy Apple Intelligence path: eligibility key only.
-            if let enabled = appleIntelligenceStaged {
-                AppleIntelligenceController.setEnabled(enabled, in: &plist)
-            }
-            if let target = spoofTarget {
-                try DeviceSpoofingManager.apply(target, to: &plist)
-            }
-        } catch {
-            manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
-            return
-        }
-
+        guard !isApplying else { return }
         isApplying = true
-        defer { isApplying = false }
-        do {
-            try manager.saveGestaltOrThrow(plist)
-            siriAIStaged = nil
-            appleIntelligenceStaged = nil
-            spoofTarget = nil
-            manager.statusText = "\(l10n.tr("siriai.apply")) OK. \(l10n.tr("siriai.restart.title"))"
-            showRestartAlert = true
-        } catch {
-            manager.statusText = String(
-                format: l10n.tr("common.failPrefix"),
-                error.localizedDescription
-            )
+
+        let siriStage = siriAIStaged
+        let aiStage = appleIntelligenceStaged
+        let spoofStage = spoofTarget
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                guard var plist = self.manager.readGestalt() else {
+                    throw ExploitManagerError(message: L10n.shared.tr("common.readFail"))
+                }
+
+                // New Siri AI path: CacheData capability patch + Siri mode flag.
+                if let enabled = siriStage {
+                    try SiriAIModifier.setEnabled(enabled, in: &plist)
+                    SiriModeApplier.setEnabled(enabled, in: &plist)
+                }
+                // Legacy Apple Intelligence path: eligibility key only.
+                if let enabled = aiStage {
+                    AppleIntelligenceController.setEnabled(enabled, in: &plist)
+                }
+                if let target = spoofStage {
+                    try DeviceSpoofingManager.apply(target, to: &plist)
+                }
+
+                try self.manager.saveGestaltOrThrow(plist)
+
+                var verifyLine = ""
+                if let target = spoofStage {
+                    // Read back from disk so the status distinguishes a write
+                    // that landed from one the system dropped (iOS 27 builds
+                    // may serve identity from signed cache values instead of
+                    // CacheExtra - GoldenNugget dropped MobileGestalt for 27
+                    // entirely; this line keeps us honest about which side failed).
+                    let v = self.manager.readGestalt()
+                        .map { DeviceSpoofingManager.verify(target: target, in: $0) } ?? (matched: 0, total: 0)
+                    verifyLine = String(
+                        format: L10n.shared.tr("siriai.spoof.verify"),
+                        target.marketingName, v.matched, v.total
+                    )
+                    if v.total == 0 || v.matched < v.total {
+                        verifyLine += "\n" + L10n.shared.tr("rdar.verify.fail")
+                    }
+                }
+
+                DispatchQueue.main.async {
+                    self.isApplying = false
+                    self.siriAIStaged = nil
+                    self.appleIntelligenceStaged = nil
+                    self.spoofTarget = nil
+                    self.manager.statusText = "\(L10n.shared.tr("siriai.apply")) OK. \(L10n.shared.tr("siriai.restart.title"))"
+                        + (verifyLine.isEmpty ? "" : "\n\(verifyLine)")
+                    self.showRestartAlert = true
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.isApplying = false
+                    self.manager.statusText = String(
+                        format: L10n.shared.tr("common.failPrefix"),
+                        error.localizedDescription
+                    )
+                }
+            }
         }
     }
 }
