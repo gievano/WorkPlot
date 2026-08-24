@@ -839,3 +839,23 @@ Fitur yang mekanismenya terbukti tidak berfungsi pada device target harus dihapu
 - Spoof di iOS 27 beta tetap TIDAK DIJAMIN tampil - kalau verify penuh tapi device diam, satu-satunya rute lanjutan adalah patch CacheData struktural (belum ada) atau menunggu komunitas menemukan jalur iOS 27.
 - `verify()` belum masuk harness CI (Support/RDARFixCheck.swift) - bisa ditambah sebagai pure-function test.
 - Uji device: RDAR XR/11 via Managed Preferences path + canvas 786x1704.
+
+## 2026-08-24 - Fix Regresi Spoof: Kembali ke Write-Set Minimal yang Terbukti
+
+### The Change
+
+1. **Akar masalah "spoofing ga jalan walau restart"** ditemukan via bedah IPA lama (`WorkPlot.ipa_4`, era 51c177b) + git history: versi LAMA yang terbukti jalan hanya menulis ProductType x9 + board/HWModel x9 + nama marketing (kalau sudah ter-cache) + CompatibleDeviceFallback di dalam ArtworkDevice. Versi BARU menambah tulisan CPU platform (t8130/t8140/t8150), RegulatoryModelNumber, dan region US/US-A - blast identitas+region ini membuat mobilegestaltd di iOS 27 tidak mempercayai seluruh CacheExtra dan mengabaikan SEMUA key.
+2. **`DeviceSpoofingManager.apply()`** dikembalikan ke write-set minimal terbukti; `changedKeyCount` dan `verify` ikut disesuaikan (hanya menghitung key yang benar-benar ditulis).
+3. `cpuKeys`/`regulatoryModelKeys` dipertahankan sebagai konstanta karena preset bawaan masih menulisnya secara eksplisit (diberi komentar ponytail); `regionValues` dihapus total.
+4. **check-feature.ps1**: dua asersi region US/US-A diganti regression guard baru - spoof picker DILARANG menulis region/CPU/regulatory (pola `regionValues` dilarang muncul).
+5. **Repo cleanup** (permintaan user): `.reference/` (decompile IPA 3105), `skill-observations/`, dan `docs/superpowers/` dicabut dari git tracking + masuk .gitignore (+ pola `*.ipa`); file tetap ada lokal.
+
+### The Reasoning
+
+- Prinsip repo sendiri: jangan bertahan pada mekanisme yang tidak terbukti. Bukti lapangan (IPA lama jalan, baru gagal) lebih kuat daripada teori "identitas lengkap lebih konsisten" - konsistensi berlebihan justru memicu penolakan daemon.
+- Preset bawaan sengaja TIDAK diubah di batch ini (masih menulis CPU/regulatory) - risiko terpisah, evaluasi menyusul setelah picker spoof dikonfirmasi jalan lagi di device.
+
+### The Tech Debt
+
+- Preset "iPhone 17 Pro Max Spoof" kemungkinan besar kena regresi yang sama (menulis CPU t8150 + A3257 lewat jalur preset) - pantau laporan user; kalau iya, terapkan write-set minimal yang sama di apply engine preset.
+- Verifikasi device: spoof picker -> About berubah setelah full restart di iOS 27 beta.

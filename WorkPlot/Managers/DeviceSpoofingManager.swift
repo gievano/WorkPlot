@@ -85,19 +85,20 @@ enum DeviceSpoofingManager {
     ]
 
     /// HardwarePlatform stores the CPU platform string (t8130 = A17 Pro,
-    /// t8140 = A18 Pro, t8150 = A19 Pro) — Nugget's third spoof axis.
+    /// t8140 = A18 Pro, t8150 = A19 Pro) - Nugget's third spoof axis.
+    /// ponytail: NOT written by the picker spoof anymore (full blast broke
+    /// mobilegestalt trust on iOS 27); kept because the built-in presets
+    /// stage these keys explicitly.
     static let cpuKeys = ["5pYKlGnYYBzGvAlIU8RjEQ"]
 
     /// RegulatoryModelNumber is the "A" model number of the hardware.
+    /// ponytail: presets-only, same reason as cpuKeys above.
     static let regulatoryModelKeys = ["97JDvERpVwO+GHtthIh7hA"]
 
-    /// Region-code keys written alongside every spoof target so regional
-    /// services (Apple Intelligence eligibility, Siri assets) agree with the
-    /// spoofed model. Values verified against GestaltEdit's AI-enabler set.
-    static let regionValues = [
-        "h63QSdBCiT/z0WU6rdQv6Q": "US",
-        "yK+xavymRGZ3xWc1tb8XDg": "US/A"
-    ]
+    /// Region-code keys REMOVED from the spoof write-set: overwriting the
+    /// device's real region (US/US-A) alongside a full identity blast was
+    /// part of the regression. AI-region forcing still writes LL/LL/A via
+    /// AIRegionApplier, which is the proven route.
 
     /// Marketing-name keys. Only overwritten when already present so we
     /// never invent keys on devices that do not cache them.
@@ -120,9 +121,6 @@ enum DeviceSpoofingManager {
 
         for key in productTypeKeys { countsChange(key, target.productType) }
         for key in hwModelKeys { countsChange(key, target.hwModel) }
-        for key in cpuKeys { countsChange(key, target.cpuName) }
-        for key in regulatoryModelKeys { countsChange(key, target.regulatoryModel) }
-        for (key, value) in regionValues { countsChange(key, value) }
         for key in deviceNameKeys where cacheExtra[key] != nil {
             countsChange(key, target.marketingName)
         }
@@ -163,23 +161,18 @@ enum DeviceSpoofingManager {
             throw GestaltArtworkError.artworkDictionaryMissing
         }
 
+        // Write-set = the PROVEN minimal blast from the release where device
+        // spoofing verifiably worked on iOS 27 (old IPA forensics + git
+        // history): ProductType x9, HW/board x9, marketing names when already
+        // cached, CompatibleDeviceFallback inside ArtworkDevice. Writing CPU
+        // platform, RegulatoryModelNumber, and US region codes on top made
+        // mobilegestaltd distrust the whole CacheExtra and ignore every key
+        // - that was the "spoofing ga jalan walau restart" regression.
         for key in productTypeKeys {
             cacheExtra[key] = target.productType
         }
         for key in hwModelKeys {
             cacheExtra[key] = target.hwModel
-        }
-        for key in cpuKeys {
-            cacheExtra[key] = target.cpuName
-        }
-        for key in regulatoryModelKeys {
-            cacheExtra[key] = target.regulatoryModel
-        }
-
-        // Region codes ride along with every target so the spoofed identity
-        // stays internally consistent.
-        for (key, value) in regionValues {
-            cacheExtra[key] = value
         }
 
         // Only overwrite names that already exist so we never invent keys.
@@ -187,9 +180,8 @@ enum DeviceSpoofingManager {
             cacheExtra[key] = target.marketingName
         }
 
-        // ArtworkDevice dictionary entries ride along with the same pass.
+        // ArtworkDevice dictionary entry rides along with the same pass.
         artwork["CompatibleDeviceFallback"] = target.productType
-        artwork["ArtworkDeviceProductDescription"] = target.marketingName
         cacheExtra[GestaltArtwork.artworkKey] = artwork
 
         plist["CacheExtra"] = cacheExtra
@@ -211,9 +203,6 @@ enum DeviceSpoofingManager {
 
         for key in productTypeKeys { counts(key, target.productType) }
         for key in hwModelKeys { counts(key, target.hwModel) }
-        for key in cpuKeys { counts(key, target.cpuName) }
-        for key in regulatoryModelKeys { counts(key, target.regulatoryModel) }
-        for (key, value) in regionValues { counts(key, value) }
         for key in deviceNameKeys where cacheExtra[key] != nil {
             counts(key, target.marketingName)
         }
