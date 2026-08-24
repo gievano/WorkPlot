@@ -763,3 +763,23 @@ Fitur yang mekanismenya terbukti tidak berfungsi pada device target harus dihapu
 
 - Judul strings hideisland berubah - jika ada materi eksternal yang menyebut nama lama perlu sinkron manual.
 - Fallback UIScreen untuk mesin tak dikenal tetap menjadi titik lemah teoretis; diterima karena satu-satunya alternatif adalah menolak melayani device baru.
+
+## 2026-08-24 - Fix 3 Bug UI: Freeze Fix RDAR/Custom Canvas + Liquid Glass EPERM
+
+### The Change
+
+1. **Bug 1 & 3 - Freeze (Fix RDAR & Apply Custom Canvas)**: `StatusDashboardView.runFixRDAR()` / `applyCanvasEveryRoute()` dijalankan **sinkron di main thread**. Keduanya memanggil `manager.readGestalt()` + `saveGestaltOrThrow()` + `RDARFix.apply()` (yang melakukan `bad_query_list` hingga 64 container + `InodeWriter` write). Main thread keblokir → UI freeze / force-close. Perbaikan: seluruh kerja berat dipindah ke `DispatchQueue.global(qos: .userInitiated).async`, status & `showRestartAlert` di-dispatch balik ke main. Tambah guard `@State isWorking` agar tap ganda tidak menumpuk (tombol Custom Canvas dinonaktifkan saat `isWorking`).
+2. **Bug 2 - Disable Liquid Glass "Operation not permitted"**: `LiquidGlassController.disableGlobal()` → `GlobalPreferences.setSolariumSuppressed` menulis `.GlobalPreferences.plist` via `InodeWriter.writeVerifiedInPlace` **tanpa `BadQueryLeaseScope`**, sehingga `open(O_WRONLY|O_NOFOLLOW)` dapat `EPERM` (errno=1) dan rollback ikut gagal. Perbaikan: bungkus write dengan `BadQueryLeaseScope.withLease(forPath: path)` (sama persis dengan pola `RDARFix.withResolvedTarget`).
+3. **Disable Liquid Glass di Dashboard** ikut di-offload ke background queue (sebelumnya ikut menjalankan `disableGlobal()` sinkron di main thread).
+4. Tambah key `common.working` = "Working…" di `WorkPlot/Resources/en.lproj/Localizable.strings` (indikator progres saat operasi background berjalan).
+
+### The Reasoning
+
+- LiquidGlassView.applyChanges() sudah benar pakai background queue; StatusDashboardView belum, padahal beban kerjanya sama berat (probe container + write inode-preserving). Offload adalah penyebab langsung freeze.
+- `GlobalPreferences` luput membawa lease padahal `RDARFix` dan `saveGestaltOrThrow` (via GestaltAccess) selalu mengakuisisi lease sebelum `open()`. Tanpa lease, `open()` ditolak kernel dengan EPERM — cocok persis dengan pesan error user.
+
+### The Tech Debt
+
+- Build tetap diverifikasi lewat CI round-trip (Windows tidak bisa kompilasi Swift).
+- `isWorking` belum dipakai sebagai guard pada tombol Fix RDAR & Disable Liquid Glass (hanya Custom Canvas) — risiko concurrency rendah karena masing-masing write punya lease sendiri, tapi bisa ditambah kalau user laporkan tap ganda.
+- Key `common.working` baru hanya di `en.lproj`; bundle resource English-only sudah konsisten dengan keputusan finalisasi bahasa.
