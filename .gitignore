@@ -4,3 +4,9 @@ graphify-out/
 *.xcuserdatad/
 xcuserdata/
 .DS_Store
+
+# Local reference material & session artifacts - not part of the app.
+.reference/
+skill-observations/
+docs/superpowers/
+*.ipa
