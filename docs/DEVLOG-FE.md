@@ -813,6 +813,7 @@ Fitur yang mekanismenya terbukti tidak berfungsi pada device target harus dihapu
 ### The Reasoning
 
 - Build lama terlihat "bisa" karena tidak pernah menyentuh springboard.plist; build baru gagal total karena write tanpa lease membatalkan seluruh apply sebelum saveGestalt. Setelah lease fix, hideDynamicIslandOn = capability=0 + flag Nugget (superset, dua rute sekaligus).
+- Laporan user "pertama kali disable bisa, setelahnya tidak": EPERM membuat apply #2 dst gagal total (throw memotong sebelum saveGestalt), sementara kesan pertama-bisa kemungkinan dari rute legacy di build lama. Karena itu rute SpringBoard kini NON-FATAL: gagal flag hanya jadi baris "SpringBoard: failed (...)" di status, capability=0 tetap tersimpan — dua rute independen tidak boleh saling bunuh.
 
 ### The Tech Debt
 
