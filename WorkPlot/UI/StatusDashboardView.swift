@@ -26,23 +26,6 @@ struct StatusDashboardView: View {
                         runFixRDAR()
                     }
                     .disabled(!manager.sandboxGranted)
-                    Button(l10n.tr("status.lg.disable")) {
-                        manager.statusText = L10n.shared.tr("common.working")
-                        DispatchQueue.global(qos: .userInitiated).async {
-                            do {
-                                let lines = try LiquidGlassController.disableGlobal()
-                                DispatchQueue.main.async {
-                                    manager.statusText = L10n.shared.tr("lg.disabled") + "\n" + lines.joined(separator: "\n")
-                                    showRestartAlert = true
-                                }
-                            } catch {
-                                DispatchQueue.main.async {
-                                    manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
-                                }
-                            }
-                        }
-                    }
-                    .disabled(!manager.sandboxGranted)
                     // Respring tetap di menu utama: fungsinya menyegarkan UI saja.
                     Button(l10n.tr("status.respring.refresh")) { manager.requestRespring() }
                 }
