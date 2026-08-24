@@ -203,25 +203,35 @@ struct WallpaperView: View {
         guard exploit.sandboxGranted else {
             UIApplication.shared.alert(title: "Exploit not active", body: "Run the bad_query exploit from the Home tab first."); return
         }
-        var hash = pbHash
-        if hash.isEmpty {
-            UIApplication.shared.change(title: "Detecting...", body: "Locating PosterBoard...")
-            hash = WallpaperPosterBoardManager.discoverPosterBoardHash() ?? ""
-            UIApplication.shared.dismissAlert()
-            pbHash = hash
-        }
-        guard !hash.isEmpty else {
-            UIApplication.shared.alert(title: "PosterBoard not found", body: "Could not locate the PosterBoard container. Make sure the exploit is active.")
-            return
-        }
-        do {
-            try poster.applyTendies(appHash: hash)
-            UIApplication.shared.dismissAlert()
-            Haptic.shared.notify(.success)
-            UIApplication.shared.alert(title: "Applied", body: "Open Wallpaper settings and pick your new poster.")
-        } catch {
-            UIApplication.shared.dismissAlert()
-            UIApplication.shared.alert(title: "Apply failed", body: error.localizedDescription)
+        guard !poster.selectedTendies.isEmpty else { return }
+
+        let startHash = pbHash
+        UIApplication.shared.change(title: "Applying Wallpapers...", body: "Locating PosterBoard...")
+        Task.detached(priority: .userInitiated) { [weak poster] in
+            var hash = startHash
+            if hash.isEmpty {
+                hash = WallpaperPosterBoardManager.discoverPosterBoardHash() ?? ""
+            }
+            guard !hash.isEmpty else {
+                await MainActor.run {
+                    UIApplication.shared.dismissAlert()
+                    UIApplication.shared.alert(title: "PosterBoard not found", body: "Could not locate the PosterBoard container. Make sure the exploit is active.")
+                }
+                return
+            }
+            do {
+                try poster?.applyTendies(appHash: hash)
+                await MainActor.run {
+                    UIApplication.shared.dismissAlert()
+                    Haptic.shared.notify(.success)
+                    UIApplication.shared.alert(title: "Applied", body: "Open Wallpaper settings and pick your new poster.")
+                }
+            } catch {
+                await MainActor.run {
+                    UIApplication.shared.dismissAlert()
+                    UIApplication.shared.alert(title: "Apply failed", body: error.localizedDescription)
+                }
+            }
         }
     }
 
@@ -231,26 +241,39 @@ struct WallpaperView: View {
         guard exploit.sandboxGranted else {
             UIApplication.shared.alert(title: "Exploit not active", body: "Run the bad_query exploit from the Home tab first."); return
         }
-        var hash = carplayHash
-        if hash.isEmpty {
-            hash = WallpaperPosterBoardManager.discoverCarPlayHash() ?? ""
-            carplayHash = hash
-        }
-        guard !hash.isEmpty else {
-            UIApplication.shared.alert(title: "CarPlay not found", body: "Could not locate the CarPlay container. Make sure the exploit is active.")
-            return
-        }
-        let wp = CarPlayWallpaper(
-            name: carplayName, lightImage: UIImage(data: light) ?? UIImage(),
-            darkImage: UIImage(data: dark) ?? UIImage(),
-            selectedImageDataLight: light, selectedImageDataDark: dark
-        )
-        do {
-            try CarPlayManager.applyCarPlay(appHash: hash, wallpapers: [wp])
-            Haptic.shared.notify(.success)
-            UIApplication.shared.alert(title: "CarPlay Applied", body: "Check your car's CarPlay wallpaper settings.")
-        } catch {
-            UIApplication.shared.alert(title: "CarPlay failed", body: error.localizedDescription)
+        let startHash = carplayHash
+        let name = carplayName
+        UIApplication.shared.change(title: "Applying CarPlay...", body: "Locating CarPlay...")
+        Task.detached(priority: .userInitiated) {
+            var hash = startHash
+            if hash.isEmpty {
+                hash = WallpaperPosterBoardManager.discoverCarPlayHash() ?? ""
+            }
+            guard !hash.isEmpty else {
+                await MainActor.run {
+                    UIApplication.shared.dismissAlert()
+                    UIApplication.shared.alert(title: "CarPlay not found", body: "Could not locate the CarPlay container. Make sure the exploit is active.")
+                }
+                return
+            }
+            let wp = CarPlayWallpaper(
+                name: name, lightImage: UIImage(data: light) ?? UIImage(),
+                darkImage: UIImage(data: dark) ?? UIImage(),
+                selectedImageDataLight: light, selectedImageDataDark: dark
+            )
+            do {
+                try CarPlayManager.applyCarPlay(appHash: hash, wallpapers: [wp])
+                await MainActor.run {
+                    UIApplication.shared.dismissAlert()
+                    Haptic.shared.notify(.success)
+                    UIApplication.shared.alert(title: "CarPlay Applied", body: "Check your car's CarPlay wallpaper settings.")
+                }
+            } catch {
+                await MainActor.run {
+                    UIApplication.shared.dismissAlert()
+                    UIApplication.shared.alert(title: "CarPlay failed", body: error.localizedDescription)
+                }
+            }
         }
     }
 
@@ -260,19 +283,28 @@ struct WallpaperView: View {
         guard exploit.sandboxGranted else {
             UIApplication.shared.alert(title: "Exploit not active", body: "Run the bad_query exploit from the Home tab first."); return
         }
-        var hash = pbHash
-        if hash.isEmpty {
-            hash = WallpaperPosterBoardManager.discoverPosterBoardHash() ?? ""
-            pbHash = hash
+        let startHash = pbHash
+        UIApplication.shared.change(title: "Resetting...", body: "Wiping custom descriptors...")
+        Task.detached(priority: .userInitiated) {
+            var hash = startHash
+            if hash.isEmpty {
+                hash = WallpaperPosterBoardManager.discoverPosterBoardHash() ?? ""
+            }
+            guard !hash.isEmpty else {
+                await MainActor.run {
+                    UIApplication.shared.dismissAlert()
+                    UIApplication.shared.alert(title: "PosterBoard not found", body: "Could not locate the PosterBoard container.")
+                }
+                return
+            }
+            _ = try? WallpaperSymlink.createDescriptorsSymlink(appHash: hash, ext: "com.apple.WallpaperKit.CollectionsPoster")
+            WallpaperSymlink.cleanup()
+            try? FileManager.default.trashItem(at: WallpaperSymlink.getLCDocumentsDirectory().appendingPathComponent(".Trash"), resultingItemURL: nil)
+            await MainActor.run {
+                UIApplication.shared.dismissAlert()
+                ExploitManager.shared.requestRespring()
+            }
         }
-        guard !hash.isEmpty else {
-            UIApplication.shared.alert(title: "PosterBoard not found", body: "Could not locate the PosterBoard container.")
-            return
-        }
-        let _ = try? WallpaperSymlink.createDescriptorsSymlink(appHash: hash, ext: "com.apple.WallpaperKit.CollectionsPoster")
-        defer { WallpaperSymlink.cleanup() }
-        try? FileManager.default.trashItem(at: WallpaperSymlink.getLCDocumentsDirectory().appendingPathComponent(".Trash"), resultingItemURL: nil)
-        ExploitManager.shared.requestRespring()
     }
 
     private func detectHash() {
@@ -281,13 +313,18 @@ struct WallpaperView: View {
             UIApplication.shared.alert(title: "Exploit not active", body: "Run the bad_query exploit from the Home tab first."); return
         }
         UIApplication.shared.change(title: "Detecting...", body: "Scanning app containers...")
-        defer { UIApplication.shared.dismissAlert() }
-        if let hash = WallpaperPosterBoardManager.discoverPosterBoardHash() {
-            pbHash = hash
-            Haptic.shared.notify(.success)
-        } else {
-            Haptic.shared.notify(.error)
-            UIApplication.shared.alert(title: "Not found", body: "Could not locate the PosterBoard container.")
+        Task.detached(priority: .userInitiated) {
+            let hash = WallpaperPosterBoardManager.discoverPosterBoardHash()
+            await MainActor.run {
+                UIApplication.shared.dismissAlert()
+                if let hash {
+                    pbHash = hash
+                    Haptic.shared.notify(.success)
+                } else {
+                    Haptic.shared.notify(.error)
+                    UIApplication.shared.alert(title: "Not found", body: "Could not locate the PosterBoard container.")
+                }
+            }
         }
     }
 
@@ -297,13 +334,18 @@ struct WallpaperView: View {
             UIApplication.shared.alert(title: "Exploit not active", body: "Run the bad_query exploit from the Home tab first."); return
         }
         UIApplication.shared.change(title: "Detecting...", body: "Scanning app containers...")
-        defer { UIApplication.shared.dismissAlert() }
-        if let hash = WallpaperPosterBoardManager.discoverCarPlayHash() {
-            carplayHash = hash
-            Haptic.shared.notify(.success)
-        } else {
-            Haptic.shared.notify(.error)
-            UIApplication.shared.alert(title: "Not found", body: "Could not locate the CarPlay container.")
+        Task.detached(priority: .userInitiated) {
+            let hash = WallpaperPosterBoardManager.discoverCarPlayHash()
+            await MainActor.run {
+                UIApplication.shared.dismissAlert()
+                if let hash {
+                    carplayHash = hash
+                    Haptic.shared.notify(.success)
+                } else {
+                    Haptic.shared.notify(.error)
+                    UIApplication.shared.alert(title: "Not found", body: "Could not locate the CarPlay container.")
+                }
+            }
         }
     }
 
