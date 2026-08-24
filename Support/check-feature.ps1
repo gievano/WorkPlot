@@ -18,8 +18,10 @@ $productKeys = @(Array-Values $spoofing "productTypeKeys")
 $boardKeys = @(Array-Values $spoofing "hwModelKeys")
 Require ($productKeys.Count -eq 9) "Expected 9 ProductType keys, got $($productKeys.Count)"
 Require ($boardKeys.Count -eq 9) "Expected 9 board keys, got $($boardKeys.Count)"
-Require ($spoofing -match '"h63QSdBCiT/z0WU6rdQv6Q":\s*"US"') "Missing US region value"
-Require ($spoofing -match '"yK\+xavymRGZ3xWc1tb8XDg":\s*"US/A"') "Missing US/A region value"
+# Region US/US-A writes were removed from the spoof path (regression: full
+# identity+region blast made mobilegestaltd ignore CacheExtra on iOS 27).
+# Regression guard: the picker spoof must NOT write CPU/regulatory/region.
+Require ($spoofing -notmatch 'regionValues') "Spoof picker must not write region codes"
 Require ($spoofing -notmatch 'D74AP|D97AP') "Rejected board value found"
 Require ($spoofing -match 'guard var artwork = cacheExtra\[GestaltArtwork\.artworkKey\] as\? \[String: Any\] else') "Spoof apply must require ArtworkDevice before staging mutations"
 Require ($spoofing -notmatch 'if var artwork = cacheExtra\[GestaltArtwork\.artworkKey\]') "Spoof apply must not silently skip ArtworkDevice"
