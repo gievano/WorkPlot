@@ -859,3 +859,31 @@ Fitur yang mekanismenya terbukti tidak berfungsi pada device target harus dihapu
 
 - Preset "iPhone 17 Pro Max Spoof" kemungkinan besar kena regresi yang sama (menulis CPU t8150 + A3257 lewat jalur preset) - pantau laporan user; kalau iya, terapkan write-set minimal yang sama di apply engine preset.
 - Verifikasi device: spoof picker -> About berubah setelah full restart di iOS 27 beta.
+
+## 2026-08-25 — Port fitur Wallpaper dari Pocket Poster
+
+### The Change
+- Modul baru `WorkPlot/Wallpaper/` (adaptasi GPL-3.0 dari `github.com/leminlimez/Pocket-Poster`):
+  - `WallpaperSymlink.swift` <- `SymHandler.swift`: symlink `.Trash` -> folder `descriptors` PosterBoard/CarPlay via app hash (butuh bad_query escape aktif).
+  - `WallpaperPosterBoardManager.swift` <- `PosterBoardManager.swift`: import `.tendies` (unzip pakai `ZipArchive` WorkPlot sendiri), extract descriptor, randomize id, apply via symlink, clear cache, open PosterBoard.
+  - `WallpaperDownloadManager.swift` + `WallpaperCowabungaAPI.swift` <- `DownloadManager.swift` + `CowabungaAPI.swift`/`DownloadableWallpaper.swift`: katalog Cowabun.ga (SerStars/nugget-wallpapers).
+  - `WallpaperVideoHandler.swift` <- `VideoHandler.swift`: video -> CAML descriptor (AVFoundation frame extraction).
+  - `WallpaperCarPlayManager.swift` <- `CarPlayWallpaper+CarPlayManager.swift` + `CPBitmapHandler.swift`: CarPlay (butuh paket `Dynamic` untuk tulis `.cpbitmap`).
+  - `WallpaperErrors.swift`, `UIApplication+Wallpaper.swift` (helper alert/progress + `Haptic`).
+  - `WallpaperView.swift`: tab "Wallpaper" baru (import, apply, browse, video, CarPlay, settings hash).
+- `UI/MainDashboardView.swift`: tab Wallpaper ditambah.
+- `Resources/WallpaperCAML/`: template descriptor (untuk fitur video; `providerInfo.plist` harus di-copy dari source asli PP - lihat README folder).
+- `THIRD_PARTY_NOTICES.md`: entri Pocket Poster (GPL-3.0, kompatibel).
+
+### The Reasoning
+- Pocket Poster & WorkPlot sama-sama pakai exploit `bad_query`; mekanisme apply wallpaper (symlink ke container PosterBoard) portable karena `ExploitManager` sudah kasih FS access.
+- Unzip `.tendies` pakai `ZipArchive` yang sudah ada (hindari tambah dependensi ZIPFoundation).
+- i18n sengaja dilewati (instruksi user); UI pakai string literal English.
+- UIApplication helper di-port utuh biar manager PP bisa di-adapt minimal (fidelitas tinggi, risiko bug rendah).
+
+### The Tech Debt
+- **Integrasi Xcode belum dilakukan** ( environment Windows, gak bisa build): file `WorkPlot/Wallpaper/` + `Resources/Wall/..` harus di-add ke target di Xcode; `WallpaperCAML` harus masuk bundle (`Bundle.main.url(forResource:"WallpaperCAML")`).
+- `import Dynamic` di `WallpaperCarPlayManager.swift` butuh SPM package `github.com/leminlimez/Dynamic` — atau file itu di-comment kalau CarPlay tidak dipakai (else build gagal).
+- `providerInfo.plist` di `WallpaperCAML` belum ada (binary NSKeyedArchiver gak bisa di-recreate) — fitur video butuh copy dari source asli PP.
+- Path `PRBPosterExtensionDataStore/61/Extensions` mengikuti PP (iOS 17+); di iOS 27 beta perlu verifikasi di device (risiko "gak persis sama" tertinggi).
+- Gak ada unit test; verifikasi murni device-only (simulator gak punya bad_query/PosterBoard).
