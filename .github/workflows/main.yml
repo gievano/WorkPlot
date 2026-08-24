@@ -19,7 +19,7 @@ jobs:
         run: |
           CHECK_BIN="$RUNNER_TEMP/check-cachedata"
           xcrun swiftc \
-            WorkPlot/Managers/CacheDataPatcher.swift \
+            WorkPlot/Features/Gestalt/CacheDataPatcher.swift \
             Support/CacheDataPatcherCheck.swift \
             -o "$CHECK_BIN"
           "$CHECK_BIN"
@@ -28,7 +28,7 @@ jobs:
         run: |
           CHECK_BIN="$RUNNER_TEMP/check-inode-writer"
           xcrun swiftc \
-            WorkPlot/Managers/InodeWriter.swift \
+            WorkPlot/Core/InodeWriter.swift \
             Support/InodeWriterCheck.swift \
             -o "$CHECK_BIN"
           "$CHECK_BIN"
@@ -37,7 +37,7 @@ jobs:
         run: |
           CHECK_BIN="$RUNNER_TEMP/check-rdar-fix"
           xcrun swiftc \
-            WorkPlot/Managers/RDARFix.swift \
+            WorkPlot/Core/RDARFix.swift \
             Support/RDARFixCheck.swift \
             -o "$CHECK_BIN"
           "$CHECK_BIN"
@@ -46,7 +46,7 @@ jobs:
         run: |
           CHECK_BIN="$RUNNER_TEMP/check-file-operations"
           xcrun swiftc -parse-as-library \
-            WorkPlot/Managers/SafeFileOperations.swift \
+            WorkPlot/Core/SafeFileOperations.swift \
             Support/FileBrowserServiceCheck.swift \
             -o "$CHECK_BIN"
           "$CHECK_BIN"
