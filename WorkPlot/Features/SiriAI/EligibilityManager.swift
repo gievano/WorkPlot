@@ -294,6 +294,7 @@ struct EligibilityView: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 12)
+        .liquidGlass(cornerRadius: 20)
     }
 
     private func runApply() {

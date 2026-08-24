@@ -9,6 +9,7 @@ struct WorkPlotApp: App {
     var body: some Scene {
         WindowGroup {
             MainDashboardView()
+                .accentColor(Theme.accent)
                 .overlay {
                     if manager.respringRequested {
                         RespringOverlayView()
