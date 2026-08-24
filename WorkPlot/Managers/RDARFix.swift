@@ -211,6 +211,10 @@ struct RDARFix {
         "iPhone16,1": (1179, 2556), "iPhone16,2": (1290, 2796),
         "iPhone17,1": (1206, 2622), "iPhone17,2": (1320, 2868), "iPhone17,3": (1179, 2556),
         "iPhone17,4": (1290, 2796), "iPhone17,5": (1170, 2532),
+        // Machine mapping per AppleDB/adamawolf gist: 18,1 = 17 Pro,
+        // 18,2 = 17 Pro Max, 18,3 = iPhone 17, 18,4 = Air, 18,5 = 17e.
+        "iPhone18,1": (1206, 2622), "iPhone18,2": (1320, 2868),
+        "iPhone18,3": (1206, 2622), "iPhone18,4": (1260, 2736), "iPhone18,5": (1170, 2532),
     ]
 
     static func knownGoodNativeCanvas(machine: String) -> (width: Int, height: Int)? {
@@ -297,9 +301,7 @@ struct RDARFix {
     #if canImport(UIKit)
     /// Marker thrown while probing a candidate: lease or read failed, so the
     /// resolver should try the next location instead of surfacing an error.
-    private struct CandidateUnavailable: Error {}
-
-    /// Probes every candidate until one yields a readable plist through its
+    private struct CandidateUnavailable: Error {}    /// Probes every candidate until one yields a readable plist through its
     /// bad_query lease, then runs `body` inside that lease.
     private static func withResolvedTarget<T>(_ body: (String) throws -> T) throws -> T {
         var failures: [String] = []
@@ -366,16 +368,6 @@ struct RDARFix {
         return String(cString: raw)
             .split(whereSeparator: \.isNewline)
             .map(String.init)
-    }
-
-    /// Canvas size is detected from the device's native screen bounds at
-    /// runtime: a hardcoded resolution only matched one iPhone model and
-    /// caused the fix to misbehave on every other device.
-    @discardableResult
-    static func apply() throws -> RDARFixApplyResult {
-        let bounds = UIScreen.main.nativeBounds
-        return try apply(canvasWidth: Int(bounds.width),
-                         canvasHeight: Int(bounds.height))
     }
 
     @discardableResult
