@@ -14,6 +14,7 @@ struct MainDashboardView: View {
                 GestaltPresetManagerView().tabItem { Label(l10n.tr("tab.gestalt"), systemImage: "cpu") }
                 GestaltFieldEditorView().tabItem { Label(l10n.tr("tab.fields"), systemImage: "list.bullet.rectangle") }
                 SiriAITweaksView().tabItem { Label(l10n.tr("tab.siriai"), systemImage: "waveform") }
+                WallpaperView().tabItem { Label("Wallpaper", systemImage: "photo") }
                 MoreMenuView().tabItem { Label(l10n.tr("tab.more"), systemImage: "ellipsis.circle.fill") }
             }
         }
