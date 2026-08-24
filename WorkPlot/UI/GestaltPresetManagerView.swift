@@ -132,10 +132,6 @@ struct GestaltPresetManagerView: View {
                     // the hide/show pair excludes itself.
                     if id == .supportsDynamicIsland {
                         selectedTweaks.remove(.hideDynamicIslandOn)
-                        selectedTweaks.remove(.disableDynamicIsland)
-                    }
-                    if id == .disableDynamicIsland {
-                        selectedTweaks.remove(.supportsDynamicIsland)
                     }
                     if id == .hideDynamicIslandOn {
                         selectedTweaks.remove(.supportsDynamicIsland)
