@@ -20,6 +20,9 @@ struct MoreMenuView: View {
                 NavigationLink { FilePatchWorkspaceView() } label: {
                     Label(l10n.tr("tab.files"), systemImage: "folder.fill")
                 }
+                NavigationLink { WallpaperView() } label: {
+                    Label("Wallpaper", systemImage: "photo")
+                }
 
                 Section {
                     NavigationLink { AppContainersView() } label: {
