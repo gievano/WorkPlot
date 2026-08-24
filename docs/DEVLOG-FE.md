@@ -818,3 +818,24 @@ Fitur yang mekanismenya terbukti tidak berfungsi pada device target harus dihapu
 ### The Tech Debt
 
 - Uji device: hide/show island di iPhone native-island iOS 27 beta + verifikasi restore menghapus capability key & flag.
+
+## 2026-08-24 - Riset GoldenNugget & FixRDAR4XR11: Verifikasi Spoof Jujur + Canvas Aman XR/11
+
+### The Change
+
+1. **SPOOF - verifikasi pasca-tulis**: `DeviceSpoofingManager.verify(target:in:)` baru (pure helper) menghitung berapa identity key yang benar-benar membawa nilai target setelah save; `SiriAITweaksView.applyChanges` kini menampilkan "Spoof <nama>: N/M keys verified on disk" (+ baris rdar.verify.fail bila parsial). Alasannya: **GoldenNugget (fork Nugget dgn iOS 27 support) menghentikan MobileGestalt sepenuhnya** untuk iOS 27 - CacheExtra yang ditulis langsung tidak dijamin dihormati mobilegestaltd di build 24A5380h, jadi "spoof ga jalan walau restart" kemungkinan besar sistem mengabaikan CacheExtra, bukan tulisan kita gagal. Status kini membedakan dua kasus itu.
+2. **SPOOF - offload main thread**: applyChanges dipindah ke background queue (pola #51/#52); readGestalt+backup+save sinkron di main thread = kelas freeze yang sama.
+3. **RDAR - lokasi Managed Preferences**: `RDARFix.candidatePaths` kini probe `/var/Managed Preferences/mobile/com.apple.iokit.IOMobileGraphicsFamily.plist` (+ /private/var) PALING AWAL - FixRDAR4XR11 membuktikan copy di domain Managed Preferences adalah yang menyembuhkan XR/11 (Cowabunga Lite restore ke path persis ini).
+4. **RDAR - canvas aman XR/11**: tabel `rdarSafeCanvases` baru: iPhone11,8 = 786x1704 (bukan native 828x1792, dari plist rilis FixRDAR4XR11 "optimized"); `fixCanvas(machine:)` = safe -> native -> nil, dipakai runFixRDAR & applyCanvasSizesGestalt. Menulis native ke XR/11 dengan RDAR aktif justru mempertahankan UI bug.
+5. Percobaan membuat dict ArtworkDevice bila tidak ada DIBATALKAN - check-feature.ps1 menegaskan owner rule: spoof harus loud-fail tanpa ArtworkDevice (guard dipertahankan).
+
+### The Reasoning
+
+- Tanpa verifikasi, laporan "spoof ga jalan" tidak bisa dipilah: tulisan gagal vs sistem mengabaikan. Kini status menjawabnya; kalau verify 100% tapi device tetap tidak berubah, itu bukti CacheExtra-only mati di build tsb dan spoof butuh rute lain (tidak ada mesin patch CacheData struktural di repo - ketiganya marker-byte opaque).
+- FixRDAR4XR11 (2024, direbuild) masih relevan karena mekanismenya file-level sama dengan jalur bad_query kita: taruh plist graphics di tempat yang dibaca IOKit.
+
+### The Tech Debt
+
+- Spoof di iOS 27 beta tetap TIDAK DIJAMIN tampil - kalau verify penuh tapi device diam, satu-satunya rute lanjutan adalah patch CacheData struktural (belum ada) atau menunggu komunitas menemukan jalur iOS 27.
+- `verify()` belum masuk harness CI (Support/RDARFixCheck.swift) - bisa ditambah sebagai pure-function test.
+- Uji device: RDAR XR/11 via Managed Preferences path + canvas 786x1704.

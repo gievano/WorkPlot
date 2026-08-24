@@ -152,6 +152,9 @@ enum DeviceSpoofingManager {
     }
 
     /// Rewrites every model-related key to the target device at once.
+    /// Owner rule (enforced by Support/check-feature.ps1): the ArtworkDevice
+    /// dictionary must already exist - a device without it cannot render the
+    /// spoofed identity, so apply refuses loudly instead of inventing keys.
     static func apply(_ target: SpoofTarget, to plist: inout [String: Any]) throws {
         guard var cacheExtra = plist["CacheExtra"] as? [String: Any] else {
             throw DeviceSpoofingError.missingCacheExtra
@@ -190,6 +193,40 @@ enum DeviceSpoofingManager {
         cacheExtra[GestaltArtwork.artworkKey] = artwork
 
         plist["CacheExtra"] = cacheExtra
+    }
+
+    /// Read-back verification: how many of the spoof's identity keys now
+    /// carry exactly the target value on disk. Distinguishes a write the
+    /// system dropped from one that genuinely landed (the OS may still
+    /// choose to ignore CacheExtra on builds where CacheData is authoritative).
+    static func verify(target: SpoofTarget, in plist: [String: Any]) -> (matched: Int, total: Int) {
+        guard let cacheExtra = plist["CacheExtra"] as? [String: Any] else { return (0, 0) }
+        var matched = 0
+        var total = 0
+
+        func counts(_ key: String, _ value: String) {
+            total += 1
+            if cacheExtra[key] as? String == value { matched += 1 }
+        }
+
+        for key in productTypeKeys { counts(key, target.productType) }
+        for key in hwModelKeys { counts(key, target.hwModel) }
+        for key in cpuKeys { counts(key, target.cpuName) }
+        for key in regulatoryModelKeys { counts(key, target.regulatoryModel) }
+        for (key, value) in regionValues { counts(key, value) }
+        for key in deviceNameKeys where cacheExtra[key] != nil {
+            counts(key, target.marketingName)
+        }
+
+        if let artwork = cacheExtra[GestaltArtwork.artworkKey] as? [String: Any] {
+            counts("CompatibleDeviceFallback-artwork", "")
+            total -= 1
+            if artwork["CompatibleDeviceFallback"] as? String == target.productType { matched += 1 }
+            total += 1
+            if artwork["ArtworkDeviceProductDescription"] as? String == target.marketingName { matched += 1 }
+        }
+
+        return (matched, total)
     }
 
     /// Restoring the genuine identity requires a pre-spoof backup — restore
