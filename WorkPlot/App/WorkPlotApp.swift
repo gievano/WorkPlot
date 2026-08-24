@@ -16,9 +16,7 @@ struct WorkPlotApp: App {
                 .accentColor(Theme.accent)
                 .overlay {
                     if manager.respringRequested {
-                        RespringOverlayView()
-                            .brightness(-1.0)
-                            .ignoresSafeArea()
+                        NeoSpringView()
                     }
                 }
                 .onAppear(perform: autoCheckAccess)
