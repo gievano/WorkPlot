@@ -3,9 +3,10 @@
 //  WorkPlot
 //
 //  Adapted from Pocket Poster's PosterBoardManager.swift (GPL-3.0).
-//  Imports .tendies packages, extracts PosterBoard descriptors, randomizes
-//  their ids, and applies them by symlinking into the PosterBoard app
-//  container (requires the bad_query escape to be active).
+//  Imports .tendies packages, extracts PosterBoard descriptors, and applies
+//  them by symlinking into the PosterBoard app container (requires the
+//  bad_query escape to be active). Apply logic mirrors Ketamine: move each
+//  descriptor straight into the real container, no re-zip / id randomization.
 //
 //  Source: github.com/leminlimez/Pocket-Poster
 //
@@ -85,90 +86,65 @@ final class WallpaperPosterBoardManager: ObservableObject {
         return nil
     }
 
-    // MARK: Id randomization
-
-    func randomizeWallpaperId(url: URL) throws {
-        let randomizedID = Int.random(in: 9999...99999)
-        var files: [URL] = []
-        if let enumerator = FileManager.default.enumerator(
-            at: url,
-            includingPropertiesForKeys: [.isRegularFileKey],
-            options: [.skipsHiddenFiles, .skipsPackageDescendants]
-        ) {
-            for case let fileURL as URL in enumerator {
-                if (try? fileURL.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile == true {
-                    files.append(fileURL)
-                }
-            }
-        }
-
-        func setPlistValue(file: String, key: String, value: Any) {
-            guard let plistData = FileManager.default.contents(atPath: file),
-                  var plist = try? PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [String: Any]
-            else { return }
-            plist[key] = value
-            guard let updated = try? PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0) else { return }
-            try? updated.write(to: URL(fileURLWithPath: file))
-        }
-
-        for file in files {
-            switch file.lastPathComponent {
-            case "com.apple.posterkit.provider.descriptor.identifier":
-                try String(randomizedID).data(using: .utf8)?.write(to: file)
-            case "com.apple.posterkit.provider.contents.userInfo":
-                setPlistValue(file: file.path(), key: "wallpaperRepresentingIdentifier", value: randomizedID)
-            case "Wallpaper.plist":
-                setPlistValue(file: file.path(), key: "identifier", value: randomizedID)
-            default:
-                continue
-            }
-        }
-    }
-
     // MARK: Apply
 
     /// Applies all selected tendies + generated videos to PosterBoard.
     /// `appHash` is the auto-detected (or provided) PosterBoard container hash.
+    ///
+    /// Mirrors Ketamine's applyTendies: build a list of (ext, descriptor dir)
+    /// pairs, then for each ext create ONE descriptor symlink and move every
+    /// descriptor straight into the real PosterBoard container (renamed to a
+    /// fresh UUID). No re-zip, no trash — so it is both correct and fast.
     func applyTendies(appHash: String) throws {
-        var extList: [String: [URL]] = [:]
-
-        if !videos.isEmpty {
-            extList["com.apple.WallpaperKit.CollectionsPoster"] = []
-            for video in videos {
-                if case let .loaded(movie) = video.loadState {
-                    do {
-                        let newVideo = try WallpaperVideoHandler.createCaml(from: movie.url, autoReverses: video.autoReverses)
-                        extList["com.apple.WallpaperKit.CollectionsPoster"]?.append(newVideo)
-                    } catch {
-                        print(error.localizedDescription)
-                    }
-                }
-            }
+        struct PendingDescriptor {
+            let ext: String
+            let directory: URL
         }
+        var pending: [PendingDescriptor] = []
 
-        UIApplication.shared.change(title: "Applying Wallpapers...", body: "Extracting tendies...")
+        // Selected .tendies packages.
         for url in selectedTendies {
             let unzippedDir = try unzipFile(at: url)
-            guard let descriptors = try getDescriptorsFromTendie(unzippedDir) else { continue }
-            extList.merge(descriptors) { $0 + $1 }
-        }
-
-        defer { WallpaperSymlink.cleanup() }
-
-        for (ext, descriptorsList) in extList {
-            _ = try WallpaperSymlink.createDescriptorsSymlink(appHash: appHash, ext: ext)
-            for descriptors in descriptorsList {
-                for descr in try FileManager.default.contentsOfDirectory(at: descriptors, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) {
-                    if descr.lastPathComponent != "__MACOSX" {
-                        try randomizeWallpaperId(url: descr)
-                        let newURL = WallpaperSymlink.getDocumentsDirectory().appendingPathComponent(UUID().uuidString, conformingTo: .directory)
-                        try FileManager.default.moveItem(at: descr, to: newURL)
-                        try FileManager.default.trashItem(at: newURL, resultingItemURL: nil)
+            guard let descriptorMap = try getDescriptorsFromTendie(unzippedDir) else { continue }
+            for (ext, folders) in descriptorMap {
+                for folder in folders {
+                    for descr in try FileManager.default.contentsOfDirectory(
+                        at: folder, includingPropertiesForKeys: nil, options: .skipsHiddenFiles
+                    ) where descr.lastPathComponent != "__MACOSX" {
+                        pending.append(PendingDescriptor(ext: ext, directory: descr))
                     }
                 }
             }
-            WallpaperSymlink.cleanup()
+            try? FileManager.default.removeItem(at: unzippedDir)
         }
+
+        // Generated video wallpapers (each CAML is a single descriptor dir).
+        for video in videos {
+            if case let .loaded(movie) = video.loadState {
+                do {
+                    let caml = try WallpaperVideoHandler.createCaml(from: movie.url, autoReverses: video.autoReverses)
+                    pending.append(PendingDescriptor(ext: "com.apple.WallpaperKit.CollectionsPoster", directory: caml))
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+        }
+
+        guard !pending.isEmpty else { return }
+
+        // Group by extension so each extension's symlink is created once, then
+        // drop every descriptor of that extension into the real container.
+        let grouped = Dictionary(grouping: pending, by: { $0.ext })
+        for (ext, items) in grouped {
+            _ = try WallpaperSymlink.createDescriptorsSymlink(appHash: appHash, ext: ext)
+            let symlink = WallpaperSymlink.getSymlinkURL()
+            for item in items {
+                let newURL = symlink.appendingPathComponent(UUID().uuidString, isDirectory: true)
+                try FileManager.default.moveItem(at: item.directory, to: newURL)
+            }
+        }
+
+        WallpaperSymlink.cleanup()
 
         for url in selectedTendies {
             try? FileManager.default.removeItem(at: WallpaperSymlink.getDocumentsDirectory().appendingPathComponent("UnzipItems", conformingTo: .directory))
