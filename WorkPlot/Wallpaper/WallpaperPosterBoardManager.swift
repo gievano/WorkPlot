@@ -34,10 +34,7 @@ final class WallpaperPosterBoardManager: ObservableObject {
     func openPosterBoard() -> Bool {
         guard let obj = objc_getClass("LSApplicationWorkspace") as? NSObject else { return false }
         let workspace = obj.perform(Selector(("defaultWorkspace")))?.takeUnretainedValue() as? NSObject
-        if let success = workspace?.perform(Selector(("openApplicationWithBundleID:")), with: "com.apple.PosterBoard") {
-            return success != nil
-        }
-        return false
+        return workspace?.perform(Selector(("openApplicationWithBundleID:")), with: "com.apple.PosterBoard") != nil
     }
 
     func runShortcut(named name: String) {

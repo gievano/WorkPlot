@@ -89,7 +89,7 @@ struct WallpaperView: View {
             Picker("Sort", selection: $cowabungaFilter) {
                 ForEach(WallpaperFilterType.allCases, id: \.self) { Text($0.rawValue) }
             }
-            .onChange(of: cowabungaFilter) { reloadCowabunga() }
+            .onChange(of: cowabungaFilter) { _ in reloadCowabunga() }
             if cowabunga.isEmpty {
                 Text(cowabungaLoaded ? "No wallpapers found." : "Loading...")
             } else {
