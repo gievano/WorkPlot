@@ -53,7 +53,7 @@ struct WallpaperView: View {
             importTendies(result)
         }
         .fileImporter(isPresented: $showVideoImporter, allowedContentTypes: [.movie]) { result in
-            if case let .success(let url) = result {
+            if case let .success(url) = result {
                 let accessing = url.startAccessingSecurityScopedResource()
                 defer { if accessing { url.stopAccessingSecurityScopedResource() } }
                 importVideo(url)
