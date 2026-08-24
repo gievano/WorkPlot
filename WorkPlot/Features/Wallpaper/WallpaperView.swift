@@ -30,22 +30,28 @@ struct WallpaperView: View {
     @State private var carplayDark: Data?
     @State private var carplayName = "Custom"
 
+    private var tendieType: UTType {
+        UTType("com.leminlimez.tendies")
+            ?? UTType(filenameExtension: "tendies", conformingTo: .data)!
+    }
+
     var body: some View {
-        List {
-            importSection
-            appliedSection
-            cowabungaSection
-            videoSection
-            if CarPlayManager.supportsCarPlay() { carplaySection }
-            settingsSection
+        ScrollView {
+            VStack(spacing: Theme.cardSpacing) {
+                importCard
+                appliedCard
+                cowabungaCard
+                videoCard
+                if CarPlayManager.supportsCarPlay() { carplayCard }
+                diagnosticsCard
+            }
+            .padding(.bottom, 24)
         }
         .navigationTitle("Wallpaper")
         .wpGlassContainer()
         .onAppear(perform: loadCowabunga)
-        .fileImporter(isPresented: $showImporter, allowedContentTypes: [.data]) { result in
-            if case let .success(url) = result {
-                importTendies(url)
-            }
+        .fileImporter(isPresented: $showImporter, allowedContentTypes: [tendieType], allowsMultipleSelection: true) { result in
+            importTendies(result)
         }
         .fileImporter(isPresented: $showVideoImporter, allowedContentTypes: [.movie]) { result in
             if case let .success(url) = result, url.startAccessingSecurityScopedResource() {
@@ -58,54 +64,71 @@ struct WallpaperView: View {
         }
     }
 
-    // MARK: Sections
+    // MARK: Cards — WorkPlot layout (own concept, not Ketamine's stacked buttons)
 
-    private var importSection: some View {
-        Section("Import") {
-            Button("Import .tendies file") { showImporter = true }
-            Button("Make from video") { showVideoImporter = true }
-            Link("Browse Cowabun.ga", destination: URL(string: WallpaperPosterBoardManager.WallpapersURL)!)
-        }
-    }
-
-    private var appliedSection: some View {
-        Section("Selected (\(poster.selectedTendies.count)/\(WallpaperPosterBoardManager.MaxTendies))") {
-            ForEach(poster.selectedTendies, id: \.self) { url in
-                HStack {
-                    Text(url.lastPathComponent)
-                    Spacer()
-                    Button("Remove") { poster.selectedTendies.removeAll { $0 == url } }
-                        .foregroundColor(.red)
+    private var importCard: some View {
+        WPCard {
+            VStack(alignment: .leading, spacing: 12) {
+                WPSectionHeader(title: "Import")
+                WPActionButton(title: "Import .tendies file") { showImporter = true }
+                WPActionButton(title: "Make from video", prominent: false) { showVideoImporter = true }
+                Link(destination: URL(string: WallpaperPosterBoardManager.WallpapersURL)!) {
+                    Text("Browse Cowabun.ga").font(.body.weight(.medium)).foregroundStyle(Theme.accent)
                 }
             }
-            Button("Apply to PosterBoard") { applySelected() }
-                .disabled(poster.selectedTendies.isEmpty)
         }
     }
 
-    private var cowabungaSection: some View {
-        Section("Cowabunga Catalogue") {
-            Picker("Sort", selection: $cowabungaFilter) {
-                ForEach(WallpaperFilterType.allCases, id: \.self) { Text($0.rawValue) }
+    private var appliedCard: some View {
+        WPCard {
+            VStack(alignment: .leading, spacing: 12) {
+                WPSectionHeader(
+                    title: "Selected Posters",
+                    subtitle: "\(poster.selectedTendies.count)/\(WallpaperPosterBoardManager.MaxTendies) descriptors"
+                )
+                ForEach(poster.selectedTendies, id: \.self) { url in
+                    HStack {
+                        Text(url.lastPathComponent).font(.subheadline)
+                        Spacer()
+                        Button("Remove") { poster.selectedTendies.removeAll { $0 == url } }
+                            .font(.footnote).foregroundColor(.red)
+                    }
+                }
+                WPActionButton(title: "Apply to PosterBoard") { applySelected() }
+                    .disabled(poster.selectedTendies.isEmpty)
             }
-            .onChange(of: cowabungaFilter) { _ in reloadCowabunga() }
-            if cowabunga.isEmpty {
-                Text(cowabungaLoaded ? "No wallpapers found." : "Loading...")
-            } else {
-                ForEach(cowabunga) { wp in
-                    Button {
-                        WallpaperDownloadManager.shared.startTendiesDownload(
-                            for: WallpaperCowabungaAPI.shared.getDownloadURLForWallpaper(wp)
-                        )
-                    } label: {
-                        HStack {
-                            if let url = URL(string: WallpaperCowabungaAPI.shared.getPreviewURLForWallpaper(wp).absoluteString) {
-                                AsyncImage(url: url) { $0.resizable() } placeholder: { Color.gray }
-                                    .frame(width: 48, height: 48).cornerRadius(8)
-                            }
-                            VStack(alignment: .leading) {
-                                Text(wp.name)
-                                if let desc = wp.description { Text(desc).font(.caption).foregroundColor(.secondary) }
+        }
+    }
+
+    private var cowabungaCard: some View {
+        WPCard {
+            VStack(alignment: .leading, spacing: 12) {
+                WPSectionHeader(title: "Cowabunga Catalogue")
+                Picker("Sort", selection: $cowabungaFilter) {
+                    ForEach(WallpaperFilterType.allCases, id: \.self) { Text($0.rawValue) }
+                }
+                .pickerStyle(.segmented)
+                .onChange(of: cowabungaFilter) { _ in reloadCowabunga() }
+                if cowabunga.isEmpty {
+                    Text(cowabungaLoaded ? "No wallpapers found." : "Loading…")
+                        .font(.subheadline).foregroundStyle(.secondary)
+                } else {
+                    ForEach(cowabunga) { wp in
+                        Button {
+                            WallpaperDownloadManager.shared.startTendiesDownload(
+                                for: WallpaperCowabungaAPI.shared.getDownloadURLForWallpaper(wp)
+                            )
+                        } label: {
+                            HStack(spacing: 12) {
+                                if let url = URL(string: WallpaperCowabungaAPI.shared.getPreviewURLForWallpaper(wp).absoluteString) {
+                                    AsyncImage(url: url) { $0.resizable() } placeholder: { Color.gray }
+                                        .frame(width: 48, height: 48).cornerRadius(8)
+                                }
+                                VStack(alignment: .leading) {
+                                    Text(wp.name).font(.subheadline.weight(.medium))
+                                    if let desc = wp.description { Text(desc).font(.caption).foregroundColor(.secondary) }
+                                }
+                                Spacer()
                             }
                         }
                     }
@@ -114,80 +137,99 @@ struct WallpaperView: View {
         }
     }
 
-    private var videoSection: some View {
-        Section("Video") {
-            ForEach(poster.videos) { info in
-                HStack {
-                    Text("Video clip")
-                    Spacer()
-                    Toggle("Auto-reverse", isOn: Binding(
-                        get: { info.autoReverses },
-                        set: { newValue in
-                            if let i = poster.videos.firstIndex(of: info) {
-                                poster.videos[i].autoReverses = newValue
+    private var videoCard: some View {
+        WPCard {
+            VStack(alignment: .leading, spacing: 12) {
+                WPSectionHeader(title: "Video")
+                ForEach(poster.videos) { info in
+                    HStack {
+                        Text("Video clip").font(.subheadline)
+                        Spacer()
+                        Toggle("Auto-reverse", isOn: Binding(
+                            get: { info.autoReverses },
+                            set: { newValue in
+                                if let i = poster.videos.firstIndex(of: info) {
+                                    poster.videos[i].autoReverses = newValue
+                                }
                             }
-                        }
-                    ))
+                        ))
+                    }
                 }
+                WPActionButton(title: "Clear video", prominent: false) { poster.videos.removeAll() }
             }
-            Button("Clear video") { poster.videos.removeAll() }
         }
     }
 
-    private var carplaySection: some View {
-        Section("CarPlay Wallpaper") {
-            PhotosPicker("Light image", selection: Binding<PhotosPickerItem?>(
-                get: { nil },
-                set: { item in Task { carplayLight = try? await item?.loadTransferable(type: Data.self) } }
-            ), matching: .images)
-            PhotosPicker("Dark image", selection: Binding<PhotosPickerItem?>(
-                get: { nil },
-                set: { item in Task { carplayDark = try? await item?.loadTransferable(type: Data.self) } }
-            ), matching: .images)
-            TextField("Name", text: $carplayName)
-            Button("Apply CarPlay") { applyCarPlay() }
-                .disabled(carplayLight == nil || carplayDark == nil)
+    private var carplayCard: some View {
+        WPCard {
+            VStack(alignment: .leading, spacing: 12) {
+                WPSectionHeader(title: "CarPlay Wallpaper")
+                PhotosPicker("Light image", selection: Binding<PhotosPickerItem?>(
+                    get: { nil },
+                    set: { item in Task { carplayLight = try? await item?.loadTransferable(type: Data.self) } }
+                ), matching: .images)
+                PhotosPicker("Dark image", selection: Binding<PhotosPickerItem?>(
+                    get: { nil },
+                    set: { item in Task { carplayDark = try? await item?.loadTransferable(type: Data.self) } }
+                ), matching: .images)
+                TextField("Name", text: $carplayName)
+                    .textFieldStyle(.roundedBorder)
+                WPActionButton(title: "Apply CarPlay") { applyCarPlay() }
+                    .disabled(carplayLight == nil || carplayDark == nil)
+            }
         }
     }
 
-    private var settingsSection: some View {
-        Section("Settings") {
-            Button("Detect PosterBoard") { detectHash() }
-            if !pbHash.isEmpty {
-                Text("PosterBoard: \(pbHash)").font(.caption).foregroundColor(.secondary)
-            }
-            if CarPlayManager.supportsCarPlay() {
-                Button("Detect CarPlay") { detectCarPlayHash() }
-                if !carplayHash.isEmpty {
-                    Text("CarPlay: \(carplayHash)").font(.caption).foregroundColor(.secondary)
+    private var diagnosticsCard: some View {
+        WPCard {
+            VStack(alignment: .leading, spacing: 12) {
+                WPSectionHeader(title: "Diagnostics")
+                WPActionButton(title: "Detect PosterBoard", prominent: false) { detectHash() }
+                if !pbHash.isEmpty {
+                    Text("PosterBoard: \(pbHash)").font(.caption).foregroundColor(.secondary)
                 }
+                if CarPlayManager.supportsCarPlay() {
+                    WPActionButton(title: "Detect CarPlay", prominent: false) { detectCarPlayHash() }
+                    if !carplayHash.isEmpty {
+                        Text("CarPlay: \(carplayHash)").font(.caption).foregroundColor(.secondary)
+                    }
+                }
+                WPActionButton(title: "Reset Collections", prominent: false) { resetCollections() }
+                WPActionButton(title: "Clear Cache", prominent: false) {
+                    try? WallpaperPosterBoardManager.clearCache()
+                    poster.selectedTendies.removeAll()
+                    poster.videos.removeAll()
+                }
+                Link("Fallback Shortcut", destination: URL(string: WallpaperPosterBoardManager.ShortcutURL)!)
+                    .font(.body.weight(.medium)).foregroundStyle(Theme.accent)
             }
-            Button("Reset Collections") { resetCollections() }
-            Button("Clear Cache") {
-                try? WallpaperPosterBoardManager.clearCache()
-                poster.selectedTendies.removeAll()
-                poster.videos.removeAll()
-            }
-            Link("Fallback Shortcut", destination: URL(string: WallpaperPosterBoardManager.ShortcutURL)!)
         }
     }
 
     // MARK: Actions
 
-    private func importTendies(_ url: URL) {
-        guard url.pathExtension.lowercased() == "tendies" else {
-            UIApplication.shared.alert(body: "Only .tendies files can be imported!"); return
-        }
-        guard poster.selectedTendies.count < WallpaperPosterBoardManager.MaxTendies else {
-            UIApplication.shared.alert(title: "Max Tendies Reached", body: "Only \(WallpaperPosterBoardManager.MaxTendies) descriptors can be applied."); return
-        }
-        do {
-            let newURL = try WallpaperDownloadManager.shared.copyTendies(from: url)
-            poster.selectedTendies.append(newURL)
-            Haptic.shared.notify(.success)
-        } catch {
-            Haptic.shared.notify(.error)
-            UIApplication.shared.alert(title: "Failed to import tendies", body: error.localizedDescription)
+    private func importTendies(_ result: Result<[URL], Error>) {
+        switch result {
+        case .success(let urls):
+            for url in urls {
+                guard poster.selectedTendies.count < WallpaperPosterBoardManager.MaxTendies else {
+                    UIApplication.shared.alert(
+                        title: "Max Tendies Reached",
+                        body: "Only \(WallpaperPosterBoardManager.MaxTendies) descriptors can be applied."
+                    )
+                    break
+                }
+                do {
+                    let newURL = try WallpaperDownloadManager.shared.copyTendies(from: url)
+                    poster.selectedTendies.append(newURL)
+                    Haptic.shared.notify(.success)
+                } catch {
+                    Haptic.shared.notify(.error)
+                    UIApplication.shared.alert(title: "Failed to import tendies", body: error.localizedDescription)
+                }
+            }
+        case .failure(let error):
+            UIApplication.shared.alert(title: "Import failed", body: error.localizedDescription)
         }
     }
 
@@ -373,7 +415,7 @@ struct WallpaperView: View {
         } else if url.absoluteString.starts(with: "pocketposter://app-hash?uuid=") {
             pbHash = url.absoluteString.replacingOccurrences(of: "pocketposter://app-hash?uuid=", with: "")
         } else if url.pathExtension == "tendies" {
-            importTendies(url)
+            importTendies(.success([url]))
         }
     }
 }
