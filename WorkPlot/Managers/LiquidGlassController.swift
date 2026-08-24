@@ -136,7 +136,11 @@ private enum GlobalPreferences {
             }
             if changed {
                 let out = try PropertyListSerialization.data(fromPropertyList: plist, format: format, options: 0)
-                try InodeWriter.writeVerifiedInPlace(out, to: path)
+                // The direct InodeWriter open() needs a bad_query lease, just
+                // like RDARFix.apply - without it open(O_WRONLY) returns EPERM.
+                try BadQueryLeaseScope.withLease(forPath: path) {
+                    try InodeWriter.writeVerifiedInPlace(out, to: path)
+                }
                 lines.append("\(path): \(suppressed ? "solarium suppressed" : "solarium keys restored")")
             } else {
                 lines.append("\(path): already \(suppressed ? "suppressed" : "clean")")
