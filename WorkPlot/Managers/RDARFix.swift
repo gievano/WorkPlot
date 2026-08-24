@@ -211,6 +211,10 @@ struct RDARFix {
         "iPhone16,1": (1179, 2556), "iPhone16,2": (1290, 2796),
         "iPhone17,1": (1206, 2622), "iPhone17,2": (1320, 2868), "iPhone17,3": (1179, 2556),
         "iPhone17,4": (1290, 2796), "iPhone17,5": (1170, 2532),
+        // Machine mapping per AppleDB/adamawolf gist: 18,1 = 17 Pro,
+        // 18,2 = 17 Pro Max, 18,3 = iPhone 17, 18,4 = Air, 18,5 = 17e.
+        "iPhone18,1": (1206, 2622), "iPhone18,2": (1320, 2868),
+        "iPhone18,3": (1206, 2622), "iPhone18,4": (1260, 2736), "iPhone18,5": (1170, 2532),
     ]
 
     static func knownGoodNativeCanvas(machine: String) -> (width: Int, height: Int)? {

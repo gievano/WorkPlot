@@ -721,3 +721,26 @@
 **The Reasoning:** Permintaan eksplisit user: tidak boleh ada fitur gimmick. Prinsip yang dipakai: fitur yang mekanismenya terbukti tidak ada = hapus, jangan pertahankan dengan label experimental; satu-satunya cara menghormati standar itu adalah mengadopsi metode komunitas terdokumentasi (Nugget/EnsWilde/PoomSmart-MGKeys) alih-alih key spekulatif.
 
 **The Tech Debt:** Efek visual Solarium keys terbatas pada build tertentu (26.x; 26.5 sebagian sub-toggle no-op; iOS 27 belum ada jalur non-jailbreak) - caption UI sudah jujur soal ini; preset "Reset Wajar" masih menulis SAGvsp=0 (arah tak terverifikasi) - kandidat pembersihan berikutnya.
+
+## 2026-08-24 - RDAR Tabel Semua iPhone + Sinkron Island Restore + Finalisasi Hapus Palette/Zoom2x
+
+### The Change
+
+Melanjutkan working tree sesi terputus dan menuntaskannya:
+
+1. **RDAR fix lengkap semua iPhone**: tabel `knownGoodNativeCanvases` dilengkapi `iPhone18,3` = iPhone 17 (1206x2622), `iPhone18,4` = Air (1260x2736), `iPhone18,5` = 17e (1170x2532); mapping iPhone18,* dikonfirmasi via AppleDB + gist adamawolf (bukan lagi "pending confirmation"). Kini seluruh iPhone XS s/d 17 Pro Max punya entri known-good sehingga Fix RDAR tidak jatuh ke fallback UIScreen.nativeBounds di device manapun.
+2. **Self-check tabel canvas**: harness CI `Support/RDARFixCheck.swift` dapat `checkKnownGoodCanvases()` - asersi model kunci (11/13/16 Pro/17 Pro) terisi, >=30 entri, dan setiap dimensi adalah panel portrait yang plausible (guard anti-typo).
+3. **Sinkron restore Dynamic Island**: `hideDynamicIslandOff` (Restore) kini juga MENGHAPUS key capability `YlEtTtHlNesRBMal1CqRaA` dari CacheExtra sebelum menonaktifkan flag SpringBoard - karena `hideDynamicIslandOn` kini stage nilai 0, restore lama meninggalkan nilai itu tertanam sehingga island bisa tetap mati di build yang menghormati rute legacy.
+4. **Finalisasi removal**: sweep case-insensitive mengkonfirmasi nol sisa referensi Color Palette / Legacy Palette / Graphics Style / Camera Zoom 2x / requiresCacheDataFlag / gestalt.cacheFlag.skipped di Swift + strings. Assertion checker `check-feature.ps1` yang masih menuntut `CacheDataPatcher.applyCapabilityFlag` di preset apply dibalik jadi larangan (dual-cache tweaks sudah tidak ada; patcher tetap dipakai jalur Siri AI).
+5. **Disable Dynamic Island kembali**: entri katalog legacy (capability=0, gated iphone14ProOrLater, EXPERIMENTAL) direstore sesuai permintaan user, plus `hideDynamicIslandOn` ikut stage capability=0 belt-and-suspenders di atas flag SpringBoard resmi Nugget.
+
+### The Reasoning
+
+- Dimensi panel 17/17e/Air diambil dari spesifikasi publik panel masing-masing (17 & 17 Pro share panel 6.3", Air 6.5" 2736x1260, 17e = panel 16e) - bukan karangan.
+- Restore harus mengembalikan plist ke bentuk stock (key ABSENT), bukan menimpa dengan nilai lain, supaya satu toggle benar-benar membalik pasangannya di semua build.
+
+### The Tech Debt
+
+- Build tetap diverifikasi lewat CI round-trip (Windows tidak bisa kompilasi Swift).
+- Efektivitas rute legacy capability=0 untuk Disable/Hide Island per build iOS belum terbukti device; jalur utama tetap flag SpringBoard.
+- Panel dim iPhone 18 generasi berikutnya (fall 2026) belum tentu sama - tabel tinggal ditambah saat device rilis.

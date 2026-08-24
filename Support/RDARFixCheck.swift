@@ -21,6 +21,7 @@ enum RDARFixCheck {
             try checkSanitizedBackupName()
             try checkIdempotencyDetection()
             try checkBackupRoundTrip()
+            try checkKnownGoodCanvases()
         } catch {
             print("RDARFix check FAILED: \(error)")
             return 1
@@ -79,6 +80,22 @@ enum RDARFixCheck {
         try expect(!RDARFix.plistIsAlreadyFixed(Data("not a plist".utf8),
                                             canvasWidth: 390, canvasHeight: 844),
                "unparseable data must count as not fixed")
+    }
+
+    private static func checkKnownGoodCanvases() throws {
+        // Every iPhone that can run iOS 27 must resolve without falling back
+        // to the untrustworthy UIScreen bounds.
+        for machine in ["iPhone12,1", "iPhone14,5", "iPhone16,2", "iPhone18,1"] {
+            try expect(RDARFix.knownGoodNativeCanvas(machine: machine) != nil,
+                       "\(machine) must have a known-good canvas")
+        }
+        try expect(RDARFix.knownGoodNativeCanvases.count >= 30,
+                   "known-good table must cover every shipping iPhone")
+        for (machine, size) in RDARFix.knownGoodNativeCanvases {
+            try expect(machine.hasPrefix("iPhone"), "unexpected key \(machine)")
+            try expect(size.width > 400 && size.height > size.width * 3 / 2 && size.height < 4000,
+                       "canvas \(machine) \(size) is not a plausible portrait panel")
+        }
     }
 
     private static func checkBackupRoundTrip() throws {
