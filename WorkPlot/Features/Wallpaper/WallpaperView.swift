@@ -250,12 +250,23 @@ struct WallpaperView: View {
 
         let startHash = pbHash
         UIApplication.shared.change(title: "Applying Wallpapers...", body: "Locating PosterBoard...")
+
+        var watchdog: DispatchWorkItem?
+        watchdog = DispatchWorkItem {
+            UIApplication.shared.dismissAlert()
+            UIApplication.shared.alert(title: "Apply timed out", body: "The operation took too long. Make sure the bad_query exploit is active, then try again.")
+        }
+        if let watchdog {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 90, execute: watchdog)
+        }
+
         Task.detached(priority: .userInitiated) { [weak poster] in
             var hash = startHash
             if hash.isEmpty {
                 hash = WallpaperPosterBoardManager.discoverPosterBoardHash() ?? ""
             }
             guard !hash.isEmpty else {
+                watchdog?.cancel()
                 await MainActor.run {
                     UIApplication.shared.dismissAlert()
                     UIApplication.shared.alert(title: "PosterBoard not found", body: "Could not locate the PosterBoard container. Make sure the exploit is active.")
@@ -264,12 +275,14 @@ struct WallpaperView: View {
             }
             do {
                 try poster?.applyTendies(appHash: hash)
+                watchdog?.cancel()
                 await MainActor.run {
                     UIApplication.shared.dismissAlert()
                     Haptic.shared.notify(.success)
                     ExploitManager.shared.requestRespring()
                 }
             } catch {
+                watchdog?.cancel()
                 await MainActor.run {
                     UIApplication.shared.dismissAlert()
                     UIApplication.shared.alert(title: "Apply failed", body: error.localizedDescription)

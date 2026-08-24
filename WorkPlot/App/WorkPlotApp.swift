@@ -2,8 +2,8 @@ import SwiftUI
 
 @main
 struct WorkPlotApp: App {
-    @ObservedObject private var manager = ExploitManager.shared
-    @ObservedObject private var l10n = L10n.shared
+    @StateObject private var manager = ExploitManager.shared
+    @StateObject private var l10n = L10n.shared
     @State private var presetImportMessage: String?
 
     init() {

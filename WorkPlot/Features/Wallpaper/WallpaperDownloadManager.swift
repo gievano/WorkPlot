@@ -80,11 +80,16 @@ final class WallpaperDownloadManager: ObservableObject {
     }
 
     /// Copies an imported (security-scoped) .tendies into the local store.
+    /// Removes any existing copy first so re-importing the same file works
+    /// (Ketamine does the same in `importTendies`).
     func copyTendies(from url: URL) throws -> URL {
         let accessing = url.startAccessingSecurityScopedResource()
         defer { if accessing { url.stopAccessingSecurityScopedResource() } }
-        let newURL = WallpaperPosterBoardManager.shared.getTendiesStoreURL()
-            .appendingPathComponent(url.lastPathComponent)
+        let storeURL = WallpaperPosterBoardManager.shared.getTendiesStoreURL()
+        let newURL = storeURL.appendingPathComponent(url.lastPathComponent)
+        if FileManager.default.fileExists(atPath: newURL.path) {
+            try FileManager.default.removeItem(at: newURL)
+        }
         try FileManager.default.copyItem(at: url, to: newURL)
         return newURL
     }
