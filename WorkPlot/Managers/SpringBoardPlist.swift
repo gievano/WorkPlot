@@ -52,7 +52,12 @@ enum SpringBoardPlist {
             }
             plist[suppressKey] = suppressed
             let out = try PropertyListSerialization.data(fromPropertyList: plist, format: .binary, options: 0)
-            try InodeWriter.writeVerifiedInPlace(out, to: path)
+            // The direct open(O_WRONLY) inside InodeWriter needs a bad_query
+            // lease - without it every write dies with errno=1 EPERM and the
+            // caller's whole apply aborts (same root cause as Liquid Glass #51).
+            try BadQueryLeaseScope.withLease(forPath: path) {
+                try InodeWriter.writeVerifiedInPlace(out, to: path)
+            }
             lines.append("\(path): patched")
         }
         guard reachedAny else { throw SpringBoardPlistError.notReachable }

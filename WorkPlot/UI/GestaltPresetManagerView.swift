@@ -178,7 +178,15 @@ struct GestaltPresetManagerView: View {
                 try GestaltArtwork.setDynamicIslandSubtype(subtype, in: &plist)
             }
             if selectedTweaks.contains(.hideDynamicIslandOn) {
-                springBoardLines += try SpringBoardPlist.setSuppressed(true)
+                // Non-fatal on purpose: the Gestalt capability=0 stage is an
+                // independent hide route, so a failed/unreachable flag write
+                // must not abort the whole apply (it used to - EPERM killed
+                // BOTH routes and the island fix never landed).
+                do {
+                    springBoardLines += try SpringBoardPlist.setSuppressed(true)
+                } catch {
+                    springBoardLines.append("SpringBoard: failed (\(error.localizedDescription))")
+                }
             }
             if selectedTweaks.contains(.hideDynamicIslandOff) {
                 // Stock state = capability key ABSENT; hideDynamicIslandOn
@@ -187,7 +195,11 @@ struct GestaltPresetManagerView: View {
                 var cacheExtra = plist["CacheExtra"] as? [String: Any] ?? [:]
                 cacheExtra.removeValue(forKey: "YlEtTtHlNesRBMal1CqRaA")
                 plist["CacheExtra"] = cacheExtra
-                springBoardLines += try SpringBoardPlist.setSuppressed(false)
+                do {
+                    springBoardLines += try SpringBoardPlist.setSuppressed(false)
+                } catch {
+                    springBoardLines.append("SpringBoard: failed (\(error.localizedDescription))")
+                }
             }
             if changesModelName {
                 let name = modelName.trimmingCharacters(in: .whitespacesAndNewlines)
