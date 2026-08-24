@@ -140,7 +140,10 @@ final class WallpaperPosterBoardManager: ObservableObject {
             let symlink = WallpaperSymlink.getSymlinkURL()
             for item in items {
                 let newURL = symlink.appendingPathComponent(UUID().uuidString, isDirectory: true)
-                try FileManager.default.moveItem(at: item.directory, to: newURL)
+                // Copy (not move) into the bad_query symlink, matching
+                // Ketamine's openTendie — moveItem across the sandbox boundary
+                // can silently fail, leaving the descriptor unapplied.
+                try FileManager.default.copyItem(at: item.directory, to: newURL)
             }
         }
 
