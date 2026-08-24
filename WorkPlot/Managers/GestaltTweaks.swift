@@ -27,10 +27,13 @@ enum GestaltTweakID: String, CaseIterable, Identifiable {
     // SpringBoard suppression flag and the capability=0 staging.
     case hideDynamicIslandOn, hideDynamicIslandOff
     case disableParallax, enableLiquidGlassLowPerformance, disableLiquidGlassLowPerformance
+    case pwm
     case bootChime, chargeLimit, tapToWake, cameraButton
     case pencil, actionButton, collisionSOS
     case stageManager, iPadOS, iPadApps
+    case iosMode
     case internalInstall, internalStorage, securityResearchDevice
+    case internalFeatures
     case rdarCanvasGestalt
 
     var id: String { rawValue }
@@ -83,9 +86,10 @@ enum GestaltTweakCatalog {
         .init(id: .hideDynamicIslandOff, category: .display, title: L10n.shared.tr("tweak.showisland.title"), detail: L10n.shared.tr("tweak.showisland.detail"), values: [:]),
         .init(id: .alwaysOnDisplay, category: .display, title: L10n.shared.tr("tweak.aod.title"), detail: L10n.shared.tr("tweak.aod.detail"), values: ["2OOJf1VhaM7NxfRok3HbWQ": 1, "j8/Omm6s1lsmTDFsXjsBfA": 1], isRisky: true),
         .init(id: .alwaysOnDisplayVibrancy, category: .display, title: L10n.shared.tr("tweak.aodvibrancy.title"), detail: L10n.shared.tr("tweak.aodvibrancy.detail"), values: ["ykpu7qyhqFweVMKtxNylWA": 1]),
-        .init(id: .disableParallax, category: .display, title: L10n.shared.tr("tweak.parallax.title"), detail: L10n.shared.tr("tweak.parallax.detail"), values: ["mmu76v66k1dAtghToInT8g": 0]),
+        .init(id: .disableParallax, category: .display, title: L10n.shared.tr("tweak.parallax.title"), detail: L10n.shared.tr("tweak.parallax.detail"), values: ["UIParallaxCapability": 0]),
         .init(id: .enableLiquidGlassLowPerformance, category: .display, title: L10n.shared.tr("tweak.lglowon.title"), detail: L10n.shared.tr("tweak.lglowon.detail"), values: ["SAGvsp6O6kAQ4fEfDJpC4Q": 1]),
         .init(id: .disableLiquidGlassLowPerformance, category: .display, title: L10n.shared.tr("tweak.lglowoff.title"), detail: L10n.shared.tr("tweak.lglowoff.detail"), values: ["SAGvsp6O6kAQ4fEfDJpC4Q": 0]),
+        .init(id: .pwm, category: .display, title: L10n.shared.tr("tweak.pwm.title"), detail: L10n.shared.tr("tweak.pwm.detail"), values: ["6IejgN+1Fmu5/QrZFOIeNw": 1]),
 
         .init(id: .bootChime, category: .hardware, title: L10n.shared.tr("tweak.bootchime.title"), detail: L10n.shared.tr("tweak.bootchime.detail"), values: ["QHxt+hGLaBPbQJbXiUJX3w": 1]),
         .init(id: .chargeLimit, category: .hardware, title: L10n.shared.tr("tweak.chargelimit.title"), detail: L10n.shared.tr("tweak.chargelimit.detail"), values: ["37NVydb//GP/GrhuTN+exg": 1]),
@@ -97,11 +101,13 @@ enum GestaltTweakCatalog {
 
         .init(id: .stageManager, category: .ipad, title: L10n.shared.tr("tweak.stagemanager.title"), detail: L10n.shared.tr("tweak.stagemanager.detail"), values: ["qeaj75wk3HF4DwQ8qbIi7g": 1]),
         .init(id: .iPadApps, category: .ipad, title: L10n.shared.tr("tweak.ipadapps.title"), detail: L10n.shared.tr("tweak.ipadapps.detail"), values: ["9MZ5AdH43csAUajl/dU+IQ": [1, 2]]),
+        .init(id: .iosMode, category: .ipad, title: L10n.shared.tr("tweak.iosmode.title"), detail: L10n.shared.tr("tweak.iosmode.detail"), values: ["mG0AnH/Vy1veoqoLRAIgTA": 0, "UCG5MkVahJxG1YULbbd5Bg": 0, "ZYqko/XM5zD3XBfN5RmaXA": 0, "nVh/gwNpy7Jv1NOk00CMrw": 0, "uKc7FPnEO++lVhHWHFlGbQ": 0]),
         .init(id: .iPadOS, category: .ipad, title: L10n.shared.tr("tweak.ipados.title"), detail: L10n.shared.tr("tweak.ipados.detail"), values: ["mG0AnH/Vy1veoqoLRAIgTA": 1, "UCG5MkVahJxG1YULbbd5Bg": 1, "ZYqko/XM5zD3XBfN5RmaXA": 1, "nVh/gwNpy7Jv1NOk00CMrw": 1, "uKc7FPnEO++lVhHWHFlGbQ": 1], isRisky: true),
 
         .init(id: .internalInstall, category: .internalFeatures, title: L10n.shared.tr("tweak.internalinstall.title"), detail: L10n.shared.tr("tweak.internalinstall.detail"), values: ["EqrsVvjcYDdxHBiQmGhAWw": 1], isRisky: true),
         .init(id: .internalStorage, category: .internalFeatures, title: L10n.shared.tr("tweak.internalstorage.title"), detail: L10n.shared.tr("tweak.internalstorage.detail"), values: ["LBJfwOEzExRxzlAnSuI7eg": 1], isRisky: true),
         .init(id: .securityResearchDevice, category: .internalFeatures, title: L10n.shared.tr("tweak.securityresearch.title"), detail: L10n.shared.tr("tweak.securityresearch.detail"), values: ["XYlJKKkj2hztRP1NWWnhlw": 1], isRisky: true),
+        .init(id: .internalFeatures, category: .internalFeatures, title: L10n.shared.tr("tweak.internalfeatures.title"), detail: L10n.shared.tr("tweak.internalfeatures.detail"), values: ["EqrsVvjcYDdxHBiQmGhAWw": 1, "Oji6HRoPi7rH7HPdWVakuw": 1, "LBJfwOEzExRxzlAnSuI7eg": 1], isRisky: true),
 
         // Canvas dimensions are ALSO read from MobileGestalt (MGKeys:
         // MainScreenCanvasSizes), not only from the graphics plist that

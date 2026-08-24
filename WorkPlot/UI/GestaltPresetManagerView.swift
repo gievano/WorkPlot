@@ -8,6 +8,7 @@ struct GestaltPresetManagerView: View {
     @State private var modelName = ""
     @State private var isApplying = false
     @State private var showRestartAlert = false
+    @State private var showRestoreConfirm = false
 
     private var stagedChangeCount: Int {
         selectedTweaks.count
@@ -19,67 +20,13 @@ struct GestaltPresetManagerView: View {
         NavigationView {
             Group {
                 if !manager.sandboxGranted {
-                    VStack(spacing: 12) {
-                        Image(systemName: "lock.icloud").font(.largeTitle).foregroundColor(.orange)
-                        Text(L10n.shared.tr("common.accessLocked"))
-                            .multilineTextAlignment(.center)
-                            .foregroundColor(.secondary)
-                    }
+                    lockedView
                 } else {
-                    List {
-                        Section(
-                            header: Text(L10n.shared.tr("gestalt.islandHeader")),
-                            footer: Text(L10n.shared.tr("gestalt.islandFooter"))
-                        ) {
-                            Picker(L10n.shared.tr("fields.typeHeader"), selection: $dynamicIslandSubtype) {
-                                Text(L10n.shared.tr("common.default")).tag(Int?.none)
-                                ForEach(DynamicIslandOption.all) { option in
-                                    Text("\(option.title) (\(option.subtype))").tag(Int?.some(option.subtype))
-                                }
-                            }
-                            if !DeviceCapability.supports(.iphone14ProOrLater) {
-                                Text(L10n.shared.tr("gestalt.island.warn"))
-                                    .font(.caption2)
-                                    .foregroundColor(.orange)
-                            }
-                        }
-
-                        Section(header: Text(L10n.shared.tr("gestalt.modelHeader"))) {
-                            Toggle(L10n.shared.tr("gestalt.changeModelName"), isOn: $changesModelName)
-                            if changesModelName {
-                                TextField(L10n.shared.tr("gestalt.modelNamePlaceholder"), text: $modelName)
-                                    .autocorrectionDisabled()
-                            }
-                        }
-
-                        ForEach(GestaltTweakCategory.allCases) { category in
-                            Section(header: Text(category.label)) {
-                                ForEach(tweaks(in: category)) { tweak in
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        if tweak.isSupportedOnThisDevice {
-                                            Toggle(isOn: binding(for: tweak.id)) {
-                                                tweakLabel(tweak)
-                                            }
-                                        } else {
-                                            Toggle(isOn: .constant(false)) {
-                                                tweakLabel(tweak)
-                                            }
-                                            .disabled(true)
-                                            Text(L10n.shared.tr("gestalt.deviceUnsupported"))
-                                                .font(.caption2)
-                                                .foregroundColor(.secondary)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                    }
-                    .workPlotScrollBackground()
-                    .scrollDismissesKeyboard(.immediately)
+                    content
                 }
             }
-            .navigationTitle(L10n.shared.tr("tab.gestalt"))
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
             .heavyRestartFlow(isPresented: $showRestartAlert)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -91,33 +38,204 @@ struct GestaltPresetManagerView: View {
                     .disabled(stagedChangeCount == 0 || isApplying || !manager.sandboxGranted)
                 }
             }
+            .onAppear { manager.refreshBackups() }
         }
+    }
+
+    private var lockedView: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "lock.icloud").font(.largeTitle).foregroundColor(.orange)
+            Text(L10n.shared.tr("common.accessLocked"))
+                .multilineTextAlignment(.center)
+                .foregroundColor(.secondary)
+        }
+    }
+
+    private var content: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                hero
+                restoreCard
+                identityGroup
+                ForEach(GestaltTweakCategory.allCases) { category in
+                    categorySection(category)
+                }
+                Spacer(minLength: 40)
+            }
+            .padding(18)
+        }
+        .scrollDismissesKeyboard(.immediately)
+    }
+
+    private var hero: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 14) {
+                Image(systemName: "wand.and.stars.inverse")
+                    .font(.system(size: 30, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 56, height: 56)
+                    .background(
+                        LinearGradient(colors: [Color.accentColor, Color.accentColor.opacity(0.55)],
+                                      startPoint: .topLeading, endPoint: .bottomTrailing),
+                        in: RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    )
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("WorkPlot").font(.title.bold())
+                    Text(L10n.shared.tr("tab.gestalt")).font(.subheadline).foregroundStyle(.secondary)
+                }
+                Spacer()
+            }
+            HStack(spacing: 8) {
+                Image(systemName: hasStockBackup ? "checkmark.shield.fill" : "shield")
+                    .foregroundStyle(hasStockBackup ? Color(.systemGreen) : .orange)
+                Text(hasStockBackup ? L10n.shared.tr("backup.hasBackup") : L10n.shared.tr("backup.noneYet"))
+                    .font(.caption.weight(.medium))
+                Spacer()
+            }
+        }
+        .padding(18)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+    }
+
+    private var hasStockBackup: Bool {
+        manager.backups.contains { $0.name == "Stock Snapshot" }
+    }
+
+    private var restoreCard: some View {
+        Button { showRestoreConfirm = true } label: {
+            HStack(spacing: 14) {
+                Image(systemName: "arrow.uturn.backward.circle.fill")
+                    .font(.title3)
+                    .foregroundStyle(.orange)
+                    .frame(width: 30)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(L10n.shared.tr("backup.revertStock"))
+                        .font(.body.weight(.semibold))
+                    Text(L10n.shared.tr("gestalt.restoreHint"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right").font(.caption).foregroundStyle(.tertiary)
+            }
+            .padding(16)
+            .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .disabled(!manager.sandboxGranted || !hasStockBackup)
+        .confirmationDialog(L10n.shared.tr("backup.restoreConfirmTitle"), isPresented: $showRestoreConfirm) {
+            Button(L10n.shared.tr("pb.apply"), role: .destructive) { restoreStock() }
+            Button(L10n.shared.tr("common.cancel"), role: .cancel) {}
+        } message: {
+            Text(L10n.shared.tr("backup.restoreMsg"))
+        }
+    }
+
+    private func restoreStock() {
+        manager.refreshBackups()
+        guard let target = manager.backups.first(where: { $0.name == "Stock Snapshot" })
+              ?? manager.backups.last else {
+            manager.statusText = L10n.shared.tr("common.noBackup")
+            return
+        }
+        if manager.restore(target) {
+            manager.statusText = L10n.shared.tr("backup.restoreOk")
+            manager.requestRespring()
+        } else {
+            manager.statusText = String(format: L10n.shared.tr("common.failPrefix"), "")
+        }
+    }
+
+    private var identityGroup: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            WPCategoryHeader(L10n.shared.tr("gestalt.identityHeader"))
+            VStack(spacing: 12) {
+                Picker(L10n.shared.tr("fields.typeHeader"), selection: $dynamicIslandSubtype) {
+                    Text(L10n.shared.tr("common.default")).tag(Int?.none)
+                    ForEach(DynamicIslandOption.all) { option in
+                        Text("\(option.title) (\(option.subtype))").tag(Int?.some(option.subtype))
+                    }
+                }
+                .padding(14)
+                .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+                if !DeviceCapability.supports(.iphone14ProOrLater) {
+                    Text(L10n.shared.tr("gestalt.island.warn"))
+                        .font(.caption2).foregroundColor(.orange)
+                        .padding(.horizontal, 4)
+                }
+
+                Toggle(L10n.shared.tr("gestalt.changeModelName"), isOn: $changesModelName)
+                    .padding(14)
+                    .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                if changesModelName {
+                    TextField(L10n.shared.tr("gestalt.modelNamePlaceholder"), text: $modelName)
+                        .autocorrectionDisabled()
+                        .padding(14)
+                        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                }
+            }
+        }
+    }
+
+    private func categorySection(_ category: GestaltTweakCategory) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            WPCategoryHeader(category.label)
+            VStack(spacing: 12) {
+                ForEach(tweaks(in: category)) { tweak in
+                    tweakCard(tweak)
+                }
+            }
+        }
+    }
+
+    private func tweakCard(_ tweak: GestaltTweakDefinition) -> some View {
+        HStack(spacing: 14) {
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 6) {
+                    Text(tweak.title).font(.body.weight(.semibold))
+                    if tweak.isRisky {
+                        Text(L10n.shared.tr("common.risky")).font(.caption2).bold()
+                            .foregroundColor(.red)
+                            .padding(.horizontal, 5).padding(.vertical, 1)
+                            .background(Color.red.opacity(0.15))
+                            .cornerRadius(4)
+                    }
+                    if tweak.isExperimental {
+                        Text(L10n.shared.tr("common.experimental")).font(.caption2).bold()
+                            .foregroundColor(.orange)
+                            .padding(.horizontal, 5).padding(.vertical, 1).padding(.horizontal, 5)
+                            .background(Color.orange.opacity(0.15))
+                            .cornerRadius(4)
+                    }
+                }
+                Text(tweak.detail).font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer()
+            if tweak.isSupportedOnThisDevice {
+                Toggle("", isOn: binding(for: tweak.id)).labelsHidden()
+            } else {
+                Toggle("", isOn: .constant(false)).labelsHidden().disabled(true)
+                Text(L10n.shared.tr("gestalt.deviceUnsupported"))
+                    .font(.caption2).foregroundStyle(.secondary)
+            }
+        }
+        .padding(16)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
     private func tweaks(in category: GestaltTweakCategory) -> [GestaltTweakDefinition] {
         GestaltTweakCatalog.definitions.filter { $0.category == category }
     }
 
-    private func tweakLabel(_ tweak: GestaltTweakDefinition) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            HStack(spacing: 4) {
-                Text(tweak.title)
-                if tweak.isRisky {
-                    Text(L10n.shared.tr("common.risky")).font(.caption2).bold()
-                        .foregroundColor(.red)
-                        .padding(.horizontal, 4).padding(.vertical, 1)
-                        .background(Color.red.opacity(0.15))
-                        .cornerRadius(4)
-                }
-                if tweak.isExperimental {
-                    Text(L10n.shared.tr("common.experimental")).font(.caption2).bold()
-                        .foregroundColor(.orange)
-                        .padding(.horizontal, 4).padding(.vertical, 1)
-                        .background(Color.orange.opacity(0.15))
-                        .cornerRadius(4)
-                }
-            }
-            Text(tweak.detail).font(.caption).foregroundColor(.secondary)
+    private struct WPCategoryHeader: View {
+        let title: String
+        var body: some View {
+            Text(title.uppercased())
+                .font(.caption.weight(.bold))
+                .foregroundStyle(.secondary)
+                .tracking(0.8)
+                .padding(.horizontal, 4)
         }
     }
 
@@ -210,6 +328,19 @@ struct GestaltPresetManagerView: View {
             }
             if selectedTweaks.contains(.iPadOS) {
                 try GestaltCacheDataPatch.applyiPadOSMode(to: &plist)
+            }
+            if selectedTweaks.contains(.internalFeatures) {
+                // CacheData patches are best-effort: an unresolved offset on
+                // this firmware must not abort the whole apply, only warn.
+                for key in ["EqrsVvjcYDdxHBiQmGhAWw", "Oji6HRoPi7rH7HPdWVakuw", "LBJfwOEzExRxzlAnSuI7eg"] {
+                    do {
+                        guard var cacheData = plist["CacheData"] as? Data else { continue }
+                        try setCacheData(1, forKey: key, in: &cacheData)
+                        plist["CacheData"] = cacheData
+                    } catch {
+                        springBoardLines.append("Internal Features (\(key)): \(error.localizedDescription)")
+                    }
+                }
             }
         } catch {
             manager.statusText = String(format: L10n.shared.tr("common.failPrefix"), error.localizedDescription)
