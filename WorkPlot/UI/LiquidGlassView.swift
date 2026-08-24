@@ -66,7 +66,7 @@ struct LiquidGlassView: View {
                 }
             }
             .navigationTitle(L10n.shared.tr("tab.liquidglass"))
-            .workPlotScrollBackground()
+            .wpGlassContainer()
             .alert(
                 L10n.shared.tr("restart.rec.title"),
                 isPresented: $showRestartAlert
