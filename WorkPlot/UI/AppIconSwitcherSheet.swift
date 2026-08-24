@@ -40,6 +40,10 @@ struct AppIconSwitcherSheet: View {
     @State private var pendingIcon: AppIcon?
     @State private var errorMessage: String?
 
+    init(showDoneButton: Bool = true) {
+        self.showDoneButton = showDoneButton
+    }
+
     private let columns = [GridItem(.adaptive(minimum: 100), spacing: 20)]
 
     var body: some View {
