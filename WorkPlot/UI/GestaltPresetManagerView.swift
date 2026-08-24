@@ -94,7 +94,7 @@ struct GestaltPresetManagerView: View {
             }
         }
         .padding(18)
-        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .liquidGlass(cornerRadius: 22)
     }
 
     private var hasStockBackup: Bool {
@@ -119,7 +119,7 @@ struct GestaltPresetManagerView: View {
                 Image(systemName: "chevron.right").font(.caption).foregroundStyle(.tertiary)
             }
             .padding(16)
-            .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .liquidGlass(cornerRadius: 16)
         }
         .buttonStyle(.plain)
         .disabled(!manager.sandboxGranted || !hasStockBackup)
@@ -157,7 +157,7 @@ struct GestaltPresetManagerView: View {
                     }
                 }
                 .padding(14)
-                .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .liquidGlass(cornerRadius: 16)
 
                 if !DeviceCapability.supports(.iphone14ProOrLater) {
                     Text(L10n.shared.tr("gestalt.island.warn"))
@@ -167,12 +167,12 @@ struct GestaltPresetManagerView: View {
 
                 Toggle(L10n.shared.tr("gestalt.changeModelName"), isOn: $changesModelName)
                     .padding(14)
-                    .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .liquidGlass(cornerRadius: 16)
                 if changesModelName {
                     TextField(L10n.shared.tr("gestalt.modelNamePlaceholder"), text: $modelName)
                         .autocorrectionDisabled()
                         .padding(14)
-                        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .liquidGlass(cornerRadius: 16)
                 }
             }
         }
@@ -221,7 +221,7 @@ struct GestaltPresetManagerView: View {
             }
         }
         .padding(16)
-        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .liquidGlass(cornerRadius: 16)
     }
 
     private func tweaks(in category: GestaltTweakCategory) -> [GestaltTweakDefinition] {
