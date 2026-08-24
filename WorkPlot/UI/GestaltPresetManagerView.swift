@@ -148,7 +148,7 @@ struct GestaltPresetManagerView: View {
 
     private var identityGroup: some View {
         VStack(alignment: .leading, spacing: 12) {
-            WPCategoryHeader(L10n.shared.tr("gestalt.identityHeader"))
+            WPSectionHeader(title: L10n.shared.tr("gestalt.identityHeader"))
             VStack(spacing: 12) {
                 Picker(L10n.shared.tr("fields.typeHeader"), selection: $dynamicIslandSubtype) {
                     Text(L10n.shared.tr("common.default")).tag(Int?.none)
@@ -180,7 +180,7 @@ struct GestaltPresetManagerView: View {
 
     private func categorySection(_ category: GestaltTweakCategory) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            WPCategoryHeader(category.label)
+            WPSectionHeader(title: category.label)
             VStack(spacing: 12) {
                 ForEach(tweaks(in: category)) { tweak in
                     tweakCard(tweak)
@@ -226,17 +226,6 @@ struct GestaltPresetManagerView: View {
 
     private func tweaks(in category: GestaltTweakCategory) -> [GestaltTweakDefinition] {
         GestaltTweakCatalog.definitions.filter { $0.category == category }
-    }
-
-    private struct WPCategoryHeader: View {
-        let title: String
-        var body: some View {
-            Text(title.uppercased())
-                .font(.caption.weight(.bold))
-                .foregroundStyle(.secondary)
-                .tracking(0.8)
-                .padding(.horizontal, 4)
-        }
     }
 
     private func binding(for id: GestaltTweakID) -> Binding<Bool> {
