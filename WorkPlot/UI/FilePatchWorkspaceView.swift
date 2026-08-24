@@ -94,7 +94,7 @@ struct FilePatchWorkspaceView: View {
         }
         .fileImporter(
             isPresented: $showingImporter,
-            allowedContentTypes: [.patch3105],
+            allowedContentTypes: [.data],
             allowsMultipleSelection: false,
             onCompletion: performImport
         )
@@ -600,6 +600,10 @@ struct FilePatchWorkspaceView: View {
     private func performImport(_ result: Result<[URL], Error>) {
         do {
             guard let sourceURL = try result.get().first else { return }
+            guard sourceURL.pathExtension.lowercased() == "3105" else {
+                errorText = "Only .3105 patch files can be imported."
+                return
+            }
             // The Files tab only accepts .3105 files, so every import is a
             // patch apply. Protected packages round-trip through the password
             // prompt before Patch3105 runs.
