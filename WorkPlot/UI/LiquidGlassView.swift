@@ -4,6 +4,7 @@ struct LiquidGlassView: View {
     @ObservedObject private var manager = ExploitManager.shared
     @State private var mode: LiquidGlassMode = .systemDefault
     @State private var isApplying = false
+    @State private var isDisabling = false
     @State private var showRestartAlert = false
     @State private var didLoadState = false
 
@@ -42,7 +43,18 @@ struct LiquidGlassView: View {
                                     Text(L10n.shared.tr("common.apply"))
                                 }
                             }
-                            .disabled(isApplying)
+                            .disabled(isApplying || isDisabling)
+
+                            Button {
+                                disableGlobally()
+                            } label: {
+                                if isDisabling {
+                                    HStack { ProgressView(); Text(L10n.shared.tr("common.working")) }
+                                } else {
+                                    Text(L10n.shared.tr("status.lg.disable"))
+                                }
+                            }
+                            .disabled(isDisabling || isApplying || !manager.sandboxGranted)
 
                             Button(role: .destructive) {
                                 manager.requestRespring()
@@ -75,6 +87,7 @@ struct LiquidGlassView: View {
     }
 
     private func applyChanges() {
+        guard !isApplying else { return }
         isApplying = true
         let mode = mode
 
@@ -89,6 +102,33 @@ struct LiquidGlassView: View {
             } catch {
                 DispatchQueue.main.async {
                     self.isApplying = false
+                    self.manager.statusText = String(
+                        format: L10n.shared.tr("common.failPrefix"),
+                        error.localizedDescription
+                    )
+                }
+            }
+        }
+    }
+
+    private func disableGlobally() {
+        guard !isDisabling else { return }
+        isDisabling = true
+
+        // GlobalPreferences writes are synchronous bad_query filesystem work,
+        // same off-main-thread rule as applyChanges.
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                let lines = try LiquidGlassController.disableGlobal()
+                DispatchQueue.main.async {
+                    self.isDisabling = false
+                    self.manager.statusText = L10n.shared.tr("lg.disabled") + "\n" + lines.joined(separator: "\n")
+                    self.mode = LiquidGlassController.currentMode()
+                    self.showRestartAlert = true
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.isDisabling = false
                     self.manager.statusText = String(
                         format: L10n.shared.tr("common.failPrefix"),
                         error.localizedDescription
