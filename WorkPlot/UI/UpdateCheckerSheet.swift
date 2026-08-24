@@ -24,6 +24,10 @@ struct UpdateCheckerSheet: View {
     let showDoneButton: Bool = true
     @State private var phase: Phase = .idle
 
+    init(showDoneButton: Bool = true) {
+        self.showDoneButton = showDoneButton
+    }
+
     var body: some View {
         NavigationView {
             Group {
