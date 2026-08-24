@@ -95,9 +95,11 @@ struct BackupRestoreManagerView: View {
             }
             .fileImporter(
                 isPresented: $isShowingImporter,
-                // A bare [.data] filter grays out .plist files in the document picker;
-                // list the property-list UTIs explicitly and keep .data as catch-all.
-                allowedContentTypes: [UTType.propertyList, .xmlPropertyList, .binaryPropertyList, .data],
+                // Accept ANY file extension - users export backups under all
+                // kinds of names. The validator below enforces the real
+                // contract: the content must parse as a plist carrying
+                // CacheExtra, everything else fails loudly.
+                allowedContentTypes: [UTType.item],
                 allowsMultipleSelection: false
             ) { result in
                 switch result {
