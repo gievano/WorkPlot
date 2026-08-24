@@ -41,7 +41,7 @@ struct WallpaperView: View {
         }
         .navigationTitle("Wallpaper")
         .onAppear(perform: loadCowabunga)
-        .fileImporter(isPresented: $showImporter, allowedContentTypes: [UTType(filenameExtension: "tendies") ?? .data]) { result in
+        .fileImporter(isPresented: $showImporter, allowedContentTypes: [.data]) { result in
             if case let .success(url) = result {
                 importTendies(url)
             }
@@ -174,7 +174,7 @@ struct WallpaperView: View {
     // MARK: Actions
 
     private func importTendies(_ url: URL) {
-        guard url.pathExtension == "tendies" else {
+        guard url.pathExtension.lowercased() == "tendies" else {
             UIApplication.shared.alert(body: "Only .tendies files can be imported!"); return
         }
         guard poster.selectedTendies.count < WallpaperPosterBoardManager.MaxTendies else {
