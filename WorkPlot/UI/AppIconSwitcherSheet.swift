@@ -35,7 +35,7 @@ struct AppIcon: Identifiable {
 struct AppIconSwitcherSheet: View {
     @ObservedObject private var l10n = L10n.shared
     @Environment(\.dismiss) private var dismiss
-    let showDoneButton: Bool = true
+    let showDoneButton: Bool
     @State private var currentAltName: String? = UIApplication.shared.alternateIconName
     @State private var pendingIcon: AppIcon?
     @State private var errorMessage: String?

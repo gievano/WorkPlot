@@ -21,7 +21,7 @@ struct UpdateCheckerSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
 
-    let showDoneButton: Bool = true
+    let showDoneButton: Bool
     @State private var phase: Phase = .idle
 
     init(showDoneButton: Bool = true) {
