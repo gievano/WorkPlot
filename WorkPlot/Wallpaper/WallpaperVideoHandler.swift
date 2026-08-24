@@ -57,7 +57,7 @@ final class WallpaperVideoHandler {
 
     static func isVideoTooLong(at url: URL) -> Bool {
         let asset = AVAsset(url: url)
-        CMTimeGetSeconds(asset.duration) > MaxDurationSecs
+        return CMTimeGetSeconds(asset.duration) > MaxDurationSecs
     }
 
     static func createCaml(from url: URL, autoReverses: Bool) throws -> URL {
