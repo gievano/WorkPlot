@@ -1,8 +1,7 @@
 import SwiftUI
 
-// Shared UI building blocks — own concept, same intent as Ketamine's
-// Components (section headers, action buttons, progress, toast) but named
-// for WorkPlot and wired to Theme.liquidGlass.
+// Shared UI building blocks — own concept, refined glass. Section headers,
+// action buttons, progress and toast, all wired to Theme.liquidGlass.
 
 struct WPSectionHeader: View {
     let title: String
@@ -11,36 +10,49 @@ struct WPSectionHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title.uppercased())
-                .font(.caption.weight(.bold))
-                .foregroundStyle(.secondary)
-                .tracking(0.8)
+                .font(.caption.weight(.heavy))
+                .foregroundStyle(Theme.accent)
+                .tracking(1.2)
             if let subtitle {
                 Text(subtitle)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
         }
-        .padding(.horizontal, 4)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.bottom, 2)
     }
 }
 
 struct WPActionButton: View {
     let title: String
     var isBusy: Bool = false
-    var prominent: Bool = false
+    var prominent: Bool = true
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: 10) {
                 if isBusy { ProgressView().controlSize(.small) }
-                Text(isBusy ? "" : title)
+                Text(isBusy ? "Please wait…" : title)
             }
             .font(.body.weight(.semibold))
             .frame(maxWidth: .infinity)
         }
         .glassAction(forceProminent: prominent)
         .disabled(isBusy)
+    }
+}
+
+struct WPCard<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    var body: some View {
+        content.wpCard()
     }
 }
 
@@ -58,6 +70,10 @@ struct WPProgressOverlay: View {
             }
             .padding(24)
             .liquidGlass(cornerRadius: 20)
+            .overlay(
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .stroke(Theme.hairline, lineWidth: 1)
+            )
         }
     }
 }
@@ -71,6 +87,10 @@ struct WPToast: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
             .liquidGlass(cornerRadius: 14)
+            .overlay(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .stroke(Theme.hairline, lineWidth: 1)
+            )
             .padding(.bottom, 8)
     }
 }
