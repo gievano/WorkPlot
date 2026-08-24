@@ -11,6 +11,7 @@ struct SiriAITweaksView: View {
     @State private var isApplying = false
     @State private var showRestartAlert = false
     @State private var showSpoofWarning = false
+    @State private var eligibilityReachable = false
 
     private var stagedCount: Int {
         (siriAIStaged == nil ? 0 : 1)
@@ -41,12 +42,18 @@ struct SiriAITweaksView: View {
                         siriAISection
                         appleIntelligenceSection
                         spoofSection
+                        if eligibilityReachable {
+                            Section(header: Text(l10n.tr("eligibility.title"))) {
+                                NavigationLink(l10n.tr("eligibility.open"), destination: EligibilityView())
+                            }
+                        }
                         applySection
                     }
                 }
             }
             .navigationTitle(l10n.tr("siriai.title"))
             .workPlotScrollBackground()
+            .task { eligibilityReachable = EligibilityManager.isReachable() }
             .heavyRestartFlow(isPresented: $showRestartAlert)
             .alert(
                 l10n.tr("danger.spoof.title"),

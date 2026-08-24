@@ -61,6 +61,7 @@
 "icon.default" = "WorkPlot Classic";
 "icon.collage" = "WP Collage";
 "common.done" = "Done";
+"common.ok" = "OK";
 
 // Icon grid, credits detail, background slider
 "icon.dark" = "Dark";
@@ -351,6 +352,17 @@
 "tweak.internalstorage.detail" = "Shows internal files in Storage settings; high risk on some iPads.";
 "tweak.securityresearch.title" = "Security Research Device Mode";
 "tweak.securityresearch.detail" = "Marks the device as a Security Research Device.";
+"tweak.pwm.title" = "Pulse Width Modulation";
+"tweak.pwm.detail" = "Advertises PWM display support for supported panels.";
+"tweak.iosmode.title" = "iOS Mode";
+"tweak.iosmode.detail" = "Spoofs iOS capabilities onto an iPad; experimental and high risk.";
+"tweak.internalfeatures.title" = "Internal Features";
+"tweak.internalfeatures.detail" = "Exposes internal settings via CacheData; high risk, some services may misbehave.";
+"backup.hasBackup" = "Stock snapshot available";
+"backup.noneYet" = "No stock snapshot yet";
+"gestalt.restoreHint" = "Revert MobileGestalt to the snapshot taken before your first tweak.";
+"backup.restoreConfirmTitle" = "Restore MobileGestalt?";
+"common.noBackup" = "No backup is available to restore.";
 
 // Status, session log, backup revert
 "status.exploitActive" = "Exploit Active (%@)";
@@ -459,3 +471,19 @@
 "tweak.showisland.detail" = "Removes the SpringBoard suppression flag so the island renders normally again.";
 "sb.error.notReachable" = "com.apple.springboard.plist was not reachable through the sandbox.";
 "lg.error.globalNotReachable" = "No copy of .GlobalPreferences.plist was reachable through the sandbox.";
+
+// Eligibility (GreyMatter/Calcium) - iOS 27 direct plist manipulation
+"eligibility.title" = "Eligibility";
+"eligibility.open" = "Open Eligibility Controls";
+"eligibility.reachable" = "DIRECT ACCESS AVAILABLE";
+"eligibility.unreachable" = "DIRECT ACCESS UNAVAILABLE";
+"eligibility.greymatter" = "Apple Intelligence";
+"eligibility.greymatter.detail" = "Enables the GREYMATTER domain for generative model eligibility.";
+"eligibility.calcium" = "China Cellular";
+"eligibility.calcium.detail" = "Removes the CALCIUM China-cellular eligibility restriction.";
+"eligibility.apply" = "Update eligibility";
+"eligibility.restore" = "Restore";
+"eligibility.explanation" = "Merges these answers into the existing eligibility plist, keeping unrelated state intact and saving the original file before the first change.";
+"eligibility.error.title" = "Eligibility update failed";
+"eligibility.unavailable.title" = "Container not reachable";
+"eligibility.unavailable.detail" = "This firmware does not grant write access to the eligibility container. Use the Apple Intelligence and Device Spoof capabilities from Tweaks instead.";

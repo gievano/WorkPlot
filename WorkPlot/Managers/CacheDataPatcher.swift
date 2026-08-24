@@ -17,6 +17,92 @@
 //
 
 import Foundation
+import Darwin
+import MachO
+
+// MARK: - Offset-resolved CacheData writes
+
+private var cacheDataOffsetCache: [String: Int] = [:]
+
+/// Resolves the byte offset of a CacheExtra key's Int value inside the
+/// `CacheData` blob by scanning libMobileGestalt's `__cstring`/`__const`
+/// sections — a per-key, per-firmware replacement for Nugget's hardcoded
+/// slice-1616 hack. Returns 0 when the offset can't be resolved.
+func cacheDataOffset(for key: String) -> Int {
+    if let cached = cacheDataOffsetCache[key] { return cached }
+
+    let libMG = "/usr/lib/libMobileGestalt.dylib"
+    dlopen(libMG, RTLD_GLOBAL)
+
+    var header: UnsafePointer<mach_header_64>?
+    for i in 0..<_dyld_image_count() {
+        if String(cString: _dyld_get_image_name(i)) == libMG {
+            header = unsafeBitCast(_dyld_get_image_header(i), to: UnsafePointer<mach_header_64>.self)
+            break
+        }
+    }
+    if header == nil {
+        for i in 0..<_dyld_image_count() {
+            let name = String(cString: _dyld_get_image_name(i))
+            if name.contains("libMobileGestalt") {
+                header = unsafeBitCast(_dyld_get_image_header(i), to: UnsafePointer<mach_header_64>.self)
+                break
+            }
+        }
+    }
+    guard let header else { cacheDataOffsetCache[key] = 0; return 0 }
+
+    var textSize = 0
+    guard let cstring = getsectiondata(header, "__TEXT", "__cstring", &textSize) else {
+        cacheDataOffsetCache[key] = 0; return 0
+    }
+    let cstr = cstring.withMemoryRebound(to: CChar.self, capacity: textSize) { $0 }
+
+    var keyPtr = cstr
+    while Int(keyPtr - cstr) < textSize {
+        if String(cString: keyPtr) == key { break }
+        keyPtr += strlen(keyPtr) + 1
+    }
+
+    var constSize = 0
+    var ptr = getsectiondata(header, "__AUTH_CONST", "__const", &constSize)?
+        .withMemoryRebound(to: UInt.self, capacity: constSize / 8) { $0 }
+    if ptr == nil {
+        ptr = getsectiondata(header, "__DATA_CONST", "__const", &constSize)?
+            .withMemoryRebound(to: UInt.self, capacity: constSize / 8) { $0 }
+    }
+    guard let ptr else { cacheDataOffsetCache[key] = 0; return 0 }
+
+    for i in 0..<(constSize / 8) {
+        if ptr[i] == UInt(bitPattern: keyPtr) {
+            let offset = Int((ptr.advanced(by: i).withMemoryRebound(to: UInt16.self, capacity: 1) { $0[0x9a / 2] }) << 3)
+            cacheDataOffsetCache[key] = offset
+            return offset
+        }
+    }
+
+    cacheDataOffsetCache[key] = 0
+    return 0
+}
+
+/// Writes a little-endian Int at the CacheData offset resolved for `key`.
+func setCacheData(_ value: Int, forKey key: String, in data: inout Data) throws {
+    let off = cacheDataOffset(for: key)
+    guard off > 0, off + MemoryLayout<Int>.size <= data.count else {
+        throw CacheDataPatchError.patternNotFound
+    }
+
+    var little = Int64(value).littleEndian
+    data.withUnsafeMutableBytes { raw in
+        guard let base = raw.baseAddress else { return }
+        withUnsafeBytes(of: &little) { bytes in
+            for (i, byte) in bytes.enumerated() {
+                base.assumingMemoryBound(to: UInt8.self).advanced(by: off + i).pointee = byte
+            }
+        }
+    }
+}
+
 
 enum CacheDataPatchError: LocalizedError {
     case cacheDataMissing
