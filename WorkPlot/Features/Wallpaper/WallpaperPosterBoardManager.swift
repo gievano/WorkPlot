@@ -89,6 +89,16 @@ final class WallpaperPosterBoardManager: ObservableObject {
 
     private static let descriptorMarker = "com.apple.posterkit.provider.descriptor.identifier"
 
+    private static func isDirectory(_ url: URL) -> Bool {
+        (try? url.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory == true
+    }
+
+    private static func isDescriptorFolder(_ url: URL) -> Bool {
+        isDirectory(url)
+            && FileManager.default.fileExists(
+                atPath: url.appendingPathComponent(descriptorMarker).path)
+    }
+
     /// Randomizes the wallpaper identifier inside a descriptor folder so
     /// multiple tendies do not collide on the same PosterBoard descriptor ID.
     /// Ported 1:1 from Ketamine's PosterBoardManager.randomizeWallpaperId.
