@@ -41,6 +41,9 @@ struct MoreMenuView: View {
                     } label: {
                         Label(l10n.tr("icon.menu"), systemImage: "paintbrush")
                     }
+                    NavigationLink { AppearanceView() } label: {
+                        Label("Appearance", systemImage: "paintpalette")
+                    }
 
                     NavigationLink { CreditsView() } label: {
                         Label(l10n.tr("credits.header"), systemImage: "heart.circle.fill")
