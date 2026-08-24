@@ -266,7 +266,7 @@ struct WallpaperView: View {
                 await MainActor.run {
                     UIApplication.shared.dismissAlert()
                     Haptic.shared.notify(.success)
-                    UIApplication.shared.alert(title: "Applied", body: "Open Wallpaper settings and pick your new poster.")
+                    ExploitManager.shared.requestRespring()
                 }
             } catch {
                 await MainActor.run {
@@ -308,7 +308,7 @@ struct WallpaperView: View {
                 await MainActor.run {
                     UIApplication.shared.dismissAlert()
                     Haptic.shared.notify(.success)
-                    UIApplication.shared.alert(title: "CarPlay Applied", body: "Check your car's CarPlay wallpaper settings.")
+                    ExploitManager.shared.requestRespring()
                 }
             } catch {
                 await MainActor.run {
