@@ -34,6 +34,7 @@ Switch them in-app under the gear icon. The whole UI follows your choice.
 | **Liquid Glass**         | Turn on Apple's Liquid Glass UI effect                                                                                                             |
 | **Backup & Restore**     | Automatic backup before each write, JSON snapshots you can export or import, plus the RDARFix repair tool                                          |
 | **File Patch Workspace** | Browse and edit system files through the HouseArrest sandbox escape (container-class labels [MHA-C13] System Groups, [MHA-C12] System Data, and so on, popularized by FilzaSlop), record reachable paths to an ACCESS MAP.txt in Documents, import `.3105` patch files, inspect app containers, clean per-app caches, view files as hex or SQLite tables |
+| **Wallpaper**            | Set PosterBoard (lock/home screen) and CarPlay wallpapers, swap in video wallpapers, import/export `.tendies` collections and `.3105` patches, auto-detect the target container hash, apply/reset without freezing the UI |
 | **Patch Packages**       | Bundle replacement rules (bundle ID + path) into a folder package with password protection and verified rollback                                   |
 | **Customization**        | Six languages, light/dark/system appearance, alternate app icons, in-app update checker                                                            |
 
@@ -45,7 +46,7 @@ WorkPlot ships as a sideloaded IPA. It will not appear on the App Store.
    ```bash
    xcodebuild -project WorkPlot/WorkPlot.xcodeproj -scheme WorkPlot archive
    ```
-2. Sign and install it while preserving `com.apple.mobile.MobileHouseArrest`; enterprise-signing tools such as eSign are supported.
+2. Install through **TrollStore** (recommended — it keeps `com.apple.mobile.MobileHouseArrest` untouched). Enterprise tools such as eSign also work **only if** they preserve the original bundle identifier.
 3. Trust your developer certificate under Settings → General → VPN & Device Management.
 
 ### Requirements
@@ -79,6 +80,12 @@ The Status tab has two controls for the RDAR wallpaper bug:
 
 After either one applies, WorkPlot reads the plist back from disk and compares the bytes. The status line then says `verified on disk` or `write not visible on disk - blocked by system`, so a silently dropped write no longer looks like success. Canvas values are read at boot time, and WorkPlot cannot reboot a sandboxed device, so heavy tweaks show a restart prompt with manual steps for userspace and full restarts.
 
+### Wallpaper (PosterBoard & CarPlay)
+
+1. Open **More → Wallpaper**.
+2. Import a `.tendies` collection or choose a bundled wallpaper; you can also set a video wallpaper.
+3. Tap apply. The write runs in the background so the UI stays responsive. **Reset** restores the original; **Detect** reads the currently applied wallpaper.
+
 ## Warning
 
 - This app modifies system state through a sandbox escape. Use it at your own risk.
@@ -95,7 +102,7 @@ After either one applies, WorkPlot reads the plist back from disk and compares t
 | Access reports an identity mismatch   | Re-sign without changing `com.apple.mobile.MobileHouseArrest`; avoid tools that rewrite it |
 | Strange behavior after Gestalt edits | Restore your latest snapshot in Backups                                    |
 | RDAR bug after edits                 | Run RDARFix or Custom Canvas on the Status tab. `verified on disk` means the write landed; if iOS still ignores the value, the fix cannot help on that build |
-| File picker grays out my file        | The Files tab only accepts `.3105` patch files; other formats are disabled on purpose |
+| File picker grays out my file        | Importers accept any file; ensure the shared file has the expected extension (`.tendies`, `.3105`, or a video) and that the source app allows exporting it |
 | Respring does nothing                | The WebKit respring trick may be patched on your beta. The overlay recovers after ten seconds and reports the failure; restart the device manually |
 
 ## Credits
