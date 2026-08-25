@@ -46,26 +46,29 @@ private let crashHTML = #"""
 </html>
 """#
 
-/// Full-screen respring transition presented over the app root while
-/// `ExploitManager.respringRequested` is true. Shows a plain loading screen
-/// first so the WKWebView beneath it — which triggers the WebKit GPU crash —
-/// is never visibly rendered; it's dimmed to black and layered underneath.
+/// Respring trigger presented over the app root while
+/// `ExploitManager.respringRequested` is true. The WKWebView mounts and fires
+/// the WebKit GPU crash; the overlay is transparent so no black screen shows —
+/// the app just resprings.
 struct NeoSpringView: View {
     @State private var showsWebView = false
 
     var body: some View {
-        ZStack {
-            Color.black
-            ProgressView()
-                .tint(.white)
-
+        Group {
             if showsWebView {
                 NeoSpringWebView()
-                    .brightness(-1)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .ignoresSafeArea()
             }
         }
-        .ignoresSafeArea()
         .task {
+            // Overlay already shows the black screen. The crash WebView is only
+            // mounted once the apply work is done (respringCrashArmed), then a
+            // short delay so the screen is settled before the GPU crash fires.
+            while !ExploitManager.shared.respringCrashArmed {
+                try? await Task.sleep(for: .milliseconds(50))
+                if Task.isCancelled { return }
+            }
             try? await Task.sleep(for: .milliseconds(250))
             showsWebView = true
         }

@@ -21,7 +21,12 @@ struct UpdateCheckerSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
 
+    let showDoneButton: Bool
     @State private var phase: Phase = .idle
+
+    init(showDoneButton: Bool = true) {
+        self.showDoneButton = showDoneButton
+    }
 
     var body: some View {
         NavigationView {
@@ -61,8 +66,10 @@ struct UpdateCheckerSheet: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .wpGlassContainer()
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(l10n.tr("common.done")) { dismiss() }
+                if showDoneButton {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button(l10n.tr("common.done")) { dismiss() }
+                    }
                 }
             }
         }
