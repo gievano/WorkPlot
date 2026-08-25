@@ -15,7 +15,7 @@
 
 ---
 
-WorkPlot is a SwiftUI app that uses the `bad_query` sandbox escape from [forcequitOS](https://github.com/forcequitOS/bad_query) to write MobileGestalt values and edit system files. It backs up MobileGestalt before every write, so a bad tweak can be undone. The whole interface follows the language you pick under Settings.
+WorkPlot is a SwiftUI app that uses the `bad_query` sandbox escape from [forcequitOS](https://github.com/forcequitOS/bad_query) to write MobileGestalt values and edit system files. It is a rebrand and continuation of **Ketamine**, carrying the same tweak catalog while adding its own tools and interface options. It backs up MobileGestalt before every write, so a bad tweak can be undone. The interface follows the language you pick under Settings.
 
 ## Requirements
 
@@ -36,6 +36,15 @@ There are two interface builds in this repo:
 - **WP New UI** is the newer interface where PosterBoard runs.
 
 Pick the build that matches what you need. The tools and tweak catalog are the same between them.
+
+## Differences from Ketamine
+
+WorkPlot keeps Ketamine's tweak catalog and exploit core, then adds a few things on top:
+
+- Light, dark, and system appearance modes (Ketamine ships one look).
+- Extra tools in the same catalog: App Containers, FilePatch 3105, Device Spoof, Gestalt Field Editor, Preset Lab, Session Log, Check for Updates, CarPlay Wallpaper, and the RDAR canvas fix.
+- Alternate app icons and a per-install badge so WorkPlot and Ketamine can sit side by side without confusion.
+- An in-app Supported iOS note and a clearer write verification (`verified on disk` vs `write not visible on disk`).
 
 ## Features
 
@@ -107,6 +116,7 @@ The status area has two controls for the RDAR wallpaper bug. **Fix rdar** writes
 
 ## Credits
 
+- WorkPlot is a rebrand and continuation of **Ketamine**. Respect to the Ketamine authors for the original app this is ported from.
 - WorkPlot: [gievano](https://github.com/gievano), [Adnan120Hz](https://github.com/adnan120hz)
 
 **Exploit and techniques**
