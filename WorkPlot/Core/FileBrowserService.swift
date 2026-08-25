@@ -318,8 +318,8 @@ enum FileBrowser {
     /// build the exploit chain is verified against (beta 1-4).
     static func ensureSupportedOSForWrite() throws {
         #if !targetEnvironment(simulator)
-        if !GestaltAccess.isRunningSupportedOS() {
-            throw FileBrowserError.osUnsupported(GestaltAccess.currentOSBuild())
+        if !WPExploitManager.isRunningSupportedOS() {
+            throw FileBrowserError.osUnsupported(WPExploitManager.currentOSBuild())
         }
         #endif
     }

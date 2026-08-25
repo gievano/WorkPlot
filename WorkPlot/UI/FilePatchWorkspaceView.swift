@@ -29,7 +29,7 @@ private struct ExportedFile: Identifiable {
 }
 
 struct FilePatchWorkspaceView: View {
-    @ObservedObject private var manager = ExploitManager.shared
+    @ObservedObject private var manager = WPExploitManager.shared
     @ObservedObject private var l10n = L10n.shared
 
     // nil = shortcut screen, otherwise an absolute directory path.
@@ -82,7 +82,7 @@ struct FilePatchWorkspaceView: View {
                 }
             }
         }
-        .onAppear(perform: refreshOSCheck)
+        .onAppear { manager.requestAccess(); refreshOSCheck() }
         .sheet(item: $selectedEntry) { entry in
             viewer(for: entry)
         }
@@ -188,6 +188,15 @@ struct FilePatchWorkspaceView: View {
                 Label(l10n.tr("filepatch.needaccess"), systemImage: "lock")
                     .font(.system(size: 15))
                     .foregroundStyle(.orange)
+                if !manager.statusText.isEmpty {
+                    Text(manager.statusText)
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                }
+                Button { manager.requestAccess() } label: {
+                    Label("Coba Akses", systemImage: "arrow.clockwise")
+                        .font(.system(size: 14, weight: .semibold))
+                }
             }
         }
     }
@@ -448,8 +457,8 @@ struct FilePatchWorkspaceView: View {
 
     private func refreshOSCheck() {
         #if !targetEnvironment(simulator)
-        osBuild = GestaltAccess.currentOSBuild()
-        osSupported = GestaltAccess.isRunningSupportedOS()
+        osBuild = WPExploitManager.currentOSBuild()
+        osSupported = WPExploitManager.isRunningSupportedOS()
         #else
         osSupported = false
         osBuild = "simulator"

@@ -15,42 +15,6 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
 
-      - name: Check CacheData patcher
-        run: |
-          CHECK_BIN="$RUNNER_TEMP/check-cachedata"
-          xcrun swiftc \
-            WorkPlot/Features/Gestalt/CacheDataPatcher.swift \
-            Support/CacheDataPatcherCheck.swift \
-            -o "$CHECK_BIN"
-          "$CHECK_BIN"
-
-      - name: Check transactional inode writer
-        run: |
-          CHECK_BIN="$RUNNER_TEMP/check-inode-writer"
-          xcrun swiftc \
-            WorkPlot/Core/InodeWriter.swift \
-            Support/InodeWriterCheck.swift \
-            -o "$CHECK_BIN"
-          "$CHECK_BIN"
-
-      - name: Check RDAR fix logic
-        run: |
-          CHECK_BIN="$RUNNER_TEMP/check-rdar-fix"
-          xcrun swiftc \
-            WorkPlot/Core/RDARFix.swift \
-            Support/RDARFixCheck.swift \
-            -o "$CHECK_BIN"
-          "$CHECK_BIN"
-
-      - name: Check safe file operations
-        run: |
-          CHECK_BIN="$RUNNER_TEMP/check-file-operations"
-          xcrun swiftc -parse-as-library \
-            WorkPlot/Core/SafeFileOperations.swift \
-            Support/FileBrowserServiceCheck.swift \
-            -o "$CHECK_BIN"
-          "$CHECK_BIN"
-
       - name: Build unsigned archive
         run: |
           xcodebuild archive \

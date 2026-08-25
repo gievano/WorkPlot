@@ -4,7 +4,7 @@
 //
 //  Adapted from Pocket Poster's SymHandler.swift (GPL-3.0).
 //  The PosterBoard/CarPlay descriptors live inside another app's container,
-//  outside our sandbox. After the bad_query escape (ExploitManager grants
+//  outside our sandbox. After the bad_query escape (WPExploitManager grants
 //  filesystem access), we symlink a writable folder to that descriptors
 //  directory, then move descriptor folders into it.
 //
@@ -38,7 +38,7 @@ struct WallpaperSymlink {
     }
 
     static func getSymlinkURL() -> URL {
-        getLCDocumentsDirectory().appendingPathComponent(".Trash", conformingTo: .symbolicLink)
+        getLCDocumentsDirectory().appendingPathComponent("wp_descriptors_symlink", conformingTo: .symbolicLink)
     }
 
     // MARK: Symlink creation

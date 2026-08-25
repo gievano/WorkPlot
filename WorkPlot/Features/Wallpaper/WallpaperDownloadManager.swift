@@ -24,8 +24,8 @@ final class WallpaperDownloadManager: ObservableObject {
     func startTendiesDownload(for url: URL) {
         if !url.absoluteString.hasSuffix(".tendies") {
             UIApplication.shared.alert(body: "Only .tendies files can be downloaded!")
-        } else if WallpaperPosterBoardManager.shared.selectedTendies.count >= WallpaperPosterBoardManager.MaxTendies {
-            UIApplication.shared.alert(title: "Max Tendies Reached", body: "Only \(WallpaperPosterBoardManager.MaxTendies) descriptors can be applied.")
+        } else if PosterBoardManager.shared.selectedTendies.count >= PosterBoardManager.MaxTendies {
+            UIApplication.shared.alert(title: "Max Tendies Reached", body: "Only \(PosterBoardManager.MaxTendies) descriptors can be applied.")
         } else {
             DispatchQueue.main.async {
                 self.downloadURL = url.absoluteString.replacingOccurrences(of: "pocketposter://download?url=", with: "")
@@ -49,7 +49,7 @@ final class WallpaperDownloadManager: ObservableObject {
             do {
                 let newURL = try await download(from: downloadURL!)
                 DispatchQueue.main.async {
-                    WallpaperPosterBoardManager.shared.selectedTendies.append(newURL)
+                    PosterBoardManager.shared.selectedTendies.append(newURL)
                     Haptic.shared.notify(.success)
                     UIApplication.shared.dismissAlert()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
@@ -73,7 +73,7 @@ final class WallpaperDownloadManager: ObservableObject {
         let request = URLRequest(url: url)
         let (data, response) = try await URLSession.shared.data(for: request) as! (Data, HTTPURLResponse)
         guard response.statusCode == 200 else { throw URLError(.cannotConnectToHost) }
-        let newURL = WallpaperPosterBoardManager.shared.getTendiesStoreURL()
+        let newURL = PosterBoardManager.shared.getTendiesStoreURL()
             .appendingPathComponent(getWallpaperName(from: urlString))
         try data.write(to: newURL)
         return newURL
@@ -81,11 +81,11 @@ final class WallpaperDownloadManager: ObservableObject {
 
     /// Copies an imported (security-scoped) .tendies into the local store.
     /// Removes any existing copy first so re-importing the same file works
-    /// (Ketamine does the same in `importTendies`).
+    /// (WorkPlot does the same in `importTendies`).
     func copyTendies(from url: URL) throws -> URL {
         let accessing = url.startAccessingSecurityScopedResource()
         defer { if accessing { url.stopAccessingSecurityScopedResource() } }
-        let storeURL = WallpaperPosterBoardManager.shared.getTendiesStoreURL()
+        let storeURL = PosterBoardManager.shared.getTendiesStoreURL()
         let newURL = storeURL.appendingPathComponent(url.lastPathComponent)
         if FileManager.default.fileExists(atPath: newURL.path) {
             try FileManager.default.removeItem(at: newURL)

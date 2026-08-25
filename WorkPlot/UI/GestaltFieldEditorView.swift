@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct GestaltFieldEditorView: View {
-    @ObservedObject private var manager = ExploitManager.shared
+    @ObservedObject private var manager = WPExploitManager.shared
     @ObservedObject private var l10n = L10n.shared
     @State private var plist: [String: Any]?
     @State private var searchText = ""
@@ -291,7 +291,7 @@ private struct KeyRow: View {
                 Text(info.kind.label)
                     .font(.caption2).bold()
                     .padding(.horizontal, 4).padding(.vertical, 1)
-                    .background(Color.blue.opacity(0.15))
+                    .background(Theme.accent.opacity(0.15))
                     .cornerRadius(4)
                 Text(info.summary)
                     .font(.caption)

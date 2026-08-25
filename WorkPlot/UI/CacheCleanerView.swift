@@ -11,7 +11,7 @@ import SwiftUI
 struct CacheCleanerView: View {
     let app: AppContainerInfo
 
-    @ObservedObject private var manager = ExploitManager.shared
+    @ObservedObject private var manager = WPExploitManager.shared
     @ObservedObject private var l10n = L10n.shared
 
     @State private var cacheBytes: Int64?
