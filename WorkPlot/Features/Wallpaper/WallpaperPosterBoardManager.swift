@@ -197,24 +197,26 @@ final class WallpaperPosterBoardManager: ObservableObject {
 
         guard !pending.isEmpty else { return }
 
-        // Group by extension so each extension's symlink is created once, then
-        // drop every descriptor of that extension into the real container.
+        // Group by extension so each extension's descriptors are written once,
+        // then drop every descriptor straight into the real container — mirroring
+        // Ketamine: lease the directories via bad_query and copy directly. No
+        // symlink/`.Trash` trick (that was what threw "permission to save .trash").
         let grouped = Dictionary(grouping: pending, by: { $0.ext })
         let extVer = WallpaperSymlink.getExtensionVersion()
+        let fm = FileManager.default
         for (ext, items) in grouped {
             let realPath = "/var/mobile/Containers/Data/Application/\(appHash)/Library/Application Support/PRBPosterExtensionDataStore/\(extVer)/Extensions/\(ext)/descriptors"
-            _ = try WallpaperSymlink.createDescriptorsSymlink(appHash: appHash, ext: ext)
-            let symlink = WallpaperSymlink.getSymlinkURL()
-            // Ketamine acquires a bad_query lease (consume) on the real
-            // descriptors path before writing; mirror that so the sandbox
-            // write is authorized instead of silently failing.
+            // Ensure the descriptors directory exists: lease the parent, create it.
+            let parent = (realPath as NSString).deletingLastPathComponent
+            try BadQueryLeaseScope.withLease(forPath: parent) {
+                try? fm.createDirectory(atPath: realPath, withIntermediateDirectories: true)
+            }
             try BadQueryLeaseScope.withLease(forPath: realPath) {
-                try? FileManager.default.createDirectory(
-                    at: URL(fileURLWithPath: realPath), withIntermediateDirectories: true)
                 for item in items {
                     try randomizeWallpaperId(url: item.directory)
-                    let newURL = symlink.appendingPathComponent(UUID().uuidString, isDirectory: true)
-                    try FileManager.default.copyItem(at: item.directory, to: newURL)
+                    let newURL = URL(fileURLWithPath: realPath)
+                        .appendingPathComponent(UUID().uuidString, isDirectory: true)
+                    try fm.copyItem(at: item.directory, to: newURL)
                 }
             }
         }
@@ -234,6 +236,41 @@ final class WallpaperPosterBoardManager: ObservableObject {
         for file in try FileManager.default.contentsOfDirectory(at: docDir, includingPropertiesForKeys: nil) {
             if file.lastPathComponent != "CarPlayPhotos" {
                 try FileManager.default.removeItem(at: file)
+            }
+        }
+    }
+
+    // MARK: Reset collections
+
+    /// Wipe every custom descriptor from PosterBoard's extension data store,
+    /// mirroring Ketamine's `PosterBoardManager.resetCollections`: acquire a
+    /// bad_query lease on the Extensions root, then for each extension remove
+    /// every descriptor folder under its `/descriptors` path. Robust on-device
+    /// because it writes through the lease directly instead of the old
+    /// symlink + `.Trash` trick, and it clears ALL extensions (not just
+    /// CollectionsPoster).
+    func resetCollections(appHash: String) throws {
+        let extVer = WallpaperSymlink.getExtensionVersion()
+        let extensionsRoot = "/var/mobile/Containers/Data/Application/\(appHash)/Library/Application Support/PRBPosterExtensionDataStore/\(extVer)/Extensions"
+        let fm = FileManager.default
+        guard fm.fileExists(atPath: extensionsRoot) else { return }
+
+        try BadQueryLeaseScope.withLease(forPath: extensionsRoot) {
+            let extDirs = (try? fm.contentsOfDirectory(atPath: extensionsRoot)) ?? []
+            for extName in extDirs {
+                let descriptorsPath = (extensionsRoot as NSString)
+                    .appendingPathComponent(extName)
+                    .appendingPathComponent("descriptors")
+                // Lease each descriptors path before removing its contents so
+                // the sandbox write is authorized under bad_query.
+                try? BadQueryLeaseScope.withLease(forPath: descriptorsPath) {
+                    guard fm.fileExists(atPath: descriptorsPath) else { return }
+                    let items = (try? fm.contentsOfDirectory(atPath: descriptorsPath)) ?? []
+                    for item in items where item != "__MACOSX" && !item.hasPrefix(".") {
+                        let full = (descriptorsPath as NSString).appendingPathComponent(item)
+                        try? fm.removeItem(atPath: full)
+                    }
+                }
             }
         }
     }

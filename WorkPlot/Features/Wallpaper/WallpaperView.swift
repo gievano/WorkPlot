@@ -357,7 +357,8 @@ struct WallpaperView: View {
     }
 
     private func resetCollections() {
-        // Wipe custom PosterBoard descriptors via bad_query, then respring.
+        // Wipe custom PosterBoard descriptors via bad_query (mirrors Ketamine),
+        // then respring.
         exploit.checkSystemPathAccess()
         guard exploit.sandboxGranted else {
             UIApplication.shared.alert(title: "Exploit not active", body: "Run the bad_query exploit from the Home tab first."); return
@@ -376,9 +377,14 @@ struct WallpaperView: View {
                 }
                 return
             }
-            _ = try? WallpaperSymlink.createDescriptorsSymlink(appHash: hash, ext: "com.apple.WallpaperKit.CollectionsPoster")
-            WallpaperSymlink.cleanup()
-            try? FileManager.default.trashItem(at: WallpaperSymlink.getLCDocumentsDirectory().appendingPathComponent(".Trash"), resultingItemURL: nil)
+            do {
+                try WallpaperPosterBoardManager.shared.resetCollections(appHash: hash)
+            } catch {
+                await MainActor.run {
+                    UIApplication.shared.alert(title: "Reset failed", body: error.localizedDescription)
+                }
+                return
+            }
             await MainActor.run {
                 UIApplication.shared.dismissAlert()
                 ExploitManager.shared.requestRespring()
