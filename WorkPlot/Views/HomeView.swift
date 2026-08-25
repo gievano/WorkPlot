@@ -127,7 +127,7 @@ struct HomeView: View {
     /// "All" selected: one flat sequential list — tweaks and tools interleaved,
     /// no category grouping.
     private var flatCatalog: some View {
-        let tweaks = store.tweaks.filter { $0.id != "product-type" && $0.category != .ai && matchesSearch($0.title) }
+        let tweaks = store.tweaks.filter { $0.category != .ai && matchesSearch($0.title) }
         let tools = toolDefs.filter { $0.id != "respring" && matchesSearch($0.title) }
         var cells: [FlatCell] = []
         var ti = 0, to = 0
@@ -172,7 +172,7 @@ struct HomeView: View {
     }
 
     private func categorySection(_ cat: TweakCategory) -> some View {
-        let tweaks = store.tweaks.filter { $0.category == cat && $0.id != "product-type" && matchesSearch($0.title) }
+        let tweaks = store.tweaks.filter { $0.category == cat && matchesSearch($0.title) }
         let tools = toolDefs.filter { $0.category == cat && $0.id != "respring" && matchesSearch($0.title) }
         // Tools flow into the last half-empty tweak row instead of starting
         // their own group, so an odd tweak count leaves no gap mid-catalog.
@@ -214,7 +214,6 @@ struct HomeView: View {
             ToolDef(id: "carplay", title: "CarPlay Wallpaper", subtitle: "Change the CarPlay wallpaper", symbol: "car", category: .display, destination: { AnyView(CarPlayWallpaperView()) }),
             ToolDef(id: "rdarfix", title: "RDARFix", subtitle: "Edit screen resolution via the canvas exploit", symbol: "wand.and.stars", category: .display, destination: { AnyView(RDARFixView()) }),
             ToolDef(id: "respring", title: "Respring", subtitle: "Restart SpringBoard without rebooting", symbol: "arrow.clockwise", category: .system, action: { RespringHelper.shared.trigger() }),
-            ToolDef(id: "devicespoof", title: "Device Spoof", subtitle: "Spoof the device identity", symbol: "iphone.and.arrow.forward", category: .system, destination: { AnyView(DeviceSpoofingView()) }),
             ToolDef(id: "gestalteditor", title: "Gestalt Field Editor", subtitle: "Edit cache MobileGestalt", symbol: "slider.horizontal.3", category: .gestalt, destination: { AnyView(GestaltFieldEditorView()) }),
             ToolDef(id: "presetlab", title: "Preset Lab", subtitle: "Build & save Gestalt presets", symbol: "flask", category: .gestalt, destination: { AnyView(PresetLabView()) }),
             ToolDef(id: "sessionlog", title: "Session Log", subtitle: "View exploit session debug logs", symbol: "doc.plaintext", category: .info, destination: { AnyView(SessionLogView()) }),

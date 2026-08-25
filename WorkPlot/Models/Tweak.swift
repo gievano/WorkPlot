@@ -88,6 +88,9 @@ enum TextFieldKind: Equatable {
 // MARK: - Tweak
 
 struct Tweak: Identifiable, Equatable {
+    /// Applied via DeviceSpoofingManager instead of plain modifications.
+    static let deviceSpoofTweakID = "devicespoof"
+
     let id: String
     let title: String
     let subtitle: String
