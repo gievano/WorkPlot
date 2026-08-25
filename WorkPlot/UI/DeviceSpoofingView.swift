@@ -55,7 +55,7 @@ struct DeviceSpoofingView: View {
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 4)
 
-                ActionButton("Apply Spoof") {
+                ActionButton(title: "Apply Spoof") {
                     Task { await apply() }
                 }
                 .disabled(isBusy || selected == nil)
