@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct SessionLogView: View {
-    @ObservedObject private var l10n = L10n.shared
     @State private var text = SessionLogger.shared.text
     @State private var showShare = false
 
@@ -12,7 +11,7 @@ struct SessionLogView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding()
         }
-        .navigationTitle(l10n.tr("sessionlog.title"))
+        .navigationTitle("Session Log")
         .navigationBarTitleDisplayMode(.inline)
         .wpGlassContainer()
         .toolbar {
@@ -20,18 +19,18 @@ struct SessionLogView: View {
                 Button {
                     UIPasteboard.general.string = text
                 } label: {
-                    Label(l10n.tr("sessionlog.copy"), systemImage: "doc.on.doc")
+                    Label("Copy Log", systemImage: "doc.on.doc")
                 }
                 Button {
                     showShare = true
                 } label: {
-                    Label(l10n.tr("sessionlog.share"), systemImage: "square.and.arrow.up")
+                    Label("Share Log", systemImage: "square.and.arrow.up")
                 }
                 Button(role: .destructive) {
                     SessionLogger.shared.clear()
                     text = ""
                 } label: {
-                    Label(l10n.tr("sessionlog.clear"), systemImage: "trash")
+                    Label("Clear Log", systemImage: "trash")
                 }
             }
         }

@@ -37,20 +37,20 @@ WorkPlot keeps the original catalog and exploit core, and adds:
 
 ## Features
 
-* 📱 Runs entirely on iPhone and iPad — no PC required
-* 🛠️ **Gestalt tweaks** — toggle capabilities by category (Display, System, Device, Liquid Glass, iPad), cover Dynamic Island on unsupported devices, Model Name, EU and iPad features, all as one MobileGestalt write
-* 🖼️ **RDAR canvas fix** — write your panel's native size into MobileGestalt to fix the RDAR wallpaper bug, or set any width and height by hand
-* 🔎 **Gestalt Field Editor** — edit MobileGestalt keys directly and inspect CacheData as hex
-* 🧪 **Preset Lab** — build and save MobileGestalt presets to re-apply later
-* 🧠 **Siri AI suite** — enable the new Siri AI and Apple Intelligence through the CacheData patch, with optional spoofing to iPhone 15/16/17 Pro and Pro Max
-* 💎 **Liquid Glass** — turn on Apple's Liquid Glass UI effect
-* 🛡️ **Backup and restore** — automatic backup before each write, JSON snapshots you can export or import, plus the RDARFix repair tool
-* 🕵️ **Device Spoof** — spoof device identity (model and region)
-* 🚗 **CarPlay Wallpaper** — set the CarPlay wallpaper
-* 📜 **Session Log** — view the exploit session debug logs
-* 🔄 **Check for Updates** — in-app update checker
-* 🔁 **Respring** — restart SpringBoard without a full reboot
-* 🎨 **Customization** — six languages, light/dark/system appearance, and alternate app icons
+- 📱 Runs entirely on iPhone and iPad — no PC required
+- 🛠️ **Gestalt tweaks** — toggle capabilities by category (Display, System, Device, Liquid Glass, iPad), cover Dynamic Island on unsupported devices, Model Name, EU and iPad features, all as one MobileGestalt write
+- 🖼️ **RDAR canvas fix** — write your panel's native size into MobileGestalt to fix the RDAR wallpaper bug, or set any width and height by hand
+- 🔎 **Gestalt Field Editor** — edit MobileGestalt keys directly and inspect CacheData as hex
+- 🧪 **Preset Lab** — build and save MobileGestalt presets to re-apply later
+- 🧠 **Siri AI suite** — enable the new Siri AI and Apple Intelligence through the CacheData patch, with optional spoofing to iPhone 15/16/17 Pro and Pro Max
+- 💎 **Liquid Glass** — turn on Apple's Liquid Glass UI effect
+- 🛡️ **Backup and restore** — automatic backup before each write, JSON snapshots you can export or import, plus the RDARFix repair tool
+- 🕵️ **Device Spoof** — spoof device identity (model and region)
+- 🚗 **CarPlay Wallpaper** — set the CarPlay wallpaper
+- 📜 **Session Log** — view the exploit session debug logs
+- 🔄 **Check for Updates** — in-app update checker
+- 🔁 **Respring** — restart SpringBoard without a full reboot
+- 🎨 **Customization** — light/dark/system appearance, and alternate app icons
 
 ## Requirements
 
@@ -60,12 +60,12 @@ There are two interface builds in this repo. **WP Old UI** is the original inter
 
 ## Compatibility
 
-| iOS Version | MobileGestalt Editing | PosterBoard |
-| ----------- | --------------------- | ----------- |
-| iOS 18.x and earlier | ❌ Unsupported | ❌ Unsupported |
-| iOS 26.0 – 26.6 | ❌ Unsupported | ✅ Supported |
-| iOS 27.0 Beta 1 – Beta 4 | ✅ Supported | ✅ Supported |
-| Later versions | ❌ Patched | ❌ Unsupported |
+| iOS Version              | MobileGestalt Editing | PosterBoard    |
+| ------------------------ | --------------------- | -------------- |
+| iOS 18.x and earlier     | ❌ Unsupported        | ❌ Unsupported |
+| iOS 26.0 – 26.6          | ❌ Unsupported        | ✅ Supported   |
+| iOS 27.0 Beta 1 – Beta 4 | ✅ Supported          | ✅ Supported   |
+| Later versions           | ❌ Patched            | ❌ Unsupported |
 
 ## Install
 
@@ -93,12 +93,12 @@ The status area has two controls for the RDAR wallpaper bug. **Fix rdar** writes
 
 ## Troubleshooting
 
-| Symptom | Fix |
-| ------- | --- |
-| Tweaks fail to apply | Re-grant the sandbox escape from the status area |
-| Strange behavior after Gestalt edits | Restore your latest snapshot |
-| RDAR bug after edits | Run RDARFix or Custom Canvas. "verified on disk" means the write landed; if iOS still ignores the value, the fix cannot help on that build |
-| Respring does nothing | The WebKit respring trick may be patched on your beta. The overlay recovers after ten seconds and reports the failure; restart the device manually |
+| Symptom                              | Fix                                                                                                                                                |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tweaks fail to apply                 | Re-grant the sandbox escape from the status area                                                                                                   |
+| Strange behavior after Gestalt edits | Restore your latest snapshot                                                                                                                       |
+| RDAR bug after edits                 | Run RDARFix or Custom Canvas. "verified on disk" means the write landed; if iOS still ignores the value, the fix cannot help on that build         |
+| Respring does nothing                | The WebKit respring trick may be patched on your beta. The overlay recovers after ten seconds and reports the failure; restart the device manually |
 
 ## Credits
 

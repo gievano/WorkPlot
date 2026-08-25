@@ -7,23 +7,22 @@ struct AppIcon: Identifiable {
     let colors: [Color]
 
     static var all: [AppIcon] { [
-        AppIcon(id: "", titleKey: "WorkPlot", subtitleKey: "Default",
+        AppIcon(id: "", title: "WorkPlot", subtitle: "Default",
                 colors: [.white, .indigo]),
-        AppIcon(id: "WPWorkplot2", titleKey: "WorkPlot 2", subtitleKey: "Custom",
+        AppIcon(id: "WPWorkplot2", title: "WorkPlot 2", subtitle: "Custom",
                 colors: [.white, .purple])
         ]
     }
 
-    init(id: String, titleKey: String, subtitleKey: String, colors: [Color]) {
+    init(id: String, title: String, subtitle: String, colors: [Color]) {
         self.id = id
-        self.title = L10n.shared.tr(titleKey)
-        self.subtitle = L10n.shared.tr(subtitleKey)
+        self.title = title
+        self.subtitle = subtitle
         self.colors = colors
     }
 }
 
 struct AppIconSwitcherSheet: View {
-    @ObservedObject private var l10n = L10n.shared
     @Environment(\.dismiss) private var dismiss
     let showDoneButton: Bool
     @State private var currentAltName: String? = UIApplication.shared.alternateIconName
@@ -53,26 +52,26 @@ struct AppIconSwitcherSheet: View {
                         .padding(.horizontal)
                 }
             }
-            .navigationTitle(l10n.tr("icon.menu"))
+            .navigationTitle("App Icon")
             .wpGlassContainer()
             .toolbar {
                 if showDoneButton {
                     ToolbarItem(placement: .confirmationAction) {
-                        Button(l10n.tr("common.done")) { dismiss() }
+                        Button("Done") { dismiss() }
                     }
                 }
             }
-            .alert(l10n.tr("icon.confirm.title"), isPresented: .init(
+            .alert("Change App Icon", isPresented: .init(
                 get: { pendingIcon != nil },
                 set: { if !$0 { pendingIcon = nil } }
             )) {
-                Button(l10n.tr("icon.confirm.change")) {
+                Button("Change Icon") {
                     if let pendingIcon { apply(pendingIcon.id) }
                     pendingIcon = nil
                 }
-                Button(l10n.tr("siriai.restart.later"), role: .cancel) { pendingIcon = nil }
+                Button("Later", role: .cancel) { pendingIcon = nil }
             } message: {
-                Text(l10n.tr("icon.confirm.message"))
+                Text("Switching icons restarts the app.")
             }
         }
     }
@@ -122,7 +121,7 @@ struct AppIconSwitcherSheet: View {
         UIApplication.shared.setAlternateIconName(altName) { error in
             DispatchQueue.main.async {
                 if let error {
-                    errorMessage = "\(l10n.tr("icon.error.prefix"))\(error.localizedDescription)"
+                    errorMessage = "\("Icon error: ")\(error.localizedDescription)"
                 } else {
                     currentAltName = altName
                     errorMessage = nil

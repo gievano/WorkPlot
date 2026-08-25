@@ -2,7 +2,6 @@ import SwiftUI
 
 struct GestaltFieldEditorView: View {
     @ObservedObject private var manager = WPExploitManager.shared
-    @ObservedObject private var l10n = L10n.shared
     @State private var plist: [String: Any]?
     @State private var searchText = ""
     @State private var isShowingAddSheet = false
@@ -13,7 +12,7 @@ struct GestaltFieldEditorView: View {
                 if !manager.sandboxGranted {
                     VStack(spacing: 12) {
                         Image(systemName: "lock.icloud").font(.largeTitle).foregroundColor(.orange)
-                        Text(L10n.shared.tr("common.accessLocked"))
+                        Text("System access is locked. Grant the sandbox escape from Home.")
                             .multilineTextAlignment(.center)
                             .foregroundColor(.secondary)
                     }
@@ -22,14 +21,14 @@ struct GestaltFieldEditorView: View {
                 } else {
                     VStack(spacing: 12) {
                         Image(systemName: "exclamationmark.triangle").font(.largeTitle).foregroundColor(.orange)
-                        Text(l10n.tr("fields.readFail"))
-                        WPActionButton(title: L10n.shared.tr("common.retry")) { load() }
+                        Text("Could not read the MobileGestalt plist.")
+                        WPActionButton(title: "Retry") { load() }
                     }
                 }
             }
-            .navigationTitle(l10n.tr("tab.fields"))
+            .navigationTitle("Fields")
             .scrollDismissesKeyboard(.immediately)
-            .searchable(text: $searchText, prompt: l10n.tr("fields.searchPrompt"))
+            .searchable(text: $searchText, prompt: "Search keys or values")
             .wpGlassContainer()
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -41,7 +40,7 @@ struct GestaltFieldEditorView: View {
                     .disabled(!manager.sandboxGranted)
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(l10n.tr("common.respring")) { manager.requestRespring() }
+                    Button("Respring") { manager.requestRespring() }
                 }
             }
             .sheet(isPresented: $isShowingAddSheet) {
@@ -84,7 +83,7 @@ struct GestaltFieldEditorView: View {
 
             let topLevelKeys = filtered(plist.keys.sorted())
             if !topLevelKeys.isEmpty {
-                Section(header: Text(l10n.tr("fields.topLevel"))) {
+                Section(header: Text("Top-Level Keys")) {
                     ForEach(topLevelKeys, id: \.self) { key in
                         NavigationLink {
                             ValueEditor(
@@ -103,7 +102,7 @@ struct GestaltFieldEditorView: View {
 
             if cacheKeys.isEmpty && topLevelKeys.isEmpty {
                 Section {
-                    Text(String(format: l10n.tr("fields.noMatch"), searchText))
+                    Text(String(format: "No matches for \"%@\"", searchText))
                         .foregroundColor(.secondary)
                 }
             }
@@ -111,7 +110,7 @@ struct GestaltFieldEditorView: View {
     }
 
     private func cacheSection(_ plist: [String: Any]) -> some View {
-        Section(header: Text(l10n.tr("fields.cacheHeader"))) {
+        Section(header: Text("Cache")) {
             HStack {
                 Text("CacheUUID").font(.callout)
                 Spacer()
@@ -181,10 +180,10 @@ struct GestaltFieldEditorView: View {
             plist["CacheExtra"] = cacheExtra
             self.plist = plist
             manager.statusText = persist()
-                ? String(format: l10n.tr("fields.status.updated"), key)
-                : String(format: l10n.tr("fields.status.saveFailed"), key)
+                ? String(format: "%@ updated", key)
+                : String(format: "Could not save %@", key)
         } catch {
-            manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
+            manager.statusText = String(format: "Failed: %@", error.localizedDescription)
         }
     }
 
@@ -195,10 +194,10 @@ struct GestaltFieldEditorView: View {
             plist[key] = try PlistValueInfo.parse(valueText, as: kind)
             self.plist = plist
             manager.statusText = persist()
-                ? String(format: l10n.tr("fields.status.updated"), key)
-                : String(format: l10n.tr("fields.status.saveFailed"), key)
+                ? String(format: "%@ updated", key)
+                : String(format: "Could not save %@", key)
         } catch {
-            manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
+            manager.statusText = String(format: "Failed: %@", error.localizedDescription)
         }
     }
 
@@ -210,10 +209,10 @@ struct GestaltFieldEditorView: View {
             plist["CacheExtra"] = cacheExtra
             self.plist = plist
             manager.statusText = persist()
-                ? String(format: l10n.tr("fields.status.added"), key)
-                : String(format: l10n.tr("fields.status.saveFailed"), key)
+                ? String(format: "%@ added", key)
+                : String(format: "Could not save %@", key)
         } catch {
-            manager.statusText = String(format: l10n.tr("common.failPrefix"), error.localizedDescription)
+            manager.statusText = String(format: "Failed: %@", error.localizedDescription)
         }
     }
 
@@ -224,15 +223,13 @@ struct GestaltFieldEditorView: View {
         plist["CacheExtra"] = cacheExtra
         self.plist = plist
         manager.statusText = persist()
-            ? String(format: l10n.tr("fields.status.deleted"), key)
-            : String(format: l10n.tr("fields.status.deleteFailed"), key)
+            ? String(format: "%@ deleted", key)
+            : String(format: "Could not delete %@", key)
     }
 }
 
 private struct CacheDataView: View {
     let plist: [String: Any]
-
-    @ObservedObject private var l10n = L10n.shared
 
     private var cacheData: Data? { plist["CacheData"] as? Data }
 
@@ -240,19 +237,19 @@ private struct CacheDataView: View {
         ScrollView(.vertical) {
             VStack(alignment: .leading, spacing: 12) {
                 if let data = cacheData {
-                    Text(l10n.tr("fields.hexPreview"))
+                    Text("CacheData hex preview (first 512 bytes)")
                         .font(.headline)
                     Text(Self.hexDump(data, limit: 512))
                         .font(.system(size: 10, design: .monospaced))
                         .textSelection(.enabled)
 
-                    Text(l10n.tr("fields.base64Full"))
+                    Text("Base64 (full)")
                         .font(.headline)
                     Text(data.base64EncodedString())
                         .font(.system(size: 9, design: .monospaced))
                         .textSelection(.enabled)
                 } else {
-                    Text(l10n.tr("fields.cacheDataMissing"))
+                    Text("No CacheData entry.")
                         .foregroundColor(.secondary)
                 }
             }
@@ -307,8 +304,6 @@ private struct ValueEditor: View {
     let kind: PlistValueKind
     let initialText: String
     let onCommit: (String) -> Void
-
-    @ObservedObject private var l10n = L10n.shared
     @State private var text: String
     @Environment(\.dismiss) private var dismiss
 
@@ -322,22 +317,22 @@ private struct ValueEditor: View {
 
     var body: some View {
         Form {
-            Section(header: Text(l10n.tr("fields.typeHeader"))) {
+            Section(header: Text("Type")) {
                 Text(kind.label).foregroundColor(.white)
             }
-            Section(header: Text(l10n.tr("fields.valueHeader"))) {
+            Section(header: Text("Value")) {
                 if kind == .array || kind == .dictionary || kind == .data {
                     TextEditor(text: $text)
                         .font(.system(.footnote, design: .monospaced))
                         .frame(minHeight: 160)
                 } else {
-                    TextField(l10n.tr("fields.valuePlaceholder"), text: $text)
+                    TextField("Value", text: $text)
                         .font(.system(.body, design: .monospaced))
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                 }
             }
-            Button(l10n.tr("common.save")) {
+            Button("Save") {
                 onCommit(text)
                 dismiss()
             }
@@ -349,8 +344,6 @@ private struct ValueEditor: View {
 
 private struct AddCacheExtraFieldView: View {
     let onSave: (String, PlistValueKind, String) -> Void
-
-    @ObservedObject private var l10n = L10n.shared
     @State private var key = ""
     @State private var kind: PlistValueKind = .string
     @State private var valueText = ""
@@ -359,33 +352,33 @@ private struct AddCacheExtraFieldView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text(l10n.tr("fields.newKeyHeader"))) {
-                    TextField(l10n.tr("fields.keyPlaceholder"), text: $key)
+                Section(header: Text("New Key")) {
+                    TextField("Key", text: $key)
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                 }
-                Section(header: Text(l10n.tr("fields.typeHeader"))) {
-                    Picker(l10n.tr("fields.typeHeader"), selection: $kind) {
+                Section(header: Text("Type")) {
+                    Picker("Type", selection: $kind) {
                         ForEach(PlistValueKind.allCases) { k in
                             Text(k.label).tag(k)
                         }
                     }
                 }
-                Section(header: Text(l10n.tr("fields.valueHeader"))) {
-                    TextField(l10n.tr("fields.valuePlaceholder"), text: $valueText)
+                Section(header: Text("Value")) {
+                    TextField("Value", text: $valueText)
                         .font(.system(.body, design: .monospaced))
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                 }
             }
-            .navigationTitle(l10n.tr("fields.addField"))
+            .navigationTitle("Add Field")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(l10n.tr("common.cancel")) { dismiss() }
+                    Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(l10n.tr("common.add")) {
+                    Button("Add") {
                         onSave(key, kind, valueText)
                         dismiss()
                     }

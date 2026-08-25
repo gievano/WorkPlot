@@ -29,7 +29,7 @@ enum DeviceSpoofingError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .missingCacheExtra:
-            L10n.shared.tr("spoof.error.noCacheExtra")
+            "CacheExtra is missing from the MobileGestalt plist."
         }
     }
 }

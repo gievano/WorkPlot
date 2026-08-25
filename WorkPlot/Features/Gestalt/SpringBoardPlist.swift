@@ -4,7 +4,7 @@ enum SpringBoardPlistError: LocalizedError {
     case notReachable
 
     var errorDescription: String? {
-        L10n.shared.tr("sb.error.notReachable")
+        "SpringBoard plist is not reachable through the sandbox escape."
     }
 }
 

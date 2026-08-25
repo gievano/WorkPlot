@@ -10,17 +10,17 @@ struct RDARFixView: View {
             VStack(alignment: .leading, spacing: 20) {
                 SectionHeader("Canvas RDARFix")
                 VStack(spacing: 14) {
-                    TextField("Lebar (px)", text: $widthText)
+                    TextField("Width (px)", text: $widthText)
                         .keyboardType(.numberPad)
                         .textFieldStyle(.roundedBorder)
-                    TextField("Tinggi (px)", text: $heightText)
+                    TextField("Height (px)", text: $heightText)
                         .keyboardType(.numberPad)
                         .textFieldStyle(.roundedBorder)
-                    ActionButton(title: "Terapkan Canvas", systemImage: "wand.and.stars") { apply() }
+                    ActionButton(title: "Apply Canvas", systemImage: "wand.and.stars") { apply() }
                     if let status {
                         Text(status)
                             .font(.footnote)
-                            .foregroundStyle(status.hasPrefix("Gagal") ? Theme.caution : .secondary)
+                            .foregroundStyle(status.hasPrefix("Failed") ? Theme.caution : .secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
@@ -28,7 +28,7 @@ struct RDARFixView: View {
                 .background(Color(uiColor: .tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
 
                 SectionHeader("Info")
-                Text("Menulis ulang route canvas (MobileGestalt MainScreenCanvasSizes + plist IOMobileGraphicsFamily) agar resolusi layar berubah tanpa reboot.")
+                Text("Rewrites the canvas route (MobileGestalt MainScreenCanvasSizes plus the IOMobileGraphicsFamily plist) so the screen resolution changes without a reboot.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .padding(18)
@@ -43,13 +43,13 @@ struct RDARFixView: View {
 
     func apply() {
         guard let w = Int(widthText), let h = Int(heightText), w > 0, h > 0 else {
-            status = "Masukkan lebar & tinggi valid"; return
+            status = "Enter a valid width & height"; return
         }
         do {
             try RDARFix.apply(canvasWidth: w, canvasHeight: h)
-            status = "Canvas berhasil diterapkan"
+            status = "Canvas applied successfully"
         } catch {
-            status = "Gagal: \(error.localizedDescription)"
+            status = "Failed: \(error.localizedDescription)"
         }
     }
 }
