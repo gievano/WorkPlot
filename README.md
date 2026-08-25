@@ -63,14 +63,11 @@ There are two interface builds in this repo. WP Old UI is the original interface
 
 ## Installation
 
-WorkPlot ships as a sideloaded IPA. It will not appear on the App Store.
+WorkPlot ships as a sideloaded IPA and is not on the App Store.
 
-1. Download the unsigned IPA from a green "Build unsigned IPA" CI run (Actions tab, latest run, Artifacts section), or build it yourself:
-   ```bash
-   xcodebuild -project WorkPlot/WorkPlot.xcodeproj -scheme WorkPlot archive
-   ```
-2. Install through **TrollStore** (recommended; it keeps `com.apple.mobile.MobileHouseArrest` untouched). Enterprise tools such as eSign also work, but only if they preserve the original bundle identifier.
-3. Trust your developer certificate under Settings, then General, then VPN and Device Management.
+1. Download the unsigned IPA. The CI builds one on every push to main: open **Actions → Build unsigned IPA**, pick the latest run, and grab `WorkPlot-IPA` from the Artifacts list. You can also grab the rolling `latest` release from the Releases page.
+2. Install it with **TrollStore** (recommended, it keeps `com.apple.mobile.MobileHouseArrest` intact). Enterprise signers such as eSign also work, as long as they keep the original bundle identifier.
+3. Trust the developer certificate at Settings → General → VPN & Device Management.
 
 ## Quick start
 
