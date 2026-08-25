@@ -34,33 +34,23 @@ struct LiquidGlassView: View {
                         }
 
                         Section {
-                            Button {
-                                applyChanges()
-                            } label: {
-                                if isApplying {
-                                    HStack { ProgressView(); Text(L10n.shared.tr("common.applying")) }
-                                } else {
-                                    Text(L10n.shared.tr("common.apply"))
-                                }
-                            }
+                            WPActionButton(
+                                title: L10n.shared.tr("common.apply"),
+                                isBusy: isApplying
+                            ) { applyChanges() }
                             .disabled(isApplying || isDisabling)
 
-                            Button {
-                                disableGlobally()
-                            } label: {
-                                if isDisabling {
-                                    HStack { ProgressView(); Text(L10n.shared.tr("common.working")) }
-                                } else {
-                                    Text(L10n.shared.tr("status.lg.disable"))
-                                }
-                            }
+                            WPActionButton(
+                                title: L10n.shared.tr("status.lg.disable"),
+                                isBusy: isDisabling,
+                                prominent: false
+                            ) { disableGlobally() }
                             .disabled(isDisabling || isApplying || !manager.sandboxGranted)
 
-                            Button(role: .destructive) {
-                                manager.requestRespring()
-                            } label: {
-                                Label(L10n.shared.tr("status.respring.refresh"), systemImage: "arrow.counterclockwise")
-                            }
+                            WPActionButton(
+                                title: L10n.shared.tr("status.respring.refresh"),
+                                prominent: false
+                            ) { manager.requestRespring() }
                         }
                     }
                 }
