@@ -7,20 +7,10 @@ struct AppIcon: Identifiable {
     let colors: [Color]
 
     static var all: [AppIcon] { [
-        AppIcon(id: "", titleKey: "icon.default", subtitleKey: "icon.subtitle.classic",
+        AppIcon(id: "", titleKey: "WorkPlot", subtitleKey: "Default",
                 colors: [.blue, .indigo]),
-        AppIcon(id: "WPCollage", titleKey: "icon.collage", subtitleKey: "icon.subtitle.devices",
-                colors: [.orange, .pink]),
-        AppIcon(id: "WPDark", titleKey: "icon.dark", subtitleKey: "icon.subtitle.dark",
-                colors: [.gray, .black]),
-        AppIcon(id: "WPNeon", titleKey: "icon.neon", subtitleKey: "icon.subtitle.neon",
-                colors: [.green, .purple]),
-        AppIcon(id: "WPMinimal", titleKey: "icon.minimal", subtitleKey: "icon.subtitle.minimal",
-                colors: [.white, .gray]),
-        AppIcon(id: "WPRetro", titleKey: "icon.retro", subtitleKey: "icon.subtitle.retro",
-                colors: [.brown, .orange]),
-        AppIcon(id: "WPGradient", titleKey: "icon.gradient", subtitleKey: "icon.subtitle.gradient",
-                colors: [.red, .yellow])
+        AppIcon(id: "WPWorkplot2", titleKey: "WorkPlot 2", subtitleKey: "Custom",
+                colors: [.blue, .purple])
         ]
     }
 
