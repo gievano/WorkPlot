@@ -19,6 +19,18 @@ struct DeviceSpoofingView: View {
         )
     }
 
+    /// Same caption contract as TweakCatalogTile: open panel reads
+    /// "Configuring"; otherwise show state or the current target.
+    private var spoofCaption: String {
+        if isConfiguring { return "Configuring" }
+        if store.isDeviceSpoofed { return "Spoofed" }
+        return selected?.marketingName ?? "None"
+    }
+
+    private func toggleConfiguration() {
+        withAnimation(.snappy) { isConfiguring.toggle() }
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -28,24 +40,31 @@ struct DeviceSpoofingView: View {
                         .foregroundStyle(Theme.caution)
                 }
 
-                Button {
-                    withAnimation(.snappy) { isConfiguring.toggle() }
-                } label: {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Device Spoof")
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(.primary)
-                            Text(isConfiguring ? "Configuring" : (selected?.marketingName ?? "None"))
-                                .font(.caption)
+                Button { toggleConfiguration() } label: {
+                    // Mirrors TweakCatalogTile 1:1 so the spoof card reads
+                    // exactly like a configurable tweak tile.
+                    VStack(alignment: .leading, spacing: 14) {
+                        HStack {
+                            Image(systemName: "iphone.and.arrow.forward")
+                                .font(.body.weight(.medium))
                                 .foregroundStyle(isConfiguring ? .white : .secondary)
+                            Spacer()
+                            Image(systemName: store.isDeviceSpoofed ? "checkmark.circle.fill" : "circle")
+                                .font(.caption)
+                                .foregroundStyle(isConfiguring ? .white : Color(uiColor: .tertiaryLabel))
                         }
-                        Spacer()
-                        Image(systemName: isConfiguring ? "chevron.up" : "chevron.down")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
+                        Spacer(minLength: 8)
+                        Text("Device Spoof")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.primary)
+                            .lineLimit(2)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Text(spoofCaption)
+                            .font(.caption)
+                            .foregroundStyle(isConfiguring ? .white : .secondary)
+                            .lineLimit(2)
                     }
-                    .frame(maxWidth: .infinity, minHeight: 142, alignment: .leading)
+                    .frame(maxWidth: .infinity, minHeight: 142, maxHeight: .infinity, alignment: .leading)
                     .padding(16)
                     .background(isConfiguring ? .white.opacity(0.14) : .clear, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
                     .liquidGlass(cornerRadius: 22)
@@ -69,6 +88,7 @@ struct DeviceSpoofingView: View {
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
+                    .transition(.opacity.combined(with: .move(edge: .top)))
                 }
 
                 ActionButton(title: "Apply Spoof") {
