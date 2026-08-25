@@ -1,6 +1,17 @@
-# WorkPlot
+<p align="center">
+  <img src="docs/assets/logo.png" alt="WorkPlot" width="180">
+</p>
 
-On-Device MobileGestalt Editor for iOS
+<h1 align="center">WorkPlot</h1>
+
+<p align="center"><strong>On-Device MobileGestalt Editor for iOS</strong></p>
+
+<p align="center">
+  <a href="#-requirements"><img alt="Platform" src="https://img.shields.io/badge/platform-iOS%2027%20betas%201%E2%80%934-black?logo=apple&logoColor=white"></a>
+  <a href="#-requirements"><img alt="Language" src="https://img.shields.io/badge/language-Swift-orange?logo=swift&logoColor=white"></a>
+  <a href="#-warning"><img alt="Status" src="https://img.shields.io/badge/status-experimental-red"></a>
+  <a href="https://github.com/forcequitOS/bad_query"><img alt="bad_query" src="https://img.shields.io/badge/exploit-bad__query-purple"></a>
+</p>
 
 WorkPlot edits MobileGestalt values and system files on iOS 27 betas without a jailbreak. It builds on the bad_query sandbox escape and carries over Ketamine's tweak catalog while adding its own tools. Every write is backed up first, so a bad tweak can be undone.
 
