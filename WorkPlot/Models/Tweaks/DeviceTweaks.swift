@@ -43,33 +43,21 @@ enum DeviceTweaks {
                                     value: .keepCurrent, isPicker: true)
             ]
         ),
+        // Full-identity spoof routed through DeviceSpoofingManager in
+        // GestaltStore.apply() — its write-set spans ~20 CacheExtra keys and
+        // name keys that only overwrite when already cached, which plain
+        // GestaltModifications can't express.
         Tweak(
-            id: "product-type",
-            title: "Device Spoof (ProductType)",
+            id: Tweak.deviceSpoofTweakID,
+            title: "Device Spoof",
             subtitle: "Spoof the reported model for Apple Intelligence eligibility.",
             category: .device,
-            symbol: "cpu",
+            symbol: "iphone.and.arrow.forward",
             isRisky: true,
-            notes: "Spoof to an AI-capable model, back, then to your final model — the AI icon appears in Settings. Don't re-enter Apple Intelligence & Siri settings after un-spoofing. May break Face ID if you keep the spoof.",
-            detail: .picker(options: [
-                "Default (real model)",
-                "iPhone 15 Pro",
-                "iPhone 15 Pro Max",
-                "iPhone 16",
-                "iPhone 16 Plus",
-                "iPhone 16 Pro",
-                "iPhone 16 Pro Max",
-                "iPhone 17",
-                "iPhone 17 Pro",
-                "iPhone 17 Pro Max",
-                "iPhone Air",
-            ]),
-            pickerValues: [.remove, .string("iPhone16,1"), .string("iPhone16,2"), .string("iPhone17,3"), .string("iPhone17,4"), .string("iPhone17,1"), .string("iPhone17,2"), .string("iPhone18,3"), .string("iPhone18,1"), .string("iPhone18,2"), .string("iPhone18,4")],
-            modifications: [
-                GestaltModification(key: "h9jDsbgj7xIVeIQ8S3/X3Q",
-                                    subkey: nil,
-                                    value: .remove, isPicker: true)
-            ]
+            notes: "Spoofs every model-identity key at once (ProductType, board, marketing name). May break Face ID until reverted — restore the pristine backup to undo. 'None' keeps your real identity.",
+            detail: .picker(options:
+                ["None (Real Identity)"] + DeviceSpoofingManager.targets.map(\.marketingName)),
+            modifications: []
         ),
     ]
 }
