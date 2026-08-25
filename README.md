@@ -24,30 +24,30 @@ WorkPlot edits MobileGestalt values and system files on iOS 27 betas without a j
 
 ## What's new since Ketamine
 
-WorkPlot keeps Ketamine's catalog and exploit core, then adds:
+WorkPlot keeps Ketamine's catalog and exploit core, and adds:
 
-- Light, dark, and system appearance modes (Ketamine ships one look).
+- Light, dark, and system appearance modes.
 - Extra tools in the same catalog: App Containers, FilePatch 3105, Device Spoof, Gestalt Field Editor, Preset Lab, Session Log, Check for Updates, CarPlay Wallpaper, and the RDAR canvas fix.
 - Alternate app icons and a per-install badge so WorkPlot and Ketamine can sit side by side.
-- A clearer write check: the app reads the plist back and reports "verified on disk" or "write not visible on disk" instead of pretending the write worked.
+- Write verification: the app reads the plist back and reports "verified on disk" or "write not visible on disk" instead of pretending the write worked.
 
 ## Features
 
-- ✅ **Gestalt tweaks** — toggle capabilities by category (Display, System, Device, Liquid Glass, iPad): Dynamic Island on unsupported devices, Model Name, EU and iPad features, and more, applied as one MobileGestalt write.
-- 🖼️ **RDAR canvas fix** — write your panel's native size into MobileGestalt to fix the RDAR wallpaper bug, or set any width and height by hand.
-- 🔧 **Gestalt Field Editor** — edit MobileGestalt keys directly and inspect CacheData as hex.
-- 🧪 **Preset Lab** — build and save MobileGestalt presets to re-apply later.
-- 🧠 **Siri AI suite** — enable the new Siri AI and Apple Intelligence through the CacheData patch, with optional spoofing to iPhone 15/16/17 Pro and Pro Max.
-- 💎 **Liquid Glass** — turn on Apple's Liquid Glass UI effect.
-- 💾 **Backup and restore** — automatic backup before each write, JSON snapshots you can export or import, plus the RDARFix repair tool.
-- 📁 **File Patch Workspace** — browse and edit system files through the HouseArrest sandbox escape, record reachable paths to an ACCESS MAP.txt in Documents, import .3105 patch files, inspect app containers, clean per-app caches, view files as hex or SQLite tables.
-- 📦 **App Containers** — inspect and manage app container data.
-- 🔀 **Device Spoof** — spoof device identity (model and region).
-- 🚗 **CarPlay Wallpaper** — set the CarPlay wallpaper.
-- 📜 **Session Log** — view the exploit session debug logs.
-- 🔄 **Check for Updates** — in-app update checker.
-- ♻️ **Respring** — restart SpringBoard without a full reboot.
-- 🌐 **Customization** — six languages, light/dark/system appearance, alternate app icons.
+- **Gestalt tweaks**: toggle capabilities by category. Display, System, Device, Liquid Glass, and iPad cover Dynamic Island on unsupported devices, Model Name, EU and iPad features, and more, all applied as one MobileGestalt write.
+- **RDAR canvas fix**: write your panel's native size into MobileGestalt to fix the RDAR wallpaper bug, or set any width and height by hand.
+- **Gestalt Field Editor**: edit MobileGestalt keys directly and inspect CacheData as hex.
+- **Preset Lab**: build and save MobileGestalt presets to re-apply later.
+- **Siri AI suite**: enable the new Siri AI and Apple Intelligence through the CacheData patch, with optional spoofing to iPhone 15/16/17 Pro and Pro Max.
+- **Liquid Glass**: turn on Apple's Liquid Glass UI effect.
+- **Backup and restore**: automatic backup before each write, JSON snapshots you can export or import, plus the RDARFix repair tool.
+- **File Patch Workspace**: browse and edit system files through the HouseArrest sandbox escape, record reachable paths to an ACCESS MAP.txt in Documents, import .3105 patch files, inspect app containers, clean per-app caches, and view files as hex or SQLite tables.
+- **App Containers**: inspect and manage app container data.
+- **Device Spoof**: spoof device identity (model and region).
+- **CarPlay Wallpaper**: set the CarPlay wallpaper.
+- **Session Log**: view the exploit session debug logs.
+- **Check for Updates**: in-app update checker.
+- **Respring**: restart SpringBoard without a full reboot.
+- **Customization**: six languages, light/dark/system appearance, and alternate app icons.
 
 ## Requirements
 
@@ -81,7 +81,7 @@ WorkPlot ships as a sideloaded IPA. It will not appear on the App Store.
 
 ### RDAR canvas fix
 
-The status area has two controls for the RDAR wallpaper bug. **Fix rdar** writes your panel's native size into MobileGestalt (`MainScreenCanvasSizes`). **Custom Canvas** lets you type any width and height, for example 828 x 1792 on an iPhone 11. After applying, WorkPlot reads the plist back from disk and reports "verified on disk" or "write not visible on disk - blocked by system", so a silently dropped write does not look like success. Canvas values are read at boot, and WorkPlot cannot reboot a sandboxed device, so heavy tweaks show a restart prompt.
+The status area has two controls for the RDAR wallpaper bug. **Fix rdar** writes your panel's native size into MobileGestalt (`MainScreenCanvasSizes`). **Custom Canvas** lets you type any width and height, for example 828 x 1792 on an iPhone 11. After applying, WorkPlot reads the plist back from disk and reports "verified on disk" or "write not visible on disk, blocked by system", so a silently dropped write does not look like success. Canvas values are read at boot, and WorkPlot cannot reboot a sandboxed device, so heavy tweaks show a restart prompt.
 
 ### Siri AI and Apple Intelligence
 
@@ -103,7 +103,7 @@ The status area has two controls for the RDAR wallpaper bug. **Fix rdar** writes
 
 ## Credits
 
-WorkPlot is a rebrand and continuation of **Ketamine**. Respect to the Ketamine authors for the original app this is ported from.
+WorkPlot is a rebrand and continuation of **Ketamine**, ported from the original app.
 
 **Exploit and techniques**
 
