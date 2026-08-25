@@ -18,10 +18,6 @@ WorkPlot edits MobileGestalt values and system files on iOS 27 betas without a j
 > [!WARNING]
 > This app modifies system state through a sandbox escape. Use it at your own risk. Keep a backup before you experiment.
 
-## Screenshot
-
-![WorkPlot](docs/assets/screenshot.png)
-
 ## Changelog
 
 WorkPlot keeps the original catalog and exploit core, and adds:
@@ -60,6 +56,15 @@ WorkPlot runs on iPhone and iPad. Reads work on any iOS 27 build. Writes depend 
 | Signing that rewrites the bundle identifier | No | No |
 
 There are two interface builds in this repo. WP Old UI is the original interface where PosterBoard does not run. WP New UI is the newer interface where PosterBoard runs. The tools and tweak catalog are the same between them.
+
+## Compatibility
+
+| iOS Version | MobileGestalt Editing | PosterBoard |
+| ----------- | --------------------- | ----------- |
+| iOS 18.x and earlier | ❌ Unsupported | ❌ Unsupported |
+| iOS 26.0 – 26.6 | ❌ Unsupported | ✅ Supported |
+| iOS 27.0 Beta 1 – Beta 4 | ✅ Supported | ✅ Supported |
+| Later versions | ❌ Patched | ❌ Unsupported |
 
 ## Installation
 
