@@ -54,8 +54,8 @@ struct GestaltPresetManagerView: View {
     private var content: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                stagedCard
                 hero
-                restoreCard
                 identityGroup
                 ForEach(GestaltTweakCategory.allCases) { category in
                     categorySection(category)
@@ -101,33 +101,114 @@ struct GestaltPresetManagerView: View {
         manager.backups.contains { $0.name == "Stock Snapshot" }
     }
 
-    private var restoreCard: some View {
-        Button { showRestoreConfirm = true } label: {
-            HStack(spacing: 14) {
-                Image(systemName: "arrow.uturn.backward.circle.fill")
-                    .font(.title3)
-                    .foregroundStyle(.orange)
-                    .frame(width: 30)
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(L10n.shared.tr("backup.revertStock"))
-                        .font(.body.weight(.semibold))
-                    Text(L10n.shared.tr("gestalt.restoreHint"))
+    private var stagedCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 12) {
+                Image(systemName: "shippingbox.fill")
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 46, height: 46)
+                    .background(
+                        LinearGradient(colors: [Color.accentColor, Color.accentColor.opacity(0.6)],
+                                      startPoint: .topLeading, endPoint: .bottomTrailing),
+                        in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    )
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(stagedChangeCount == 0
+                         ? "No changes staged"
+                         : "\(stagedChangeCount) changes staged")
+                        .font(.headline.bold())
+                    Text("Review staged changes before writing to the mobile gestalt")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
-                Image(systemName: "chevron.right").font(.caption).foregroundStyle(.tertiary)
             }
-            .padding(16)
-            .liquidGlass(cornerRadius: 16)
+
+            if stagedChangeCount > 0 {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(Array(selectedTweaks), id: \.self) { id in
+                            if let def = GestaltTweakCatalog.definition(for: id) {
+                                Image(systemName: def.icon)
+                                    .font(.system(size: 15, weight: .semibold))
+                                    .foregroundStyle(.white)
+                                    .frame(width: 32, height: 32)
+                                    .background(Circle().fill(Theme.accent))
+                            }
+                        }
+                    }
+                    .padding(.vertical, 2)
+                }
+
+                VStack(alignment: .leading, spacing: 6) {
+                    ForEach(Array(selectedTweaks), id: \.self) { id in
+                        if let def = GestaltTweakCatalog.definition(for: id) {
+                            Button { toggle(id) } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: def.icon).foregroundStyle(Theme.accent)
+                                    Text(def.title).font(.subheadline)
+                                    Spacer()
+                                    Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    if dynamicIslandSubtype != nil {
+                        stagedRow(icon: "rectangle.topthird.inset.filled",
+                                  text: "Dynamic Island subtype")
+                    }
+                    if changesModelName && !modelName.trimmingCharacters(in: .whitespaces).isEmpty {
+                        stagedRow(icon: "wrench",
+                                  text: "Model name: \(modelName)")
+                    }
+                }
+
+                WPActionButton(
+                    title: "Apply (\(stagedChangeCount)) changes",
+                    isBusy: isApplying
+                ) { applySelected() }
+                .disabled(stagedChangeCount == 0)
+
+                HStack(spacing: 10) {
+                    WPActionButton(title: "Backup", prominent: false) { createBackup() }
+                    WPActionButton(title: "Restore Pristine", prominent: false) {
+                        if hasStockBackup { showRestoreConfirm = true }
+                    }
+                    .disabled(!hasStockBackup)
+                }
+            }
         }
-        .buttonStyle(.plain)
-        .disabled(!manager.sandboxGranted || !hasStockBackup)
-        .confirmationDialog(L10n.shared.tr("backup.restoreConfirmTitle"), isPresented: $showRestoreConfirm) {
-            Button(L10n.shared.tr("pb.apply"), role: .destructive) { restoreStock() }
-            Button(L10n.shared.tr("common.cancel"), role: .cancel) {}
+        .padding(18)
+        .liquidGlass(cornerRadius: 22)
+        .confirmationDialog("Restore Pristine", isPresented: $showRestoreConfirm) {
+            Button("Restore", role: .destructive) { restoreStock() }
+            Button("Cancel", role: .cancel) {}
         } message: {
-            Text(L10n.shared.tr("backup.restoreMsg"))
+            Text("This reverts all gestalt changes to the Stock Snapshot. The device will respring.")
+        }
+    }
+
+    private func stagedRow(icon: String, text: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon).foregroundStyle(Theme.accent)
+            Text(text).font(.subheadline)
+            Spacer()
+        }
+    }
+
+    private func createBackup() {
+        guard let data = manager.readGestaltData() else {
+            manager.statusText = "Could not read gestalt to back up."
+            return
+        }
+        do {
+            let backup = try GestaltBackupStore.create(from: data)
+            manager.refreshBackups()
+            manager.statusText = "Backup \"\(backup.name)\" saved."
+        } catch {
+            manager.statusText = "Backup failed: \(error.localizedDescription)"
         }
     }
 
@@ -181,78 +262,93 @@ struct GestaltPresetManagerView: View {
     private func categorySection(_ category: GestaltTweakCategory) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             WPSectionHeader(title: category.label)
-            VStack(spacing: 12) {
+            LazyVGrid(
+                columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
+                spacing: 12
+            ) {
                 ForEach(tweaks(in: category)) { tweak in
-                    tweakCard(tweak)
+                    tweakBox(tweak)
                 }
             }
         }
     }
 
-    private func tweakCard(_ tweak: GestaltTweakDefinition) -> some View {
-        HStack(spacing: 14) {
-            VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: 6) {
-                    Text(tweak.title).font(.body.weight(.semibold))
-                    if tweak.isRisky {
-                        Text(L10n.shared.tr("common.risky")).font(.caption2).bold()
-                            .foregroundColor(.red)
-                            .padding(.horizontal, 5).padding(.vertical, 1)
-                            .background(Color.red.opacity(0.15))
-                            .cornerRadius(4)
-                    }
-                    if tweak.isExperimental {
-                        Text(L10n.shared.tr("common.experimental")).font(.caption2).bold()
-                            .foregroundColor(.orange)
-                            .padding(.horizontal, 5).padding(.vertical, 1).padding(.horizontal, 5)
-                            .background(Color.orange.opacity(0.15))
-                            .cornerRadius(4)
+    private func tweakBox(_ tweak: GestaltTweakDefinition) -> some View {
+        let isOn = selectedTweaks.contains(tweak.id)
+        let supported = tweak.isSupportedOnThisDevice
+        return Button {
+            toggle(tweak.id)
+        } label: {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .top) {
+                    Image(systemName: tweak.icon)
+                        .font(.system(size: 22))
+                        .foregroundStyle(supported ? Theme.accent : .secondary)
+                    Spacer()
+                    Image(systemName: isOn ? "checkmark.circle.fill" : "circle")
+                        .foregroundStyle(isOn ? Theme.accent : .secondary)
+                }
+                Text(tweak.title)
+                    .font(.system(size: 13, weight: .semibold))
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(2)
+                if !tweak.detail.isEmpty {
+                    Text(tweak.detail)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(3)
+                }
+                if tweak.isRisky || tweak.isExperimental {
+                    HStack(spacing: 6) {
+                        if tweak.isRisky {
+                            HStack(spacing: 3) {
+                                Image(systemName: "exclamationmark.triangle.fill").font(.system(size: 10))
+                                Text("Risky").font(.system(size: 10, weight: .bold))
+                            }
+                            .foregroundStyle(.red)
+                        }
+                        if tweak.isExperimental {
+                            HStack(spacing: 3) {
+                                Image(systemName: "flask.fill").font(.system(size: 10))
+                                Text("Experimental").font(.system(size: 10, weight: .bold))
+                            }
+                            .foregroundStyle(.orange)
+                        }
                     }
                 }
-                Text(tweak.detail).font(.caption).foregroundStyle(.secondary)
+                Spacer(minLength: 0)
             }
-            Spacer()
-            if tweak.isSupportedOnThisDevice {
-                Toggle("", isOn: binding(for: tweak.id)).labelsHidden()
-            } else {
-                Toggle("", isOn: .constant(false)).labelsHidden().disabled(true)
-                Text(L10n.shared.tr("gestalt.deviceUnsupported"))
-                    .font(.caption2).foregroundStyle(.secondary)
-            }
+            .padding(14)
+            .frame(maxWidth: .infinity, minHeight: 140, alignment: .leading)
+            .liquidGlass(cornerRadius: 16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(isOn ? Theme.accent : .clear, lineWidth: 2)
+            )
+            .opacity(supported ? 1 : 0.5)
         }
-        .padding(16)
-        .liquidGlass(cornerRadius: 16)
+        .buttonStyle(.plain)
+        .disabled(!supported)
     }
 
     private func tweaks(in category: GestaltTweakCategory) -> [GestaltTweakDefinition] {
         GestaltTweakCatalog.definitions.filter { $0.category == category }
     }
 
-    private func binding(for id: GestaltTweakID) -> Binding<Bool> {
-        Binding(
-            get: { selectedTweaks.contains(id) },
-            set: { enabled in
-                if enabled {
-                    if id == .enableLiquidGlassLowPerformance { selectedTweaks.remove(.disableLiquidGlassLowPerformance) }
-                    if id == .disableLiquidGlassLowPerformance { selectedTweaks.remove(.enableLiquidGlassLowPerformance) }
-                    // Island enable vs the off-switches are opposites;
-                    // the hide/show pair excludes itself.
-                    if id == .supportsDynamicIsland {
-                        selectedTweaks.remove(.hideDynamicIslandOn)
-                    }
-                    if id == .hideDynamicIslandOn {
-                        selectedTweaks.remove(.supportsDynamicIsland)
-                        selectedTweaks.remove(.hideDynamicIslandOff)
-                    }
-                    if id == .hideDynamicIslandOff {
-                        selectedTweaks.remove(.hideDynamicIslandOn)
-                    }
-                    selectedTweaks.insert(id)
-                } else {
-                    selectedTweaks.remove(id)
-                }
+    private func toggle(_ id: GestaltTweakID) {
+        if selectedTweaks.contains(id) {
+            selectedTweaks.remove(id)
+        } else {
+            if id == .enableLiquidGlassLowPerformance { selectedTweaks.remove(.disableLiquidGlassLowPerformance) }
+            if id == .disableLiquidGlassLowPerformance { selectedTweaks.remove(.enableLiquidGlassLowPerformance) }
+            if id == .supportsDynamicIsland { selectedTweaks.remove(.hideDynamicIslandOn) }
+            if id == .hideDynamicIslandOn {
+                selectedTweaks.remove(.supportsDynamicIsland)
+                selectedTweaks.remove(.hideDynamicIslandOff)
             }
-        )
+            if id == .hideDynamicIslandOff { selectedTweaks.remove(.hideDynamicIslandOn) }
+            selectedTweaks.insert(id)
+        }
     }
 
     private func applySelected() {

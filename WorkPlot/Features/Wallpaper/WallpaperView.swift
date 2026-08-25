@@ -37,6 +37,7 @@ struct WallpaperView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: Theme.cardSpacing) {
+                posterboardHeader
                 importCard
                 appliedCard
                 cowabungaCard
@@ -47,7 +48,15 @@ struct WallpaperView: View {
             .padding(.bottom, 24)
         }
         .navigationTitle("Wallpaper")
+        .navigationBarTitleDisplayMode(.inline)
         .wpGlassContainer()
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button { showImporter = true } label: {
+                    Image(systemName: "plus.circle.fill").font(.title3)
+                }
+            }
+        }
         .onAppear(perform: loadCowabunga)
         .fileImporter(isPresented: $showImporter, allowedContentTypes: [tendieType], allowsMultipleSelection: true) { result in
             importTendies(result)
@@ -65,6 +74,34 @@ struct WallpaperView: View {
     }
 
     // MARK: Cards — WorkPlot layout (own concept, not Ketamine's stacked buttons)
+
+    private var posterboardHeader: some View {
+        WPCard {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(spacing: 14) {
+                    Image(systemName: "photo.on.rectangle.angled")
+                        .font(.system(size: 24, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 52, height: 52)
+                        .background(
+                            LinearGradient(colors: [Color.accentColor, Color.accentColor.opacity(0.6)],
+                                          startPoint: .topLeading, endPoint: .bottomTrailing),
+                            in: RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        )
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("PosterBoard").font(.title3.bold())
+                        Text("Your wallpaper shelf is empty")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                Text("Import a .tendies pack to start building your PosterBoard wallpapers. Packs apply straight to the device and trigger a respring.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                WPActionButton(title: "+ Add Tendies Pack") { showImporter = true }
+            }
+        }
+    }
 
     private var importCard: some View {
         WPCard {
@@ -103,7 +140,7 @@ struct WallpaperView: View {
     private var cowabungaCard: some View {
         WPCard {
             VStack(alignment: .leading, spacing: 12) {
-                WPSectionHeader(title: "Cowabunga Catalogue")
+                WPSectionHeader(title: "Download Wallpapers")
                 Picker("Sort", selection: $cowabungaFilter) {
                     ForEach(WallpaperFilterType.allCases, id: \.self) { Text($0.rawValue) }
                 }
@@ -249,29 +286,47 @@ struct WallpaperView: View {
         guard !poster.selectedTendies.isEmpty else { return }
 
         let startHash = pbHash
-        UIApplication.shared.change(title: "Applying Wallpapers...", body: "Locating PosterBoard...")
+        // Show the respring overlay at once so the wait happens on the black
+        // screen instead of a "Applying Wallpapers" dialog. The actual crash
+        // is armed only after the apply work finishes (see armRespringCrash).
+        ExploitManager.shared.beginRespring()
+
+        var watchdog: DispatchWorkItem?
+        watchdog = DispatchWorkItem {
+            ExploitManager.shared.respringRequested = false
+            ExploitManager.shared.respringCrashArmed = false
+            UIApplication.shared.alert(title: "Apply timed out", body: "The operation took too long. Make sure the bad_query exploit is active, then try again.")
+        }
+        if let watchdog {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 120, execute: watchdog)
+        }
+
         Task.detached(priority: .userInitiated) { [weak poster] in
             var hash = startHash
             if hash.isEmpty {
                 hash = WallpaperPosterBoardManager.discoverPosterBoardHash() ?? ""
             }
             guard !hash.isEmpty else {
+                watchdog?.cancel()
                 await MainActor.run {
-                    UIApplication.shared.dismissAlert()
+                    ExploitManager.shared.respringRequested = false
+                    ExploitManager.shared.respringCrashArmed = false
                     UIApplication.shared.alert(title: "PosterBoard not found", body: "Could not locate the PosterBoard container. Make sure the exploit is active.")
                 }
                 return
             }
             do {
                 try poster?.applyTendies(appHash: hash)
+                watchdog?.cancel()
                 await MainActor.run {
-                    UIApplication.shared.dismissAlert()
                     Haptic.shared.notify(.success)
-                    ExploitManager.shared.requestRespring()
+                    ExploitManager.shared.armRespringCrash()
                 }
             } catch {
+                watchdog?.cancel()
                 await MainActor.run {
-                    UIApplication.shared.dismissAlert()
+                    ExploitManager.shared.respringRequested = false
+                    ExploitManager.shared.respringCrashArmed = false
                     UIApplication.shared.alert(title: "Apply failed", body: error.localizedDescription)
                 }
             }

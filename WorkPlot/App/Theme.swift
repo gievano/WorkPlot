@@ -76,24 +76,14 @@ extension View {
             )
     }
 
-    /// Scroll surface: calm tinted backdrop + hairline frame. The screen reads
-    /// as glass without slab-ing every row; cards carry the real glass.
+    /// Scroll surface: calm grouped backdrop so content reads clean and the
+    /// cards (wpCard) carry the real glass — mirrors Ketamine's
+    /// `systemGroupedBackground` + liquidGlass card language.
     func wpGlassContainer() -> some View {
         self
             .scrollContentBackground(.hidden)
             .padding(Theme.pagePadding)
-            .background(
-                ZStack {
-                    LinearGradient(
-                        colors: [Color(.systemBackground), Theme.accent.opacity(0.06)],
-                        startPoint: .top, endPoint: .bottom
-                    )
-                    .ignoresSafeArea()
-                    RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous)
-                        .stroke(Theme.hairline, lineWidth: 1)
-                        .ignoresSafeArea()
-                }
-            )
+            .background(Color(uiColor: .systemGroupedBackground).ignoresSafeArea())
     }
 
     /// WorkPlot accent button styling.

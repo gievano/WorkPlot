@@ -37,7 +37,7 @@ struct WallpaperSymlink {
         getLCDocumentsDirectory().appendingPathComponent("NuggetCarPlayWallpaperHash")
     }
 
-    private static func getSymlinkURL() -> URL {
+    static func getSymlinkURL() -> URL {
         getLCDocumentsDirectory().appendingPathComponent(".Trash", conformingTo: .symbolicLink)
     }
 

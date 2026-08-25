@@ -35,9 +35,14 @@ struct AppIcon: Identifiable {
 struct AppIconSwitcherSheet: View {
     @ObservedObject private var l10n = L10n.shared
     @Environment(\.dismiss) private var dismiss
+    let showDoneButton: Bool
     @State private var currentAltName: String? = UIApplication.shared.alternateIconName
     @State private var pendingIcon: AppIcon?
     @State private var errorMessage: String?
+
+    init(showDoneButton: Bool = true) {
+        self.showDoneButton = showDoneButton
+    }
 
     private let columns = [GridItem(.adaptive(minimum: 100), spacing: 20)]
 
@@ -61,8 +66,10 @@ struct AppIconSwitcherSheet: View {
             .navigationTitle(l10n.tr("icon.menu"))
             .wpGlassContainer()
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(l10n.tr("common.done")) { dismiss() }
+                if showDoneButton {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button(l10n.tr("common.done")) { dismiss() }
+                    }
                 }
             }
             .alert(l10n.tr("icon.confirm.title"), isPresented: .init(
