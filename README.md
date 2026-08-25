@@ -1,24 +1,32 @@
-<p align="center">
-  <img src="docs/assets/logo.png" alt="WorkPlot" width="180">
+<div align="center">
+
+<img src="docs/assets/logo.png" alt="WorkPlot app icon" width="128" height="128">
+
+# WorkPlot
+
+**On-device MobileGestalt editor for iOS 27 — no PC required**
+
+<p>
+  <a href="https://github.com/forcequitOS/bad_query"><img src="https://img.shields.io/badge/exploit-bad__query-purple?style=flat-square" alt="bad_query"></a>
+  <img src="https://img.shields.io/badge/platform-iOS%2027%20betas%201%E2%80%934-black?style=flat-square&logo=apple&logoColor=white" alt="Platform">
+  <img src="https://img.shields.io/badge/language-Swift-orange?style=flat-square&logo=swift&logoColor=white" alt="Language">
+  <img src="https://img.shields.io/badge/status-experimental-red?style=flat-square" alt="Status">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPLv3-6E56CF?style=flat-square" alt="GPLv3"></a>
 </p>
 
-<h1 align="center">WorkPlot</h1>
+<a href="https://github.com/forcequitOS/bad_query/releases/latest"><b>Download IPA</b></a> ·
+<a href="#requirements">Requirements</a> ·
+<a href="#install">Install</a> ·
+<a href="#credits">Credits</a>
 
-<p align="center"><strong>On-Device MobileGestalt Editor for iOS</strong></p>
-
-<p align="center">
-  <a href="#-requirements"><img alt="Platform" src="https://img.shields.io/badge/platform-iOS%2027%20betas%201%E2%80%934-black?logo=apple&logoColor=white"></a>
-  <a href="#-requirements"><img alt="Language" src="https://img.shields.io/badge/language-Swift-orange?logo=swift&logoColor=white"></a>
-  <a href="#-warning"><img alt="Status" src="https://img.shields.io/badge/status-experimental-red"></a>
-  <a href="https://github.com/forcequitOS/bad_query"><img alt="bad_query" src="https://img.shields.io/badge/exploit-bad__query-purple"></a>
-</p>
-
-WorkPlot edits MobileGestalt values and system files on iOS 27 betas without a jailbreak. It builds on the bad_query sandbox escape and ships a full MobileGestalt tweak catalog plus its own tools. Every write is backed up first, so a bad tweak can be undone.
+</div>
 
 > [!WARNING]
-> This app modifies system state through a sandbox escape. Use it at your own risk. Keep a backup before you experiment.
+> WorkPlot modifies system state through a sandbox escape. It can break system features and may require restoring the device. Keep a backup before you experiment. Use at your own risk.
 
-## Changelog
+WorkPlot edits MobileGestalt values and system files on iOS 27 betas without a jailbreak. It builds on the `bad_query` sandbox escape and ships a full MobileGestalt tweak catalog plus its own tools. Every write is backed up first, so a bad tweak can be undone.
+
+## What's new
 
 WorkPlot keeps the original catalog and exploit core, and adds:
 
@@ -29,33 +37,28 @@ WorkPlot keeps the original catalog and exploit core, and adds:
 
 ## Features
 
-- **Gestalt tweaks**: toggle capabilities by category. Display, System, Device, Liquid Glass, and iPad cover Dynamic Island on unsupported devices, Model Name, EU and iPad features, and more, all applied as one MobileGestalt write.
-- **RDAR canvas fix**: write your panel's native size into MobileGestalt to fix the RDAR wallpaper bug, or set any width and height by hand.
-- **Gestalt Field Editor**: edit MobileGestalt keys directly and inspect CacheData as hex.
-- **Preset Lab**: build and save MobileGestalt presets to re-apply later.
-- **Siri AI suite**: enable the new Siri AI and Apple Intelligence through the CacheData patch, with optional spoofing to iPhone 15/16/17 Pro and Pro Max.
-- **Liquid Glass**: turn on Apple's Liquid Glass UI effect.
-- **Backup and restore**: automatic backup before each write, JSON snapshots you can export or import, plus the RDARFix repair tool.
-- **File Patch Workspace**: browse and edit system files through the HouseArrest sandbox escape, record reachable paths to an ACCESS MAP.txt in Documents, import .3105 patch files, inspect app containers, clean per-app caches, and view files as hex or SQLite tables.
-- **App Containers**: inspect and manage app container data.
-- **Device Spoof**: spoof device identity (model and region).
-- **CarPlay Wallpaper**: set the CarPlay wallpaper.
-- **Session Log**: view the exploit session debug logs.
-- **Check for Updates**: in-app update checker.
-- **Respring**: restart SpringBoard without a full reboot.
-- **Customization**: six languages, light/dark/system appearance, and alternate app icons.
+* 📱 Runs entirely on iPhone and iPad — no PC required
+* 🛠️ **Gestalt tweaks** — toggle capabilities by category (Display, System, Device, Liquid Glass, iPad), cover Dynamic Island on unsupported devices, Model Name, EU and iPad features, all as one MobileGestalt write
+* 🖼️ **RDAR canvas fix** — write your panel's native size into MobileGestalt to fix the RDAR wallpaper bug, or set any width and height by hand
+* 🔎 **Gestalt Field Editor** — edit MobileGestalt keys directly and inspect CacheData as hex
+* 🧪 **Preset Lab** — build and save MobileGestalt presets to re-apply later
+* 🧠 **Siri AI suite** — enable the new Siri AI and Apple Intelligence through the CacheData patch, with optional spoofing to iPhone 15/16/17 Pro and Pro Max
+* 💎 **Liquid Glass** — turn on Apple's Liquid Glass UI effect
+* 🛡️ **Backup and restore** — automatic backup before each write, JSON snapshots you can export or import, plus the RDARFix repair tool
+* 📂 **File Patch Workspace** — browse and edit system files through the HouseArrest sandbox escape, record reachable paths to an `ACCESS MAP.txt`, import `.3105` patch files, inspect app containers, clean per-app caches, and view files as hex or SQLite tables
+* 📦 **App Containers** — inspect and manage app container data
+* 🕵️ **Device Spoof** — spoof device identity (model and region)
+* 🚗 **CarPlay Wallpaper** — set the CarPlay wallpaper
+* 📜 **Session Log** — view the exploit session debug logs
+* 🔄 **Check for Updates** — in-app update checker
+* 🔁 **Respring** — restart SpringBoard without a full reboot
+* 🎨 **Customization** — six languages, light/dark/system appearance, and alternate app icons
 
 ## Requirements
 
-WorkPlot runs on iPhone and iPad. Reads work on any iOS 27 build. Writes depend on the bad_query exploit, which is verified against iOS 27 developer betas 1 through 4. On a build the exploit is not verified against, the sandbox escape can fail with a kernel refusal and writes will not land. The app shows the failure instead of pretending the write worked.
+WorkPlot runs on iPhone and iPad. Reads work on any iOS 27 build. Writes depend on the `bad_query` exploit, which is verified against iOS 27 developer betas 1 through 4. On a build the exploit is not verified against, the sandbox escape can fail with a kernel refusal and writes will not land. The app shows the failure instead of pretending the write worked.
 
-| Build | Full features | Writes verified |
-| ----- | ------------ | --------------- |
-| iOS 27 developer betas 1 to 4 | Yes | Yes |
-| Other iOS 27 builds | Reads only | No |
-| Signing that rewrites the bundle identifier | No | No |
-
-There are two interface builds in this repo. WP Old UI is the original interface where PosterBoard does not run. WP New UI is the newer interface where PosterBoard runs. The tools and tweak catalog are the same between them.
+There are two interface builds in this repo. **WP Old UI** is the original interface where PosterBoard does not run. **WP New UI** is the newer interface where PosterBoard runs. The tools and tweak catalog are the same between them.
 
 ## Compatibility
 
@@ -66,9 +69,11 @@ There are two interface builds in this repo. WP Old UI is the original interface
 | iOS 27.0 Beta 1 – Beta 4 | ✅ Supported | ✅ Supported |
 | Later versions | ❌ Patched | ❌ Unsupported |
 
-## Installation
+## Install
 
-Download WorkPlot.ipa from Releases. Install iLoader, connect your device, and sign in with your Apple ID (used only for local signing). Import the IPA to sign and install it, then trust the certificate under Settings → General → VPN & Device Management.
+1. Download `WorkPlot.ipa` from [Releases](https://github.com/forcequitOS/bad_query/releases/latest).
+2. Install [iLoader](https://github.com/nab138/iloader), connect your device, and sign in with your Apple ID (used only for local signing).
+3. Import the IPA to sign and install it, then trust the certificate under Settings → General → VPN & Device Management.
 
 ## Quick start
 
@@ -123,9 +128,9 @@ WorkPlot is a rebrand and continuation of an earlier MobileGestalt editor.
 
 Full attribution and licenses: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). WorkPlot incorporates GPLv3-licensed `bad_query` source code.
 
-## Licence
+## License
 
-WorkPlot is distributed under the GPLv3 licence. See [LICENSE](LICENSE) for the full text.
+WorkPlot is distributed under the [GPLv3 license](LICENSE).
 
 ## Disclaimer
 
