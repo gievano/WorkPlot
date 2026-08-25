@@ -1,36 +1,36 @@
 import SwiftUI
 
-// WorkPlot visual language — refined glass. Real glassEffect on iOS 26+,
-// material fallback below. Glass is reserved for focal surfaces (cards,
-// buttons, sheets); scroll areas get a calm tinted backdrop + hairline
-// border so content keeps contrast and hierarchy.
 enum AppAccent: String, CaseIterable, Identifiable {
-    case blue, mint, orange, pink, purple
+    case blue
+    case indigo
+    case teal
+    case orange
+    case pink
 
     var id: String { rawValue }
 
-    var displayName: String {
+    var name: String {
         switch self {
-        case .blue: "Blue"
-        case .mint: "Mint"
-        case .orange: "Orange"
-        case .pink: "Pink"
-        case .purple: "Purple"
+        case .blue: return "Blue"
+        case .indigo: return "Indigo"
+        case .teal: return "Teal"
+        case .orange: return "Orange"
+        case .pink: return "Pink"
         }
     }
 
     var color: Color {
         switch self {
-        case .blue: .blue
-        case .mint: .mint
-        case .orange: .orange
-        case .pink: .pink
-        case .purple: .purple
+        case .blue: return .blue
+        case .indigo: return .indigo
+        case .teal: return .teal
+        case .orange: return .orange
+        case .pink: return .pink
         }
     }
 
     static var current: AppAccent {
-        AppAccent(rawValue: UserDefaults.standard.string(forKey: "appAccent") ?? "orange") ?? .orange
+        AppAccent(rawValue: UserDefaults.standard.string(forKey: "accentColor") ?? "blue") ?? .blue
     }
 }
 
@@ -42,73 +42,57 @@ enum Theme {
         }
         return AppAccent.current.color
     }
-
     static let caution = Color(.systemOrange)
     static let destructive = Color(.systemRed)
     static let affirmative = Color(.systemGreen)
 
-    static let pagePadding: CGFloat = 16
-    static let cardRadius: CGFloat = 22
-    static let cardSpacing: CGFloat = 14
-    static let hairline = Color.white.opacity(0.10)
+    static let pagePadding: CGFloat = 20
+    static let cardRadius: CGFloat = 24
 }
 
 extension View {
-    /// Glass surface for focal cards, sheets and controls. GlassEffect on
-    /// iOS 26+, thin material below. A hairline overlay keeps edge contrast.
     @ViewBuilder
     func liquidGlass(cornerRadius: CGFloat = Theme.cardRadius) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
         if #available(iOS 26.0, *) {
-            self.glassEffect(in: .rect(cornerRadius: cornerRadius))
+            glassEffect(Glass.regular, in: shape)
         } else {
-            self.background(.thinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            background(.thinMaterial, in: shape)
         }
     }
 
-    /// Glass card: padding + glass + hairline border for crisp edges.
-    func wpCard() -> some View {
-        self
-            .padding(Theme.pagePadding)
-            .liquidGlass()
-            .overlay(
-                RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous)
-                    .stroke(Theme.hairline, lineWidth: 1)
-            )
-    }
-
-    /// Scroll surface: calm grouped backdrop so content reads clean and the
-    /// cards (wpCard) carry the real glass — mirrors Ketamine's
-    /// `systemGroupedBackground` + liquidGlass card language.
-    func wpGlassContainer() -> some View {
-        self
-            .scrollContentBackground(.hidden)
-            .padding(Theme.pagePadding)
-            .background(Color(uiColor: .systemGroupedBackground).ignoresSafeArea())
-    }
-
-    /// WorkPlot accent button styling. Renders a true liquid-glass pill
-    /// (not the old bordered look) so every WPActionButton reads as glass.
     @ViewBuilder
-    func glassAction(forceProminent: Bool = false, tint: Color = Theme.accent) -> some View {
-        self
-            .buttonStyle(.plain)
-            .padding(.vertical, 14)
-            .padding(.horizontal, 16)
-            .frame(maxWidth: .infinity)
-            .liquidGlass(cornerRadius: Theme.cardRadius)
-            .foregroundStyle(forceProminent ? tint : .primary)
+    func glassAction(prominent: Bool = false) -> some View {
+        if #available(iOS 26.0, *) {
+            if prominent {
+                buttonStyle(.glassProminent)
+            } else {
+                buttonStyle(.glass)
+            }
+        } else if prominent {
+            buttonStyle(.borderedProminent)
+        } else {
+            buttonStyle(.bordered)
+        }
     }
 }
 
-/// Glass container used by a few inline call sites; thin wrapper over wpCard.
 struct GlassGroup<Content: View>: View {
-    @ViewBuilder let content: Content
+    let spacing: CGFloat
+    let content: Content
 
-    init(@ViewBuilder content: () -> Content) {
+    init(spacing: CGFloat = 16, @ViewBuilder content: () -> Content) {
+        self.spacing = spacing
         self.content = content()
     }
 
     var body: some View {
-        content.wpCard()
+        if #available(iOS 26.0, *) {
+            GlassEffectContainer(spacing: spacing) {
+                content
+            }
+        } else {
+            content
+        }
     }
 }

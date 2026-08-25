@@ -2,63 +2,18 @@ import SwiftUI
 
 @main
 struct WorkPlotApp: App {
-    @StateObject private var manager = ExploitManager.shared
-    @StateObject private var l10n = L10n.shared
-    @State private var presetImportMessage: String?
-
-    init() {
-        UIDocumentPickerViewController.workplotSwizzleOnce
-    }
+    @StateObject private var store = GestaltStore()
+    @AppStorage("accentColor") private var accentColor = AppAccent.blue.rawValue
+    @AppStorage("customColor") private var customColor: Double = 0
+    @AppStorage("useCustomColor") private var useCustomColor = false
 
     var body: some Scene {
         WindowGroup {
-            MainDashboardView()
-                .accentColor(Theme.accent)
-                .overlay {
-                    if manager.respringRequested {
-                        NeoSpringView()
-                    }
-                }
-                .onAppear(perform: autoCheckAccess)
-                .onOpenURL(perform: handlePresetURL)
-                .alert(
-                    "WorkPlot",
-                    isPresented: Binding(
-                        get: { presetImportMessage != nil },
-                        set: { if !$0 { presetImportMessage = nil } }
-                    )
-                ) {
-                    Button(l10n.tr("common.done"), role: .cancel) {}
-                } message: {
-                    Text(presetImportMessage ?? "")
-                }
-        }
-    }
-
-    /// Runs the sandbox access probe once at launch so users do not have to
-    /// tap "Periksa Akses Sistem" manually.
-    private func autoCheckAccess() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            guard !manager.sandboxGranted else { return }
-            _ = manager.checkSystemPathAccess()
-        }
-    }
-
-    /// workplot://preset?data=<base64url(JSON preset)> imports a shared preset.
-    private func handlePresetURL(_ url: URL) {
-        guard url.scheme?.lowercased() == "workplot",
-              url.host?.lowercased() == "preset",
-              let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems,
-              let payload = items.first(where: { $0.name == "data" })?.value else {
-            presetImportMessage = l10n.tr("preset.importFail")
-            return
-        }
-
-        do {
-            let preset = try PresetStore.shared.importURLPayload(payload)
-            presetImportMessage = String(format: l10n.tr("preset.importOk"), preset.name)
-        } catch {
-            presetImportMessage = l10n.tr("preset.importFail")
+            RootView()
+                .environmentObject(store)
+                .tint(useCustomColor
+                      ? Color(hue: customColor, saturation: 0.75, brightness: 0.9)
+                      : (AppAccent(rawValue: accentColor)?.color ?? .blue))
         }
     }
 }
