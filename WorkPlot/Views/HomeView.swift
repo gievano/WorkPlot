@@ -5,7 +5,6 @@ struct HomeView: View {
     /// `nil` selects "All" — every tweak, uncategorized.
     @State private var category: TweakCategory? = .display
     @State private var configurationID: String?
-    @State private var showIconSwitcher = false
     @State private var showUpdater = false
     @State private var searchText = ""
 
@@ -66,7 +65,6 @@ struct HomeView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showIconSwitcher) { AppIconSwitcherSheet(showDoneButton: true) }
             .sheet(isPresented: $showUpdater) { UpdateCheckerSheet(showDoneButton: true) }
         }
     }
@@ -211,7 +209,6 @@ struct HomeView: View {
             NavigationLink { PresetLabView() } label: { toolRow("Preset Lab", "Gestalt preset lab", "flask") }
             NavigationLink { SessionLogView() } label: { toolRow("Session Log", "Debug logs", "doc.plaintext") }
             NavigationLink { DeviceSpoofingView() } label: { toolRow("Device Spoof", "Spoof device identity", "iphone.and.arrow.forward") }
-            Button { showIconSwitcher = true } label: { toolRow("App Icon", "Change app icon", "app") }
             Button { showUpdater = true } label: { toolRow("Check for Updates", "Updater", "arrow.down.app") }
         }
     }

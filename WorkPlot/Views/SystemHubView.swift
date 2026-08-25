@@ -5,6 +5,7 @@ struct SystemHubView: View {
     @EnvironmentObject private var store: GestaltStore
     @State private var showRestore = false
     @State private var showGoldToast = false
+    @State private var showIconSwitcher = false
 
     private var version: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
@@ -37,6 +38,14 @@ struct SystemHubView: View {
                             )
                         }
                         .buttonStyle(.plain)
+                        Button { showIconSwitcher = true } label: {
+                            HubToolCard(
+                                title: "App Icon",
+                                detail: "Change the app icon",
+                                symbol: "app"
+                            )
+                        }
+                        .buttonStyle(.plain)
                     }
                     credits
                     thanks
@@ -49,6 +58,7 @@ struct SystemHubView: View {
             .navigationBarTitleDisplayMode(.large)
         }
         .sheet(isPresented: $showRestore) { RestoreSheet() }
+        .sheet(isPresented: $showIconSwitcher) { AppIconSwitcherSheet(showDoneButton: true) }
         .toast(isPresented: $showGoldToast, message: "You've struck a gold!")
     }
 
@@ -151,8 +161,8 @@ struct SystemHubView: View {
     /// One-time unlock for the hidden "Golden K" icon. Once unlocked this is
     /// a no-op forever after — no repeat toast, no repeat haptic.
     private func unlockGoldenK() {
-        guard !AppIconCatalog.isUnlocked("AppIconGold") else { return }
-        AppIconCatalog.unlock("AppIconGold")
+        guard !AppIconCatalog.isUnlocked("WPWorkplot2") else { return }
+        AppIconCatalog.unlock("WPWorkplot2")
         UINotificationFeedbackGenerator().notificationOccurred(.success)
         showGoldToast = true
     }

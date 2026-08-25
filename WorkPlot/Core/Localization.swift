@@ -42,7 +42,18 @@ final class L10n: ObservableObject {
     private init() {}
 
     func tr(_ key: String) -> String {
-        Self.englishBundle.localizedString(forKey: key, value: key, table: nil)
+        let value = Self.englishBundle.localizedString(forKey: key, value: key, table: nil)
+        return value == key ? Self.prettify(key) : value
+    }
+
+    /// When a key has no localized string, turn "common.respring" into
+    /// "Common Respring" so the UI never shows raw dotted keys.
+    private static func prettify(_ key: String) -> String {
+        key.replacingOccurrences(of: "_", with: " ")
+            .replacingOccurrences(of: ".", with: " ")
+            .split(separator: " ")
+            .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
+            .joined(separator: " ")
     }
 
     var failPrefix: String {
