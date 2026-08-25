@@ -7,10 +7,15 @@ struct DeviceSpoofingView: View {
     @State private var message: String?
     @State private var errorText: String?
 
-    private var realID: String { DeviceSpoofingManager.realMachineIdentifier }
-
     private var allTargets: [SpoofTarget?] {
         [nil] + DeviceSpoofingManager.targets
+    }
+
+    private var selectionBinding: Binding<Int> {
+        Binding(
+            get: { allTargets.firstIndex { $0?.id == selected?.id } ?? 0 },
+            set: { selected = allTargets[$0] }
+        )
     }
 
     var body: some View {
@@ -24,36 +29,18 @@ struct DeviceSpoofingView: View {
 
                 SectionHeader("Configure Device Spoof")
 
-                VStack(spacing: 0) {
+                Picker("Option", selection: selectionBinding) {
                     ForEach(Array(allTargets.enumerated()), id: \.offset) { index, target in
-                        Button {
-                            selected = target
-                        } label: {
-                            HStack {
-                                Text(target?.marketingName ?? "None")
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(.primary)
-                                Spacer()
-                                if selected?.id == target?.id {
-                                    Image(systemName: "checkmark").foregroundStyle(.white)
-                                }
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 12)
-                        }
-                        .buttonStyle(.plain)
-
-                        if index < allTargets.count - 1 {
-                            Divider().padding(.horizontal, 16)
-                        }
+                        Text(target?.marketingName ?? "None").tag(index)
                     }
                 }
-                .liquidGlass(cornerRadius: 16)
+                .pickerStyle(.wheel)
+                .frame(height: 138)
+                .liquidGlass()
 
-                Text("Changes the reported device identity. Some spoof targets may break Face ID until reverted, so keep a snapshot handy. 'None' keeps the device's real identity.")
-                    .font(.caption)
+                Label("Changes the reported device identity. Some spoof targets may break Face ID until reverted, so keep a snapshot handy. 'None' keeps the device's real identity.", systemImage: "exclamationmark.triangle")
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
-                    .padding(.horizontal, 4)
 
                 ActionButton(title: "Apply Spoof") {
                     Task { await apply() }
