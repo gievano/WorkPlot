@@ -10,7 +10,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct PresetLabView: View {
-    @ObservedObject private var manager = ExploitManager.shared
+    @ObservedObject private var manager = WPExploitManager.shared
     @ObservedObject private var store = PresetStore.shared
     @ObservedObject private var l10n = L10n.shared
 
@@ -132,9 +132,9 @@ struct PresetLabView: View {
                         Text(preset.name)
                         if preset.risky {
                             Text(l10n.tr("common.risky")).font(.caption2).bold()
-                                .foregroundColor(.red)
+                                .foregroundStyle(Theme.caution)
                                 .padding(.horizontal, 4).padding(.vertical, 1)
-                                .background(Color.red.opacity(0.15))
+                                .background(Theme.caution.opacity(0.15))
                                 .cornerRadius(4)
                         }
                     }
