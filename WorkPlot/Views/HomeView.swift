@@ -5,6 +5,9 @@ struct HomeView: View {
     /// `nil` selects "All" — every tweak, uncategorized.
     @State private var category: TweakCategory? = .display
     @State private var configurationID: String?
+    @State private var showIconSwitcher = false
+    @State private var showUpdater = false
+    @State private var searchText = ""
 
     private var consoleCategories: [TweakCategory] {
         TweakCategory.allCases.filter { cat in
@@ -13,6 +16,12 @@ struct HomeView: View {
     }
 
     private var categoryTweaks: [Tweak] {
+        if !searchText.isEmpty {
+            return store.tweaks.filter {
+                $0.category != .ai && $0.id != "product-type" &&
+                $0.title.localizedCaseInsensitiveContains(searchText)
+            }
+        }
         guard let category else {
             return store.tweaks.filter { $0.category != .ai && $0.id != "product-type" }
         }
@@ -33,11 +42,13 @@ struct HomeView: View {
                             categoryRail
                             catalog
                             if !selectedTweaks.isEmpty { activeConfiguration }
+                            toolsSection
                         }
                         .padding(.horizontal, Theme.pagePadding)
                         .padding(.bottom, 32)
                     }
                     .scrollIndicators(.hidden)
+                    .searchable(text: $searchText, prompt: "Search tweaks")
                 } else {
                     FeatureUnsupportedView(feature: "Tweaks")
                 }
@@ -55,6 +66,8 @@ struct HomeView: View {
                     }
                 }
             }
+            .sheet(isPresented: $showIconSwitcher) { AppIconSwitcherSheet(showDoneButton: true) }
+            .sheet(isPresented: $showUpdater) { UpdateCheckerSheet(showDoneButton: true) }
         }
     }
 
@@ -185,6 +198,41 @@ struct HomeView: View {
             .padding(.horizontal, 18)
             .liquidGlass()
         }
+    }
+
+    private var toolsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader("WorkPlot Tools")
+            NavigationLink { RDARFixView() } label: { toolRow("RDARFix", "Canvas exploit", "wand.and.stars") }
+            NavigationLink { FilePatchWorkspaceView() } label: { toolRow("FilePatch 3105", "Patch system files", "doc.badge.gearshape") }
+            NavigationLink { AppContainersView() } label: { toolRow("App Containers", "Container manager", "shippingbox") }
+            NavigationLink { CarPlayWallpaperView() } label: { toolRow("CarPlay Wallpaper", "Set CarPlay wallpaper", "car") }
+            NavigationLink { GestaltFieldEditorView() } label: { toolRow("Gestalt Field Editor", "Edit MobileGestalt", "slider.horizontal.3") }
+            NavigationLink { PresetLabView() } label: { toolRow("Preset Lab", "Gestalt preset lab", "flask") }
+            NavigationLink { GestaltPresetManagerView() } label: { toolRow("Gestalt Presets", "Manage presets", "tray.full") }
+            NavigationLink { SessionLogView() } label: { toolRow("Session Log", "Debug logs", "doc.plaintext") }
+            NavigationLink { CacheCleanerView() } label: { toolRow("Cache Cleaner", "Clear app caches", "trash") }
+            NavigationLink { DeviceSpoofingView() } label: { toolRow("Device Spoof", "Spoof device identity", "iphone.and.arrow.forward") }
+            Button { showIconSwitcher = true } label: { toolRow("App Icon", "Change app icon", "app") }
+            Button { showUpdater = true } label: { toolRow("Check for Updates", "Updater", "arrow.down.app") }
+        }
+    }
+
+    private func toolRow(_ title: String, _ detail: String, _ symbol: String) -> some View {
+        HStack(spacing: 15) {
+            Image(systemName: symbol)
+                .font(.title3)
+                .foregroundStyle(Theme.accent)
+                .frame(width: 30)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title).font(.body.weight(.semibold)).foregroundStyle(.primary)
+                Text(detail).font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer()
+            Image(systemName: "chevron.right").font(.caption).foregroundStyle(.tertiary)
+        }
+        .padding(18)
+        .liquidGlass()
     }
 
     private func toggle(_ tweak: Tweak) {

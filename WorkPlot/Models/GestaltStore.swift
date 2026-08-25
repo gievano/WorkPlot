@@ -464,6 +464,48 @@ final class GestaltStore: ObservableObject {
         return result
     }
 
+    /// Spoof seluruh identitas perangkat (ProductType, HWModel, CPU, nama
+    /// pemasaran) ke target terpilih melalui `DeviceSpoofingManager`, pakai
+    /// engine baca/tulis/backup yang sama dengan `apply()`.
+    func applyDeviceSpoof(_ target: SpoofTarget) async throws {
+        guard !isBusy else { throw ApplyError.busy }
+        isBusy = true
+        defer { isBusy = false }
+
+        let access = MobileGestaltAccess()
+        guard (try? access.activate()) != nil else { throw ApplyError.activationFailed }
+        defer { access.deactivate() }
+        guard let path = access.mobileGestaltPath else { throw ApplyError.missingPath }
+        let url = URL(fileURLWithPath: path)
+
+        let current = try Data(contentsOf: url)
+        let hadBackup = backup.hasBackup
+        try backup.ensureBackup(from: current)
+        guard var plist = try PropertyListSerialization.propertyList(
+            from: current, format: nil) as? [String: Any]
+        else { throw ApplyError.badPlist }
+
+        try DeviceSpoofingManager.apply(target, to: &plist)
+
+        let newData = try PropertyListSerialization.data(
+            fromPropertyList: plist, format: .binary, options: 0)
+        do {
+            try newData.write(to: url, options: [])
+        } catch {
+            try? backup.restoreData().write(to: url, options: [])
+            throw ApplyError.writeFailed
+        }
+        guard let readback = try? Data(contentsOf: url), readback == newData else {
+            try? backup.restoreData().write(to: url, options: [])
+            throw ApplyError.writeVerificationFailed
+        }
+        isDeviceSpoofed = true
+        lastApply = ApplyResult(
+            appliedCount: 1, warnings: [], binaryPatchApplied: false,
+            backedUpFirstTime: !hadBackup)
+        lastError = nil
+    }
+
     /// Reverses whatever `applyAIRegion()` changed — restores every AI
     /// region key to the value `snapshotAIRegionKeyIfNeeded` saved before
     /// WorkPlot first touched it (removing keys that didn't exist before),

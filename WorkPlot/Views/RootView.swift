@@ -34,10 +34,8 @@ struct MainTabView: View {
                 .tabItem { Label("PosterBoard", systemImage: "square.stack.3d.up") }
             SiriAISetupView()
                 .tabItem { Label("Siri AI Setup", systemImage: "brain.head.profile") }
-            SystemHubView()
-                .tabItem { Label("Settings", systemImage: "gearshape") }
-            WorkPlotHubView()
-                .tabItem { Label("WorkPlot", systemImage: "app.badge.checkmark") }
-        }
+        SystemHubView()
+            .tabItem { Label("Settings", systemImage: "gearshape") }
+    }
     }
 }
