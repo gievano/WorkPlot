@@ -103,19 +103,67 @@ struct HomeView: View {
 
     private var catalog: some View {
         VStack(alignment: .leading, spacing: 24) {
-            ForEach(visibleCategories, id: \.self) { cat in
-                categorySection(cat)
+            if let category {
+                categorySection(category)
+            } else {
+                flatCatalog
             }
         }
     }
 
-    private var visibleCategories: [TweakCategory] {
-        if let category { return [category] }
-        return TweakCategory.allCases.filter { cat in
-            cat != .ai && (
-                store.tweaks.contains { $0.category == cat && $0.id != "product-type" && matchesSearch($0.title) } ||
-                toolDefs.contains { $0.category == cat && $0.id != "respring" && matchesSearch($0.title) }
-            )
+    /// Unified cell for the flat "All" list so tweaks and tools interleave
+    /// instead of rendering as two separate groups.
+    private enum FlatCell: Identifiable {
+        case tweak(Tweak)
+        case tool(ToolDef)
+        var id: String {
+            switch self {
+            case .tweak(let t): return t.id
+            case .tool(let t): return t.id
+            }
+        }
+    }
+
+    /// "All" selected: one flat sequential list — tweaks and tools interleaved,
+    /// no category grouping.
+    private var flatCatalog: some View {
+        let tweaks = store.tweaks.filter { $0.id != "product-type" && $0.category != .ai && matchesSearch($0.title) }
+        let tools = toolDefs.filter { $0.id != "respring" && matchesSearch($0.title) }
+        var cells: [FlatCell] = []
+        var ti = 0, to = 0
+        while ti < tweaks.count || to < tools.count {
+            if ti < tweaks.count { cells.append(.tweak(tweaks[ti])); ti += 1 }
+            if to < tools.count { cells.append(.tool(tools[to])); to += 1 }
+        }
+        return VStack(alignment: .leading, spacing: 12) {
+            flatRows(cells)
+        }
+    }
+
+    private func flatRows(_ cells: [FlatCell]) -> some View {
+        ForEach(Array(stride(from: 0, to: cells.count, by: 2).enumerated()), id: \.offset) { _, start in
+            let row = Array(cells[start..<min(start + 2, cells.count)])
+            HStack(alignment: .top, spacing: 12) {
+                ForEach(row) { cell in
+                    switch cell {
+                    case .tweak(let tweak):
+                        Button { toggle(tweak) } label: {
+                            TweakCatalogTile(tweak: tweak, isConfiguring: configurationID == tweak.id)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityHint(tweak.isEnabled ? "Disables this capability" : "Enables this capability")
+                    case .tool(let tool):
+                        toolCatalogTile(tool)
+                    }
+                }
+                if row.count == 1 { Color.clear.frame(maxWidth: .infinity) }
+            }
+            if let tweak = configuringTweak,
+               row.contains(where: { if case .tweak(let t) = $0 { return t.id == tweak.id }; return false }),
+               let detail = tweak.detail {
+                InlineTweakConfiguration(tweak: tweak, detail: detail)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
         }
     }
 
@@ -138,33 +186,40 @@ struct HomeView: View {
             // configuration panel can sit directly under the row holding the
             // tile that opened it, instead of after the whole catalog.
             VStack(alignment: .leading, spacing: 12) {
-                ForEach(Array(tweakRows(tweaks).enumerated()), id: \.offset) { _, row in
-                    HStack(alignment: .top, spacing: 12) {
-                        ForEach(row) { tweak in
-                            Button { toggle(tweak) } label: {
-                                TweakCatalogTile(tweak: tweak, isConfiguring: configurationID == tweak.id)
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityHint(tweak.isEnabled ? "Disables this capability" : "Enables this capability")
-                        }
-                        // Keeps a lone trailing tile at half width.
-                        if row.count == 1 { Color.clear.frame(maxWidth: .infinity) }
+                catalogRows(tweaks: tweaks, tools: tools)
+            }
+        }
+    }
+
+    /// Shared row rendering for both the flat "All" list and a per-category
+    /// section: tweak rows (with inline config panel) followed by tool rows.
+    @ViewBuilder
+    private func catalogRows(tweaks: [Tweak], tools: [ToolDef]) -> some View {
+        ForEach(Array(tweakRows(tweaks).enumerated()), id: \.offset) { _, row in
+            HStack(alignment: .top, spacing: 12) {
+                ForEach(row) { tweak in
+                    Button { toggle(tweak) } label: {
+                        TweakCatalogTile(tweak: tweak, isConfiguring: configurationID == tweak.id)
                     }
-                    if let tweak = configuringTweak,
-                       row.contains(where: { $0.id == tweak.id }),
-                       let detail = tweak.detail {
-                        InlineTweakConfiguration(tweak: tweak, detail: detail)
-                            .transition(.opacity.combined(with: .move(edge: .top)))
-                    }
+                    .buttonStyle(.plain)
+                    .accessibilityHint(tweak.isEnabled ? "Disables this capability" : "Enables this capability")
                 }
-                ForEach(Array(toolRows(tools).enumerated()), id: \.offset) { _, row in
-                    HStack(alignment: .top, spacing: 12) {
-                        ForEach(row) { tool in
-                            toolCatalogTile(tool)
-                        }
-                        if row.count == 1 { Color.clear.frame(maxWidth: .infinity) }
-                    }
+                // Keeps a lone trailing tile at half width.
+                if row.count == 1 { Color.clear.frame(maxWidth: .infinity) }
+            }
+            if let tweak = configuringTweak,
+               row.contains(where: { $0.id == tweak.id }),
+               let detail = tweak.detail {
+                InlineTweakConfiguration(tweak: tweak, detail: detail)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        ForEach(Array(toolRows(tools).enumerated()), id: \.offset) { _, row in
+            HStack(alignment: .top, spacing: 12) {
+                ForEach(row) { tool in
+                    toolCatalogTile(tool)
                 }
+                if row.count == 1 { Color.clear.frame(maxWidth: .infinity) }
             }
         }
     }
@@ -320,11 +375,11 @@ struct TweakCatalogTile: View {
             HStack {
                 Image(systemName: tweak.symbol)
                     .font(.body.weight(.medium))
-                    .foregroundStyle(tweak.isEnabled ? Theme.accent : .secondary)
+                    .foregroundStyle(tweak.isEnabled ? .white : .secondary)
                 Spacer()
                 Image(systemName: tweak.isEnabled ? "checkmark.circle.fill" : "circle")
                     .font(.caption)
-                    .foregroundStyle(tweak.isEnabled ? Theme.accent : Color(uiColor: .tertiaryLabel))
+                    .foregroundStyle(tweak.isEnabled ? .white : Color(uiColor: .tertiaryLabel))
             }
             Spacer(minLength: 8)
             Text(tweak.title)
@@ -334,7 +389,7 @@ struct TweakCatalogTile: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             Text(tweak.isEnabled ? (isConfiguring ? "Configuring" : "Enabled") : tweak.subtitle)
                 .font(.caption)
-                .foregroundStyle(tweak.isEnabled ? Theme.accent : .secondary)
+                .foregroundStyle(tweak.isEnabled ? .white : .secondary)
                 .lineLimit(2)
         }
         // maxHeight lets paired tiles match the tallest in their row, the way
