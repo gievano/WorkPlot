@@ -37,6 +37,7 @@ struct WallpaperView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: Theme.cardSpacing) {
+                posterboardHeader
                 importCard
                 appliedCard
                 cowabungaCard
@@ -47,7 +48,15 @@ struct WallpaperView: View {
             .padding(.bottom, 24)
         }
         .navigationTitle("Wallpaper")
+        .navigationBarTitleDisplayMode(.inline)
         .wpGlassContainer()
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button { showImporter = true } label: {
+                    Image(systemName: "plus.circle.fill").font(.title3)
+                }
+            }
+        }
         .onAppear(perform: loadCowabunga)
         .fileImporter(isPresented: $showImporter, allowedContentTypes: [tendieType], allowsMultipleSelection: true) { result in
             importTendies(result)
@@ -65,6 +74,34 @@ struct WallpaperView: View {
     }
 
     // MARK: Cards — WorkPlot layout (own concept, not Ketamine's stacked buttons)
+
+    private var posterboardHeader: some View {
+        WPCard {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(spacing: 14) {
+                    Image(systemName: "photo.on.rectangle.angled")
+                        .font(.system(size: 24, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 52, height: 52)
+                        .background(
+                            LinearGradient(colors: [Color.accentColor, Color.accentColor.opacity(0.6)],
+                                          startPoint: .topLeading, endPoint: .bottomTrailing),
+                            in: RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        )
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("PosterBoard").font(.title3.bold())
+                        Text("Your wallpaper shelf is empty")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                Text("Import a .tendies pack to start building your PosterBoard wallpapers. Packs apply straight to the device and trigger a respring.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                WPActionButton(title: "+ Add Tendies Pack") { showImporter = true }
+            }
+        }
+    }
 
     private var importCard: some View {
         WPCard {
@@ -103,7 +140,7 @@ struct WallpaperView: View {
     private var cowabungaCard: some View {
         WPCard {
             VStack(alignment: .leading, spacing: 12) {
-                WPSectionHeader(title: "Cowabunga Catalogue")
+                WPSectionHeader(title: "Download Wallpapers")
                 Picker("Sort", selection: $cowabungaFilter) {
                     ForEach(WallpaperFilterType.allCases, id: \.self) { Text($0.rawValue) }
                 }
