@@ -189,22 +189,97 @@ final class PosterBoardManager: ObservableObject {
             atPath: url.appendingPathComponent(descriptorMarker).path)
     }
 
+    /// Directory children excluding hidden files and the macOS archive junk
+    /// folder `__MACOSX`, which `FileManager`'s `.skipsHiddenFiles` misses.
+    private func children(of url: URL) -> [URL] {
+        (try? FileManager.default.contentsOfDirectory(
+            at: url, includingPropertiesForKeys: [.isDirectoryKey],
+            options: .skipsHiddenFiles)) ?? []
+        .filter { $0.lastPathComponent != "__MACOSX" }
+    }
+
+    /// Reads a tendie's real PosterBoard structure and returns its descriptor
+    /// folders keyed by the actual extension they belong to, mirroring
+    /// Pocket-Poster's `getDescriptorsFromTendie`. Handles the three layouts
+    /// seen in the wild:
+    ///   - `container` (Apple device packs): each
+    ///     `Extensions/<ext>/descriptors` folder is mapped to its real `<ext>`,
+    ///     so e.g. `com.apple.MercuryPoster` wallpapers no longer get mis-routed
+    ///     to collections and silently dropped.
+    ///   - `descriptors` / `descriptor` / `ordered-descriptors` -> collections
+    ///   - `video-descriptors` / `video-descriptor` -> Photos provider
+    /// A single generic wrapper folder (common in "Standalone" exports) is
+    /// descended into before the layout check.
+    func getDescriptorsFromTendie(_ url: URL) -> [String: [URL]]? {
+        var root = url
+        let topItems = children(of: url)
+        if topItems.count == 1, let only = topItems.first, Self.isDirectory(only) {
+            let n = only.lastPathComponent.lowercased()
+            let known = ["container", "descriptors", "descriptor",
+                         "ordered-descriptors", "ordered-descriptor",
+                         "video-descriptors", "video-descriptor"]
+            if !known.contains(n) { root = only }
+        }
+
+        for dir in children(of: root) {
+            let name = dir.lastPathComponent.lowercased()
+            if name == "container" {
+                guard let extDir = extensionsDir(in: dir) else { continue }
+                var ret: [String: [URL]] = [:]
+                for ext in children(of: extDir) {
+                    guard Self.isDirectory(ext) else { continue }
+                    let descrDir = ext.appendingPathComponent("descriptors")
+                    guard Self.isDirectory(descrDir) else { continue }
+                    let folders = descriptorFolders(in: descrDir)
+                    if !folders.isEmpty { ret[ext.lastPathComponent] = folders }
+                }
+                if !ret.isEmpty { return ret }
+            } else if name == "descriptors" || name == "descriptor"
+                        || name == "ordered-descriptors" || name == "ordered-descriptor" {
+                let folders = descriptorFolders(in: dir)
+                if !folders.isEmpty { return [Self.collectionsExt: folders] }
+            } else if name == "video-descriptors" || name == "video-descriptor" {
+                let folders = descriptorFolders(in: dir)
+                if !folders.isEmpty { return [Self.photosExt: folders] }
+            }
+        }
+        return nil
+    }
+
+    /// Locates `.../PRBPosterExtensionDataStore/<ver>/Extensions` inside a
+    /// PosterBoard container folder, preferring the device's extension version
+    /// and falling back to any version folder present in the pack.
+    private func extensionsDir(in container: URL) -> URL? {
+        let base = container.appendingPathComponent(
+            "Library/Application Support/PRBPosterExtensionDataStore")
+        let preferred = base.appendingPathComponent(getExtensionVersion())
+            .appendingPathComponent("Extensions")
+        if Self.isDirectory(preferred) { return preferred }
+        for ver in children(of: base) where Self.isDirectory(ver) {
+            let candidate = ver.appendingPathComponent("Extensions")
+            if Self.isDirectory(candidate) { return candidate }
+        }
+        return nil
+    }
+
+    /// Returns the immediate descriptor subfolders of a `descriptors` directory,
+    /// skipping metadata junk like `__MACOSX` and dotfiles.
+    private func descriptorFolders(in descriptorsDir: URL) -> [URL] {
+        children(of: descriptorsDir).filter { Self.isDirectory($0) }
+    }
+
     /// Deep-recurses a tendie directory looking for descriptor folders,
     /// returning them keyed by the PosterBoard extension they belong to.
-    /// is any directory containing a `com.apple.posterkit.provider.descriptor.identifier`
-    /// file. Descriptor folders whose parent folder name contains "video" are
-    /// mapped to the Photos provider; everything else to PosterBoard
-    /// collections. Traverses twice — once per target — so every descriptor is
+    /// Any directory containing a `com.apple.posterkit.provider.descriptor.identifier`
+    /// file is treated as a descriptor. Descriptor folders whose parent folder
+    /// name contains "video" are mapped to the Photos provider; everything
+    /// else to PosterBoard collections. Kept as a fallback for packs with
+    /// unusual layouts that `getDescriptorsFromTendie` does not recognise.
     func findDescriptors(in url: URL) throws -> [String: [URL]] {
         var result: [String: [URL]] = [:]
 
         func collect(_ current: URL, target: String, parent: URL?) {
-            guard let items = try? FileManager.default.contentsOfDirectory(
-                at: current, includingPropertiesForKeys: [.isDirectoryKey],
-                options: [.skipsHiddenFiles]) else { return }
-
-            for item in items {
-                guard item.lastPathComponent != "__MACOSX" else { continue }
+            for item in children(of: current) {
                 if Self.isDescriptorFolder(item) {
                     let parentName = parent?.lastPathComponent.lowercased() ?? ""
                     if target == Self.photosExt {
@@ -275,7 +350,8 @@ final class PosterBoardManager: ObservableObject {
         var extList: [String: [URL]] = [:]
         for url in selectedTendies {
             let unzippedDir = try unzipFile(at: url)
-            let descriptors = try findDescriptors(in: unzippedDir)
+            let descriptors = (try? getDescriptorsFromTendie(unzippedDir))
+                ?? (try? findDescriptors(in: unzippedDir)) ?? [:]
             guard !descriptors.isEmpty else { continue }
             extList.merge(descriptors) { (first, second) in first + second }
         }

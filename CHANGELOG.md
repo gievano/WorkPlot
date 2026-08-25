@@ -10,6 +10,9 @@ All notable changes to WorkPlot. Newest first.
 - 📱 Device Spoof now lives in the tweak catalog as a tile — tap to toggle, wheel picker inline, applied with the staged batch (full identity blast unchanged).
 - 🧾 Credits trimmed: dropped the 3105 entry after its feature was removed; FilzaSlop is now credited as class-13 research only.
 
+### Fixed
+- 🖼️ PosterBoard: Apple device wallpaper packs (e.g. "iPhone 17 Pro") now apply their own art instead of falling back to the device's default set. The importer now reads each pack's real PosterBoard extension (container layout, e.g. `com.apple.MercuryPoster`) instead of forcing everything into Collections.
+
 ### Removed
 - 🔥 File Patch Workspace, App Containers, per-app cache cleaner, `.3105` patch importer, and hex/SQLite viewers - the underlying file-access path never worked reliably on device (#72).
 
