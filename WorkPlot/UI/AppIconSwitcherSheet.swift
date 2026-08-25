@@ -83,10 +83,11 @@ struct AppIconSwitcherSheet: View {
             pendingIcon = icon
         } label: {
             VStack(spacing: 8) {
-                RoundedRectangle(cornerRadius: 22)
-                    .fill(LinearGradient(colors: icon.colors,
-                                         startPoint: .topLeading, endPoint: .bottomTrailing))
+                Image(icon.id.isEmpty ? "Logo" : icon.id + "Preview")
+                    .resizable()
+                    .scaledToFit()
                     .frame(width: 88, height: 88)
+                    .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
                     .overlay(alignment: .bottomTrailing) {
                         if currentAltName == icon.id {
                             Image(systemName: "checkmark.circle.fill")
