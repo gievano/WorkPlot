@@ -10,7 +10,7 @@
 import SwiftUI
 
 struct AppContainersView: View {
-    @ObservedObject private var manager = WPWPExploitManager.shared
+    @ObservedObject private var manager = WPExploitManager.shared
     @ObservedObject private var l10n = L10n.shared
 
     @State private var containers: [AppContainerInfo] = []

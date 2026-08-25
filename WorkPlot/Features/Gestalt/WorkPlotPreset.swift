@@ -3,7 +3,7 @@
 //  WorkPlot
 //
 //  Preset format v1: a named set of CacheExtra key/value pairs applied to
-//  MobileGestalt through the existing ExploitManager write path (which backs
+//  MobileGestalt through the existing WPExploitManager write path (which backs
 //  up the original plist before every save).
 //
 
@@ -244,10 +244,10 @@ final class PresetStore: ObservableObject {
     }
 
     /// Applies every preset value into CacheExtra through the standard
-    /// read-modify-write path; ExploitManager.saveGestalt creates a backup
+    /// read-modify-write path; WPExploitManager.saveGestalt creates a backup
     /// from the pre-write plist automatically.
     @discardableResult
-    func apply(_ preset: WorkPlotPreset, manager: ExploitManager = .shared) -> Bool {
+    func apply(_ preset: WorkPlotPreset, manager: WPExploitManager = .shared) -> Bool {
         guard var plist = manager.readGestalt() else { return false }
         var cacheExtra = plist["CacheExtra"] as? [String: Any] ?? [:]
         for (key, value) in preset.values {

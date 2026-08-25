@@ -29,7 +29,7 @@ private struct ExportedFile: Identifiable {
 }
 
 struct FilePatchWorkspaceView: View {
-    @ObservedObject private var manager = WPWPExploitManager.shared
+    @ObservedObject private var manager = WPExploitManager.shared
     @ObservedObject private var l10n = L10n.shared
 
     // nil = shortcut screen, otherwise an absolute directory path.
