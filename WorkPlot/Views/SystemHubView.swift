@@ -103,9 +103,8 @@ struct SystemHubView: View {
             credit("Adnan.120hz", "Idea Contributor, and testing during development", "https://github.com/adnan120hz")
             credit("Nouvborne", "Ketamine (base framework)", "https://github.com/Nouvborne", easterEgg: unlockGoldenK)
             credit("forcequitOS", "bad_query", "https://github.com/forcequitOS")
-            credit("0xjohnnydev", "FilzaSlop (sandbox escape)", "https://github.com/0xjohnnydev")
+            credit("0xjohnnydev", "FilzaSlop / class-13 research", "https://github.com/0xjohnnydev")
             credit("leminlimez", "Nugget & GestaltEdit", "https://github.com/leminlimez")
-            credit("YangJiiii", "3105", "https://github.com/YangJiiii")
             credit("rooootdev", "neospring (respring)", "https://github.com/rooootdev", easterEgg: {
                 RespringHelper.shared.trigger()
             })

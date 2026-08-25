@@ -211,14 +211,14 @@ struct HomeView: View {
 
     private var toolDefs: [ToolDef] {
         [
-            ToolDef(id: "carplay", title: "CarPlay Wallpaper", subtitle: "Ganti wallpaper layar CarPlay", symbol: "car", category: .display, destination: { AnyView(CarPlayWallpaperView()) }),
-            ToolDef(id: "rdarfix", title: "RDARFix", subtitle: "Edit resolusi layar lewat canvas exploit", symbol: "wand.and.stars", category: .display, destination: { AnyView(RDARFixView()) }),
-            ToolDef(id: "respring", title: "Respring", subtitle: "Restart SpringBoard tanpa reboot", symbol: "arrow.clockwise", category: .system, action: { RespringHelper.shared.trigger() }),
-            ToolDef(id: "devicespoof", title: "Device Spoof", subtitle: "Spoof identitas perangkat", symbol: "iphone.and.arrow.forward", category: .system, destination: { AnyView(DeviceSpoofingView()) }),
+            ToolDef(id: "carplay", title: "CarPlay Wallpaper", subtitle: "Change the CarPlay wallpaper", symbol: "car", category: .display, destination: { AnyView(CarPlayWallpaperView()) }),
+            ToolDef(id: "rdarfix", title: "RDARFix", subtitle: "Edit screen resolution via the canvas exploit", symbol: "wand.and.stars", category: .display, destination: { AnyView(RDARFixView()) }),
+            ToolDef(id: "respring", title: "Respring", subtitle: "Restart SpringBoard without rebooting", symbol: "arrow.clockwise", category: .system, action: { RespringHelper.shared.trigger() }),
+            ToolDef(id: "devicespoof", title: "Device Spoof", subtitle: "Spoof the device identity", symbol: "iphone.and.arrow.forward", category: .system, destination: { AnyView(DeviceSpoofingView()) }),
             ToolDef(id: "gestalteditor", title: "Gestalt Field Editor", subtitle: "Edit cache MobileGestalt", symbol: "slider.horizontal.3", category: .gestalt, destination: { AnyView(GestaltFieldEditorView()) }),
-            ToolDef(id: "presetlab", title: "Preset Lab", subtitle: "Racik & simpan preset Gestalt", symbol: "flask", category: .gestalt, destination: { AnyView(PresetLabView()) }),
-            ToolDef(id: "sessionlog", title: "Session Log", subtitle: "Lihat log debug sesi exploit", symbol: "doc.plaintext", category: .info, destination: { AnyView(SessionLogView()) }),
-            ToolDef(id: "updates", title: "Check for Updates", subtitle: "Cek & pasang pembaruan", symbol: "arrow.down.app", category: .info, destination: { AnyView(UpdateCheckerSheet(showDoneButton: true)) }),
+            ToolDef(id: "presetlab", title: "Preset Lab", subtitle: "Build & save Gestalt presets", symbol: "flask", category: .gestalt, destination: { AnyView(PresetLabView()) }),
+            ToolDef(id: "sessionlog", title: "Session Log", subtitle: "View exploit session debug logs", symbol: "doc.plaintext", category: .info, destination: { AnyView(SessionLogView()) }),
+            ToolDef(id: "updates", title: "Check for Updates", subtitle: "Check for & install updates", symbol: "arrow.down.app", category: .info, destination: { AnyView(UpdateCheckerSheet(showDoneButton: true)) }),
         ]
     }
 

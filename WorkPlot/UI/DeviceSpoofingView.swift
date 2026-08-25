@@ -3,6 +3,7 @@ import SwiftUI
 struct DeviceSpoofingView: View {
     @EnvironmentObject private var store: GestaltStore
     @State private var selected: SpoofTarget?
+    @State private var isConfiguring = false
     @State private var isBusy = false
     @State private var message: String?
     @State private var errorText: String?
@@ -27,20 +28,48 @@ struct DeviceSpoofingView: View {
                         .foregroundStyle(Theme.caution)
                 }
 
-                SectionHeader("Configure Device Spoof")
+                Button {
+                    withAnimation(.snappy) { isConfiguring.toggle() }
+                } label: {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Device Spoof")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.primary)
+                            Text(isConfiguring ? "Configuring" : (selected?.marketingName ?? "None"))
+                                .font(.caption)
+                                .foregroundStyle(isConfiguring ? .white : .secondary)
+                        }
+                        Spacer()
+                        Image(systemName: isConfiguring ? "chevron.up" : "chevron.down")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 142, alignment: .leading)
+                    .padding(16)
+                    .background(isConfiguring ? .white.opacity(0.14) : .clear, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                    .liquidGlass(cornerRadius: 22)
+                }
+                .buttonStyle(.plain)
 
-                Picker("Option", selection: selectionBinding) {
-                    ForEach(Array(allTargets.enumerated()), id: \.offset) { index, target in
-                        Text(target?.marketingName ?? "None").tag(index)
+                if isConfiguring {
+                    VStack(alignment: .leading, spacing: 12) {
+                        SectionHeader("Configure Device Spoof")
+
+                        Picker("Option", selection: selectionBinding) {
+                            ForEach(Array(allTargets.enumerated()), id: \.offset) { index, target in
+                                Text(target?.marketingName ?? "None").tag(index)
+                            }
+                        }
+                        .pickerStyle(.wheel)
+                        .frame(height: 138)
+                        .liquidGlass()
+
+                        Label("Changes the reported device identity. Some spoof targets may break Face ID until reverted, so keep a snapshot handy. 'None' keeps the device's real identity.", systemImage: "exclamationmark.triangle")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
                     }
                 }
-                .pickerStyle(.wheel)
-                .frame(height: 138)
-                .liquidGlass()
-
-                Label("Changes the reported device identity. Some spoof targets may break Face ID until reverted, so keep a snapshot handy. 'None' keeps the device's real identity.", systemImage: "exclamationmark.triangle")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
 
                 ActionButton(title: "Apply Spoof") {
                     Task { await apply() }

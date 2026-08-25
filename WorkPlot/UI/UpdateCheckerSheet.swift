@@ -16,8 +16,6 @@ struct UpdateCheckerSheet: View {
         case available(tag: String, url: URL)
         case failed(String)
     }
-
-    @ObservedObject private var l10n = L10n.shared
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
 
@@ -33,29 +31,29 @@ struct UpdateCheckerSheet: View {
             Group {
                 switch phase {
                 case .idle:
-                    WPActionButton(title: l10n.tr("upd.check"), action: check)
+                    WPActionButton(title: "Check for Updates", action: check)
                 case .checking:
                     ProgressView()
                 case .upToDate:
-                    Text(String(format: l10n.tr("upd.latest"), UpdaterService.currentVersion))
+                    Text(String(format: "You are on the latest version (%@).", UpdaterService.currentVersion))
                         .font(.system(size: 14))
                         .multilineTextAlignment(.center)
                         .padding()
                 case .available(let tag, let url):
                     VStack(spacing: 16) {
-                        Text(String(format: l10n.tr("upd.newVersion"), tag))
+                        Text(String(format: "New version available: %@", tag))
                             .font(.system(size: 15, weight: .semibold))
                             .multilineTextAlignment(.center)
-                        WPActionButton(title: l10n.tr("upd.openRelease")) { openURL(url) }
+                        WPActionButton(title: "Open Release") { openURL(url) }
                     }
                     .padding()
                 case .failed(let message):
                     VStack(spacing: 16) {
-                        Text(String(format: l10n.tr("upd.fail"), message))
+                        Text(String(format: "Check failed: %@", message))
                             .font(.system(size: 14))
                             .multilineTextAlignment(.center)
                             .foregroundStyle(.secondary)
-                        WPActionButton(title: l10n.tr("upd.check"), action: check)
+                        WPActionButton(title: "Check for Updates", action: check)
                     }
                     .padding()
                 }
@@ -65,7 +63,7 @@ struct UpdateCheckerSheet: View {
             .toolbar {
                 if showDoneButton {
                     ToolbarItem(placement: .confirmationAction) {
-                        Button(l10n.tr("common.done")) { dismiss() }
+                        Button("Done") { dismiss() }
                     }
                 }
             }
