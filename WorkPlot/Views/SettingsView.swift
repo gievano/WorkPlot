@@ -114,7 +114,7 @@ struct SettingsView: View {
                             accentColor = AppAccent.blue.rawValue
                         }
                         .font(.caption.weight(.medium))
-                        .foregroundStyle(Theme.accent)
+                        .foregroundStyle(.white)
                     }
                 }
             }
@@ -175,7 +175,7 @@ struct SettingsView: View {
                     }
                 }
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(Theme.accent)
+                .foregroundStyle(.white)
                 if !BadQuery.isAvailable {
                     Text("Detection is unavailable on this iOS version.")
                         .font(.caption)
@@ -229,7 +229,7 @@ struct SettingsView: View {
                 }
             }
             .font(.subheadline.weight(.semibold))
-            .foregroundStyle(Theme.accent)
+            .foregroundStyle(.white)
         }
     }
 

@@ -700,7 +700,7 @@ struct FileBrowserRowView: View {
 
     private var iconColor: Color {
         switch entry.kind {
-        case .directory: .blue
+        case .directory: .white
         case .plist: .purple
         case .text: .primary
         case .image: .green

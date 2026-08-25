@@ -75,7 +75,7 @@ struct NuggetWallpaperGalleryView: View {
                     .multilineTextAlignment(.center)
                 Button("Retry") { Task { await store.load(source, force: true) } }
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(.white)
             }
             .frame(maxWidth: .infinity, minHeight: 240)
         } else {
@@ -181,7 +181,7 @@ private struct WallpaperCard: View {
             .font(.caption.weight(.bold))
             .foregroundStyle(.white)
             .frame(width: 30, height: 30)
-            .background(isDownloaded ? Theme.affirmative : Theme.accent, in: Circle())
+            .background(isDownloaded ? Theme.affirmative : .white, in: Circle())
         }
         .buttonStyle(.plain)
         .disabled(isDownloading || isDownloaded || (isQueueFull && !isDownloaded))
