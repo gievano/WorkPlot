@@ -58,6 +58,9 @@
 			fileSystemSynchronizedGroups = (
 				000000000000000000000010 /* WorkPlot */,
 			);
+			packageProductDependencies = (
+				BB0000000000000000000002 /* ZIPFoundation */,
+			);
 			name = WorkPlot;
 			productName = WorkPlot;
 			productReference = 000000000000000000000120 /* WorkPlot.app */;
@@ -95,6 +98,9 @@
 			productRefGroup = 000000000000000000000020 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
+			packageReferences = (
+				BB0000000000000000000001 /* XCRemoteSwiftPackageReference */,
+			);
 			targets = (
 				AA0000000000000000000100 /* WorkPlot */,
 			);
@@ -116,6 +122,25 @@
 			);
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		BB0000000000000000000001 /* XCRemoteSwiftPackageReference */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.19;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		BB0000000000000000000002 /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BB0000000000000000000001 /* XCRemoteSwiftPackageReference */;
+			productName = ZIPFoundation;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCBuildConfiguration section */
 		AA0000000000000000000011 /* Debug configuration for PBXProject "WorkPlot" */ = {
