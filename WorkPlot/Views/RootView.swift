@@ -37,6 +37,5 @@ struct MainTabView: View {
             SystemHubView()
                 .tabItem { Label("Settings", systemImage: "gearshape") }
         }
-        .tint(.white)
     }
 }

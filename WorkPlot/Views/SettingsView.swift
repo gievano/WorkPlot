@@ -114,7 +114,6 @@ struct SettingsView: View {
                             accentColor = AppAccent.blue.rawValue
                         }
                         .font(.caption.weight(.medium))
-                        .foregroundStyle(.white)
                     }
                 }
             }

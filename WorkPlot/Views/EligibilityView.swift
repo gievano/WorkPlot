@@ -107,7 +107,6 @@ struct EligibilityView: View {
                 .font(.body.weight(.semibold))
                 .frame(maxWidth: .infinity)
                 .glassAction(prominent: true)
-                .tint(.white)
                 .disabled(isBusy)
         }
         .padding(.horizontal, Theme.pagePadding)
@@ -126,7 +125,6 @@ struct EligibilityView: View {
                 }
             }
         }
-        .tint(.white)
         .padding(.vertical, 16)
     }
 
