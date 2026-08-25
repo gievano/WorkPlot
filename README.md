@@ -13,7 +13,7 @@
   <a href="https://github.com/forcequitOS/bad_query"><img alt="bad_query" src="https://img.shields.io/badge/exploit-bad__query-purple"></a>
 </p>
 
-WorkPlot edits MobileGestalt values and system files on iOS 27 betas without a jailbreak. It builds on the bad_query sandbox escape and carries over Ketamine's tweak catalog while adding its own tools. Every write is backed up first, so a bad tweak can be undone.
+WorkPlot edits MobileGestalt values and system files on iOS 27 betas without a jailbreak. It builds on the bad_query sandbox escape and ships a full MobileGestalt tweak catalog plus its own tools. Every write is backed up first, so a bad tweak can be undone.
 
 > [!WARNING]
 > This app modifies system state through a sandbox escape. Use it at your own risk. Keep a backup before you experiment.
@@ -24,11 +24,11 @@ WorkPlot edits MobileGestalt values and system files on iOS 27 betas without a j
 
 ## Changelog
 
-WorkPlot keeps Ketamine's catalog and exploit core, and adds:
+WorkPlot keeps the original catalog and exploit core, and adds:
 
 - Light, dark, and system appearance modes.
 - Extra tools in the same catalog: App Containers, FilePatch 3105, Device Spoof, Gestalt Field Editor, Preset Lab, Session Log, Check for Updates, CarPlay Wallpaper, and the RDAR canvas fix.
-- Alternate app icons and a per-install badge so WorkPlot and Ketamine can sit side by side.
+- Alternate app icons and a per-install badge so two installs can run side by side.
 - Write verification: the app reads the plist back and reports "verified on disk" or "write not visible on disk" instead of pretending the write worked.
 
 ## Features
@@ -103,7 +103,7 @@ The status area has two controls for the RDAR wallpaper bug. **Fix rdar** writes
 
 ## Credits
 
-WorkPlot is a rebrand and continuation of **Ketamine**, ported from the original app.
+WorkPlot is a rebrand and continuation of an earlier MobileGestalt editor.
 
 **Exploit and techniques**
 
@@ -117,7 +117,7 @@ WorkPlot is a rebrand and continuation of **Ketamine**, ported from the original
 - [YangJiiii/3105](https://github.com/YangJiiii/3105) (GPLv3, safe file operations adapted)
 - [frs0n/placard](https://github.com/frs0n/placard)
 
-**Individuals:** Mond, Ketamine, Toto.
+**Individuals:** Mond, Toto.
 
 Full attribution and licenses: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). WorkPlot incorporates GPLv3-licensed `bad_query` source code.
 
