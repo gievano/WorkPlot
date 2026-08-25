@@ -246,6 +246,7 @@ final class PresetStore: ObservableObject {
     /// Applies every preset value into CacheExtra through the standard
     /// read-modify-write path; WPExploitManager.saveGestalt creates a backup
     /// from the pre-write plist automatically.
+    @MainActor
     @discardableResult
     func apply(_ preset: WorkPlotPreset, manager: WPExploitManager = .shared) -> Bool {
         guard var plist = manager.readGestalt() else { return false }

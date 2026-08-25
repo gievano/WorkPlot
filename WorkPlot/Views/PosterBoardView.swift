@@ -4,12 +4,6 @@ import UIKit
 import ObjectiveC
 import UniformTypeIdentifiers
 
-extension UIDocumentPickerViewController {
-    @objc func workplot_init(forOpeningContentTypes contentTypes: [UTType], asCopy: Bool) -> UIDocumentPickerViewController {
-        workplot_init(forOpeningContentTypes: contentTypes, asCopy: true)
-    }
-}
-
 struct PosterBoardView: View {
     @ObservedObject private var pbManager = PosterBoardManager.shared
     @AppStorage("pbHash") private var pbHash = ""
@@ -21,20 +15,6 @@ struct PosterBoardView: View {
 
     private let tendieType = UTType("com.leminlimez.tendies")
         ?? UTType(filenameExtension: "tendies", conformingTo: .data)!
-
-    init() { Self.swizzleOnce }
-
-    private static let swizzleOnce: Void = {
-        let replacement = class_getInstanceMethod(
-            UIDocumentPickerViewController.self,
-            #selector(UIDocumentPickerViewController.workplot_init(forOpeningContentTypes:asCopy:))
-        )!
-        let original = class_getInstanceMethod(
-            UIDocumentPickerViewController.self,
-            #selector(UIDocumentPickerViewController.init(forOpeningContentTypes:asCopy:))
-        )!
-        method_exchangeImplementations(original, replacement)
-    }()
 
     var body: some View {
         ZStack {
