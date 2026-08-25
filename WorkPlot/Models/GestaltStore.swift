@@ -288,7 +288,7 @@ final class GestaltStore: ObservableObject {
                         }
                     }
                 } else {
-                    applied += 1
+                    if !tweak.springBoardSuppression { applied += 1 }
                 }
                 for mod in mods {
                     switch mod.value {
@@ -313,6 +313,17 @@ final class GestaltStore: ObservableObject {
                         }
                     }
                 }
+            }
+        }
+
+        // SpringBoard Dynamic Island suppression — enabled hides the island,
+        // disabled restores it. Idempotent, so harmless on every apply.
+        for tweak in tweaks where (ids == nil || ids!.contains(tweak.id)) && tweak.springBoardSuppression {
+            do {
+                _ = try SpringBoardPlist.setSuppressed(tweak.isEnabled)
+                applied += 1
+            } catch {
+                warnings.append("\(tweak.title): \(error.localizedDescription)")
             }
         }
 

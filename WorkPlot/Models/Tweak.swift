@@ -110,5 +110,10 @@ struct Tweak: Identifiable, Equatable {
     /// `.all` (both iPhone and iPad).
     var platform: TweakPlatform = .all
 
+    /// When true, applying this tweak writes the SpringBoard
+    /// `SBSuppressDynamicIslandCompletely` flag (true = hide Dynamic Island,
+    /// false = restore it) instead of a Gestalt CacheExtra modification.
+    var springBoardSuppression: Bool = false
+
     let modifications: [GestaltModification]
 }

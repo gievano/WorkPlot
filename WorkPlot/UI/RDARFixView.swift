@@ -6,26 +6,39 @@ struct RDARFixView: View {
     @State private var status: String?
 
     var body: some View {
-        Form {
-            Section {
-                TextField("Lebar (px)", text: $widthText)
-                    .keyboardType(.numberPad)
-                TextField("Tinggi (px)", text: $heightText)
-                    .keyboardType(.numberPad)
-                Button("Terapkan Canvas") { apply() }
-                    .buttonStyle(.borderedProminent)
-                if let status {
-                    Text(status).font(.footnote).foregroundStyle(.secondary)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                SectionHeader("Canvas RDARFix")
+                VStack(spacing: 14) {
+                    TextField("Lebar (px)", text: $widthText)
+                        .keyboardType(.numberPad)
+                        .textFieldStyle(.roundedBorder)
+                    TextField("Tinggi (px)", text: $heightText)
+                        .keyboardType(.numberPad)
+                        .textFieldStyle(.roundedBorder)
+                    ActionButton(title: "Terapkan Canvas", systemImage: "wand.and.stars") { apply() }
+                    if let status {
+                        Text(status)
+                            .font(.footnote)
+                            .foregroundStyle(status.hasPrefix("Gagal") ? Theme.caution : .secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                 }
-            } header: { Text("Canvas RDARFix") }
+                .padding(18)
+                .liquidGlass()
 
-            Section {
+                SectionHeader("Info")
                 Text("Menulis ulang route canvas (MobileGestalt MainScreenCanvasSizes + plist IOMobileGraphicsFamily) agar resolusi layar berubah tanpa reboot.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-            } header: { Text("Info") }
+                    .padding(18)
+                    .liquidGlass()
+            }
+            .padding(Theme.pagePadding)
         }
+        .background(Color(uiColor: .systemGroupedBackground))
         .navigationTitle("RDARFix")
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     func apply() {
