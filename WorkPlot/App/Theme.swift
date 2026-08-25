@@ -86,14 +86,17 @@ extension View {
             .background(Color(uiColor: .systemGroupedBackground).ignoresSafeArea())
     }
 
-    /// WorkPlot accent button styling.
+    /// WorkPlot accent button styling. Renders a true liquid-glass pill
+    /// (not the old bordered look) so every WPActionButton reads as glass.
     @ViewBuilder
     func glassAction(forceProminent: Bool = false, tint: Color = Theme.accent) -> some View {
-        if forceProminent {
-            self.buttonStyle(.borderedProminent).tint(tint)
-        } else {
-            self.buttonStyle(.bordered).tint(tint)
-        }
+        self
+            .buttonStyle(.plain)
+            .padding(.vertical, 14)
+            .padding(.horizontal, 16)
+            .frame(maxWidth: .infinity)
+            .liquidGlass(cornerRadius: Theme.cardRadius)
+            .foregroundStyle(forceProminent ? tint : .primary)
     }
 }
 
