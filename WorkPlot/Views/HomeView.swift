@@ -174,10 +174,13 @@ struct HomeView: View {
     private func categorySection(_ cat: TweakCategory) -> some View {
         let tweaks = store.tweaks.filter { $0.category == cat && $0.id != "product-type" && matchesSearch($0.title) }
         let tools = toolDefs.filter { $0.category == cat && $0.id != "respring" && matchesSearch($0.title) }
+        // Tools flow into the last half-empty tweak row instead of starting
+        // their own group, so an odd tweak count leaves no gap mid-catalog.
+        let cells = tweaks.map { FlatCell.tweak($0) } + tools.map { FlatCell.tool($0) }
         return VStack(alignment: .leading, spacing: 14) {
             SectionHeader(cat.rawValue)
             HStack {
-                Text("\(tweaks.count + tools.count) available")
+                Text("\(cells.count) available")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Spacer()
@@ -186,40 +189,7 @@ struct HomeView: View {
             // configuration panel can sit directly under the row holding the
             // tile that opened it, instead of after the whole catalog.
             VStack(alignment: .leading, spacing: 12) {
-                catalogRows(tweaks: tweaks, tools: tools)
-            }
-        }
-    }
-
-    /// Shared row rendering for both the flat "All" list and a per-category
-    /// section: tweak rows (with inline config panel) followed by tool rows.
-    @ViewBuilder
-    private func catalogRows(tweaks: [Tweak], tools: [ToolDef]) -> some View {
-        ForEach(Array(tweakRows(tweaks).enumerated()), id: \.offset) { _, row in
-            HStack(alignment: .top, spacing: 12) {
-                ForEach(row) { tweak in
-                    Button { toggle(tweak) } label: {
-                        TweakCatalogTile(tweak: tweak, isConfiguring: configurationID == tweak.id)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityHint(tweak.isEnabled ? "Disables this capability" : "Enables this capability")
-                }
-                // Keeps a lone trailing tile at half width.
-                if row.count == 1 { Color.clear.frame(maxWidth: .infinity) }
-            }
-            if let tweak = configuringTweak,
-               row.contains(where: { $0.id == tweak.id }),
-               let detail = tweak.detail {
-                InlineTweakConfiguration(tweak: tweak, detail: detail)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-            }
-        }
-        ForEach(Array(toolRows(tools).enumerated()), id: \.offset) { _, row in
-            HStack(alignment: .top, spacing: 12) {
-                ForEach(row) { tool in
-                    toolCatalogTile(tool)
-                }
-                if row.count == 1 { Color.clear.frame(maxWidth: .infinity) }
+                flatRows(cells)
             }
         }
     }
@@ -241,8 +211,8 @@ struct HomeView: View {
 
     private var toolDefs: [ToolDef] {
         [
-            ToolDef(id: "rdarfix", title: "RDARFix", subtitle: "Edit resolusi layar lewat canvas exploit", symbol: "wand.and.stars", category: .display, destination: { AnyView(RDARFixView()) }),
             ToolDef(id: "carplay", title: "CarPlay Wallpaper", subtitle: "Ganti wallpaper layar CarPlay", symbol: "car", category: .display, destination: { AnyView(CarPlayWallpaperView()) }),
+            ToolDef(id: "rdarfix", title: "RDARFix", subtitle: "Edit resolusi layar lewat canvas exploit", symbol: "wand.and.stars", category: .display, destination: { AnyView(RDARFixView()) }),
             ToolDef(id: "respring", title: "Respring", subtitle: "Restart SpringBoard tanpa reboot", symbol: "arrow.clockwise", category: .system, action: { RespringHelper.shared.trigger() }),
             ToolDef(id: "devicespoof", title: "Device Spoof", subtitle: "Spoof identitas perangkat", symbol: "iphone.and.arrow.forward", category: .system, destination: { AnyView(DeviceSpoofingView()) }),
             ToolDef(id: "gestalteditor", title: "Gestalt Field Editor", subtitle: "Edit cache MobileGestalt", symbol: "slider.horizontal.3", category: .gestalt, destination: { AnyView(GestaltFieldEditorView()) }),
@@ -273,19 +243,6 @@ struct HomeView: View {
         }
         .buttonStyle(.plain)
         .accessibilityHint("Restart SpringBoard")
-    }
-
-    /// Split a list into rows of two, matching the old grid.
-    private func tweakRows(_ tweaks: [Tweak]) -> [[Tweak]] {
-        stride(from: 0, to: tweaks.count, by: 2).map { start in
-            Array(tweaks[start..<min(start + 2, tweaks.count)])
-        }
-    }
-
-    private func toolRows(_ tools: [ToolDef]) -> [[ToolDef]] {
-        stride(from: 0, to: tools.count, by: 2).map { start in
-            Array(tools[start..<min(start + 2, tools.count)])
-        }
     }
 
     private var configuringTweak: Tweak? {
