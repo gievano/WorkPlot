@@ -109,7 +109,6 @@ struct PosterBoardView: View {
                     .padding(.vertical, 13)
             }
             .glassAction(prominent: true)
-            .tint(.white)
         }
     }
 
@@ -178,7 +177,6 @@ struct PosterBoardView: View {
             .font(.body.weight(.semibold))
             .frame(maxWidth: .infinity)
             .glassAction(prominent: true)
-            .tint(.white)
             .disabled(isBusy)
         }
         .padding(.horizontal, Theme.pagePadding)

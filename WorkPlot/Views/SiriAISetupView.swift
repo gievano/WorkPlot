@@ -152,7 +152,6 @@ struct SiriAISetupView: View {
             Text("Apple Intelligence model finished downloading")
                 .font(.subheadline.weight(.medium))
         }
-        .tint(.white)
         .padding(18)
         .liquidGlass()
     }
@@ -168,7 +167,6 @@ struct SiriAISetupView: View {
                 .font(.body.weight(.semibold))
                 .frame(maxWidth: .infinity)
                 .glassAction(prominent: true)
-                .tint(.white)
                 .disabled(isBusy || !canApply)
         }
         .padding(.horizontal, Theme.pagePadding)
