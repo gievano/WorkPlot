@@ -210,7 +210,6 @@ struct HomeView: View {
             NavigationLink { GestaltFieldEditorView() } label: { toolRow("Gestalt Field Editor", "Edit MobileGestalt", "slider.horizontal.3") }
             NavigationLink { PresetLabView() } label: { toolRow("Preset Lab", "Gestalt preset lab", "flask") }
             NavigationLink { SessionLogView() } label: { toolRow("Session Log", "Debug logs", "doc.plaintext") }
-            NavigationLink { CacheCleanerView() } label: { toolRow("Cache Cleaner", "Clear app caches", "trash") }
             NavigationLink { DeviceSpoofingView() } label: { toolRow("Device Spoof", "Spoof device identity", "iphone.and.arrow.forward") }
             Button { showIconSwitcher = true } label: { toolRow("App Icon", "Change app icon", "app") }
             Button { showUpdater = true } label: { toolRow("Check for Updates", "Updater", "arrow.down.app") }
