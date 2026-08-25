@@ -61,7 +61,7 @@ struct SystemHubView: View {
                 .frame(width: 48, height: 48)
                 .clipShape(RoundedRectangle(cornerRadius: 13, style: .continuous))
             VStack(alignment: .leading, spacing: 3) {
-                Text("Ketamine").font(.title3.weight(.semibold))
+                Text("WorkPlot").font(.title3.weight(.semibold))
                 Text("MG Toolkit  v\(version)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -90,7 +90,7 @@ struct SystemHubView: View {
     private var credits: some View {
         VStack(alignment: .leading, spacing: 8) {
             SectionHeader("Credits")
-            credit("Nouvborne", "Ketamine developer", "https://github.com/Nouvborne", easterEgg: unlockGoldenK)
+            credit("Nouvborne", "WorkPlot developer", "https://github.com/Nouvborne", easterEgg: unlockGoldenK)
             credit("0xjohnnydev", "MobileHouseArrest PoC", "https://github.com/0xjohnnydev")
             credit("forcequitOS", "bad_query", "https://github.com/forcequitOS")
             credit("leminlimez", "Pocket Poster", "https://github.com/leminlimez")

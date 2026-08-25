@@ -1,6 +1,6 @@
 //
 //  NuggetWallpaperStore.swift
-//  Ketamine
+//  WorkPlot
 //
 //  Fetches the Nugget-Wallpapers catalogs (leminlimez/community "custom"
 //  packs and Apple's stock collections) and resolves their relative asset

@@ -158,7 +158,7 @@ final class GestaltStore: ObservableObject {
     /// Saves a key's current value into the app's own container (UserDefaults)
     /// the first time it's touched, so it can be reversed later. Never
     /// overwrites an existing snapshot — it always holds the value from
-    /// before Ketamine first modified the key.
+    /// before WorkPlot first modified the key.
     private func snapshotAIRegionKeyIfNeeded(_ key: String, in cacheExtra: [String: Any]) {
         let presenceKey = Self.aiRegionSnapshotPresenceKey(key)
         guard defaults.object(forKey: presenceKey) == nil else { return }
@@ -466,7 +466,7 @@ final class GestaltStore: ObservableObject {
 
     /// Reverses whatever `applyAIRegion()` changed — restores every AI
     /// region key to the value `snapshotAIRegionKeyIfNeeded` saved before
-    /// Ketamine first touched it (removing keys that didn't exist before),
+    /// WorkPlot first touched it (removing keys that didn't exist before),
     /// then forces `A62OafQ85EJAiiqKn4agtg` back to 0 regardless of what
     /// that restore produced.
     func applySiri() async throws -> ApplyResult {
@@ -603,7 +603,7 @@ final class GestaltStore: ObservableObject {
     }
 
     /// Removes only the device-identity spoof, restoring each spoof key to
-    /// the value saved before Ketamine first wrote it. Siri / Apple
+    /// the value saved before WorkPlot first wrote it. Siri / Apple
     /// Intelligence eligibility keys are deliberately left as they are, so
     /// the device keeps whatever capability it was granted.
     func unspoofDevice() async throws -> ApplyResult {
@@ -634,7 +634,7 @@ final class GestaltStore: ObservableObject {
         for key in Self.spoofKeys {
             let presenceKey = Self.aiRegionSnapshotPresenceKey(key)
             if defaults.object(forKey: presenceKey) == nil {
-                // Never snapshotted, so Ketamine never wrote it — but the
+                // Never snapshotted, so WorkPlot never wrote it — but the
                 // device still reports a spoof, so drop the key entirely.
                 cacheExtra.removeValue(forKey: key)
             } else if defaults.bool(forKey: presenceKey) {

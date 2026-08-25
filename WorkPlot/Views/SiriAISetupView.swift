@@ -95,7 +95,7 @@ struct SiriAISetupView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Rarely works in its current state")
                     .font(.headline)
-                Text("Siri AI is the least reliable feature in Ketamine and may have no effect on your device. You can still apply it, but it isn't expected to succeed.")
+                Text("Siri AI is the least reliable feature in WorkPlot and may have no effect on your device. You can still apply it, but it isn't expected to succeed.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)

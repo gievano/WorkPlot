@@ -1,6 +1,6 @@
 //
 //  NeoSpringView.swift
-//  Ketamine
+//  WorkPlot
 //
 //  Full-screen respring transition, presented over RootView while
 //  RespringHelper.shared.isRespringing is true. Shows a plain loading screen

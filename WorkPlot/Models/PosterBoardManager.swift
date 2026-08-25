@@ -1,6 +1,6 @@
 //
 //  PosterBoardManager.swift
-//  Ketamine
+//  WorkPlot
 //
 //  Injects wallpaper descriptor packs ("tendies") into PosterBoard's
 //  extension data store using the bad_query sandbox escape. Ported from

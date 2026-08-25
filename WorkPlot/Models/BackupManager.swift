@@ -33,7 +33,7 @@ final class BackupManager {
 
     private var backupDirectory: URL {
         let docs = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        return docs.appendingPathComponent("Ketamine/Backup", isDirectory: true)
+        return docs.appendingPathComponent("WorkPlot/Backup", isDirectory: true)
     }
 
     private var backupURL: URL { backupDirectory.appendingPathComponent("com.apple.MobileGestalt.plist") }

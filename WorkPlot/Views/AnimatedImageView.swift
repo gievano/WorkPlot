@@ -1,6 +1,6 @@
 //
 //  AnimatedImageView.swift
-//  Ketamine
+//  WorkPlot
 //
 //  Lightweight GIF/PNG remote preview: decodes ImageIO frame sequences into a
 //  UIImage animation so wallpaper previews play inline without a third-party
