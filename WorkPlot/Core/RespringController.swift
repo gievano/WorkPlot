@@ -54,7 +54,11 @@ struct NeoSpringView: View {
     @State private var showsWebView = false
 
     var body: some View {
-        Group {
+        ZStack {
+            // ponytail: transparent backing so the crash WebView actually
+            // composites and the GPU crash fires; bump opacity / add a real
+            // color if some iOS build stops rendering a 0.001 alpha layer
+            Color.black.opacity(0.001)
             if showsWebView {
                 NeoSpringWebView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
