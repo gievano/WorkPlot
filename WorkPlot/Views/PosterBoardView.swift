@@ -4,6 +4,12 @@ import UIKit
 import ObjectiveC
 import UniformTypeIdentifiers
 
+extension UIDocumentPickerViewController {
+    @objc func ketamine_init(forOpeningContentTypes contentTypes: [UTType], asCopy: Bool) -> UIDocumentPickerViewController {
+        ketamine_init(forOpeningContentTypes: contentTypes, asCopy: true)
+    }
+}
+
 struct PosterBoardView: View {
     @ObservedObject private var pbManager = PosterBoardManager.shared
     @AppStorage("pbHash") private var pbHash = ""
@@ -15,6 +21,18 @@ struct PosterBoardView: View {
 
     private let tendieType = UTType("com.leminlimez.tendies")
         ?? UTType(filenameExtension: "tendies", conformingTo: .data)!
+
+    static let swizzleOnce: Void = {
+        let replacement = class_getInstanceMethod(
+            UIDocumentPickerViewController.self,
+            #selector(UIDocumentPickerViewController.ketamine_init(forOpeningContentTypes:asCopy:))
+        )!
+        let original = class_getInstanceMethod(
+            UIDocumentPickerViewController.self,
+            #selector(UIDocumentPickerViewController.init(forOpeningContentTypes:asCopy:))
+        )!
+        method_exchangeImplementations(original, replacement)
+    }()
 
     var body: some View {
         ZStack {
