@@ -106,12 +106,9 @@ struct WallpaperView: View {
     private var importCard: some View {
         WPCard {
             VStack(alignment: .leading, spacing: 12) {
-                WPSectionHeader(title: "Import")
+                WPSectionHeader(title: "Import", icon: "square.and.arrow.down")
                 WPActionButton(title: "Import .tendies file") { showImporter = true }
                 WPActionButton(title: "Make from video", prominent: false) { showVideoImporter = true }
-                Link(destination: URL(string: WallpaperPosterBoardManager.WallpapersURL)!) {
-                    Text("Browse Cowabun.ga").font(.body.weight(.medium)).foregroundStyle(Theme.accent)
-                }
             }
         }
     }
@@ -121,14 +118,20 @@ struct WallpaperView: View {
             VStack(alignment: .leading, spacing: 12) {
                 WPSectionHeader(
                     title: "Selected Posters",
-                    subtitle: "\(poster.selectedTendies.count)/\(WallpaperPosterBoardManager.MaxTendies) descriptors"
+                    subtitle: "\(poster.selectedTendies.count)/\(WallpaperPosterBoardManager.MaxTendies) descriptors",
+                    icon: "checkmark.seal.fill"
                 )
                 ForEach(poster.selectedTendies, id: \.self) { url in
                     HStack {
+                        Image(systemName: "doc.zipper").foregroundStyle(.secondary)
                         Text(url.lastPathComponent).font(.subheadline)
                         Spacer()
-                        Button("Remove") { poster.selectedTendies.removeAll { $0 == url } }
-                            .font(.footnote).foregroundColor(.red)
+                        Button {
+                            poster.selectedTendies.removeAll { $0 == url }
+                        } label: {
+                            Image(systemName: "minus.circle.fill").foregroundStyle(.red)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
                 WPActionButton(title: "Apply to PosterBoard") { applySelected() }
@@ -140,7 +143,7 @@ struct WallpaperView: View {
     private var cowabungaCard: some View {
         WPCard {
             VStack(alignment: .leading, spacing: 12) {
-                WPSectionHeader(title: "Download Wallpapers")
+                WPSectionHeader(title: "Download Wallpapers", icon: "square.and.arrow.down.on.square")
                 Picker("Sort", selection: $cowabungaFilter) {
                     ForEach(WallpaperFilterType.allCases, id: \.self) { Text($0.rawValue) }
                 }
@@ -159,15 +162,23 @@ struct WallpaperView: View {
                             HStack(spacing: 12) {
                                 if let url = URL(string: WallpaperCowabungaAPI.shared.getPreviewURLForWallpaper(wp).absoluteString) {
                                     AsyncImage(url: url) { $0.resizable() } placeholder: { Color.gray }
-                                        .frame(width: 48, height: 48).cornerRadius(8)
+                                        .frame(width: 44, height: 44).cornerRadius(10)
                                 }
-                                VStack(alignment: .leading) {
+                                VStack(alignment: .leading, spacing: 2) {
                                     Text(wp.name).font(.subheadline.weight(.medium))
-                                    if let desc = wp.description { Text(desc).font(.caption).foregroundColor(.secondary) }
+                                    if let desc = wp.description {
+                                        Text(desc).font(.caption).foregroundColor(.secondary).lineLimit(1)
+                                    }
                                 }
                                 Spacer()
+                                Image(systemName: "arrow.down.circle.fill")
+                                    .foregroundStyle(Theme.accent)
+                                    .font(.title3)
                             }
+                            .padding(10)
+                            .liquidGlass(cornerRadius: 12)
                         }
+                        .buttonStyle(.plain)
                     }
                 }
             }
@@ -177,7 +188,7 @@ struct WallpaperView: View {
     private var videoCard: some View {
         WPCard {
             VStack(alignment: .leading, spacing: 12) {
-                WPSectionHeader(title: "Video")
+                WPSectionHeader(title: "Video", icon: "film")
                 ForEach(poster.videos) { info in
                     HStack {
                         Text("Video clip").font(.subheadline)
@@ -200,7 +211,7 @@ struct WallpaperView: View {
     private var carplayCard: some View {
         WPCard {
             VStack(alignment: .leading, spacing: 12) {
-                WPSectionHeader(title: "CarPlay Wallpaper")
+                WPSectionHeader(title: "CarPlay Wallpaper", icon: "car.fill")
                 PhotosPicker("Light image", selection: Binding<PhotosPickerItem?>(
                     get: { nil },
                     set: { item in Task { carplayLight = try? await item?.loadTransferable(type: Data.self) } }
@@ -220,7 +231,7 @@ struct WallpaperView: View {
     private var diagnosticsCard: some View {
         WPCard {
             VStack(alignment: .leading, spacing: 12) {
-                WPSectionHeader(title: "Diagnostics")
+                WPSectionHeader(title: "Diagnostics", icon: "stethoscope")
                 WPActionButton(title: "Detect PosterBoard", prominent: false) { detectHash() }
                 if !pbHash.isEmpty {
                     Text("PosterBoard: \(pbHash)").font(.caption).foregroundColor(.secondary)

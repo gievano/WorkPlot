@@ -14,6 +14,8 @@ struct MainDashboardView: View {
                 .tabItem { Label("PosterBoard", systemImage: "square.stack.3d.up") }
             GestaltPresetManagerView()
                 .tabItem { Label("Gestalt", systemImage: "cpu") }
+            SiriAITweaksView()
+                .tabItem { Label("Siri AI", systemImage: "waveform.circle.fill") }
             SettingsTabView()
                 .tabItem { Label("Settings", systemImage: "gearshape") }
         }

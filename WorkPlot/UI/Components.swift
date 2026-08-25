@@ -6,18 +6,27 @@ import SwiftUI
 struct WPSectionHeader: View {
     let title: String
     var subtitle: String?
+    var icon: String?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title.uppercased())
-                .font(.caption.weight(.heavy))
-                .foregroundStyle(Theme.accent)
-                .tracking(1.2)
-            if let subtitle {
-                Text(subtitle)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+        HStack(spacing: 8) {
+            if let icon {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Theme.accent)
             }
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title.uppercased())
+                    .font(.caption.weight(.heavy))
+                    .foregroundStyle(Theme.accent)
+                    .tracking(1.2)
+                if let subtitle {
+                    Text(subtitle)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.bottom, 2)
