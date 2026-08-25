@@ -60,7 +60,6 @@ struct ActionButton: View {
             .frame(maxWidth: .infinity)
         }
         .glassAction(prominent: true)
-        .tint(.white)
         .controlSize(.large)
         .disabled(disabled || isBusy)
     }
