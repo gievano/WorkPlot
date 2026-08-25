@@ -11,7 +11,7 @@ struct CarPlayWallpaperView: View {
             VStack(alignment: .leading, spacing: 20) {
                 SectionHeader("Status")
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(supported ? "CarPlay didukung" : "CarPlay tidak didukung")
+                    Text(supported ? "CarPlay supported" : "CarPlay not supported")
                         .foregroundStyle(supported ? Theme.affirmative : Theme.caution)
                     if !cacheVersion.isEmpty {
                         Text("Cache version: \(cacheVersion)")
@@ -23,10 +23,10 @@ struct CarPlayWallpaperView: View {
                 .padding(18)
                 .background(Color(uiColor: .tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
 
-                SectionHeader("Wallpaper tersedia")
+                SectionHeader("Available wallpapers")
                 VStack(alignment: .leading, spacing: 8) {
                     if names.isEmpty {
-                        Text("Belum ada wallpaper CarPlay tersimpan")
+                        Text("No CarPlay wallpapers saved yet")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     } else {
@@ -39,7 +39,7 @@ struct CarPlayWallpaperView: View {
                 .padding(18)
                 .background(Color(uiColor: .tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
 
-                ActionButton(title: "Muat ulang", systemImage: "arrow.clockwise") { reload() }
+                ActionButton(title: "Reload", systemImage: "arrow.clockwise") { reload() }
 
                 if let status {
                     Text(status)

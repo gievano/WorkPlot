@@ -6,7 +6,7 @@ enum GestaltArtworkError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .artworkDictionaryMissing:
-            L10n.shared.tr("artwork.error.noDict")
+            "ArtworkDevice dictionary is missing in CacheExtra."
         }
     }
 }
