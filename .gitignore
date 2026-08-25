@@ -10,6 +10,8 @@ xcuserdata/
 skill-observations/
 *.ipa
 
-# Docs (DEVLOG, assets) & testing plans are local artifacts - not part of the app.
-docs/
+# Docs (DEVLOG, testing plans) are local artifacts, but README images
+# under docs/assets must ship so the GitHub header renders.
+docs/*
+!docs/assets/
 testing-plans/
