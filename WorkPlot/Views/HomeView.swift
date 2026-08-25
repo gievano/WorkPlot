@@ -38,9 +38,11 @@ struct HomeView: View {
                     ScrollView {
                         LazyVStack(alignment: .leading, spacing: 24) {
                             commandStatus
+                            wpFeatures
                             categoryRail
                             catalog
                             if !selectedTweaks.isEmpty { activeConfiguration }
+                            respringButton
                         }
                         .padding(.horizontal, Theme.pagePadding)
                         .padding(.bottom, 32)
@@ -118,7 +120,7 @@ struct HomeView: View {
             HStack {
                 Text(category?.rawValue ?? "All").font(.title3.weight(.semibold))
                 Spacer()
-                Text("\(categoryTweaks.count + categoryTools.count) available")
+                Text("\(categoryTweaks.count) available")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -145,29 +147,7 @@ struct HomeView: View {
                             .transition(.opacity.combined(with: .move(edge: .top)))
                     }
                 }
-                if !categoryTools.isEmpty {
-                    SectionHeader("Tools")
-                    ForEach(Array(toolRows.enumerated()), id: \.offset) { _, row in
-                        HStack(alignment: .top, spacing: 12) {
-                            ForEach(row) { tool in
-                                toolCatalogTile(tool)
-                            }
-                            if row.count == 1 { Color.clear.frame(maxWidth: .infinity) }
-                        }
-                    }
-                }
             }
-        }
-    }
-
-    private var categoryTools: [ToolDef] {
-        guard let category else { return toolDefs }
-        return toolDefs.filter { $0.category == category }
-    }
-
-    private var toolRows: [[ToolDef]] {
-        stride(from: 0, to: categoryTools.count, by: 2).map { start in
-            Array(categoryTools[start..<min(start + 2, categoryTools.count)])
         }
     }
 
@@ -209,6 +189,35 @@ struct HomeView: View {
         let category: TweakCategory
         var destination: (() -> AnyView)? = nil
         var action: (() -> Void)? = nil
+    }
+
+    private var wpFeatures: some View {
+        VStack(alignment: .leading, spacing: 22) {
+            ForEach([TweakCategory.display, .system, .gestalt, .info], id: \.self) { cat in
+                let items = toolDefs.filter { $0.category == cat && $0.id != "respring" }
+                if !items.isEmpty {
+                    SectionHeader(cat.rawValue)
+                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible())], spacing: 12) {
+                        ForEach(items) { tool in
+                            toolCatalogTile(tool)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private var respringButton: some View {
+        Button { RespringHelper.shared.trigger() } label: {
+            Label("Respring", systemImage: "arrow.clockwise")
+                .font(.subheadline.weight(.semibold))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(Color.clear, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .liquidGlass(cornerRadius: 16)
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Restart SpringBoard")
     }
 
     /// `categoryTweaks` split into rows of two, matching the old grid.

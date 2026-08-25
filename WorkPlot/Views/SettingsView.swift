@@ -26,6 +26,7 @@ struct SettingsView: View {
                 appearance
                 connection
                 backup
+                supportInfo
             }
             .padding(Theme.pagePadding)
         }
@@ -180,6 +181,19 @@ struct SettingsView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
+            }
+        }
+    }
+
+    private var supportInfo: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader("Supported iOS")
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Full features need iOS 27.")
+                    .font(.subheadline.weight(.medium))
+                Text("Reads work on any iOS 27 build. Writes depend on the bad_query exploit, which is verified against iOS 27 developer betas 1 to 4.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
     }
