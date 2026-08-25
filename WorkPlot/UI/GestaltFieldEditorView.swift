@@ -23,7 +23,7 @@ struct GestaltFieldEditorView: View {
                     VStack(spacing: 12) {
                         Image(systemName: "exclamationmark.triangle").font(.largeTitle).foregroundColor(.orange)
                         Text(l10n.tr("fields.readFail"))
-                        Button(l10n.tr("common.retry")) { load() }
+                        WPActionButton(title: L10n.shared.tr("common.retry")) { load() }
                     }
                 }
             }

@@ -33,8 +33,7 @@ struct UpdateCheckerSheet: View {
             Group {
                 switch phase {
                 case .idle:
-                    Button(l10n.tr("upd.check"), action: check)
-                        .buttonStyle(.borderedProminent)
+                    WPActionButton(title: l10n.tr("upd.check"), action: check)
                 case .checking:
                     ProgressView()
                 case .upToDate:
@@ -47,8 +46,7 @@ struct UpdateCheckerSheet: View {
                         Text(String(format: l10n.tr("upd.newVersion"), tag))
                             .font(.system(size: 15, weight: .semibold))
                             .multilineTextAlignment(.center)
-                        Button(l10n.tr("upd.openRelease")) { openURL(url) }
-                            .buttonStyle(.borderedProminent)
+                        WPActionButton(title: l10n.tr("upd.openRelease")) { openURL(url) }
                     }
                     .padding()
                 case .failed(let message):
@@ -57,8 +55,7 @@ struct UpdateCheckerSheet: View {
                             .font(.system(size: 14))
                             .multilineTextAlignment(.center)
                             .foregroundStyle(.secondary)
-                        Button(l10n.tr("upd.check"), action: check)
-                            .buttonStyle(.bordered)
+                        WPActionButton(title: l10n.tr("upd.check"), action: check)
                     }
                     .padding()
                 }
