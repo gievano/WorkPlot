@@ -291,7 +291,7 @@ private struct KeyRow: View {
                 Text(info.kind.label)
                     .font(.caption2).bold()
                     .padding(.horizontal, 4).padding(.vertical, 1)
-                    .background(Theme.accent.opacity(0.15))
+                    .background(.white.opacity(0.15))
                     .cornerRadius(4)
                 Text(info.summary)
                     .font(.caption)
@@ -323,7 +323,7 @@ private struct ValueEditor: View {
     var body: some View {
         Form {
             Section(header: Text(l10n.tr("fields.typeHeader"))) {
-                Text(kind.label).foregroundColor(.blue)
+                Text(kind.label).foregroundColor(.white)
             }
             Section(header: Text(l10n.tr("fields.valueHeader"))) {
                 if kind == .array || kind == .dictionary || kind == .data {

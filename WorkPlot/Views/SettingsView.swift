@@ -26,6 +26,7 @@ struct SettingsView: View {
                 appearance
                 connection
                 backup
+                supportInfo
             }
             .padding(Theme.pagePadding)
         }
@@ -113,7 +114,7 @@ struct SettingsView: View {
                             accentColor = AppAccent.blue.rawValue
                         }
                         .font(.caption.weight(.medium))
-                        .foregroundStyle(Theme.accent)
+                        .foregroundStyle(.white)
                     }
                 }
             }
@@ -174,12 +175,25 @@ struct SettingsView: View {
                     }
                 }
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(Theme.accent)
+                .foregroundStyle(.white)
                 if !BadQuery.isAvailable {
                     Text("Detection is unavailable on this iOS version.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
+            }
+        }
+    }
+
+    private var supportInfo: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader("Supported iOS")
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Full features need iOS 27.")
+                    .font(.subheadline.weight(.medium))
+                Text("Reads work on any iOS 27 build. Writes depend on the bad_query exploit, which is verified against iOS 27 developer betas 1 to 4.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
     }
@@ -215,7 +229,7 @@ struct SettingsView: View {
                 }
             }
             .font(.subheadline.weight(.semibold))
-            .foregroundStyle(Theme.accent)
+            .foregroundStyle(.white)
         }
     }
 

@@ -85,7 +85,7 @@ struct SystemHubView: View {
                 .font(.title3.weight(.semibold))
             HStack(spacing: 12) {
                 Image(systemName: store.backup.hasBackup ? "checkmark.shield.fill" : "shield")
-                    .foregroundStyle(store.backup.hasBackup ? Theme.affirmative : Theme.accent)
+                    .foregroundStyle(store.backup.hasBackup ? Theme.affirmative : .white)
                     .font(.title2)
                 Text(store.backup.hasBackup ? "Backup is available" : "No backup has been created")
                     .font(.subheadline.weight(.medium))
@@ -177,7 +177,7 @@ struct HubToolCard: View {
         HStack(spacing: 15) {
             Image(systemName: symbol)
                 .font(.title3)
-                .foregroundStyle(Theme.accent)
+                .foregroundStyle(.white)
                 .frame(width: 30)
             VStack(alignment: .leading, spacing: 3) {
                 Text(title).font(.body.weight(.semibold)).foregroundStyle(.primary)

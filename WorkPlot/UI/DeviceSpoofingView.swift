@@ -36,7 +36,7 @@ struct DeviceSpoofingView: View {
                             }
                             Spacer()
                             if selected?.id == target.id {
-                                Image(systemName: "checkmark").foregroundStyle(Theme.accent)
+                                Image(systemName: "checkmark").foregroundStyle(.white)
                             }
                         }
                     }
