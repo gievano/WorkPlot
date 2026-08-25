@@ -209,7 +209,6 @@ struct HomeView: View {
             NavigationLink { CarPlayWallpaperView() } label: { toolRow("CarPlay Wallpaper", "Set CarPlay wallpaper", "car") }
             NavigationLink { GestaltFieldEditorView() } label: { toolRow("Gestalt Field Editor", "Edit MobileGestalt", "slider.horizontal.3") }
             NavigationLink { PresetLabView() } label: { toolRow("Preset Lab", "Gestalt preset lab", "flask") }
-            NavigationLink { GestaltPresetManagerView() } label: { toolRow("Gestalt Presets", "Manage presets", "tray.full") }
             NavigationLink { SessionLogView() } label: { toolRow("Session Log", "Debug logs", "doc.plaintext") }
             NavigationLink { CacheCleanerView() } label: { toolRow("Cache Cleaner", "Clear app caches", "trash") }
             NavigationLink { DeviceSpoofingView() } label: { toolRow("Device Spoof", "Spoof device identity", "iphone.and.arrow.forward") }
