@@ -14,9 +14,9 @@ struct RestoreSheet: View {
                 HStack(alignment: .center) {
                     Image(systemName: done ? "checkmark" : "arrow.counterclockwise")
                         .font(.title2.weight(.medium))
-                        .foregroundStyle(done ? Theme.affirmative : Theme.accent)
+                        .foregroundStyle(done ? Theme.affirmative : .white)
                         .frame(width: 52, height: 52)
-                        .background((done ? Theme.affirmative : Theme.accent).opacity(0.13), in: Circle())
+                        .background((done ? Theme.affirmative : .white).opacity(0.13), in: Circle())
                     Spacer()
                     Text(done ? "COMPLETE" : "RECOVERY")
                         .font(.caption2.weight(.bold))

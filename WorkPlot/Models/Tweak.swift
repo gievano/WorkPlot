@@ -28,6 +28,8 @@ enum TweakCategory: String, CaseIterable, Identifiable {
     case system = "System"
     case liquidGlass = "Liquid Glass"
     case ipad = "iPad"
+    case gestalt = "Gestalt"
+    case info = "Info"
     case ai = "Intelligence"
 
     var id: String { rawValue }

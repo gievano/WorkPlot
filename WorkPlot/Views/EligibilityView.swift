@@ -107,7 +107,7 @@ struct EligibilityView: View {
                 .font(.body.weight(.semibold))
                 .frame(maxWidth: .infinity)
                 .glassAction(prominent: true)
-                .tint(Theme.accent)
+                .tint(.white)
                 .disabled(isBusy)
         }
         .padding(.horizontal, Theme.pagePadding)
@@ -118,7 +118,7 @@ struct EligibilityView: View {
         Toggle(isOn: isOn) {
             HStack(alignment: .top, spacing: 12) {
                 Image(systemName: symbol)
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(.white)
                     .frame(width: 24)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title).font(.body.weight(.medium))
@@ -126,7 +126,7 @@ struct EligibilityView: View {
                 }
             }
         }
-        .tint(Theme.accent)
+        .tint(.white)
         .padding(.vertical, 16)
     }
 
