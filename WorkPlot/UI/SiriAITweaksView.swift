@@ -30,28 +30,13 @@ struct SiriAITweaksView: View {
         NavigationView {
             Group {
                 if !manager.sandboxGranted {
-                    VStack(spacing: 12) {
-                        Image(systemName: "lock.icloud").font(.largeTitle).foregroundColor(.orange)
-                        Text(L10n.shared.tr("common.accessLocked"))
-                            .multilineTextAlignment(.center)
-                            .foregroundColor(.secondary)
-                    }
+                    lockedView
                 } else {
-                    List {
-                        statusSection
-                        siriAISection
-                        appleIntelligenceSection
-                        spoofSection
-                        if eligibilityReachable {
-                            Section(header: Text(l10n.tr("eligibility.title"))) {
-                                NavigationLink(l10n.tr("eligibility.open"), destination: EligibilityView())
-                            }
-                        }
-                        applySection
-                    }
+                    content
                 }
             }
             .navigationTitle(l10n.tr("siriai.title"))
+            .navigationBarTitleDisplayMode(.inline)
             .wpGlassContainer()
             .task { eligibilityReachable = EligibilityManager.isReachable() }
             .heavyRestartFlow(isPresented: $showRestartAlert)
@@ -67,114 +52,184 @@ struct SiriAITweaksView: View {
         }
     }
 
-    // MARK: - Sections
-
-    /// Read-only snapshot of what is actually written on the device.
-    private var statusSection: some View {
-        Section(header: Text(l10n.tr("siriai.status.header"))) {
-            HStack {
-                Text(l10n.tr("siriai.status.siri"))
-                Spacer()
-                Text(siriAIStatusText).foregroundColor(siriAIStatusColor)
-            }
-            HStack {
-                Text(l10n.tr("siriai.status.ai"))
-                Spacer()
-                Text(appleIntelligenceStatusText)
-                    .foregroundColor(appleIntelligenceOn ? Color.green : Color.secondary)
-            }
-            HStack {
-                Text(l10n.tr("siriai.status.spoof"))
-                Spacer()
-                Text(spoofStatusText).foregroundColor(Color.secondary)
-            }
-        }
-    }
-
-    private var siriAISection: some View {
-        Section(
-            header: Text(l10n.tr("siriai.section.siri.header")),
-            footer: Text(l10n.tr("siriai.section.siri.footer"))
-        ) {
-            Toggle(l10n.tr("siriai.toggle"), isOn: Binding(
-                get: { siriAIStaged ?? currentSiriAI },
-                set: { siriAIStaged = $0 }
-            ))
-        }
-    }
-
-    private var appleIntelligenceSection: some View {
-        Section(
-            header: Text(l10n.tr("siriai.section.ai.header")),
-            footer: Text(l10n.tr("siriai.section.ai.footer"))
-        ) {
-            Toggle(l10n.tr("siriai.ai.toggle"), isOn: Binding(
-                get: { appleIntelligenceStaged ?? currentAppleIntelligence },
-                set: { handleAppleIntelligenceToggle($0) }
-            ))
-            if appleIntelligenceStaged == true && spoofTarget != nil {
-                Text(l10n.tr("siriai.ai.autospoof"))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-        }
-    }
-
-    private var spoofSection: some View {
-        Section(
-            header: Text(l10n.tr("siriai.section.spoof.header")),
-            footer: Text(l10n.tr("siriai.spoof.revert"))
-        ) {
-            Picker(l10n.tr("siriai.spoof"), selection: $spoofTarget) {
-                Text(l10n.tr("siriai.spoof.none")).tag(SpoofTarget?.none)
-                ForEach(DeviceSpoofingManager.targets) { target in
-                    Text(target.marketingName).tag(SpoofTarget?.some(target))
-                }
-            }
-            if let target = spoofTarget, let plist = loadedPlist {
-                Text(String(format: l10n.tr("siriai.spoof.keysCount"),
-                            DeviceSpoofingManager.changedKeyCount(in: plist, target: target)))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            Text(String(format: l10n.tr("siriai.spoof.detected"),
-                        DeviceSpoofingManager.realMachineIdentifier))
-                .font(.caption)
+    private var lockedView: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "lock.icloud").font(.largeTitle).foregroundColor(.orange)
+            Text(L10n.shared.tr("common.accessLocked"))
+                .multilineTextAlignment(.center)
                 .foregroundColor(.secondary)
-            Text(l10n.tr("siriai.warning"))
-                .font(.caption).bold()
-                .foregroundColor(.red)
         }
     }
 
-    private var applySection: some View {
-        Section {
-            Button {
+    private var content: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                warningBanner
+                statusCard
+                modeCards
+                spoofCard
+                applyCard
+                Spacer(minLength: 40)
+            }
+            .padding(18)
+        }
+        .scrollDismissesKeyboard(.immediately)
+    }
+
+    // MARK: - Warning
+
+    private var warningBanner: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 22))
+                .foregroundStyle(.yellow)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Siri AI is experimental")
+                    .font(.subheadline.bold())
+                Text("These tweaks may be unstable on some firmwares. Use at your own risk.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+        }
+        .padding(16)
+        .liquidGlass(cornerRadius: 16)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.yellow.opacity(0.5), lineWidth: 1)
+        )
+    }
+
+    // MARK: - Status
+
+    private var statusCard: some View {
+        WPCard {
+            VStack(alignment: .leading, spacing: 12) {
+                WPSectionHeader(title: l10n.tr("siriai.status.header"))
+                statusRow(l10n.tr("siriai.status.siri"), value: siriAIStatusText, color: siriAIStatusColor)
+                statusRow(l10n.tr("siriai.status.ai"),
+                          value: appleIntelligenceStatusText,
+                          color: appleIntelligenceOn ? .green : .secondary)
+                statusRow(l10n.tr("siriai.status.spoof"), value: spoofStatusText, color: .secondary)
+            }
+        }
+    }
+
+    private func statusRow(_ label: String, value: String, color: Color) -> some View {
+        HStack {
+            Text(label).font(.subheadline)
+            Spacer()
+            Text(value).font(.subheadline.weight(.medium)).foregroundColor(color)
+        }
+    }
+
+    // MARK: - Mode cards (left: revert, middle: AI, right: Siri AI)
+
+    private var modeCards: some View {
+        HStack(alignment: .top, spacing: 12) {
+            modeCard(
+                icon: "arrow.uturn.backward.circle.fill",
+                title: "Siri Menu Revert",
+                note: "Reset Siri & AI changes back to stock.",
+                action: WPActionButton(title: "Revert", prominent: false) { revertAll() }
+            )
+            modeCard(
+                icon: "brain",
+                title: "Apple Intelligence",
+                note: "Toggle Apple Intelligence eligibility.",
+                action: WPActionButton(
+                    title: (appleIntelligenceStaged ?? currentAppleIntelligence) ? "Disable" : "Enable",
+                    prominent: false
+                ) { handleAppleIntelligenceToggle(!((appleIntelligenceStaged ?? currentAppleIntelligence))) }
+            )
+            modeCard(
+                icon: "waveform.circle.fill",
+                title: "Siri AI",
+                note: "Enable the new Siri AI mode.",
+                action: WPActionButton(
+                    title: (siriAIStaged ?? currentSiriAI) ? "Disable" : "Enable",
+                    prominent: false
+                ) { siriAIStaged = !((siriAIStaged ?? currentSiriAI)) }
+            )
+        }
+    }
+
+    private func modeCard(icon: String, title: String, note: String, action: some View) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Image(systemName: icon)
+                .font(.system(size: 22))
+                .foregroundStyle(Theme.accent)
+            Text(title)
+                .font(.system(size: 13, weight: .semibold))
+            Text(note)
+                .font(.system(size: 10))
+                .foregroundStyle(.secondary)
+                .lineLimit(3)
+            Spacer(minLength: 0)
+            action
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, minHeight: 158, alignment: .leading)
+        .liquidGlass(cornerRadius: 16)
+    }
+
+    // MARK: - Spoof
+
+    private var spoofCard: some View {
+        WPCard {
+            VStack(alignment: .leading, spacing: 12) {
+                WPSectionHeader(
+                    title: l10n.tr("siriai.section.spoof.header"),
+                    subtitle: "Risky — changes the reported device model."
+                )
+                Picker(l10n.tr("siriai.spoof"), selection: $spoofTarget) {
+                    Text(l10n.tr("siriai.spoof.none")).tag(SpoofTarget?.none)
+                    ForEach(DeviceSpoofingManager.targets) { target in
+                        Text(target.marketingName).tag(SpoofTarget?.some(target))
+                    }
+                }
+                .pickerStyle(.menu)
+                if let target = spoofTarget, let plist = loadedPlist {
+                    Text(String(format: l10n.tr("siriai.spoof.keysCount"),
+                                DeviceSpoofingManager.changedKeyCount(in: plist, target: target)))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                Text(String(format: l10n.tr("siriai.spoof.detected"),
+                            DeviceSpoofingManager.realMachineIdentifier))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                if eligibilityReachable {
+                    NavigationLink(l10n.tr("eligibility.open"), destination: EligibilityView())
+                }
+                Text(l10n.tr("siriai.warning"))
+                    .font(.caption).bold()
+                    .foregroundColor(.red)
+            }
+        }
+    }
+
+    // MARK: - Apply
+
+    private var applyCard: some View {
+        VStack(spacing: 12) {
+            WPActionButton(
+                title: stagedCount == 0 ? l10n.tr("siriai.apply") : "\(l10n.tr("siriai.apply")) (\(stagedCount))",
+                isBusy: isApplying
+            ) {
                 if willApplySpoof {
                     showSpoofWarning = true
                 } else {
                     applyChanges()
                 }
-            } label: {
-                if isApplying {
-                    HStack { ProgressView(); Text(l10n.tr("siriai.apply") + "...") }
-                } else {
-                    Text(stagedCount == 0 ? l10n.tr("siriai.apply") : "\(l10n.tr("siriai.apply")) (\(stagedCount))")
-                }
             }
             .disabled(stagedCount == 0 || isApplying)
-
-            Button {
+            WPActionButton(title: l10n.tr("siriai.restart.respring"), prominent: false) {
                 manager.requestRespring()
-            } label: {
-                Label(l10n.tr("siriai.restart.respring"), systemImage: "arrow.counterclockwise")
             }
-
             Text(l10n.tr("siri.rebootHint"))
                 .font(.caption)
                 .foregroundColor(.secondary)
-        } footer: {
-            Text(l10n.tr("restart.options.message"))
         }
     }
 
@@ -188,6 +243,13 @@ struct SiriAITweaksView: View {
         guard on, spoofTarget == nil,
               loadedPlist.flatMap({ DeviceSpoofingManager.currentTarget(in: $0) }) == nil else { return }
         spoofTarget = DeviceSpoofingManager.targets.last
+    }
+
+    private func revertAll() {
+        siriAIStaged = false
+        appleIntelligenceStaged = false
+        spoofTarget = nil
+        applyChanges()
     }
 
     // MARK: - Current device state
