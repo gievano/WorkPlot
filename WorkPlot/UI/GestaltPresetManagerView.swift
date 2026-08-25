@@ -199,12 +199,12 @@ struct GestaltPresetManagerView: View {
     }
 
     private func createBackup() {
-        guard let plist = manager.readGestalt() else {
+        guard let data = manager.readGestaltData() else {
             manager.statusText = "Could not read gestalt to back up."
             return
         }
         do {
-            let backup = try GestaltBackupStore.create(from: plist)
+            let backup = try GestaltBackupStore.create(from: data)
             manager.refreshBackups()
             manager.statusText = "Backup \"\(backup.name)\" saved."
         } catch {
@@ -296,7 +296,7 @@ struct GestaltPresetManagerView: View {
                     Text(tweak.detail)
                         .font(.system(size: 11))
                         .foregroundStyle(.secondary)
-                        .lineLimit(3, truncatesLastVisibleLine: true)
+                        .lineLimit(3)
                 }
                 if tweak.isRisky || tweak.isExperimental {
                     HStack(spacing: 6) {
