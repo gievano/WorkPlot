@@ -3,6 +3,7 @@ import SwiftUI
 struct DeviceSpoofingView: View {
     @EnvironmentObject private var store: GestaltStore
     @State private var selected: SpoofTarget?
+    @State private var isConfiguring = false
     @State private var isBusy = false
     @State private var message: String?
     @State private var errorText: String?
@@ -18,6 +19,18 @@ struct DeviceSpoofingView: View {
         )
     }
 
+    /// Same caption contract as TweakCatalogTile: open panel reads
+    /// "Configuring"; otherwise show state or the current target.
+    private var spoofCaption: String {
+        if isConfiguring { return "Configuring" }
+        if store.isDeviceSpoofed { return "Spoofed" }
+        return selected?.marketingName ?? "None"
+    }
+
+    private func toggleConfiguration() {
+        withAnimation(.snappy) { isConfiguring.toggle() }
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -27,20 +40,56 @@ struct DeviceSpoofingView: View {
                         .foregroundStyle(Theme.caution)
                 }
 
-                SectionHeader("Configure Device Spoof")
-
-                Picker("Option", selection: selectionBinding) {
-                    ForEach(Array(allTargets.enumerated()), id: \.offset) { index, target in
-                        Text(target?.marketingName ?? "None").tag(index)
+                Button { toggleConfiguration() } label: {
+                    // Mirrors TweakCatalogTile 1:1 so the spoof card reads
+                    // exactly like a configurable tweak tile.
+                    VStack(alignment: .leading, spacing: 14) {
+                        HStack {
+                            Image(systemName: "iphone.and.arrow.forward")
+                                .font(.body.weight(.medium))
+                                .foregroundStyle(isConfiguring ? .white : .secondary)
+                            Spacer()
+                            Image(systemName: store.isDeviceSpoofed ? "checkmark.circle.fill" : "circle")
+                                .font(.caption)
+                                .foregroundStyle(isConfiguring ? .white : Color(uiColor: .tertiaryLabel))
+                        }
+                        Spacer(minLength: 8)
+                        Text("Device Spoof")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.primary)
+                            .lineLimit(2)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Text(spoofCaption)
+                            .font(.caption)
+                            .foregroundStyle(isConfiguring ? .white : .secondary)
+                            .lineLimit(2)
                     }
+                    .frame(maxWidth: .infinity, minHeight: 142, maxHeight: .infinity, alignment: .leading)
+                    .padding(16)
+                    .background(isConfiguring ? .white.opacity(0.14) : .clear, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                    .liquidGlass(cornerRadius: 22)
                 }
-                .pickerStyle(.wheel)
-                .frame(height: 138)
-                .liquidGlass()
+                .buttonStyle(.plain)
 
-                Label("Changes the reported device identity. Some spoof targets may break Face ID until reverted, so keep a snapshot handy. 'None' keeps the device's real identity.", systemImage: "exclamationmark.triangle")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                if isConfiguring {
+                    VStack(alignment: .leading, spacing: 12) {
+                        SectionHeader("Configure Device Spoof")
+
+                        Picker("Option", selection: selectionBinding) {
+                            ForEach(Array(allTargets.enumerated()), id: \.offset) { index, target in
+                                Text(target?.marketingName ?? "None").tag(index)
+                            }
+                        }
+                        .pickerStyle(.wheel)
+                        .frame(height: 138)
+                        .liquidGlass()
+
+                        Label("Changes the reported device identity. Some spoof targets may break Face ID until reverted, so keep a snapshot handy. 'None' keeps the device's real identity.", systemImage: "exclamationmark.triangle")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                }
 
                 ActionButton(title: "Apply Spoof") {
                     Task { await apply() }

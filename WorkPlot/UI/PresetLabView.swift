@@ -12,7 +12,6 @@ import UniformTypeIdentifiers
 struct PresetLabView: View {
     @ObservedObject private var manager = WPExploitManager.shared
     @ObservedObject private var store = PresetStore.shared
-    @ObservedObject private var l10n = L10n.shared
 
     @State private var pendingRiskyPreset: WorkPlotPreset?
     @State private var showRestartAlert = false
@@ -30,24 +29,24 @@ struct PresetLabView: View {
                 if !manager.sandboxGranted {
                     VStack(spacing: 12) {
                         Image(systemName: "lock.icloud").font(.largeTitle).foregroundColor(.orange)
-                        Text(l10n.tr("common.accessLocked"))
+                        Text("System access is locked. Grant the sandbox escape from Home.")
                             .multilineTextAlignment(.center)
                             .foregroundColor(.secondary)
                     }
                 } else {
                     List {
                         Section(
-                            header: Text(l10n.tr("preset.builtinHeader")),
-                            footer: Text(l10n.tr("preset.footer"))
+                            header: Text("Built-in Presets"),
+                            footer: Text("Built-in presets stage known MobileGestalt key sets. A backup is created automatically before each write.")
                         ) {
                             ForEach(store.builtinPresets) { preset in
                                 presetRow(preset)
                             }
                         }
 
-                        Section(header: Text(l10n.tr("preset.userHeader"))) {
+                        Section(header: Text("Your Presets")) {
                             if store.userPresets.isEmpty {
-                                Text(l10n.tr("preset.userEmpty"))
+                                Text("No saved presets yet.")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -63,42 +62,42 @@ struct PresetLabView: View {
                     }
                 }
             }
-            .navigationTitle(l10n.tr("preset.title"))
+            .navigationTitle("Preset Lab")
             .wpGlassContainer()
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         isShowingImporter = true
                     } label: {
-                        Label(l10n.tr("preset.importFile"), systemImage: "square.and.arrow.down")
+                        Label("Import Preset File", systemImage: "square.and.arrow.down")
                     }
                 }
             }
             .alert(
-                l10n.tr("preset.confirm.title"),
+                "Apply Risky Preset",
                 isPresented: Binding(
                     get: { pendingRiskyPreset != nil },
                     set: { if !$0 { pendingRiskyPreset = nil } }
                 )
             ) {
-                Button(l10n.tr("danger.spoof.continue"), role: .destructive) {
+                Button("Continue", role: .destructive) {
                     if let preset = pendingRiskyPreset {
                         applyPreset(preset)
                     }
                     pendingRiskyPreset = nil
                 }
-                Button(l10n.tr("common.cancel"), role: .cancel) { pendingRiskyPreset = nil }
+                Button("Cancel", role: .cancel) { pendingRiskyPreset = nil }
             } message: {
-                Text(l10n.tr("preset.confirm.message"))
+                Text("This preset writes risky keys to MobileGestalt. A backup is created first, but the change may affect system behavior.")
             }
             .alert(
-                l10n.tr("restart.rec.title"),
+                "Restart Recommended",
                 isPresented: $showRestartAlert
             ) {
-                Button(l10n.tr("siriai.restart.respring")) { manager.requestRespring() }
-                Button(l10n.tr("siriai.restart.later"), role: .cancel) {}
+                Button("Respring") { manager.requestRespring() }
+                Button("Later", role: .cancel) {}
             } message: {
-                Text(l10n.tr("restart.rec.message"))
+                Text("Restart SpringBoard or reboot so the applied values take effect.")
             }
             .fileImporter(
                 isPresented: $isShowingImporter,
@@ -109,7 +108,7 @@ struct PresetLabView: View {
                 case .success(let urls):
                     if let url = urls.first { importPreset(from: url) }
                 case .failure(let error):
-                    manager.statusText = String(format: l10n.tr("common.importFailedDetail"), error.localizedDescription)
+                    manager.statusText = String(format: "Import failed: %@", error.localizedDescription)
                 }
             }
             .sheet(item: $sharedExportURL) { item in
@@ -131,14 +130,14 @@ struct PresetLabView: View {
                     HStack(spacing: 4) {
                         Text(preset.name)
                         if preset.risky {
-                            Text(l10n.tr("common.risky")).font(.caption2).bold()
+                            Text("Risky").font(.caption2).bold()
                                 .foregroundStyle(Theme.caution)
                                 .padding(.horizontal, 4).padding(.vertical, 1)
                                 .background(Theme.caution.opacity(0.15))
                                 .cornerRadius(4)
                         }
                     }
-                    Text("\(String(format: l10n.tr("preset.author"), preset.author)) · \(String(format: l10n.tr("preset.keysCount"), preset.values.count))")
+                    Text("\(String(format: "by %@", preset.author)) · \(String(format: "%d keys", preset.values.count))")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -158,10 +157,10 @@ struct PresetLabView: View {
 
     private func applyPreset(_ preset: WorkPlotPreset) {
         if store.apply(preset) {
-            manager.statusText = "\(preset.name) OK. \(l10n.tr("restart.rec.title"))"
+            manager.statusText = "\(preset.name) OK. \("Restart Recommended")"
             showRestartAlert = true
         } else {
-            manager.statusText = l10n.tr("preset.applyFailed")
+            manager.statusText = "Preset apply failed."
         }
     }
 
@@ -173,9 +172,9 @@ struct PresetLabView: View {
         do {
             let data = try Data(contentsOf: url)
             let preset = try store.importData(data)
-            manager.statusText = String(format: l10n.tr("preset.importOk"), preset.name)
+            manager.statusText = String(format: "Imported preset %@", preset.name)
         } catch {
-            manager.statusText = "\(l10n.tr("preset.importFail")) \(error.localizedDescription)"
+            manager.statusText = "\("Import failed:") \(error.localizedDescription)"
         }
     }
 }

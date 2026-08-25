@@ -164,7 +164,7 @@ enum BuiltinPresets {
             ]
         ),
         WorkPlotPreset(
-            name: "Reset Wajar",
+            name: "Sensible Reset",
             author: "WorkPlot",
             values: [
                 "EqrsVvjcYDdxHBiQmGhAWw": .integer(0),

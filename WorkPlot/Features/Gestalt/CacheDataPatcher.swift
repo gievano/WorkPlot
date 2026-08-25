@@ -113,13 +113,13 @@ enum CacheDataPatchError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .cacheDataMissing:
-            L10n.shared.tr("cachedata.error.missing")
+            "CacheData is missing from the plist."
         case .patternNotFound:
-            L10n.shared.tr("cachedata.error.notfound")
+            "The expected byte pattern was not found in CacheData."
         case .patternAmbiguous(let count):
-            String(format: L10n.shared.tr("cachedata.error.ambiguous"), count)
+            String(format: "Pattern matched %d times; refusing an ambiguous patch.", count)
         case .decodeFailed:
-            L10n.shared.tr("cachedata.error.decode")
+            "CacheData could not be decoded."
         }
     }
 }
