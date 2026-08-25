@@ -29,9 +29,25 @@ struct AppContainersView: View {
         NavigationView {
             Group {
                 if !manager.sandboxGranted {
-                    Label(l10n.tr("home.locked"), systemImage: "lock")
-                        .font(.system(size: 15))
-                        .foregroundColor(.secondary)
+                    VStack(spacing: 10) {
+                        Label(l10n.tr("home.locked"), systemImage: "lock")
+                            .font(.system(size: 15))
+                            .foregroundColor(.secondary)
+                        if !manager.statusText.isEmpty {
+                            Text(manager.statusText)
+                                .font(.system(size: 12))
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
+                        }
+                        Button { manager.requestAccess() } label: {
+                            Label("Coba Akses", systemImage: "arrow.clockwise")
+                                .font(.system(size: 14, weight: .semibold))
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 9)
+                        .glassAction()
+                    }
                 } else if isLoading || isCleaningAll {
                     VStack(spacing: 8) {
                         ProgressView()
@@ -68,7 +84,7 @@ struct AppContainersView: View {
                     .disabled(isLoading || isCleaningAll)
                 }
             }
-            .onAppear(perform: reloadContainers)
+            .onAppear { manager.requestAccess(); reloadContainers() }
         }
     }
 
