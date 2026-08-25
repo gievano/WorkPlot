@@ -2,11 +2,10 @@
 //  AppIconCatalog.swift
 //  WorkPlot
 //
-//  Alternate icons are data-driven so adding one never touches Swift: drop
-//  its `<id>.appiconset` + `<id>Preview.imageset` into Assets.xcassets,
-//  register `<id>` under Info.plist's CFBundleAlternateIcons, and add a row
-//  to Resources/AppIcons.json. scripts/add_app_icon.py does all of that from
-//  one source image.
+//  Alternate icons are registered here (see `standard` + `alternates`) and
+//  declared in Support/Info.plist's CFBundleAlternateIcons. Each alternate
+//  needs a `<id>.appiconset` plus a same-named `<id>Preview.imageset`
+//  thumbnail for the in-app picker.
 //
 
 import Foundation
@@ -45,16 +44,11 @@ enum AppIconCatalog {
     /// `AppIcon.appiconset` / `Logo.imageset` directly rather than the
     /// `<id>` / `<id>Preview` convention scripted alternates follow, and
     /// `setAlternateIconName(nil)` — not its id — is what restores it.
-    static let standard = AppIconOption(id: "AppIcon", title: "Standard", creator: "Nouvborne")
+    static let standard = AppIconOption(id: "AppIcon", title: "WorkPlot", creator: "Gievano")
 
-    static let alternates: [AppIconOption] = {
-        guard let url = Bundle.main.url(forResource: "AppIcons", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let options = try? JSONDecoder().decode([AppIconOption].self, from: data) else {
-            return []
-        }
-        return options
-    }()
+    static let alternates: [AppIconOption] = [
+        AppIconOption(id: "WPWorkplot2", title: "WorkPlot 2", creator: "Adnan")
+    ]
 
     static var all: [AppIconOption] { [standard] + alternates }
 

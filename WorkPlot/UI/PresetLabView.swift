@@ -132,9 +132,9 @@ struct PresetLabView: View {
                         Text(preset.name)
                         if preset.risky {
                             Text(l10n.tr("common.risky")).font(.caption2).bold()
-                                .foregroundColor(.red)
+                                .foregroundStyle(Theme.caution)
                                 .padding(.horizontal, 4).padding(.vertical, 1)
-                                .background(Color.red.opacity(0.15))
+                                .background(Theme.caution.opacity(0.15))
                                 .cornerRadius(4)
                         }
                     }

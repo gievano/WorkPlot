@@ -42,6 +42,7 @@ struct HomeView: View {
                             catalog
                             if !selectedTweaks.isEmpty { activeConfiguration }
                             toolsSection
+                            respringSection
                         }
                         .padding(.horizontal, Theme.pagePadding)
                         .padding(.bottom, 32)
@@ -210,6 +211,15 @@ struct HomeView: View {
             NavigationLink { SessionLogView() } label: { toolRow("Session Log", "Debug logs", "doc.plaintext") }
             NavigationLink { DeviceSpoofingView() } label: { toolRow("Device Spoof", "Spoof device identity", "iphone.and.arrow.forward") }
             Button { showUpdater = true } label: { toolRow("Check for Updates", "Updater", "arrow.down.app") }
+        }
+    }
+
+    private var respringSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader("System")
+            ActionButton(title: "Respring", systemImage: "arrow.clockwise") {
+                RespringHelper.shared.trigger()
+            }
         }
     }
 

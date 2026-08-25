@@ -12,60 +12,11 @@
 	<dict>
 		<key>CFBundleAlternateIcons</key>
 		<dict>
-			<key>AppIconCosmic</key>
+			<key>WPWorkplot2</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
 				<array>
-					<string>AppIconCosmic</string>
-				</array>
-			</dict>
-			<key>AppIconCrackCat</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>AppIconCrackCat</string>
-				</array>
-			</dict>
-			<key>AppIconEvil</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>AppIconEvil</string>
-				</array>
-			</dict>
-			<key>AppIconEvilSpecial</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>AppIconEvilSpecial</string>
-				</array>
-			</dict>
-			<key>AppIconGold</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>AppIconGold</string>
-				</array>
-			</dict>
-			<key>AppIconLemonz</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>AppIconLemonz</string>
-				</array>
-			</dict>
-			<key>AppIconModernized</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>AppIconModernized</string>
-				</array>
-			</dict>
-			<key>AppIconWojak</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>AppIconWojak</string>
+					<string>WPWorkplot2</string>
 				</array>
 			</dict>
 		</dict>

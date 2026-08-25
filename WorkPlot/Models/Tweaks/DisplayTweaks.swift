@@ -5,16 +5,14 @@ enum DisplayTweaks {
     static let all: [Tweak] = [
         Tweak(
             id: "dynamic-island",
-            title: "Dynamic Island",
-            subtitle: "Force the Dynamic Island capability bit directly.",
+            title: "Disable Dynamic Island",
+            subtitle: "Hide the Dynamic Island completely (respring to apply).",
             category: .display,
-            symbol: "rectangle.inset.filled",
+            symbol: "eye.slash",
             isRisky: false,
-            notes: nil,
-            modifications: [
-                GestaltModification(key: "YlEtTtHlNesRBMal1CqRaA",
-                                    subkey: nil, value: .int(1))
-            ]
+            notes: "Writes SBSuppressDynamicIslandCompletely to the SpringBoard preferences.",
+            springBoardSuppression: true,
+            modifications: []
         ),
         Tweak(
             id: "aod",

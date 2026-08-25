@@ -7,32 +7,52 @@ struct CarPlayWallpaperView: View {
     @State private var status: String?
 
     var body: some View {
-        Form {
-            Section {
-                Text(supported ? "CarPlay didukung" : "CarPlay tidak didukung")
-                    .foregroundStyle(supported ? .green : .red)
-                if !cacheVersion.isEmpty {
-                    Text("Cache version: \(cacheVersion)")
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                SectionHeader("Status")
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(supported ? "CarPlay didukung" : "CarPlay tidak didukung")
+                        .foregroundStyle(supported ? Theme.affirmative : Theme.caution)
+                    if !cacheVersion.isEmpty {
+                        Text("Cache version: \(cacheVersion)")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
                 }
-            } header: { Text("Status") }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(18)
+                .liquidGlass()
 
-            Section {
-                if names.isEmpty {
-                    Text("Belum ada wallpaper CarPlay tersimpan")
+                SectionHeader("Wallpaper tersedia")
+                VStack(alignment: .leading, spacing: 8) {
+                    if names.isEmpty {
+                        Text("Belum ada wallpaper CarPlay tersimpan")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(names, id: \.self) { name in
+                            Text(name).font(.footnote)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(18)
+                .liquidGlass()
+
+                ActionButton(title: "Muat ulang", systemImage: "arrow.clockwise") { reload() }
+
+                if let status {
+                    Text(status)
+                        .font(.footnote)
                         .foregroundStyle(.secondary)
-                } else {
-                    ForEach(names, id: \.self) { Text($0) }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
-            } header: { Text("Wallpaper tersedia") }
-
-            Section {
-                Button("Muat ulang") { reload() }
             }
-            if let status {
-                Section { Text(status).font(.footnote) }
-            }
+            .padding(Theme.pagePadding)
         }
+        .background(Color(uiColor: .systemGroupedBackground))
         .navigationTitle("CarPlay Wallpaper")
+        .navigationBarTitleDisplayMode(.inline)
         .onAppear { reload() }
     }
 
