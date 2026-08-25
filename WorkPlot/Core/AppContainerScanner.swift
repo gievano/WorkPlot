@@ -146,7 +146,7 @@ enum AppContainerScanner {
         guard path.hasPrefix("/") else { return nil }
         var cPath = path.utf8CString
         let result = cPath.withUnsafeMutableBufferPointer { buffer in
-            bad_query(buffer.baseAddress, true, nil, false)
+            bad_query(buffer.baseAddress, true, nil, false, nil)
         }
         return result >= 0 ? result : nil
     }
