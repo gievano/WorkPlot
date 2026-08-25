@@ -244,8 +244,6 @@ struct HomeView: View {
             ToolDef(id: "rdarfix", title: "RDARFix", subtitle: "Edit resolusi layar lewat canvas exploit", symbol: "wand.and.stars", category: .display, destination: { AnyView(RDARFixView()) }),
             ToolDef(id: "carplay", title: "CarPlay Wallpaper", subtitle: "Ganti wallpaper layar CarPlay", symbol: "car", category: .display, destination: { AnyView(CarPlayWallpaperView()) }),
             ToolDef(id: "respring", title: "Respring", subtitle: "Restart SpringBoard tanpa reboot", symbol: "arrow.clockwise", category: .system, action: { RespringHelper.shared.trigger() }),
-            ToolDef(id: "appcontainers", title: "App Containers", subtitle: "Kelola container & data aplikasi", symbol: "shippingbox", category: .system, destination: { AnyView(AppContainersView()) }),
-            ToolDef(id: "filepatch", title: "FilePatch 3105", subtitle: "Sunting file sistem read/write", symbol: "doc.badge.gearshape", category: .system, destination: { AnyView(FilePatchWorkspaceView()) }),
             ToolDef(id: "devicespoof", title: "Device Spoof", subtitle: "Spoof identitas perangkat", symbol: "iphone.and.arrow.forward", category: .system, destination: { AnyView(DeviceSpoofingView()) }),
             ToolDef(id: "gestalteditor", title: "Gestalt Field Editor", subtitle: "Edit cache MobileGestalt", symbol: "slider.horizontal.3", category: .gestalt, destination: { AnyView(GestaltFieldEditorView()) }),
             ToolDef(id: "presetlab", title: "Preset Lab", subtitle: "Racik & simpan preset Gestalt", symbol: "flask", category: .gestalt, destination: { AnyView(PresetLabView()) }),
