@@ -22,7 +22,7 @@ WorkPlot edits MobileGestalt values and system files on iOS 27 betas without a j
 
 ![WorkPlot](docs/assets/screenshot.png)
 
-## What's new since Ketamine
+## Changelog
 
 WorkPlot keeps Ketamine's catalog and exploit core, and adds:
 
