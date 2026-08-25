@@ -94,3 +94,50 @@ struct WPToast: View {
             .padding(.bottom, 8)
     }
 }
+
+/// Labeled key/value row used inside info cards (device build, method,
+/// status, etc.). Value color carries state (green = ok, orange = warn).
+struct WPInfoRow: View {
+    let label: String
+    var value: String = "—"
+    var valueColor: Color = .primary
+
+    var body: some View {
+        HStack {
+            Text(label).font(.subheadline)
+            Spacer()
+            Text(value)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(valueColor)
+                .multilineTextAlignment(.trailing)
+        }
+    }
+}
+
+/// Centered, icon-led placeholder for empty / locked / error states so every
+/// list and detail screen reads the same when there is nothing to show.
+struct WPEmptyState: View {
+    let icon: String
+    let title: String
+    var message: String?
+    var tint: Color = .secondary
+
+    var body: some View {
+        VStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 34, weight: .semibold))
+                .foregroundStyle(tint)
+            Text(title)
+                .font(.headline)
+                .multilineTextAlignment(.center)
+            if let message {
+                Text(message)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
+    }
+}

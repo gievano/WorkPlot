@@ -10,52 +10,19 @@ struct StatusDashboardView: View {
 
     var body: some View {
         NavigationView {
-            Form {
-                Section(header: Text(l10n.tr("home.info"))) {
-                    HStack { Text(l10n.tr("home.buildLabel")); Spacer(); Text(manager.osBuild.isEmpty ? "—" : manager.osBuild).foregroundColor(.blue) }
-                    HStack { Text(l10n.tr("status.methodLabel")); Spacer(); Text(manager.exploitMethod.isEmpty ? "—" : manager.exploitMethod).foregroundColor(manager.sandboxGranted ? .green : .orange) }
-                    HStack { Text(l10n.tr("home.statusLabel")); Spacer(); Text(manager.sandboxGranted ? l10n.tr("home.active") : l10n.tr("home.locked")).foregroundColor(manager.sandboxGranted ? .green : .orange) }
-                    if manager.showsSigningHint {
-                        Text(l10n.tr("status.signingHint"))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+            ScrollView {
+                VStack(alignment: .leading, spacing: Theme.cardSpacing) {
+                    hero
+                    infoCard
+                    actionsCard
+                    canvasCard
+                    logCard
                 }
-                Section(header: Text(l10n.tr("home.actionsHeader"))) {
-                    Button(l10n.tr("status.rdarfix")) {
-                        runFixRDAR()
-                    }
-                    .disabled(!manager.sandboxGranted)
-                    // Respring tetap di menu utama: fungsinya menyegarkan UI saja.
-                    Button(l10n.tr("status.respring.refresh")) { manager.requestRespring() }
-                }
-                Section(header: Text(l10n.tr("rdar.custom.header")),
-                        footer: Text(l10n.tr("rdar.custom.footer"))) {
-                    HStack {
-                        TextField(l10n.tr("rdar.custom.width"), text: $customWidth)
-                            .keyboardType(.numberPad)
-                        TextField(l10n.tr("rdar.custom.height"), text: $customHeight)
-                            .keyboardType(.numberPad)
-                    }
-                    Button(l10n.tr("rdar.custom.apply")) {
-                        guard let width = Int(customWidth), let height = Int(customHeight),
-                              width > 0, height > 0 else {
-                            manager.statusText = l10n.tr("rdar.custom.invalid")
-                            return
-                        }
-                        applyCanvasEveryRoute(width: width, height: height, note: nil)
-                    }
-                    .disabled(!manager.sandboxGranted || isWorking)
-                }
-                Section(header: Text(l10n.tr("home.log"))) {
-                    Text(manager.statusText)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(manager.statusText.hasPrefix(l10n.failPrefix)
-                                         || manager.statusText.contains("failed (")
-                                         || manager.statusText.contains("not visible on disk") ? .orange : .green)
-                }
+                .padding(18)
+                .padding(.bottom, 24)
             }
-            .navigationTitle("WorkPlot")
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
             .wpGlassContainer()
             .scrollDismissesKeyboard(.immediately)
             .toolbar {
@@ -68,6 +35,136 @@ struct StatusDashboardView: View {
             // full restart with honest manual guidance).
             .heavyRestartFlow(isPresented: $showRestartAlert)
         }
+    }
+
+    // MARK: - Sections
+
+    private var hero: some View {
+        HStack(spacing: 14) {
+            Image(systemName: "wand.and.stars.inverse")
+                .font(.system(size: 30, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 56, height: 56)
+                .background(
+                    LinearGradient(colors: [Color.accentColor, Color.accentColor.opacity(0.55)],
+                                  startPoint: .topLeading, endPoint: .bottomTrailing),
+                    in: RoundedRectangle(cornerRadius: 16, style: .continuous)
+                )
+            VStack(alignment: .leading, spacing: 2) {
+                Text("WorkPlot").font(.title.bold())
+                Text("Status & quick actions").font(.subheadline).foregroundStyle(.secondary)
+            }
+            Spacer()
+            statusPill
+        }
+        .padding(18)
+        .liquidGlass(cornerRadius: 22)
+    }
+
+    private var statusPill: some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(manager.sandboxGranted ? Color.green : Color.orange)
+                .frame(width: 8, height: 8)
+            Text(manager.sandboxGranted ? l10n.tr("home.active") : l10n.tr("home.locked"))
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(manager.sandboxGranted ? .green : .orange)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .liquidGlass(cornerRadius: 12)
+    }
+
+    private var infoCard: some View {
+        WPCard {
+            VStack(alignment: .leading, spacing: 12) {
+                WPSectionHeader(title: l10n.tr("home.info"))
+                WPInfoRow(
+                    label: l10n.tr("home.buildLabel"),
+                    value: manager.osBuild.isEmpty ? "—" : manager.osBuild,
+                    valueColor: .blue
+                )
+                WPInfoRow(
+                    label: l10n.tr("status.methodLabel"),
+                    value: manager.exploitMethod.isEmpty ? "—" : manager.exploitMethod,
+                    valueColor: manager.sandboxGranted ? .green : .orange
+                )
+                WPInfoRow(
+                    label: l10n.tr("home.statusLabel"),
+                    value: manager.sandboxGranted ? l10n.tr("home.active") : l10n.tr("home.locked"),
+                    valueColor: manager.sandboxGranted ? .green : .orange
+                )
+                if manager.showsSigningHint {
+                    Text(l10n.tr("status.signingHint"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+
+    private var actionsCard: some View {
+        WPCard {
+            VStack(alignment: .leading, spacing: 12) {
+                WPSectionHeader(title: l10n.tr("home.actionsHeader"))
+                WPActionButton(title: l10n.tr("status.rdarfix")) { runFixRDAR() }
+                    .disabled(!manager.sandboxGranted)
+                // Respring tetap di menu utama: fungsinya menyegarkan UI saja.
+                WPActionButton(title: l10n.tr("status.respring.refresh"), prominent: false) {
+                    manager.requestRespring()
+                }
+            }
+        }
+    }
+
+    private var canvasCard: some View {
+        WPCard {
+            VStack(alignment: .leading, spacing: 12) {
+                WPSectionHeader(
+                    title: l10n.tr("rdar.custom.header"),
+                    subtitle: l10n.tr("rdar.custom.footer")
+                )
+                HStack(spacing: 12) {
+                    TextField(l10n.tr("rdar.custom.width"), text: $customWidth)
+                        .keyboardType(.numberPad)
+                        .padding(12)
+                        .liquidGlass(cornerRadius: 12)
+                    TextField(l10n.tr("rdar.custom.height"), text: $customHeight)
+                        .keyboardType(.numberPad)
+                        .padding(12)
+                        .liquidGlass(cornerRadius: 12)
+                }
+                WPActionButton(title: l10n.tr("rdar.custom.apply"), prominent: false) { applyCanvas() }
+                    .disabled(!manager.sandboxGranted || isWorking)
+            }
+        }
+    }
+
+    private var logCard: some View {
+        WPCard {
+            VStack(alignment: .leading, spacing: 10) {
+                WPSectionHeader(title: l10n.tr("home.log"))
+                Text(manager.statusText)
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(
+                        manager.statusText.hasPrefix(l10n.failPrefix)
+                            || manager.statusText.contains("failed (")
+                            || manager.statusText.contains("not visible on disk") ? .orange : .green
+                    )
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+    }
+
+    // MARK: - Canvas
+
+    private func applyCanvas() {
+        guard let width = Int(customWidth), let height = Int(customHeight),
+              width > 0, height > 0 else {
+            manager.statusText = l10n.tr("rdar.custom.invalid")
+            return
+        }
+        applyCanvasEveryRoute(width: width, height: height, note: nil)
     }
 
     /// One tap writes BOTH known canvas routes - MobileGestalt's

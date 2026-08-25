@@ -11,9 +11,7 @@ struct BackupRestoreManagerView: View {
         NavigationView {
             Group {
                 if manager.backups.isEmpty {
-                    Text(L10n.shared.tr("backup.empty"))
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(.secondary)
+                    WPEmptyState(icon: "tray", title: L10n.shared.tr("backup.empty"))
                 } else {
                     List {
                         ForEach(manager.backups) { backup in

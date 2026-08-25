@@ -29,24 +29,14 @@ struct AppContainersView: View {
         NavigationView {
             Group {
                 if !manager.sandboxGranted {
-                    Label(l10n.tr("home.locked"), systemImage: "lock")
-                        .font(.system(size: 15))
-                        .foregroundColor(.secondary)
+                    WPEmptyState(icon: "lock", title: l10n.tr("home.locked"))
                 } else if isLoading || isCleaningAll {
-                    VStack(spacing: 8) {
-                        ProgressView()
-                        Text(l10n.tr("ac.loading"))
-                            .font(.system(size: 15))
-                            .foregroundColor(.secondary)
-                    }
+                    ProgressView()
+                        .controlSize(.large)
                 } else if let loadError {
-                    Text(loadError)
-                        .font(.system(size: 15))
-                        .foregroundColor(.red)
+                    WPEmptyState(icon: "exclamationmark.triangle", title: loadError, tint: .red)
                 } else if filteredContainers.isEmpty {
-                    Label(l10n.tr("ac.empty"), systemImage: "shippingbox")
-                        .font(.system(size: 15))
-                        .foregroundColor(.secondary)
+                    WPEmptyState(icon: "shippingbox", title: l10n.tr("ac.empty"))
                 } else {
                     containerList
                 }
