@@ -57,7 +57,7 @@ struct HomeView: View {
 
     private var commandStatus: some View {
         HStack(alignment: .center, spacing: 16) {
-            AppMark(name: "ConsoleGlyph", size: 52, tint: store.enabledCount == 0 ? .secondary : Theme.accent)
+            AppMark(name: "ConsoleGlyph", size: 52, tint: store.enabledCount == 0 ? .secondary : .white)
             VStack(alignment: .leading, spacing: 4) {
                 Text(store.enabledCount == 0 ? "No changes staged" : "\(store.enabledCount) changes staged")
                     .font(.headline)
@@ -96,7 +96,7 @@ struct HomeView: View {
                 .foregroundStyle(isSelected ? .primary : .secondary)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 10)
-                .background(isSelected ? Theme.accent.opacity(0.14) : .clear, in: Capsule())
+                .background(isSelected ? .white.opacity(0.14) : .clear, in: Capsule())
         }
         .buttonStyle(.plain)
     }
@@ -304,13 +304,13 @@ struct HomeView: View {
                 ForEach(Array(selectedTweaks.prefix(4).enumerated()), id: \.element.id) { index, tweak in
                     HStack(spacing: 12) {
                         Image(systemName: tweak.symbol)
-                            .foregroundStyle(Theme.accent)
+                            .foregroundStyle(.white)
                             .frame(width: 24)
                         Text(tweak.title)
                         Spacer()
                         Image(systemName: "checkmark")
                             .font(.caption.weight(.bold))
-                            .foregroundStyle(Theme.accent)
+                            .foregroundStyle(.white)
                     }
                     .font(.subheadline.weight(.medium))
                     .padding(.vertical, 13)
@@ -338,7 +338,7 @@ struct HomeView: View {
             VStack(alignment: .leading, spacing: 14) {
                 Image(systemName: symbol)
                     .font(.body.weight(.medium))
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(.white)
                 Spacer(minLength: 8)
                 Text(title)
                     .font(.subheadline.weight(.semibold))
@@ -397,7 +397,7 @@ struct TweakCatalogTile: View {
         // expands with it.
         .frame(maxWidth: .infinity, minHeight: 142, maxHeight: .infinity, alignment: .leading)
         .padding(16)
-        .background(tweak.isEnabled ? Theme.accent.opacity(0.14) : .clear, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .background(tweak.isEnabled ? .white.opacity(0.14) : .clear, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
         .liquidGlass(cornerRadius: 22)
     }
 }

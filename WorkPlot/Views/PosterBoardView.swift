@@ -94,7 +94,7 @@ struct PosterBoardView: View {
             Spacer(minLength: 42)
             Image(systemName: "square.stack.3d.up")
                 .font(.system(size: 42, weight: .light))
-                .foregroundStyle(Theme.accent)
+                .foregroundStyle(.white)
             VStack(alignment: .leading, spacing: 8) {
                 Text("Your wallpaper shelf is empty")
                     .font(.title2.weight(.semibold))
@@ -109,7 +109,7 @@ struct PosterBoardView: View {
                     .padding(.vertical, 13)
             }
             .glassAction(prominent: true)
-            .tint(Theme.accent)
+            .tint(.white)
         }
     }
 
@@ -127,7 +127,7 @@ struct PosterBoardView: View {
                     Image(systemName: "plus.circle.fill").font(.title3)
                 }
                 .buttonStyle(.plain)
-                .foregroundStyle(Theme.accent)
+                .foregroundStyle(.white)
             }
             VStack(spacing: 0) {
                 ForEach(Array(pbManager.selectedTendies.enumerated()), id: \.element) { index, tendie in
@@ -165,7 +165,7 @@ struct PosterBoardView: View {
                 showWallpaperGallery = true
             }
             .font(.subheadline.weight(.semibold))
-            .foregroundStyle(Theme.accent)
+            .foregroundStyle(.white)
         }
         .padding(.top, 8)
     }
@@ -178,7 +178,7 @@ struct PosterBoardView: View {
             .font(.body.weight(.semibold))
             .frame(maxWidth: .infinity)
             .glassAction(prominent: true)
-            .tint(Theme.accent)
+            .tint(.white)
             .disabled(isBusy)
         }
         .padding(.horizontal, Theme.pagePadding)

@@ -8,9 +8,9 @@ struct AppIcon: Identifiable {
 
     static var all: [AppIcon] { [
         AppIcon(id: "", titleKey: "WorkPlot", subtitleKey: "Default",
-                colors: [.blue, .indigo]),
+                colors: [.white, .indigo]),
         AppIcon(id: "WPWorkplot2", titleKey: "WorkPlot 2", subtitleKey: "Custom",
-                colors: [.blue, .purple])
+                colors: [.white, .purple])
         ]
     }
 
@@ -92,13 +92,13 @@ struct AppIconSwitcherSheet: View {
                         if currentAltName == icon.id {
                             Image(systemName: "checkmark.circle.fill")
                                 .font(.title3)
-                                .foregroundStyle(.white, .blue)
+                                .foregroundStyle(.white, Color.black.opacity(0.6))
                                 .offset(x: 6, y: 6)
                         }
                     }
                     .overlay(
                         RoundedRectangle(cornerRadius: 22)
-                            .strokeBorder(currentAltName == icon.id ? Color.blue : .clear, lineWidth: 3)
+                            .strokeBorder(currentAltName == icon.id ? Color.white : .clear, lineWidth: 3)
                     )
                 VStack(spacing: 2) {
                     Text(icon.title)

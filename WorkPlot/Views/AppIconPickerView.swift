@@ -39,7 +39,7 @@ struct AppIconPickerView: View {
                     if appIcon == option.id {
                         Image(systemName: "checkmark")
                             .font(.body.weight(.semibold))
-                            .foregroundStyle(Theme.accent)
+                            .foregroundStyle(.white)
                     }
                 }
                 .padding(.vertical, 4)

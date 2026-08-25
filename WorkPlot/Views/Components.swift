@@ -3,7 +3,7 @@ import SwiftUI
 struct AppMark: View {
     let name: String
     let size: CGFloat
-    var tint: Color = Theme.accent
+    var tint: Color = .white
 
     var body: some View {
         Image(name)
@@ -60,7 +60,7 @@ struct ActionButton: View {
             .frame(maxWidth: .infinity)
         }
         .glassAction(prominent: true)
-        .tint(Theme.accent)
+        .tint(.white)
         .controlSize(.large)
         .disabled(disabled || isBusy)
     }
