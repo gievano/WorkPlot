@@ -21,7 +21,7 @@ struct CarPlayWallpaperView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(18)
-                .liquidGlass()
+                .background(Color(uiColor: .tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
 
                 SectionHeader("Wallpaper tersedia")
                 VStack(alignment: .leading, spacing: 8) {
@@ -37,7 +37,7 @@ struct CarPlayWallpaperView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(18)
-                .liquidGlass()
+                .background(Color(uiColor: .tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
 
                 ActionButton(title: "Muat ulang", systemImage: "arrow.clockwise") { reload() }
 

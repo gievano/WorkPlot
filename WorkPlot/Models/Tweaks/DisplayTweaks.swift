@@ -5,6 +5,19 @@ enum DisplayTweaks {
     static let all: [Tweak] = [
         Tweak(
             id: "dynamic-island",
+            title: "Dynamic Island",
+            subtitle: "Force the Dynamic Island capability bit directly.",
+            category: .display,
+            symbol: "rectangle.inset.filled",
+            isRisky: false,
+            notes: nil,
+            modifications: [
+                GestaltModification(key: "YlEtTtHlNesRBMal1CqRaA",
+                                    subkey: nil, value: .int(1))
+            ]
+        ),
+        Tweak(
+            id: "disable-dynamic-island",
             title: "Disable Dynamic Island",
             subtitle: "Hide the Dynamic Island completely (respring to apply).",
             category: .display,

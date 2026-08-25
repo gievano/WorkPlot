@@ -25,14 +25,14 @@ struct RDARFixView: View {
                     }
                 }
                 .padding(18)
-                .liquidGlass()
+                .background(Color(uiColor: .tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
 
                 SectionHeader("Info")
                 Text("Menulis ulang route canvas (MobileGestalt MainScreenCanvasSizes + plist IOMobileGraphicsFamily) agar resolusi layar berubah tanpa reboot.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .padding(18)
-                    .liquidGlass()
+                    .background(Color(uiColor: .tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             }
             .padding(Theme.pagePadding)
         }
