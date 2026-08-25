@@ -50,7 +50,7 @@ struct CreditsView: View {
                     tiktok: "https://www.tiktok.com/@lsnguyyniu"),
     ] }
 
-    private let thanks = ["Mond", "Ketamine", "Toto"]
+    private let thanks = ["Mond", "WorkPlot", "Toto"]
 
     @State private var tiktokLink: CreditsLink?
     @State private var showTikTokDialog = false

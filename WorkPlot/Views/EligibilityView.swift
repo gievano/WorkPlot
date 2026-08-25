@@ -78,7 +78,7 @@ struct EligibilityView: View {
     private var explanation: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("How it works").font(.subheadline.weight(.semibold))
-            Text("Ketamine merges these answers into the existing eligibility plist. It keeps unrelated state intact and saves the original file before the first change.")
+            Text("WorkPlot merges these answers into the existing eligibility plist. It keeps unrelated state intact and saves the original file before the first change.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }

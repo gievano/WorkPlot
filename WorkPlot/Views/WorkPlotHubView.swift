@@ -11,10 +11,17 @@ struct WorkPlotHubView: View {
                     NavigationLink("FilePatch 3105", destination: FilePatchWorkspaceView())
                     NavigationLink("App Containers", destination: AppContainersView())
                     NavigationLink("CarPlay Wallpaper", destination: CarPlayWallpaperView())
+                    NavigationLink("Gestalt Field Editor", destination: GestaltFieldEditorView())
+                    NavigationLink("Preset Lab", destination: PresetLabView())
+                    NavigationLink("Gestalt Presets", destination: GestaltPresetManagerView())
                 }
                 Section("Logs & About") {
                     NavigationLink("Session Log", destination: SessionLogView())
                     NavigationLink("Credits", destination: CreditsView())
+                }
+                Section {
+                    Button("Ganti App Icon") { showIconSwitcher = true }
+                    Button("Check for Updates") { showUpdater = true }
                 }
                 Section {
                     Button("Check for Updates") { showUpdater = true }

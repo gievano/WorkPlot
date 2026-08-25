@@ -14,7 +14,7 @@ struct UnsupportedView: View {
                 .frame(width: 64, height: 64)
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             VStack(alignment: .leading, spacing: 8) {
-                Text("Ketamine cannot run here")
+                Text("WorkPlot cannot run here")
                     .font(.title2.weight(.semibold))
                 Text(reason)
                     .font(.subheadline)

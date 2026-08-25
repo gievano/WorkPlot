@@ -1,6 +1,6 @@
 //
 //  NuggetWallpaperGalleryView.swift
-//  Ketamine
+//  WorkPlot
 //
 //  Browses the Nugget-Wallpapers catalogs and downloads picked tendies packs
 //  straight into the PosterBoard install queue.

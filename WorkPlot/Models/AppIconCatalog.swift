@@ -1,6 +1,6 @@
 //
 //  AppIconCatalog.swift
-//  Ketamine
+//  WorkPlot
 //
 //  Alternate icons are data-driven so adding one never touches Swift: drop
 //  its `<id>.appiconset` + `<id>Preview.imageset` into Assets.xcassets,

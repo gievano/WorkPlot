@@ -5,8 +5,8 @@ import ObjectiveC
 import UniformTypeIdentifiers
 
 extension UIDocumentPickerViewController {
-    @objc func ketamine_init(forOpeningContentTypes contentTypes: [UTType], asCopy: Bool) -> UIDocumentPickerViewController {
-        ketamine_init(forOpeningContentTypes: contentTypes, asCopy: true)
+    @objc func workplot_init(forOpeningContentTypes contentTypes: [UTType], asCopy: Bool) -> UIDocumentPickerViewController {
+        workplot_init(forOpeningContentTypes: contentTypes, asCopy: true)
     }
 }
 
@@ -27,7 +27,7 @@ struct PosterBoardView: View {
     private static let swizzleOnce: Void = {
         let replacement = class_getInstanceMethod(
             UIDocumentPickerViewController.self,
-            #selector(UIDocumentPickerViewController.ketamine_init(forOpeningContentTypes:asCopy:))
+            #selector(UIDocumentPickerViewController.workplot_init(forOpeningContentTypes:asCopy:))
         )!
         let original = class_getInstanceMethod(
             UIDocumentPickerViewController.self,

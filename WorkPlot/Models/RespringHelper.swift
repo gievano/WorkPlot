@@ -1,6 +1,6 @@
 //
 //  RespringHelper.swift
-//  Ketamine
+//  WorkPlot
 //
 //  NeoSpring-style instant respring (WebKit GPU crash). Web approach
 //  developed by @neonmodder123, ported to Swift by @skadz108, as used in
