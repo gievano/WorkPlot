@@ -7,6 +7,7 @@ All notable changes to WorkPlot. Newest first.
 ### Changed
 - 🛠️ Every screen is now English only, and status/error messages render properly instead of placeholder strings like "Common Failprefix".
 - 📱 Device Spoof: tapping the card expands the wheel picker inline, matching the subtype tweak configuration style.
+- 📱 Device Spoof now lives in the tweak catalog as a tile — tap to toggle, wheel picker inline, applied with the staged batch (full identity blast unchanged).
 - 🧾 Credits trimmed: dropped the 3105 entry after its feature was removed; FilzaSlop is now credited as class-13 research only.
 
 ### Removed

@@ -109,46 +109,6 @@ enum DeviceSpoofingManager {
         "j9Th5smJpdztHwc+i39zIg"
     ]
 
-    /// Number of CacheExtra keys this target would change on the given
-    /// plist (artwork subkeys count individually). Used for the UI summary.
-    static func changedKeyCount(in plist: [String: Any], target: SpoofTarget) -> Int {
-        guard let cacheExtra = plist["CacheExtra"] as? [String: Any] else { return 0 }
-        var count = 0
-
-        func countsChange(_ key: String, _ value: String) {
-            if cacheExtra[key] as? String != value { count += 1 }
-        }
-
-        for key in productTypeKeys { countsChange(key, target.productType) }
-        for key in hwModelKeys { countsChange(key, target.hwModel) }
-        for key in deviceNameKeys where cacheExtra[key] != nil {
-            countsChange(key, target.marketingName)
-        }
-
-        if let artwork = cacheExtra[GestaltArtwork.artworkKey] as? [String: Any] {
-            if artwork["CompatibleDeviceFallback"] as? String != target.productType { count += 1 }
-            if artwork["ArtworkDeviceProductDescription"] as? String != target.marketingName { count += 1 }
-        }
-
-        return count
-    }
-
-    /// Real hardware identity from sysctl, deliberately ignoring any
-    /// spoofed CacheExtra ProductType.
-    static var realMachineIdentifier: String {
-        DeviceCapability.machineIdentifier
-    }
-
-    /// Returns the currently spoofed target by matching any ProductType key,
-    /// or nil when no ProductType matches a known spoof entry.
-    static func currentTarget(in plist: [String: Any]) -> SpoofTarget? {
-        let cacheExtra = plist["CacheExtra"] as? [String: Any] ?? [:]
-        let values = Set(
-            productTypeKeys.compactMap { cacheExtra[$0] as? String }
-        )
-        return targets.first { values.contains($0.productType) }
-    }
-
     /// Rewrites every model-related key to the target device at once.
     /// Owner rule (enforced by Support/check-feature.ps1): the ArtworkDevice
     /// dictionary must already exist - a device without it cannot render the
@@ -185,48 +145,5 @@ enum DeviceSpoofingManager {
         cacheExtra[GestaltArtwork.artworkKey] = artwork
 
         plist["CacheExtra"] = cacheExtra
-    }
-
-    /// Read-back verification: how many of the spoof's identity keys now
-    /// carry exactly the target value on disk. Distinguishes a write the
-    /// system dropped from one that genuinely landed (the OS may still
-    /// choose to ignore CacheExtra on builds where CacheData is authoritative).
-    static func verify(target: SpoofTarget, in plist: [String: Any]) -> (matched: Int, total: Int) {
-        guard let cacheExtra = plist["CacheExtra"] as? [String: Any] else { return (0, 0) }
-        var matched = 0
-        var total = 0
-
-        func counts(_ key: String, _ value: String) {
-            total += 1
-            if cacheExtra[key] as? String == value { matched += 1 }
-        }
-
-        for key in productTypeKeys { counts(key, target.productType) }
-        for key in hwModelKeys { counts(key, target.hwModel) }
-        for key in deviceNameKeys where cacheExtra[key] != nil {
-            counts(key, target.marketingName)
-        }
-
-        if let artwork = cacheExtra[GestaltArtwork.artworkKey] as? [String: Any] {
-            counts("CompatibleDeviceFallback-artwork", "")
-            total -= 1
-            if artwork["CompatibleDeviceFallback"] as? String == target.productType { matched += 1 }
-            total += 1
-            if artwork["ArtworkDeviceProductDescription"] as? String == target.marketingName { matched += 1 }
-        }
-
-        return (matched, total)
-    }
-
-    /// Restoring the genuine identity requires a pre-spoof backup — restore
-    /// it from the Backups tab and every key above reverts atomically with
-    /// the whole plist. This helper only clears the spoofed name overrides,
-    /// leaving identifier keys untouched.
-    @discardableResult
-    static func clearDeviceNames(in plist: inout [String: Any]) -> Bool {
-        guard var cacheExtra = plist["CacheExtra"] as? [String: Any] else { return false }
-        for key in deviceNameKeys { cacheExtra.removeValue(forKey: key) }
-        plist["CacheExtra"] = cacheExtra
-        return true
     }
 }
