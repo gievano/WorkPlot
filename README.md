@@ -31,7 +31,7 @@ WorkPlot edits MobileGestalt values and system files on iOS 27 betas without a j
 WorkPlot keeps the original catalog and exploit core, and adds:
 
 - Light, dark, and system appearance modes.
-- Extra tools in the same catalog: App Containers, FilePatch 3105, Device Spoof, Gestalt Field Editor, Preset Lab, Session Log, Check for Updates, CarPlay Wallpaper, and the RDAR canvas fix.
+- Extra tools in the same catalog: Device Spoof, Gestalt Field Editor, Preset Lab, Session Log, Check for Updates, CarPlay Wallpaper, and the RDAR canvas fix.
 - Alternate app icons and a per-install badge so two installs can run side by side.
 - Write verification: the app reads the plist back and reports "verified on disk" or "write not visible on disk" instead of pretending the write worked.
 
@@ -45,8 +45,6 @@ WorkPlot keeps the original catalog and exploit core, and adds:
 * 🧠 **Siri AI suite** — enable the new Siri AI and Apple Intelligence through the CacheData patch, with optional spoofing to iPhone 15/16/17 Pro and Pro Max
 * 💎 **Liquid Glass** — turn on Apple's Liquid Glass UI effect
 * 🛡️ **Backup and restore** — automatic backup before each write, JSON snapshots you can export or import, plus the RDARFix repair tool
-* 📂 **File Patch Workspace** — browse and edit system files through the HouseArrest sandbox escape, record reachable paths to an `ACCESS MAP.txt`, import `.3105` patch files, inspect app containers, clean per-app caches, and view files as hex or SQLite tables
-* 📦 **App Containers** — inspect and manage app container data
 * 🕵️ **Device Spoof** — spoof device identity (model and region)
 * 🚗 **CarPlay Wallpaper** — set the CarPlay wallpaper
 * 📜 **Session Log** — view the exploit session debug logs
@@ -98,10 +96,8 @@ The status area has two controls for the RDAR wallpaper bug. **Fix rdar** writes
 | Symptom | Fix |
 | ------- | --- |
 | Tweaks fail to apply | Re-grant the sandbox escape from the status area |
-| Access reports an identity mismatch | Re-sign without changing `com.apple.mobile.MobileHouseArrest`; avoid tools that rewrite it |
 | Strange behavior after Gestalt edits | Restore your latest snapshot |
 | RDAR bug after edits | Run RDARFix or Custom Canvas. "verified on disk" means the write landed; if iOS still ignores the value, the fix cannot help on that build |
-| File picker grays out my file | Importers accept any file; ensure the shared file has the expected extension (`.tendies`, `.3105`, or a video) and that the source app allows exporting it |
 | Respring does nothing | The WebKit respring trick may be patched on your beta. The overlay recovers after ten seconds and reports the failure; restart the device manually |
 
 ## Credits
@@ -115,13 +111,12 @@ WorkPlot is a rebrand and continuation of an earlier MobileGestalt editor.
 **Exploit and techniques**
 
 - `bad_query` sandbox escape: [forcequitOS/bad_query](https://github.com/forcequitOS/bad_query) (GPLv3, incorporated)
-- HouseArrest sandbox escape: demonstrated by [0xjohnnydev/FilzaSlop](https://github.com/0xjohnnydev/FilzaSlop); class-13 route groundwork in the MobileHouseArrest-PoC notes (mond / 0xjohnnydev)
+- `bad_query` class-13 MobileGestalt route: parameters cross-checked against the MobileHouseArrest-PoC notes (mond / 0xjohnnydev); demonstrated end-to-end by [0xjohnnydev/FilzaSlop](https://github.com/0xjohnnydev/FilzaSlop)
 - Respring method: [rooootdev/neospring](https://github.com/rooootdev/neospring); WebKit variant by @neonmodder123, Swift port by @skadz108
 - MobileGestalt tweak semantics: [leminlimez/Nugget](https://github.com/leminlimez/Nugget) and [GestaltEdit](https://github.com/leminlimez/GestaltEdit)
 
 **Reference apps**
 
-- [YangJiiii/3105](https://github.com/YangJiiii/3105) (GPLv3, safe file operations adapted)
 - [frs0n/placard](https://github.com/frs0n/placard)
 
 **Individuals:** Mond, Ketamine, Toto.
