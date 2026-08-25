@@ -40,7 +40,6 @@ struct SystemHubView: View {
                     }
                     credits
                     thanks
-                    discordLink
                 }
                 .padding(Theme.pagePadding)
             }
@@ -62,7 +61,7 @@ struct SystemHubView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 13, style: .continuous))
             VStack(alignment: .leading, spacing: 3) {
                 Text("WorkPlot").font(.title3.weight(.semibold))
-                Text("MG Toolkit  v\(version)")
+                Text("WorkPlot Toolkit  v\(version)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -90,22 +89,26 @@ struct SystemHubView: View {
     private var credits: some View {
         VStack(alignment: .leading, spacing: 8) {
             SectionHeader("Credits")
-            credit("Nouvborne", "WorkPlot developer", "https://github.com/Nouvborne", easterEgg: unlockGoldenK)
-            credit("0xjohnnydev", "MobileHouseArrest PoC", "https://github.com/0xjohnnydev")
+            credit("Adnan.120hz", "WorkPlot Owner", "https://github.com/adnan120hz")
+            credit("Gievano", "WorkPlot Owner", "https://github.com/gievano")
+            credit("Nouvborne", "Ketamine (base framework)", "https://github.com/Nouvborne", easterEgg: unlockGoldenK)
             credit("forcequitOS", "bad_query", "https://github.com/forcequitOS")
-            credit("leminlimez", "Pocket Poster", "https://github.com/leminlimez")
-            credit("rooootdev", "NeoSpring", "https://github.com/rooootdev", easterEgg: {
+            credit("0xjohnnydev", "FilzaSlop (sandbox escape)", "https://github.com/0xjohnnydev")
+            credit("leminlimez", "Nugget & GestaltEdit", "https://github.com/leminlimez")
+            credit("YangJiiii", "3105", "https://github.com/YangJiiii")
+            credit("rooootdev", "neospring (respring)", "https://github.com/rooootdev", easterEgg: {
                 RespringHelper.shared.trigger()
             })
+            credit("frs0n", "Placard", "https://github.com/frs0n")
         }
     }
 
     private var thanks: some View {
         VStack(alignment: .leading, spacing: 8) {
             SectionHeader("Big thanks to")
-            thanksRow("Lemonz", "Discord Manager")
-            thanksRow("Sierra", "Discord Moderator")
-            Text("…and the rest of our Discord team.")
+            thanksRow("Mond", "Supporter")
+            thanksRow("Toto", "Supporter")
+            Text("…and everyone in the WorkPlot community who tested and reported issues.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .padding(.top, 2)
@@ -119,25 +122,6 @@ struct SystemHubView: View {
             Spacer()
         }
         .padding(.vertical, 7)
-    }
-
-    private var discordLink: some View {
-        Link(destination: URL(string: "https://discord.gg/Wt8dj8E8ZN")!) {
-            HStack(spacing: 12) {
-                Image(systemName: "bubble.right.fill")
-                    .font(.title3)
-                    .foregroundStyle(Color(red: 0.35, green: 0.42, blue: 0.91))
-                    .frame(width: 30)
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("Join our Discord").font(.body.weight(.semibold)).foregroundStyle(.primary)
-                    Text("Community support and updates").font(.caption).foregroundStyle(.secondary)
-                }
-                Spacer()
-                Image(systemName: "arrow.up.right").font(.caption).foregroundStyle(.tertiary)
-            }
-            .padding(18)
-            .liquidGlass()
-        }
     }
 
     /// `easterEgg`, when set, fires on a long press without blocking the
