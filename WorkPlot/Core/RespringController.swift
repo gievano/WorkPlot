@@ -47,32 +47,28 @@ private let crashHTML = #"""
 """#
 
 /// Respring trigger presented over the app root while
-/// `ExploitManager.respringRequested` is true. The WKWebView mounts and fires
-/// the WebKit GPU crash; the overlay is transparent so no black screen shows —
-/// the app just resprings.
+/// `ExploitManager.respringRequested` is true. Shows a plain black loading
+/// screen first so the WKWebView beneath it — which triggers the WebKit GPU
+/// crash — is never visibly rendered; it's dimmed to black and layered
+/// underneath. Mirrors Ketamine's NeoSpringView exactly: the crash WebView
+/// mounts on a fixed 250ms delay, independent of any apply state, so it always
+/// fires (no arming → no stuck-transparent "freeze" state).
 struct NeoSpringView: View {
     @State private var showsWebView = false
 
     var body: some View {
         ZStack {
-            // ponytail: transparent backing so the crash WebView actually
-            // composites and the GPU crash fires; bump opacity / add a real
-            // color if some iOS build stops rendering a 0.001 alpha layer
-            Color.black.opacity(0.001)
+            Color.black
+            ProgressView()
+                .tint(.white)
+
             if showsWebView {
                 NeoSpringWebView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .ignoresSafeArea()
+                    .brightness(-1)
             }
         }
+        .ignoresSafeArea()
         .task {
-            // Overlay already shows the black screen. The crash WebView is only
-            // mounted once the apply work is done (respringCrashArmed), then a
-            // short delay so the screen is settled before the GPU crash fires.
-            while !ExploitManager.shared.respringCrashArmed {
-                try? await Task.sleep(for: .milliseconds(50))
-                if Task.isCancelled { return }
-            }
             try? await Task.sleep(for: .milliseconds(250))
             showsWebView = true
         }
