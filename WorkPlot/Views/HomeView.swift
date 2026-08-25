@@ -5,12 +5,12 @@ struct HomeView: View {
     /// `nil` selects "All" — every tweak, uncategorized.
     @State private var category: TweakCategory? = .display
     @State private var configurationID: String?
-    @State private var showUpdater = false
     @State private var searchText = ""
 
     private var consoleCategories: [TweakCategory] {
         TweakCategory.allCases.filter { cat in
-            cat != .ai && store.tweaks.contains { $0.category == cat }
+            cat != .ai &&
+            (store.tweaks.contains { $0.category == cat } || toolDefs.contains { $0.category == cat })
         }
     }
 
@@ -41,7 +41,6 @@ struct HomeView: View {
                             categoryRail
                             catalog
                             if !selectedTweaks.isEmpty { activeConfiguration }
-                            workplotTools
                         }
                         .padding(.horizontal, Theme.pagePadding)
                         .padding(.bottom, 32)
@@ -65,7 +64,6 @@ struct HomeView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showUpdater) { UpdateCheckerSheet(showDoneButton: true) }
         }
     }
 
@@ -120,7 +118,7 @@ struct HomeView: View {
             HStack {
                 Text(category?.rawValue ?? "All").font(.title3.weight(.semibold))
                 Spacer()
-                Text("\(categoryTweaks.count) available")
+                Text("\(categoryTweaks.count + categoryTools.count) available")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -147,8 +145,70 @@ struct HomeView: View {
                             .transition(.opacity.combined(with: .move(edge: .top)))
                     }
                 }
+                if !categoryTools.isEmpty {
+                    SectionHeader("Tools")
+                    ForEach(Array(toolRows.enumerated()), id: \.offset) { _, row in
+                        HStack(alignment: .top, spacing: 12) {
+                            ForEach(row) { tool in
+                                toolCatalogTile(tool)
+                            }
+                            if row.count == 1 { Color.clear.frame(maxWidth: .infinity) }
+                        }
+                    }
+                }
             }
         }
+    }
+
+    private var categoryTools: [ToolDef] {
+        guard let category else { return toolDefs }
+        return toolDefs.filter { $0.category == category }
+    }
+
+    private var toolRows: [[ToolDef]] {
+        stride(from: 0, to: categoryTools.count, by: 2).map { start in
+            Array(categoryTools[start..<min(start + 2, categoryTools.count)])
+        }
+    }
+
+    @ViewBuilder
+    private func toolCatalogTile(_ tool: ToolDef) -> some View {
+        if let destination = tool.destination {
+            NavigationLink(destination: destination()) {
+                ToolTile(title: tool.title, detail: tool.subtitle, symbol: tool.symbol)
+            }
+            .buttonStyle(.plain)
+        } else if let action = tool.action {
+            Button(action: action) {
+                ToolTile(title: tool.title, detail: tool.subtitle, symbol: tool.symbol)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private var toolDefs: [ToolDef] {
+        [
+            ToolDef(id: "rdarfix", title: "RDARFix", subtitle: "Edit resolusi layar lewat canvas exploit", symbol: "wand.and.stars", category: .display, destination: { AnyView(RDARFixView()) }),
+            ToolDef(id: "carplay", title: "CarPlay Wallpaper", subtitle: "Ganti wallpaper layar CarPlay", symbol: "car", category: .display, destination: { AnyView(CarPlayWallpaperView()) }),
+            ToolDef(id: "respring", title: "Respring", subtitle: "Restart SpringBoard tanpa reboot", symbol: "arrow.clockwise", category: .system, action: { RespringHelper.shared.trigger() }),
+            ToolDef(id: "appcontainers", title: "App Containers", subtitle: "Kelola container & data aplikasi", symbol: "shippingbox", category: .system, destination: { AnyView(AppContainersView()) }),
+            ToolDef(id: "filepatch", title: "FilePatch 3105", subtitle: "Sunting file sistem read/write", symbol: "doc.badge.gearshape", category: .system, destination: { AnyView(FilePatchWorkspaceView()) }),
+            ToolDef(id: "devicespoof", title: "Device Spoof", subtitle: "Spoof identitas perangkat", symbol: "iphone.and.arrow.forward", category: .system, destination: { AnyView(DeviceSpoofingView()) }),
+            ToolDef(id: "gestalteditor", title: "Gestalt Field Editor", subtitle: "Edit cache MobileGestalt", symbol: "slider.horizontal.3", category: .gestalt, destination: { AnyView(GestaltFieldEditorView()) }),
+            ToolDef(id: "presetlab", title: "Preset Lab", subtitle: "Racik & simpan preset Gestalt", symbol: "flask", category: .gestalt, destination: { AnyView(PresetLabView()) }),
+            ToolDef(id: "sessionlog", title: "Session Log", subtitle: "Lihat log debug sesi exploit", symbol: "doc.plaintext", category: .info, destination: { AnyView(SessionLogView()) }),
+            ToolDef(id: "updates", title: "Check for Updates", subtitle: "Cek & pasang pembaruan", symbol: "arrow.down.app", category: .info, destination: { AnyView(UpdateCheckerSheet(showDoneButton: true)) }),
+        ]
+    }
+
+    private struct ToolDef: Identifiable {
+        let id: String
+        let title: String
+        let subtitle: String
+        let symbol: String
+        let category: TweakCategory
+        var destination: (() -> AnyView)? = nil
+        var action: (() -> Void)? = nil
     }
 
     /// `categoryTweaks` split into rows of two, matching the old grid.
@@ -196,44 +256,6 @@ struct HomeView: View {
             .padding(.horizontal, 18)
             .liquidGlass()
         }
-    }
-
-    private var workplotTools: some View {
-        VStack(alignment: .leading, spacing: 22) {
-            workplotGroup("Display") {
-                NavigationLink { RDARFixView() } label: { ToolTile(title: "RDARFix", detail: "Edit resolusi layar lewat canvas exploit", symbol: "wand.and.stars") }
-                NavigationLink { CarPlayWallpaperView() } label: { ToolTile(title: "CarPlay Wallpaper", detail: "Ganti wallpaper layar CarPlay", symbol: "car") }
-            }
-            workplotGroup("System") {
-                Button { RespringHelper.shared.trigger() } label: { ToolTile(title: "Respring", detail: "Restart SpringBoard tanpa reboot", symbol: "arrow.clockwise") }
-                    .buttonStyle(.plain)
-                NavigationLink { AppContainersView() } label: { ToolTile(title: "App Containers", detail: "Kelola container & data aplikasi", symbol: "shippingbox") }
-                NavigationLink { FilePatchWorkspaceView() } label: { ToolTile(title: "FilePatch 3105", detail: "Sunting file sistem read/write", symbol: "doc.badge.gearshape") }
-                NavigationLink { DeviceSpoofingView() } label: { ToolTile(title: "Device Spoof", detail: "Spoof identitas perangkat", symbol: "iphone.and.arrow.forward") }
-            }
-            workplotGroup("Gestalt") {
-                NavigationLink { GestaltFieldEditorView() } label: { ToolTile(title: "Gestalt Field Editor", detail: "Edit cache MobileGestalt", symbol: "slider.horizontal.3") }
-                NavigationLink { PresetLabView() } label: { ToolTile(title: "Preset Lab", detail: "Racik & simpan preset Gestalt", symbol: "flask") }
-            }
-            workplotGroup("Info") {
-                NavigationLink { SessionLogView() } label: { ToolTile(title: "Session Log", detail: "Lihat log debug sesi exploit", symbol: "doc.plaintext") }
-                Button { showUpdater = true } label: { ToolTile(title: "Check for Updates", detail: "Cek & pasang pembaruan", symbol: "arrow.down.app") }
-                    .buttonStyle(.plain)
-            }
-        }
-    }
-
-    private func workplotGroup<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
-            SectionHeader(title)
-            LazyVGrid(columns: gridColumns, spacing: 12) {
-                content()
-            }
-        }
-    }
-
-    private var gridColumns: [GridItem] {
-        [GridItem(.flexible(), spacing: 12), GridItem(.flexible())]
     }
 
     struct ToolTile: View {
