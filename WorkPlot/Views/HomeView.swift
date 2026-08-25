@@ -41,8 +41,7 @@ struct HomeView: View {
                             categoryRail
                             catalog
                             if !selectedTweaks.isEmpty { activeConfiguration }
-                            toolsSection
-                            respringSection
+                            workplotTools
                         }
                         .padding(.horizontal, Theme.pagePadding)
                         .padding(.bottom, 32)
@@ -199,45 +198,52 @@ struct HomeView: View {
         }
     }
 
-    private var toolsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader("WorkPlot Tools")
-            NavigationLink { RDARFixView() } label: { toolRow("RDARFix", "Canvas exploit", "wand.and.stars") }
-            NavigationLink { FilePatchWorkspaceView() } label: { toolRow("FilePatch 3105", "Patch system files", "doc.badge.gearshape") }
-            NavigationLink { AppContainersView() } label: { toolRow("App Containers", "Container manager", "shippingbox") }
-            NavigationLink { CarPlayWallpaperView() } label: { toolRow("CarPlay Wallpaper", "Set CarPlay wallpaper", "car") }
-            NavigationLink { GestaltFieldEditorView() } label: { toolRow("Gestalt Field Editor", "Edit MobileGestalt", "slider.horizontal.3") }
-            NavigationLink { PresetLabView() } label: { toolRow("Preset Lab", "Gestalt preset lab", "flask") }
-            NavigationLink { SessionLogView() } label: { toolRow("Session Log", "Debug logs", "doc.plaintext") }
-            NavigationLink { DeviceSpoofingView() } label: { toolRow("Device Spoof", "Spoof device identity", "iphone.and.arrow.forward") }
-            Button { showUpdater = true } label: { toolRow("Check for Updates", "Updater", "arrow.down.app") }
-        }
-    }
-
-    private var respringSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader("System")
-            ActionButton(title: "Respring", systemImage: "arrow.clockwise") {
-                RespringHelper.shared.trigger()
+    private var workplotTools: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            SectionHeader("WorkPlot")
+            LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible())], spacing: 12) {
+                NavigationLink { RDARFixView() } label: { ToolTile(title: "RDARFix", detail: "Canvas exploit", symbol: "wand.and.stars") }
+                NavigationLink { FilePatchWorkspaceView() } label: { ToolTile(title: "FilePatch 3105", detail: "Patch system files", symbol: "doc.badge.gearshape") }
+                NavigationLink { AppContainersView() } label: { ToolTile(title: "App Containers", detail: "Container manager", symbol: "shippingbox") }
+                NavigationLink { CarPlayWallpaperView() } label: { ToolTile(title: "CarPlay Wallpaper", detail: "Set CarPlay wallpaper", symbol: "car") }
+                NavigationLink { GestaltFieldEditorView() } label: { ToolTile(title: "Gestalt Field Editor", detail: "Edit MobileGestalt", symbol: "slider.horizontal.3") }
+                NavigationLink { PresetLabView() } label: { ToolTile(title: "Preset Lab", detail: "Gestalt preset lab", symbol: "flask") }
+                NavigationLink { SessionLogView() } label: { ToolTile(title: "Session Log", detail: "Debug logs", symbol: "doc.plaintext") }
+                NavigationLink { DeviceSpoofingView() } label: { ToolTile(title: "Device Spoof", detail: "Spoof device identity", symbol: "iphone.and.arrow.forward") }
+                Button { RespringHelper.shared.trigger() } label: { ToolTile(title: "Respring", detail: "Restart SpringBoard", symbol: "arrow.clockwise") }
+                    .buttonStyle(.plain)
+                Button { showUpdater = true } label: { ToolTile(title: "Check for Updates", detail: "Updater", symbol: "arrow.down.app") }
+                    .buttonStyle(.plain)
             }
         }
     }
 
-    private func toolRow(_ title: String, _ detail: String, _ symbol: String) -> some View {
-        HStack(spacing: 15) {
-            Image(systemName: symbol)
-                .font(.title3)
-                .foregroundStyle(Theme.accent)
-                .frame(width: 30)
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title).font(.body.weight(.semibold)).foregroundStyle(.primary)
-                Text(detail).font(.caption).foregroundStyle(.secondary)
+    struct ToolTile: View {
+        let title: String
+        let detail: String
+        let symbol: String
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 14) {
+                Image(systemName: symbol)
+                    .font(.body.weight(.medium))
+                    .foregroundStyle(Theme.accent)
+                Spacer(minLength: 8)
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Text(detail)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
             }
-            Spacer()
-            Image(systemName: "chevron.right").font(.caption).foregroundStyle(.tertiary)
+            .frame(maxWidth: .infinity, minHeight: 142, maxHeight: .infinity, alignment: .leading)
+            .padding(16)
+            .background(Color.clear, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .liquidGlass(cornerRadius: 22)
         }
-        .padding(18)
-        .liquidGlass()
     }
 
     private func toggle(_ tweak: Tweak) {

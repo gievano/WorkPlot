@@ -9,6 +9,7 @@ struct SettingsView: View {
     @AppStorage("appIcon") private var appIcon = AppIconCatalog.standard.id
     @AppStorage("customColor") private var customColor: Double = 0
     @AppStorage("useCustomColor") private var useCustomColor = false
+    @AppStorage("appearanceScheme") private var appearanceScheme = 0
     @State private var detectingHash = false
     @State private var showHashError = false
     @State private var hashErrorMessage = ""
@@ -115,6 +116,16 @@ struct SettingsView: View {
                         .foregroundStyle(Theme.accent)
                     }
                 }
+            }
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Appearance mode")
+                    .font(.subheadline.weight(.semibold))
+                Picker("Mode", selection: $appearanceScheme) {
+                    Text("System").tag(0)
+                    Text("Light").tag(1)
+                    Text("Dark").tag(2)
+                }
+                .pickerStyle(.segmented)
             }
             VStack(alignment: .leading, spacing: 10) {
                 Text("App icon")
