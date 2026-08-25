@@ -14,19 +14,6 @@ struct HomeView: View {
         }
     }
 
-    private var categoryTweaks: [Tweak] {
-        if !searchText.isEmpty {
-            return store.tweaks.filter {
-                $0.category != .ai && $0.id != "product-type" &&
-                $0.title.localizedCaseInsensitiveContains(searchText)
-            }
-        }
-        guard let category else {
-            return store.tweaks.filter { $0.category != .ai && $0.id != "product-type" }
-        }
-        return store.tweaks.filter { $0.category == category && $0.id != "product-type" }
-    }
-
     private var selectedTweaks: [Tweak] {
         store.tweaks.filter(\.isEnabled)
     }
@@ -38,7 +25,6 @@ struct HomeView: View {
                     ScrollView {
                         LazyVStack(alignment: .leading, spacing: 24) {
                             commandStatus
-                            wpFeatures
                             categoryRail
                             catalog
                             if !selectedTweaks.isEmpty { activeConfiguration }
@@ -116,19 +102,43 @@ struct HomeView: View {
     }
 
     private var catalog: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 24) {
+            ForEach(visibleCategories, id: \.self) { cat in
+                categorySection(cat)
+            }
+        }
+    }
+
+    private var visibleCategories: [TweakCategory] {
+        if let category { return [category] }
+        return TweakCategory.allCases.filter { cat in
+            cat != .ai && (
+                store.tweaks.contains { $0.category == cat && $0.id != "product-type" && matchesSearch($0.title) } ||
+                toolDefs.contains { $0.category == cat && $0.id != "respring" && matchesSearch($0.title) }
+            )
+        }
+    }
+
+    private func matchesSearch(_ title: String) -> Bool {
+        searchText.isEmpty || title.localizedCaseInsensitiveContains(searchText)
+    }
+
+    private func categorySection(_ cat: TweakCategory) -> some View {
+        let tweaks = store.tweaks.filter { $0.category == cat && $0.id != "product-type" && matchesSearch($0.title) }
+        let tools = toolDefs.filter { $0.category == cat && $0.id != "respring" && matchesSearch($0.title) }
+        return VStack(alignment: .leading, spacing: 14) {
+            SectionHeader(cat.rawValue)
             HStack {
-                Text(category?.rawValue ?? "All").font(.title3.weight(.semibold))
-                Spacer()
-                Text("\(categoryTweaks.count) available")
+                Text("\(tweaks.count + tools.count) available")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                Spacer()
             }
             // Laid out row by row rather than as one LazyVGrid so the
             // configuration panel can sit directly under the row holding the
             // tile that opened it, instead of after the whole catalog.
             VStack(alignment: .leading, spacing: 12) {
-                ForEach(Array(tweakRows.enumerated()), id: \.offset) { _, row in
+                ForEach(Array(tweakRows(tweaks).enumerated()), id: \.offset) { _, row in
                     HStack(alignment: .top, spacing: 12) {
                         ForEach(row) { tweak in
                             Button { toggle(tweak) } label: {
@@ -145,6 +155,14 @@ struct HomeView: View {
                        let detail = tweak.detail {
                         InlineTweakConfiguration(tweak: tweak, detail: detail)
                             .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
+                }
+                ForEach(Array(toolRows(tools).enumerated()), id: \.offset) { _, row in
+                    HStack(alignment: .top, spacing: 12) {
+                        ForEach(row) { tool in
+                            toolCatalogTile(tool)
+                        }
+                        if row.count == 1 { Color.clear.frame(maxWidth: .infinity) }
                     }
                 }
             }
@@ -191,22 +209,6 @@ struct HomeView: View {
         var action: (() -> Void)? = nil
     }
 
-    private var wpFeatures: some View {
-        VStack(alignment: .leading, spacing: 22) {
-            ForEach([TweakCategory.display, .system, .gestalt, .info], id: \.self) { cat in
-                let items = toolDefs.filter { $0.category == cat && $0.id != "respring" }
-                if !items.isEmpty {
-                    SectionHeader(cat.rawValue)
-                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible())], spacing: 12) {
-                        ForEach(items) { tool in
-                            toolCatalogTile(tool)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     private var respringButton: some View {
         Button { RespringHelper.shared.trigger() } label: {
             Label("Respring", systemImage: "arrow.clockwise")
@@ -220,11 +222,16 @@ struct HomeView: View {
         .accessibilityHint("Restart SpringBoard")
     }
 
-    /// `categoryTweaks` split into rows of two, matching the old grid.
-    private var tweakRows: [[Tweak]] {
-        let tweaks = categoryTweaks
-        return stride(from: 0, to: tweaks.count, by: 2).map { start in
+    /// Split a list into rows of two, matching the old grid.
+    private func tweakRows(_ tweaks: [Tweak]) -> [[Tweak]] {
+        stride(from: 0, to: tweaks.count, by: 2).map { start in
             Array(tweaks[start..<min(start + 2, tweaks.count)])
+        }
+    }
+
+    private func toolRows(_ tools: [ToolDef]) -> [[ToolDef]] {
+        stride(from: 0, to: tools.count, by: 2).map { start in
+            Array(tools[start..<min(start + 2, tools.count)])
         }
     }
 
