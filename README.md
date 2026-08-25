@@ -105,6 +105,10 @@ The status area has two controls for the RDAR wallpaper bug. **Fix rdar** writes
 
 WorkPlot is a rebrand and continuation of an earlier MobileGestalt editor.
 
+**Base app**
+
+- Ketamine: the original MobileGestalt editor and tweak catalog this app is ported from.
+
 **Exploit and techniques**
 
 - `bad_query` sandbox escape: [forcequitOS/bad_query](https://github.com/forcequitOS/bad_query) (GPLv3, incorporated)
@@ -117,7 +121,7 @@ WorkPlot is a rebrand and continuation of an earlier MobileGestalt editor.
 - [YangJiiii/3105](https://github.com/YangJiiii/3105) (GPLv3, safe file operations adapted)
 - [frs0n/placard](https://github.com/frs0n/placard)
 
-**Individuals:** Mond, Toto.
+**Individuals:** Mond, Ketamine, Toto.
 
 Full attribution and licenses: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). WorkPlot incorporates GPLv3-licensed `bad_query` source code.
 
