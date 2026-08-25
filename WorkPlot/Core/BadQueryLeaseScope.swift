@@ -28,7 +28,7 @@ enum BadQueryLeaseScope {
     /// across operations. Long-lived usage stays in GestaltAccess, which
     /// revalidates its lease on every connect().
     static func withLease<T>(forPath path: String, _ body: () throws -> T) throws -> T {
-        let handle = try BadQuery.consume(path: path, create: true)
+        let handle = try BadQuery.consume(path: path)
         defer { handle.release() }
         return try body()
     }

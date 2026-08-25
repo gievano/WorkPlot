@@ -199,23 +199,41 @@ struct HomeView: View {
     }
 
     private var workplotTools: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            SectionHeader("WorkPlot")
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible())], spacing: 12) {
-                NavigationLink { RDARFixView() } label: { ToolTile(title: "RDARFix", detail: "Canvas exploit", symbol: "wand.and.stars") }
-                NavigationLink { FilePatchWorkspaceView() } label: { ToolTile(title: "FilePatch 3105", detail: "Patch system files", symbol: "doc.badge.gearshape") }
-                NavigationLink { AppContainersView() } label: { ToolTile(title: "App Containers", detail: "Container manager", symbol: "shippingbox") }
-                NavigationLink { CarPlayWallpaperView() } label: { ToolTile(title: "CarPlay Wallpaper", detail: "Set CarPlay wallpaper", symbol: "car") }
-                NavigationLink { GestaltFieldEditorView() } label: { ToolTile(title: "Gestalt Field Editor", detail: "Edit MobileGestalt", symbol: "slider.horizontal.3") }
-                NavigationLink { PresetLabView() } label: { ToolTile(title: "Preset Lab", detail: "Gestalt preset lab", symbol: "flask") }
-                NavigationLink { SessionLogView() } label: { ToolTile(title: "Session Log", detail: "Debug logs", symbol: "doc.plaintext") }
-                NavigationLink { DeviceSpoofingView() } label: { ToolTile(title: "Device Spoof", detail: "Spoof device identity", symbol: "iphone.and.arrow.forward") }
-                Button { RespringHelper.shared.trigger() } label: { ToolTile(title: "Respring", detail: "Restart SpringBoard", symbol: "arrow.clockwise") }
+        VStack(alignment: .leading, spacing: 22) {
+            workplotGroup("Display") {
+                NavigationLink { RDARFixView() } label: { ToolTile(title: "RDARFix", detail: "Edit resolusi layar lewat canvas exploit", symbol: "wand.and.stars") }
+                NavigationLink { CarPlayWallpaperView() } label: { ToolTile(title: "CarPlay Wallpaper", detail: "Ganti wallpaper layar CarPlay", symbol: "car") }
+            }
+            workplotGroup("System") {
+                Button { RespringHelper.shared.trigger() } label: { ToolTile(title: "Respring", detail: "Restart SpringBoard tanpa reboot", symbol: "arrow.clockwise") }
                     .buttonStyle(.plain)
-                Button { showUpdater = true } label: { ToolTile(title: "Check for Updates", detail: "Updater", symbol: "arrow.down.app") }
+                NavigationLink { AppContainersView() } label: { ToolTile(title: "App Containers", detail: "Kelola container & data aplikasi", symbol: "shippingbox") }
+                NavigationLink { FilePatchWorkspaceView() } label: { ToolTile(title: "FilePatch 3105", detail: "Sunting file sistem read/write", symbol: "doc.badge.gearshape") }
+                NavigationLink { DeviceSpoofingView() } label: { ToolTile(title: "Device Spoof", detail: "Spoof identitas perangkat", symbol: "iphone.and.arrow.forward") }
+            }
+            workplotGroup("Gestalt") {
+                NavigationLink { GestaltFieldEditorView() } label: { ToolTile(title: "Gestalt Field Editor", detail: "Edit cache MobileGestalt", symbol: "slider.horizontal.3") }
+                NavigationLink { PresetLabView() } label: { ToolTile(title: "Preset Lab", detail: "Racik & simpan preset Gestalt", symbol: "flask") }
+            }
+            workplotGroup("Info") {
+                NavigationLink { SessionLogView() } label: { ToolTile(title: "Session Log", detail: "Lihat log debug sesi exploit", symbol: "doc.plaintext") }
+                Button { showUpdater = true } label: { ToolTile(title: "Check for Updates", detail: "Cek & pasang pembaruan", symbol: "arrow.down.app") }
                     .buttonStyle(.plain)
             }
         }
+    }
+
+    private func workplotGroup<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            SectionHeader(title)
+            LazyVGrid(columns: gridColumns, spacing: 12) {
+                content()
+            }
+        }
+    }
+
+    private var gridColumns: [GridItem] {
+        [GridItem(.flexible(), spacing: 12), GridItem(.flexible())]
     }
 
     struct ToolTile: View {
