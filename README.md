@@ -106,7 +106,7 @@ WorkPlot is a rebrand and continuation of an earlier MobileGestalt editor.
 
 **Base app**
 
-- Ketamine: the original MobileGestalt editor and tweak catalog this app is ported from.
+- **Ketamine by Nouvborne** — the original MobileGestalt editor and tweak catalog this app is ported from. [Repo](https://github.com/Nouvborne/Ketamine) · [GitHub](https://github.com/Nouvborne)
 
 **Exploit and techniques**
 

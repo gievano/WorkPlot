@@ -101,7 +101,7 @@ struct SystemHubView: View {
             SectionHeader("Credits")
             credit("Gievano", "WorkPlot Developer", "https://github.com/gievano")
             credit("Adnan.120hz", "Idea Contributor, and testing during development", "https://github.com/adnan120hz")
-            credit("Nouvborne", "Ketamine (base framework)", "https://github.com/Nouvborne", easterEgg: unlockGoldenK)
+            credit("Ketamine by Nouvborne", "Original app — base framework", "https://github.com/Nouvborne/Ketamine", easterEgg: unlockGoldenK)
             credit("forcequitOS", "bad_query", "https://github.com/forcequitOS")
             credit("0xjohnnydev", "FilzaSlop / class-13 research", "https://github.com/0xjohnnydev")
             credit("leminlimez", "Nugget & GestaltEdit", "https://github.com/leminlimez")

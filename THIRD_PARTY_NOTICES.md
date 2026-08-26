@@ -1,5 +1,12 @@
 # Third-Party Notices
 
+## Ketamine (Nouvborne) — GPL-3.0
+
+WorkPlot is derived from Ketamine by Nouvborne, licensed under GPL-3.0.
+Credit: **Ketamine by Nouvborne**.
+- Repository: https://github.com/Nouvborne/Ketamine
+- GitHub profile: https://github.com/Nouvborne
+
 ## bad_query (forcequitOS) — GPLv3
 
 WorkPlot incorporates GPLv3-licensed `bad_query` source code from
