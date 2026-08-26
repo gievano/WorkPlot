@@ -14,7 +14,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPLv3-6E56CF?style=flat-square" alt="GPLv3"></a>
 </p>
 
-<a href="https://github.com/forcequitOS/bad_query/releases/latest"><b>Download IPA</b></a> ·
+<a href="https://github.com/gievano/WorkPlot/releases/latest"><b>Download IPA</b></a> ·
 <a href="#requirements">Requirements</a> ·
 <a href="#install">Install</a> ·
 <a href="#credits">Credits</a>
@@ -69,7 +69,7 @@ There are two interface builds in this repo. **WP Old UI** is the original inter
 
 ## Install
 
-1. Download `WorkPlot.ipa` from [Releases](https://github.com/forcequitOS/bad_query/releases/latest).
+1. Download `WorkPlot.ipa` from [Releases](https://github.com/gievano/WorkPlot/releases/latest).
 2. Install [iLoader](https://github.com/nab138/iloader), connect your device, and sign in with your Apple ID (used only for local signing).
 3. Import the IPA to sign and install it, then trust the certificate under Settings → General → VPN & Device Management.
 
