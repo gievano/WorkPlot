@@ -120,7 +120,9 @@ WorkPlot is a rebrand and continuation of an earlier MobileGestalt editor.
 - [frs0n/placard](https://github.com/frs0n/placard)
 
 **Individuals:** Mond, Ketamine, Toto.
-
+**Beta Tester**
+@LsNguyen
+@arya
 Full attribution and licenses: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). WorkPlot incorporates GPLv3-licensed `bad_query` source code.
 
 ## License
