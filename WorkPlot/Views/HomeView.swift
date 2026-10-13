@@ -211,8 +211,8 @@ struct HomeView: View {
 
     private var toolDefs: [ToolDef] {
         [
-            ToolDef(id: "carplay", title: "CarPlay Wallpaper", subtitle: "Change the CarPlay wallpaper", symbol: "car", category: .display, destination: { AnyView(CarPlayWallpaperView()) }),
-            ToolDef(id: "rdarfix", title: "RDARFix", subtitle: "Edit screen resolution via the canvas exploit", symbol: "wand.and.stars", category: .display, destination: { AnyView(RDARFixView()) }),
+            ToolDef(id: "filebrowser", title: "File Browser", subtitle: "Browse the filesystem via the sandbox escape", symbol: "folder", category: .system, destination: { AnyView(FileBrowserView()) }),
+            ToolDef(id: "passcodethemes", title: "Passcode Themes", subtitle: "Theme the dialer & passcode keypad", symbol: "keypad", category: .display, destination: { AnyView(PasscodeThemeView()) }),
             ToolDef(id: "respring", title: "Respring", subtitle: "Restart SpringBoard without rebooting", symbol: "arrow.clockwise", category: .system, action: { RespringHelper.shared.trigger() }),
             ToolDef(id: "gestalteditor", title: "Gestalt Field Editor", subtitle: "Edit cache MobileGestalt", symbol: "slider.horizontal.3", category: .gestalt, destination: { AnyView(GestaltFieldEditorView()) }),
             ToolDef(id: "presetlab", title: "Preset Lab", subtitle: "Build & save Gestalt presets", symbol: "flask", category: .gestalt, destination: { AnyView(PresetLabView()) }),

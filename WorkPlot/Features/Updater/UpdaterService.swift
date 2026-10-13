@@ -29,7 +29,7 @@ enum UpdaterService {
     }
 
     private static let releaseURLString =
-        "https://api.github.com/repos/gievano/apps-adnan-gievano/releases/latest"
+        "https://api.github.com/repos/gievano/WorkPlot/releases/latest"
 
     static func latestRelease() async throws -> (tag: String, url: URL) {
         guard let url = URL(string: releaseURLString) else {

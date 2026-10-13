@@ -31,7 +31,7 @@ WorkPlot edits MobileGestalt values and system files on iOS 27 betas without a j
 WorkPlot keeps the original catalog and exploit core, and adds:
 
 - Light, dark, and system appearance modes.
-- Extra tools in the same catalog: Device Spoof, Gestalt Field Editor, Preset Lab, Session Log, Check for Updates, CarPlay Wallpaper, and the RDAR canvas fix.
+- Extra tools in the same catalog: Device Spoof, Gestalt Field Editor, Preset Lab, Session Log, and Check for Updates.
 - Alternate app icons and a per-install badge so two installs can run side by side.
 - Write verification: the app reads the plist back and reports "verified on disk" or "write not visible on disk" instead of pretending the write worked.
 
@@ -39,14 +39,13 @@ WorkPlot keeps the original catalog and exploit core, and adds:
 
 - 📱 Runs entirely on iPhone and iPad — no PC required
 - 🛠️ **Gestalt tweaks** — toggle capabilities by category (Display, System, Device, Liquid Glass, iPad), cover Dynamic Island on unsupported devices, Model Name, EU and iPad features, all as one MobileGestalt write
-- 🖼️ **RDAR canvas fix** — write your panel's native size into MobileGestalt to fix the RDAR wallpaper bug, or set any width and height by hand
+- 🖼️ **PosterBoard** — Tendies wallpaper collections
 - 🔎 **Gestalt Field Editor** — edit MobileGestalt keys directly and inspect CacheData as hex
 - 🧪 **Preset Lab** — build and save MobileGestalt presets to re-apply later
 - 🧠 **Siri AI suite** — enable the new Siri AI and Apple Intelligence through the CacheData patch, with optional spoofing to iPhone 15/16/17 Pro and Pro Max
 - 💎 **Liquid Glass** — turn on Apple's Liquid Glass UI effect
-- 🛡️ **Backup and restore** — automatic backup before each write, JSON snapshots you can export or import, plus the RDARFix repair tool
+- 🛡️ **Backup and restore** — automatic backup before each write, JSON snapshots you can export or import
 - 🕵️ **Device Spoof** — spoof device identity (model and region)
-- 🚗 **CarPlay Wallpaper** — set the CarPlay wallpaper
 - 📜 **Session Log** — view the exploit session debug logs
 - 🔄 **Check for Updates** — in-app update checker
 - 🔁 **Respring** — restart SpringBoard without a full reboot
@@ -80,10 +79,6 @@ There are two interface builds in this repo. **WP Old UI** is the original inter
 3. Toggle a tweak or open a tool, then apply. The app prompts for a respring when one is needed.
 4. If something breaks, restore the snapshot and report the issue.
 
-### RDAR canvas fix
-
-The status area has two controls for the RDAR wallpaper bug. **Fix rdar** writes your panel's native size into MobileGestalt (`MainScreenCanvasSizes`). **Custom Canvas** lets you type any width and height, for example 828 x 1792 on an iPhone 11. After applying, WorkPlot reads the plist back from disk and reports "verified on disk" or "write not visible on disk, blocked by system", so a silently dropped write does not look like success. Canvas values are read at boot, and WorkPlot cannot reboot a sandboxed device, so heavy tweaks show a restart prompt.
-
 ### Siri AI and Apple Intelligence
 
 1. In the Siri AI screen, toggle **Enable New Siri AI (CacheData)**.
@@ -97,7 +92,7 @@ The status area has two controls for the RDAR wallpaper bug. **Fix rdar** writes
 | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Tweaks fail to apply                 | Re-grant the sandbox escape from the status area                                                                                                   |
 | Strange behavior after Gestalt edits | Restore your latest snapshot                                                                                                                       |
-| RDAR bug after edits                 | Run RDARFix or Custom Canvas. "verified on disk" means the write landed; if iOS still ignores the value, the fix cannot help on that build         |
+| Strange behavior after Gestalt edits | Restore your latest snapshot
 | Respring does nothing                | The WebKit respring trick may be patched on your beta. The overlay recovers after ten seconds and reports the failure; restart the device manually |
 
 ## Credits

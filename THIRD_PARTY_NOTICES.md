@@ -6,6 +6,15 @@ WorkPlot is derived from Ketamine by Nouvborne, licensed under GPL-3.0.
 Credit: **Ketamine by Nouvborne**.
 - Repository: https://github.com/Nouvborne/Ketamine
 - GitHub profile: https://github.com/Nouvborne
+- `Models/PasscodeThemeManager.swift` <- `Ketamine/Models/PasscodeThemeManager.swift`
+- `UI/PasscodeThemeView.swift` is WorkPlot-original UI on top of that manager.
+
+## mond (rooootdev) — AGPL-3.0
+
+- `UI/FileBrowserView.swift` <- `mond/views/tweaks/SantanderView.swift`
+  (rooootdev/mond, https://github.com/rooootdev/mond). The AGPL-3.0 terms
+  continue to apply to that file; adapted to WorkPlot's `BadQuery.consume`
+  wrapper instead of calling `bad_query` directly.
 
 ## bad_query (forcequitOS) — GPLv3
 
@@ -42,12 +51,10 @@ as an app-design reference. No source code was copied from these projects.
 - `WallpaperDownloadManager.swift` <- `Controllers/DownloadManager.swift`
 - `WallpaperCowabungaAPI.swift` <- `API/CowabungaAPI.swift` + `API/DownloadableWallpaper.swift`
 - `WallpaperVideoHandler.swift` <- `Controllers/VideoHandler.swift`
-- `WallpaperCarPlayManager.swift` <- `Controllers/CarPlayWallpaper+CarPlayManager.swift` + `Controllers/CPBitmapHandler.swift`
 - `WallpaperErrors.swift` <- `Error Codes/ApplyError.swift` + `Error Codes/APIError.swift`
 - `UIApplication+Wallpaper.swift` <- `Extensions/Views/Alert++.swift`
 
 Pocket Poster is also GPL-3.0, so the port is license-compatible. The
 `Resources/WallpaperCAML/` template mirrors Pocket Poster's `Resources/VideoCAML/`
 (the `providerInfo.plist` must be copied from the upstream source — see the
-folder's README). CarPlay `.cpbitmap` writing depends on the `Dynamic`
-Swift package (github.com/leminlimez/Dynamic).
+folder's README).
