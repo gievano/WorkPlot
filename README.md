@@ -31,7 +31,7 @@ WorkPlot edits MobileGestalt values and system files on iOS 27 betas without a j
 WorkPlot keeps the original catalog and exploit core, and adds:
 
 - Light, dark, and system appearance modes.
-- Extra tools in the same catalog: Device Spoof, Gestalt Field Editor, Preset Lab, Session Log, and Check for Updates.
+- Extra tools in the same catalog: Device Spoof, Gestalt Field Editor, Preset Lab, Session Log, File Browser, Passcode Themes, and Check for Updates.
 - Alternate app icons and a per-install badge so two installs can run side by side.
 - Write verification: the app reads the plist back and reports "verified on disk" or "write not visible on disk" instead of pretending the write worked.
 
@@ -47,6 +47,8 @@ WorkPlot keeps the original catalog and exploit core, and adds:
 - 🛡️ **Backup and restore** — automatic backup before each write, JSON snapshots you can export or import
 - 🕵️ **Device Spoof** — spoof device identity (model and region)
 - 📜 **Session Log** — view the exploit session debug logs
+- 📁 **File Browser** — browse the filesystem through the sandbox escape, with search, previews, and text/plist editing
+- ⌨️ **Passcode Themes** — apply .zip/.passthm dialer & passcode keypad themes, with one-time backup and restore
 - 🔄 **Check for Updates** — in-app update checker
 - 🔁 **Respring** — restart SpringBoard without a full reboot
 - 🎨 **Customization** — light/dark/system appearance, and alternate app icons
