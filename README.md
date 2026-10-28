@@ -14,6 +14,8 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPLv3-6E56CF?style=flat-square" alt="GPLv3"></a>
 </p>
 
+[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/gievano/badge.svg)](https://hub.xerj.org/contributors/gievano)
+
 <a href="https://github.com/gievano/WorkPlot/releases/latest"><b>Download IPA</b></a> ·
 <a href="#requirements">Requirements</a> ·
 <a href="#install">Install</a> ·
